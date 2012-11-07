@@ -22,4 +22,8 @@ post '/afterpush' => sub {
     return 'Ok';
 };
 
+get '/afterpush' => sub {
+    return "Hello world";
+};
+
 start;
