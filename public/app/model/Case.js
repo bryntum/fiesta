@@ -1,4 +1,12 @@
 Ext.define("Fiesta.model.Case", {
 	extend: "Ext.data.Model",
-	fields: ["id", "title", "tags", "code", "framework", "user", "userId", "frameworkId"]
+	idProperty: "id",
+	fields: ["id", "name", "tags", "code", "framework", "createdBy", "createdByUserId", "frameworkId"],
+	proxy: {
+		type: "rest",
+		url: "/case",
+		reader: {
+			type: 'json'
+		}
+	}
 });

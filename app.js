@@ -171,4 +171,7 @@ app.get("/me", function(request, response){
 });
 
 // Server loop.
-app.listen(config.http.port);
+(function(port){
+    app.listen(port);
+    console.log("Fiesta server started at http://localhost:" + port);
+})(config.http.port);

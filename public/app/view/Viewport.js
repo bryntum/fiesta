@@ -1,8 +1,7 @@
 Ext.define("Fiesta.view.Viewport", {
 	extend: "Ext.container.Viewport",
 	requires: [
-		"Fiesta.view.component.SearchPane",
-		"Fiesta.view.component.CasePane"
+		"Fiesta.view.component.SearchPane"
 	],
 	initComponent: function(config){
 		Ext.apply(this, {

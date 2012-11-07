@@ -64239,12 +64239,10 @@ Ext.define('Ext.data.writer.Json', {
         
         if (this.encode) {
             if (root) {
-                
                 request.params[root] = Ext.encode(data);
             } else {
             }
         } else {
-            
             request.jsonData = request.jsonData || {};
             if (root) {
                 request.jsonData[root] = data;
