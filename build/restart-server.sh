@@ -10,4 +10,3 @@ git reset --hard origin/master
 
 screen -S fiesta-server -X kill
 screen -d -m -S fiesta-server node app.js
-
