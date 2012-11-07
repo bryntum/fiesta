@@ -12,7 +12,7 @@ $SIG{CHLD} = "IGNORE";
 set port         => 3001;
 set startup_info => 0;
 
-my $script_dir  = dir(__FILE__);
+my $script_dir  = file(__FILE__)->dir;
 
 post '/afterpush' => sub {
     if (fork() == 0) {
