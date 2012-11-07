@@ -1,177 +1,266 @@
-var config = require("./lib/config"),
+var express = require("express"),
+	web = express(),
 
-	db = require("./lib/db")(config.db),
-
-	express = require("express"),
-	app = express(),
-
-	// only for passwords.
-	password = function (/*salt, */value) {
-		return require("crypto").createHmac("sha1", /*salt).update(*/value).digest("hex");
-	},
-	visibleUser = function(value){
-		return value && {id: value.id, name: value.name, points: value.points};
-	},
-	errors = function(){
-		var list = Array.prototype.slice.call(arguments).reduce(function(list, one){
-			if(one && !(one instanceof Error) && "object"===typeof(one)){
-				Array.prototype.push.apply(list, Object.keys(one).reduce(function(buffer, key){
-					return Array.prototype.push.apply(buffer, one[key]), buffer;
-				}, []));
+	// MongoDb
+	util = require('./lib/util'),
+	uuid = require("./lib/uuid"),
+	config = require('./lib/config'),
+	db = (function(mongo){
+		// Create connection.
+		var db = new mongo.Db(config.db.database, new mongo.Server(config.db.host, config.db.port, {auto_reconnect: true, poolSize: 4}), {
+			safe: false,
+			pk: {
+				createPk: uuid.create
 			}
-			else if(!list.length && one){
-				list.push(one + "");
-			}
-			return list;
-		}, []);
-		return {error: list.length >= 1 ? list[0] : list};
-	};
+		});
 
-// Session initialization.
-app.use(express.cookieParser());
-app.use(express.session({
-	secret: config.http.secret
-}));
+		// Define collections & unique indexes
+		var collections = {
+			users: ["email"],
+			frameworks: ["name"],
+			cases: ["name"],
+			tags: ["name"]
+		};
 
-// Static resources & post params.
-app.use(express.static("./public"));
-app.use(express.bodyParser());
+		// Setup collection & indexes.
+		Object.keys(collections).forEach(function(one){
+			db.hasOwnProperty(one) || (db[one] = db.collection(one));
+			(collections[one] || []).forEach(function(name){
+				var index = {};
+				index[name] = 1;
+				db[one].ensureIndex(index, {unique: true, background: true, dropDups: true, sparse: true});
+			});
+		});
 
-// Application routes & handers.
-app.get(/^\/(framework|case|tag)\b/i, function(request, response) {
-	var model = db.resolveModel(request.params[0]);
+		// Return Db instance.
+		return db;
+	})(require("mongodb"));
 
-	// Can not resolve model - return error message.
-	if (!model) {
-		return response.json(404, errors("Can not find requested object"));
-	}
 
-	// Get query from request, build database command.
-	var query = request.query || {},
-		command = {
-			limit: +query.limit || 25,
-			offset: +query.start || 0,
-			where: (function(value) {
-				if (value) {
+// Setup default webserver using express.js.
+web.use(express.methodOverride())
+   .use(express.compress())
+   .use(express.cookieParser())
+   .use(express.bodyParser())
+   .use(require("express-validator"))
+   .use(express.session({secret: config.http.secret}))
+   .use(util.web.express);
+
+
+
+// Collections
+web.get(/\/(frameworks|cases|tags)\b/, function(request, response){
+	var collection = db[request.params[0]],
+		query = {
+			// Filter (if presented)
+			$or: (function(value) {
+				if(value!=null){
 					try {
-						return JSON.parse(value).reduce(function(where, pair) {
-							return (where[pair.property] = {like: "%" + pair.value.replace(/(?=\W)/g, "\\") + "%"}, where);
-						}, {});
+						return JSON.parse(value).reduce(function(list, pair) {
+							var condition = {};
+							condition[pair.property] = new RegExp(pair.value);
+							return (list.push(condition), list);
+						}, []);
 					}
 					catch(e){}
 				}
 
-				// Filter not found.
-				return {};
-			})(query.filter)
+				// Default condition.
+				return [{_id: {$ne: ''}}];
+			})(request.param("filter"))
+		},
+		options = {
+			skip: +request.param("start") || 0,
+			limit: +request.param("limit") || 50,
+			sort: (function(sort, order){
+				var data = {};
+				if(sort && order){
+					data[sort] = order == "ASC" ? 1 : -1;
+				}
+				return data;
+			})(request.param("sort"), request.param("dir"))
 		};
 
-	// Execute command & send result.
-	model.all(command, function(error, rows) {
-		if (error) {
-			return response.json(errors(error));
-		}
-		// TODO: add filtration of json by fields (if presented).
-		response.json(rows);
-	});
-});
-
-app.post("/signup", function(request, response){
-	// Create new user.
-	var data = request.body;
-	data.password = password(data.password);
-
-	db.User.create(data, function(error, model){
-		if(error){
-			return response.json(errors(model.errors, error));
-		}
-		request.session.user = model;
-		response.redirect("/me");
-	});
-});
-
-app.post("/signin", function(request, response) {
-	var data = request.body;
-	db.User.findOne({
-		where: {
-			password: password(data.password),
-			email: {like: data.email}
-		}
-	}, function(error, model){
-		if(error){
-			return response.json(errors(model.errors, error));
-		}
-
-		if(!model){
-			return response.json(401, errors("Invalid email or password."));
-		}
-
-		model.loginDate = new Date();
-		request.session.user = model;
-		response.redirect("/me");
-	});
-});
-
-app.post("/signout", function(request, response){
-	if(!request.session.user){
-		return response.json(403, errors("You are not authorized to perform this action."));
-	}
-	request.session.user = null;
-	response.json({success: true});
-});
-
-app.post("/case", function(request, response){
-	var data = request.body,
-		user = request.session.user;
-
-	// Add missing fields.
-	data.createdByUserId = user && user.id;
-	db.Case.create(data, function(error, model){
-		if(error){
-			return response.json(errors(model.errors, error));
-		}
-
-		response.json(model);
-	});
-});
-
-app.get("/tags/:caseId", function(request, response){
-	db.Case.find(request.param("caseId"), function(error, model){
-		if(!model){
-			return response.json([]);
-		}
-
-		model.caseTags(function(error, caseTags){
-			// There is no tags.
-			if(!caseTags || !caseTags.length){
-				return response.json([]);
-			}
-
-			// Wait for populating of all tags.
-			var pending = caseTags.length, list = [];
-			caseTags.forEach(function(caseTag){
-				caseTag.tag(function(error, tag){
-					tag && list.push(tag);
-					if(--pending){
-						response.json(list);
-					}
-				});
+	// Get total count.
+	collection.find(query).count(function(e, count){
+		// Get items array.
+		response.error(401, e, "collection.count") || collection.find(query, options).toArray(function(e, list){
+			response.error(401, e, "collection.find") || response.json({
+				total: count,
+				items: (list || []).map(util.db.restoreIdentity)
 			});
 		});
 	});
 });
 
-app.get("/me", function(request, response){
-	var user = request.session.user;
-	if(!user){
-		return response.json(403, errors("You are not authorized to perform this action."));
-	}
 
-	response.json(visibleUser(user));
+
+// User
+web.post("/users", function(request, response){
+	// Setup validation.
+	request.assert("password", "Password field must be from 6 to 20 characters.").len(6, 20);
+	request.assert("email", "Invalid email address.").notEmpty().isEmail();
+	request.assert("name", "Name can not be empty.").notEmpty();
+
+	// Show error or create user.
+	var id = uuid.create();
+	response.error(400, request.validationErrors(true))
+	|| db.users.insert({
+			_id: id,
+			name: request.param("name").trim(),
+			email: request.param("email").trim().toLowerCase(),
+			password: util.user.password(request.param("password").trim()),
+			role: request.param("role")
+		}, function(e, list){
+			response.error(401, e, "user.insert")
+			|| db.users.findOne({_id: id}, function(e, model){
+				response.error(401, e, "user.insert")
+				|| !model && response.error(403, "Account already exists for your email address.")
+				|| response.json(util.user.public(request.session.me = model, model));
+			});
+		});
 });
 
-// Server loop.
-(function(port){
-    app.listen(port);
-    console.log("Fiesta server started at http://localhost:" + port);
-})(config.http.port);
+web.post("/users/login", function(request, response){
+	// Setup validation.
+	request.assert("password", "Password is required.").notEmpty();
+	request.assert("email", "Invalid email address.").notEmpty().isEmail();
+
+	// Validation
+	response.error(400, request.validationErrors(true))
+	|| db.users.findOne({
+			email: request.param("email").trim().toLowerCase(),
+			password: util.user.password(request.param("password").trim())}, function(e, user){
+				response.error(401, e, "user.login")
+				|| !user && response.error(404, "Your username and password are incorrect.")
+				|| response.json(util.user.public(request.session.me = user));
+			});
+});
+
+web.post("/users/logout", function(request, response){
+	var me = request.session.me;
+	(me)
+		? (request.session.me = null, response.json({success: true}))
+		: response.unauthorized();
+});
+
+web.get("/users/me", function(request, response){
+	var me = request.session.me;
+	(me)
+		? response.json(util.user.public(me))
+		: response.unauthorized();
+});
+
+
+
+// Case (create & update).
+web.post("/cases", function(request, response){
+	var me = request.session.me;
+	if(!me){
+		return response.unauthorized();
+	}
+
+	request.assert("code", "Code is required field.").notEmpty();
+	request.assert("name", "Name is required field.").notEmpty();
+	request.assert("framework", "Framework is required field.").notEmpty();
+
+	// Validation
+	var id = uuid.create();
+	response.error(400, request.validationErrors(true))
+
+	// Find framework.
+	|| db.frameworks.findOne({name: new RegExp(request.param("framework").trim(), "i")}, function frameworkReady(e, framework){
+			response.error(401, e, "case.create.#1")
+			|| !framework && db.frameworks.insert({name: request.param("framework")}, frameworkReady)
+
+			// Find tags.
+			|| (function findTags(tags){
+					db.tags.find({name: {$in: tags}}).toArray(function(e, list){
+						response.error(401, e, "case.create.#2")
+
+						// Need to create some of tags.
+						|| tags.length > list.length && (function(pending){
+								pending.slice().forEach(function(one){
+									db.tags.insert({name: one}, function(e, tag){
+										if(!--pending.length){
+											findTags(tags);
+										}
+									});
+								});
+							})(tags.map(function(one){
+								return list.some(function(tag){
+									return tag.name === one;
+								}) ? null : one;
+							}).filter(function(one){
+								return one!==null;
+							}))
+
+						// Need to create unique index.
+						|| tags.length < list.length && db.tags.ensureIndex({name: 1}, {
+							unique: true,
+							background: true,
+							dropDups: true,
+							safe: true}, function(){
+								response.error(401, e, "case.create.#3")
+								|| findTags(tags);
+							})
+
+						// Ready, create case!
+						|| !request.param("id") && db.cases.insert({
+								_id: id,
+								name: request.param("name"),
+								code: request.param("code"),
+								public: (request.param("public") !== undefined)
+									? request.param("public")
+									: true,
+								preload: request.param("preload"),
+								created: Date.now(),
+								createdBy: util.user.public(me),
+
+								modified: null,
+								modifiedBy: null,
+
+								framework: framework.name,
+								tags: tags
+							}, function(e, list){
+								response.error(401, e, "case.create")
+								|| db.cases.findOne({_id: id}, function(e, model){
+									response.error(401, e, "case.create")
+									|| !model && response.error(403, "Case with same name already exists.")
+									|| response.json(util.db.restoreIdentity(model));
+								});
+							})
+
+						// Ready, update case!
+						|| request.param("id") && db.cases.findAndModify({_id: request.param("id")}, [], {$set: {
+								name: request.param("name"),
+								code: request.param("code"),
+								public: (request.param("public") !== undefined)
+									? request.param("public")
+									: true,
+								preload: request.param("preload"),
+
+								modified: Date.now(),
+								modifiedBy: util.user.public(me),
+
+								framework: framework.name,
+								tags: tags
+							}}, {new: true}, function(e, model){
+								response.error(401, e, "case.update")
+								|| response.json(util.db.restoreIdentity(model));
+							});
+					});
+				})(util.array.unique(Array.isArray(request.param("tags")) ? request.param("tags") : [], function(key){
+					return key.trim().toLowerCase();
+				}));
+	});
+});
+
+
+
+web.listen(config.http.port);
+console.log("Fieta server started at http://localhost:" + config.http.port);
+
+
+// For testing purpose
+module.exports = {web: web, db: db};
