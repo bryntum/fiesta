@@ -3,4 +3,10 @@
 # get the directory in which the script reside
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-echo "yo" > $DIR/aa.txt
+cd ..
+
+git fetch --all
+git reset --hard origin/master
+
+`screen -S fiesta-server -X kill`;
+`screen -d -m -S fiesta-server node app.js`;
