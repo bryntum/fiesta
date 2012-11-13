@@ -7,12 +7,12 @@ Ext.define("Fiesta.controller.Users", {
 	 */
 	getUser: function (callback) {
 		Ext.Ajax.request({
-			url: "/me",
+			url: "/users/me",
 			success: function (response) {
 				try {
 					var data = JSON.parse(response.responseText);
-					if(!response.success){
-						callback(response.message, false);
+					if(data.errors){
+						callback(data.errors, false);
 					}
 					else{
 						callback(false, data);
@@ -22,8 +22,8 @@ Ext.define("Fiesta.controller.Users", {
 
 			failure: function (response) {
 				try {
-					var data = JSON.parse(response.responseText);
-					callback(data.message || data, false);
+					var data = JSON.parse(response.responseText) || {};
+					callback(data.errors || data, false);
 				} catch (e) {}
 			}
 		});
@@ -37,13 +37,13 @@ Ext.define("Fiesta.controller.Users", {
 	login: function (email, password, callback) {
 		Ext.Ajax.request({
 			method: 'POST',
-			url: "/signin",
+			url: "/users/login",
 			params: {email: email, password: password},
 			success: function (response) {
 				try {
 					var data = JSON.parse(response.responseText);
-					if(!response.success){
-						callback(response.message, false);
+					if(data.errors){
+						callback(data.errors, false);
 					}
 					else{
 						callback(false, data);
@@ -53,8 +53,8 @@ Ext.define("Fiesta.controller.Users", {
 
 			failure: function (response) {
 				try {
-					var data = JSON.parse(response.responseText);
-					callback(data.message || data, false);
+					var data = JSON.parse(response.responseText) || {};
+					callback(data.errors || data, false);
 				} catch (e) {}
 			}
 		});
@@ -69,13 +69,13 @@ Ext.define("Fiesta.controller.Users", {
 	register: function (name, email, password, callback) {
 		Ext.Ajax.request({
 			method: 'POST',
-			url: "/signup",
+			url: "/users",
 			params: {name: name, email: email, password: password},
 			success: function (response) {
 				try {
 					var data = JSON.parse(response.responseText);
-					if(!response.success){
-						callback(response.message, false);
+					if(data.errors){
+						callback(data.errors, false);
 					}
 					else{
 						callback(false, data);
@@ -86,8 +86,7 @@ Ext.define("Fiesta.controller.Users", {
 			failure: function (response) {
 				try {
 					var data = JSON.parse(response.responseText);
-					console.log("FAIL: ", data);
-					callback(data.message || data, false);
+					callback(data.errors || data, false);
 				} catch (e) {}
 			}
 		});

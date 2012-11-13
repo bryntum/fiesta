@@ -4,12 +4,9 @@ Ext.define("Fiesta.model.User", {
 	fields: ["id", "name", "email", "password"],
 	proxy: {
 		type: "rest",
-		url: "/user",
-		api: {
-			create: "/signup"
-		},
+		url: "/users",
 		reader: {
-			type: 'json'
+			type: "json"
 		}
 	}
 });

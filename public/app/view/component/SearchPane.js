@@ -23,7 +23,7 @@ Ext.define("Fiesta.view.component.SearchPane", {
 					align: "middle"
 				},
 				items: [{
-					id: "title-filter",
+					id: "name-filter",
 					xtype: "textfield",
 					flex: true,
 					emptyText: "Filter by name"
@@ -38,14 +38,14 @@ Ext.define("Fiesta.view.component.SearchPane", {
 				xtype: "combobox",
 				store: "Tags",
 				displayField: "name",
-				valueField: "id",
+				valueField: "name",
 				multiSelect: true,
 				emptyText: "Filter by tag (multiple choices)"
 			}, {
-				id: "frameworkId-filter",
+				id: "framework-filter",
 				xtype: "combo",
 				displayField: "name",
-				valueField: "id",
+				valueField: "name",
 				emptyText: "Framework",
 				store: "Frameworks"
 			}, {
@@ -55,21 +55,17 @@ Ext.define("Fiesta.view.component.SearchPane", {
 				fields: ["id", "name", "tags", "createdBy"],
 				store: "Cases",
 				columns: [{
-					text: "Id",
-					width: "10%",
-					dataIndex: "id"
-				}, {
 					text: "Name",
-					width: "30%",
 					dataIndex: "name"
 				}, {
 					text: "Tags",
-					width: "29.9%",
 					dataIndex: "tags"
 				}, {
 					text: "Created by",
-					width: "29.5%",
-					dataIndex: "createdBy"
+					dataIndex: "createdBy",
+					renderer: function(data){
+						return data.name;
+					}
 				}]
 			}]
 		});

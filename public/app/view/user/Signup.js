@@ -28,6 +28,12 @@ Ext.define("Fiesta.view.user.Signup", {
 
 						app.getController("Users").register(data.name, data.email, data.password, function(error, model){
 							if(error){
+								var messages = [];
+								for(var key in error){
+									if(error[key].msg){ messages.push(error[key].msg); }
+								}
+								error = messages.join("<br />");
+
 								return Ext.Msg.alert("Error", error);
 							}
 							Ext.Msg.alert("Message", "You are successfully registered");

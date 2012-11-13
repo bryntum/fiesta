@@ -4,6 +4,6 @@ Ext.define("Fiesta.model.Tag", {
 	fields: ["id", "name"],
 	proxy: {
 		type: "ajax",
-		url: "tag"
+		url: "tags"
 	}
 });

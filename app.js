@@ -44,7 +44,9 @@ web.use(express.methodOverride())
    .use(express.bodyParser())
    .use(require("express-validator"))
    .use(express.session({secret: config.http.secret}))
-   .use(util.web.express);
+   .use(util.web.express)
+   .use(express.static("./public/"));
+
 
 
 
@@ -53,13 +55,24 @@ web.get(/\/(frameworks|cases|tags)\b/, function(request, response){
 	var collection = db[request.params[0]],
 		query = {
 			// Filter (if presented)
-			$or: (function(value) {
+			$and: (function(value) {
 				if(value!=null){
 					try {
-						return JSON.parse(value).reduce(function(list, pair) {
-							var condition = {};
-							condition[pair.property] = new RegExp(pair.value);
-							return (list.push(condition), list);
+						return JSON.parse(value).reduce(function(accumulate, pair) {
+							var expression = {};
+
+                            if(pair.value instanceof Array){
+                                expression.$or = pair.value.reduce(function(all, one){
+                                    var single = {}, like = {};
+                                    single[pair.property] = (like["$in"] = [one], like);
+                                    return (all.push(single), all);
+                                }, []);
+                            }
+                            else{
+                                expression[pair.property] = new RegExp(pair.value, "i");
+                            }
+
+							return (accumulate.push(expression), accumulate);
 						}, []);
 					}
 					catch(e){}
@@ -70,8 +83,8 @@ web.get(/\/(frameworks|cases|tags)\b/, function(request, response){
 			})(request.param("filter"))
 		},
 		options = {
-			skip: +request.param("start") || 0,
-			limit: +request.param("limit") || 50,
+			skip: Math.max(0, +request.param("start") || 0),
+			limit: Math.min(Math.max(0, +request.param("limit") || 50), 1000),
 			sort: (function(sort, order){
 				var data = {};
 				if(sort && order){
@@ -84,8 +97,10 @@ web.get(/\/(frameworks|cases|tags)\b/, function(request, response){
 	// Get total count.
 	collection.find(query).count(function(e, count){
 		// Get items array.
-		response.error(401, e, "collection.count") || collection.find(query, options).toArray(function(e, list){
-			response.error(401, e, "collection.find") || response.json({
+		response.error(401, e, "collection.count")
+		|| collection.find(query, options).toArray(function(e, list){
+			response.error(401, e, "collection.find")
+			|| response.json({
 				total: count,
 				items: (list || []).map(util.db.restoreIdentity)
 			});
@@ -103,21 +118,17 @@ web.post("/users", function(request, response){
 	request.assert("name", "Name can not be empty.").notEmpty();
 
 	// Show error or create user.
-	var id = uuid.create();
 	response.error(400, request.validationErrors(true))
 	|| db.users.insert({
-			_id: id,
 			name: request.param("name").trim(),
 			email: request.param("email").trim().toLowerCase(),
 			password: util.user.password(request.param("password").trim()),
 			role: request.param("role")
-		}, function(e, list){
-			response.error(401, e, "user.insert")
-			|| db.users.findOne({_id: id}, function(e, model){
-				response.error(401, e, "user.insert")
-				|| !model && response.error(403, "Account already exists for your email address.")
-				|| response.json(util.user.public(request.session.me = model, model));
-			});
+		}, {safe: true}, function(e, list){
+			e && (~String(e).indexOf("duplicate")
+				? response.error(403, "Account already exists for your email address.")
+				: response.error(401, e, "user.insert"))
+			|| response.json(util.user.public(request.session.me = list[0], list[0]));
 		});
 });
 
@@ -165,13 +176,14 @@ web.post("/cases", function(request, response){
 	request.assert("framework", "Framework is required field.").notEmpty();
 
 	// Validation
-	var id = uuid.create();
 	response.error(400, request.validationErrors(true))
 
 	// Find framework.
 	|| db.frameworks.findOne({name: new RegExp(request.param("framework").trim(), "i")}, function frameworkReady(e, framework){
 			response.error(401, e, "case.create.#1")
-			|| !framework && db.frameworks.insert({name: request.param("framework")}, frameworkReady)
+			|| !framework && db.frameworks.insert({name: request.param("framework")}, {safe: true}, function(){
+				db.frameworks.findOne({name: request.param("framework")}, frameworkReady);
+			})
 
 			// Find tags.
 			|| (function findTags(tags){
@@ -181,7 +193,7 @@ web.post("/cases", function(request, response){
 						// Need to create some of tags.
 						|| tags.length > list.length && (function(pending){
 								pending.slice().forEach(function(one){
-									db.tags.insert({name: one}, function(e, tag){
+									db.tags.insert({name: one}, {safe: true}, function(e, tag){
 										if(!--pending.length){
 											findTags(tags);
 										}
@@ -207,7 +219,6 @@ web.post("/cases", function(request, response){
 
 						// Ready, create case!
 						|| !request.param("id") && db.cases.insert({
-								_id: id,
 								name: request.param("name"),
 								code: request.param("code"),
 								public: (request.param("public") !== undefined)
@@ -222,13 +233,11 @@ web.post("/cases", function(request, response){
 
 								framework: framework.name,
 								tags: tags
-							}, function(e, list){
-								response.error(401, e, "case.create")
-								|| db.cases.findOne({_id: id}, function(e, model){
-									response.error(401, e, "case.create")
-									|| !model && response.error(403, "Case with same name already exists.")
-									|| response.json(util.db.restoreIdentity(model));
-								});
+							}, {safe: true}, function(e, list){
+								e && (~String(e).indexOf("duplicate")
+									? response.error(403, "Case with same name already exists.")
+									: response.error(401, e, "case.create"))
+								|| response.json(util.db.restoreIdentity(list[0]));
 							})
 
 						// Ready, update case!
@@ -250,7 +259,11 @@ web.post("/cases", function(request, response){
 								|| response.json(util.db.restoreIdentity(model));
 							});
 					});
-				})(util.array.unique(Array.isArray(request.param("tags")) ? request.param("tags") : [], function(key){
+				})(util.array.unique(Array.isArray(request.param("tags"))
+					? request.param("tags")
+					: (request.param("tags")
+						? String(request.param("tags")).split(/\s*,\s*/)
+						: []), function(key){
 					return key.trim().toLowerCase();
 				}));
 	});
@@ -260,6 +273,8 @@ web.post("/cases", function(request, response){
 
 web.listen(config.http.port);
 console.log("Fieta server started at http://localhost:" + config.http.port);
+
+
 
 
 // For testing purpose

@@ -5,27 +5,24 @@ Ext.define("Fiesta.controller.Search", {
 	views: [],
 	init: function () {
 		this.control({
-			"#title-filter, #tags-filter, #frameworkId-filter": {
+			"#name-filter, #tags-filter, #framework-filter": {
 				change: this.applyFilter
 			}
 		});
 	},
 	applyFilter: function (sender, text) {
-		// TODO: refactor this.
-		var filterBy = sender.id.substr(0, sender.id.indexOf('-')),
-			store = Ext.getCmp("case-list").getStore(),
-			value = text || '';
+        var store = Ext.getCmp("case-list").getStore(),
+            keys = ["name", "tags", "framework"],
+            filter = [];
 
-		Ext.each(store.filters.items, function (filter, i){
-			if (filter.property == filterBy) {
-				this.splice(i, 1);
-				return false;
-			}
-		}, store.filters.items);
+        Ext.each(keys, function(key){
+            var cmp = Ext.getCmp(key + "-filter"),
+                value = cmp && cmp.value || "";
 
-		if (value) {
-			store.filter(filterBy, value);
-		}
-		store.load();
+            (!value || !value.length) || filter.push({property: key, value: value});
+        });
+
+        filter.length && store.load({params: {filter: JSON.stringify(filter)}})
+            || store.load();
 	}
 });

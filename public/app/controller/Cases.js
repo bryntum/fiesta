@@ -17,6 +17,9 @@ Ext.define("Fiesta.controller.Cases", {
 			},
 			"button[action=cancel]": {
 				click: this.closeCase
+			},
+			"button[action=edit]": {
+				click: this.editCase
 			}
 		});
 	},
@@ -29,12 +32,25 @@ Ext.define("Fiesta.controller.Cases", {
 		owner.remove(tab);
 	},
 
+	editCase: function (sender){
+		var pane = Ext.getCmp("tab-pane"),
+			data = sender.up("case-view").data;
+
+		this.closeCase(sender);
+		pane.add({
+				id: data.id,
+				title: data.name,
+				xtype: "case-edit",
+				data: data
+			}).show();
+	},
+
 	saveCase: function (sender) {
 		var tab = sender.up("case-edit"),
 			form = sender.up("case-edit").down("form"),
-			hasData = !!sender.data,
 			data = form.getForm().getValues(),
-			store = this.getCasesStore();
+			store = this.getCasesStore(),
+			that = this;
 
 		form.setLoading({
 			msg: "Please, wait..."
@@ -44,19 +60,50 @@ Ext.define("Fiesta.controller.Cases", {
 			if (error) {
 				form.setLoading(false);
 				return new Fiesta.view.user.Signin().show();
-				// Ext.Msg.alert("Error", error);
 			}
 
-			Ext.create("Fiesta.model.Case", data).save({
-				success: function () {
+			var showErrors = function(error){
+				if(error){
+					var messages = [];
+					for(var key in error){
+						if(error[key].msg){ messages.push(error[key].msg); }
+					}
+					error = messages.join("<br />");
+
+					return Ext.Msg.alert("Error", error);
+				}
+			};
+			
+			Ext.Ajax.request({
+				method: 'POST',
+				url: "/cases",
+				params: form.getValues(),
+
+				success: function (response) {
 					form.setLoading(false);
+					try {
+						var data = JSON.parse(response.responseText);
+						if(data.errors){
+							return showErrors(data.errors, false);
+						}
+
+
+						// TODO: bind values to model or open in read mode
+						that.closeCase(sender);
+						that.getCaseView(sender, {data: data})
+					} catch (e) {}
+
+					// reload
 					store.load();
-					// TODO: bind values to model or open in read mode
-					tab.ownerCt.remove(tab);
+
 				},
-				failure: function (record, operation) {
+
+				failure: function (response) {
 					form.setLoading(false);
-					Ext.Msg.alert("Error", operation.request.scope.reader.jsonData.message);
+					try {
+						var data = JSON.parse(response.responseText) || {};
+						showErrors(data.errors || data, false);
+					} catch (e) {}
 				}
 			});
 		});
@@ -85,7 +132,7 @@ Ext.define("Fiesta.controller.Cases", {
 				id: id,
 				title: data.name,
 				xtype: "case-view",
-				data: data
+				data: data.id == "create-case" ? {} : data
 			}).show();
 		} else {
 			Ext.getCmp(id).show();

@@ -4,6 +4,6 @@ Ext.define("Fiesta.model.Framework", {
 	fields: ["id", "name"],
 	proxy: {
 		type: "ajax",
-		url: "framework"
+		url: "frameworks"
 	}
 });
