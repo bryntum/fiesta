@@ -6,6 +6,7 @@ var request = require("supertest"),
 
 app.db.users.remove({email: new RegExp("@vows.com$")}, function(){
 app.db.cases.remove({code: new RegExp("^alert")}, function(){
+app.db.tags.remove({name: {$ne: ""}}, function(){
 
 	test.describe("Fiesta test cases").addBatch({
 		"Unauthorized data retrieving": {
@@ -200,6 +201,37 @@ app.db.cases.remove({code: new RegExp("^alert")}, function(){
 			}
 		},
 
+		"Case creation test": {
+			topic: function(){
+				request(app.web)
+					.post("/users/login")
+					.send({email: "user@vows.com", password: "123456"})
+					.end((function(e, response){
+						request(app.web)
+							.post("/cases")
+							.set("cookie", response.headers["set-cookie"])
+							.send({
+								name: "Empty case 2",
+								code: "alert(1);",
+								tags: ["sencha", "fiesta", "jquery", "new"],
+								framework: "sencha"
+							})
+							.end(this.callback);
+					}).bind(this))
+			},
+			"should respond with no error": function(e, response){
+				assert.ifError(e);
+			},
+			"should response with valid case": function(e, response){
+				var body = response.body || {};
+
+				assert.equal(body.name, "Empty case 2");
+				assert.equal(body.code, "alert(1);");
+				assert.equal(body.framework, "sencha");
+				assert.equal(body.tags + "", ["sencha", "fiesta", "jquery", "new"] + "");
+			}
+		},
+
 
 		"Case modification test": {
 			topic: function(){
@@ -245,6 +277,6 @@ app.db.cases.remove({code: new RegExp("^alert")}, function(){
 			}
 		}
 	}).run();
-
+});
 });
 });

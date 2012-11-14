@@ -77,7 +77,7 @@ Ext.define("Fiesta.view.case.Edit", {
 						}, {
 							layout: "hbox",
 							border: false,
-							items: (this.data && this.data.tags || [null]).map(function(tag){
+							items: (this.data && this.data.tags && this.data.tags.length && this.data.tags || [null]).map(function(tag){
 								return {
 									margin: {top: 3, right: 5},
 									name: "tags",

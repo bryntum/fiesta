@@ -191,13 +191,11 @@ web.post("/cases", function(request, response){
 						response.error(401, e, "case.create.#2")
 
 						// Need to create some of tags.
-						|| tags.length > list.length && (function(pending){
-								pending.slice().forEach(function(one){
-									db.tags.insert({name: one}, {safe: true}, function(e, tag){
-										if(!--pending.length){
-											findTags(tags);
-										}
-									});
+						|| tags.length > list.length && (function(missing){
+								db.tags.insert(missing.map(function(one){
+									return {name: one};
+								}), {safe: true}, function(e, list){
+									findTags(tags);
 								});
 							})(tags.map(function(one){
 								return list.some(function(tag){
