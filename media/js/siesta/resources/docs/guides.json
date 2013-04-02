@@ -1,0 +1,32 @@
+[
+    {
+        "title": "Siesta",
+        "items": [
+            {
+                "name"          : "siesta_getting_started",
+                "title"         : "Getting Started with Siesta - stress free JavaScript unit testing",
+                "description"   : "This guide will allow you to get started with Siesta."
+            },
+            {
+                "name"          : "siesta_automation",
+                "title"         : "Siesta automation. Continuous integration",
+                "description"   : "This guide describes how test suite for Siesta can be launched from command line."
+            },
+            {
+                "name"          : "testing_mvc_app",
+                "title"         : "Testing ExtJS MVC application with Siesta",
+                "description"   : "This guide contains details about how to make testing MVC application easier."
+            },
+            {
+                "name"          : "extending_test_class",
+                "title"         : "Extending test class with your own assertions and utility methods",
+                "description"   : "This guide describes, how to add your own assertions and/or utility methods to the test class."
+            },
+            {
+                "name"          : "cross_page_testing",
+                "title"         : "Cross page testing",
+                "description"   : "This guide describes, how to write cross-page tests (tests involving page refresh / redirect)"
+            }
+        ]
+    }
+]

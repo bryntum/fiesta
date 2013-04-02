@@ -8,7 +8,8 @@
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
 
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
-    <script type="text/javascript" src="/media/js/fiesta.js"></script>
+    <script type="text/javascript" src="/media/js/siesta/siesta-all.js"></script>
+    <script type="text/javascript" src="/media/js/fiesta/app.js"></script>
     <script type="text/javascript">
         var disqus_shortname = '<?php echo $disqus_shortname?>'; 
         (function() {

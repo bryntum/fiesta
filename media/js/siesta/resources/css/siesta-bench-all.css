@@ -1,0 +1,185 @@
+iframe {
+    position    : absolute;
+    
+    left        : -10000px;
+    top         : -10000px;
+    
+    background-color    : white;
+}
+
+
+
+/*=======================================================================================================================================================================================================================
+    Test suite title
+*/
+
+.tr-title .x-panel-body {
+    background-color    : #d5e7f0;
+    color               : black;
+    line-height         : 50px;
+    font-size           : 20px;
+    padding-left        : 10px
+}
+
+
+.tr-logo {
+    float               : right;
+    width               : 230px;
+    height              : 100%;
+    background-image    : url(../images/logo.png);
+    background-repeat   : no-repeat;
+    background-position : left center;
+    cursor              : pointer;
+}
+
+
+/*=======================================================================================================================================================================================================================
+    Refresh icon
+*/
+
+.tr-icon-run-checked {
+    background-image: url(../images/button_play_checked.png) !important;
+}
+
+.tr-icon-run-failed {
+    background-image: url(../images/button_play_red.png) !important;
+}
+
+.tr-icon-run-all {
+    background-image: url(../images/button_play_all.png) !important;
+}
+
+
+
+/*=======================================================================================================================================================================================================================
+    Vertically aligned content
+*/
+
+.tr-vertical-align-helper-content {
+    display         : -moz-inline-box;
+    display         : inline-block;
+    vertical-align  : middle;
+    zoom            : 1;
+}
+
+
+.tr-vertical-align-helper {
+    display         : -moz-inline-box;
+    display         : inline-block;
+    vertical-align  : middle;
+    height          : 100%;
+    width           : 0px;
+    zoom            : 1;
+}
+
+.tr-rounded-box {
+    background              : #FFFFFF;
+    color                   : black;
+    font-size               : larger;
+    
+    border                  : 3px solid #d5e7f0;
+    
+    padding                 : 30px;
+    
+    -moz-border-radius      : 24px;
+    -webkit-border-radius   : 24px;
+    border-radius           : 24px;
+}
+
+
+.tr-main-area-centered {
+	text-align         : center;
+}/*=======================================================================================================================================================================================================================
+    Row in tests grid - result cell
+*/
+
+.tr-testgrid .x-grid-cell-inner {
+    height          : 20px !important;
+}
+
+.x-ie9 .tr-testgrid .x-grid-cell-inner {
+    white-space     : nowrap !important;
+}
+
+
+.tr-test-status {
+    background-position: 3px center;
+    background-repeat: no-repeat;
+}
+
+.tr-test-status .x-tree-icon {
+    background-position     : left center;
+    background-repeat       : no-repeat;
+}
+
+.tr-test-status-empty .x-tree-icon {
+    background-image : url(../images/document_16.png) !important;
+}
+
+.tr-test-status-failed .x-tree-icon {
+    background-image : url(../images/bug.png) !important;
+}
+
+.tr-test-status-thrown .x-tree-icon {
+    background-image : url(../images/flag-red.png) !important;
+}
+
+.tr-test-status-working .x-tree-icon {
+    background-image : url(../images/hourglass.png) !important;
+}
+
+.tr-test-status-passed .x-tree-icon {
+    background-image : url(../images/ok.png) !important;
+}
+
+.tr-test-status-missing .x-tree-icon {
+    background-image : url(../images/cross.png) !important;
+}
+
+.tr-folder-green .x-tree-icon {
+    background-image : url(../images/folder_green.png) !important;
+}
+
+.tr-folder-yellow .x-tree-icon {
+    background-image : url(../images/folder_yellow.png) !important;
+}
+
+.tr-folder-red .x-tree-icon {
+    background-image : url(../images/folder_red.png) !important;
+}.tr-measurement-icon {
+    display         : -moz-inline-box;
+    display         : inline-block;
+    
+    width           : 16px;
+    height          : 16px;
+    
+    background-repeat   : no-repeat;
+    vertical-align      : middle;
+    
+    margin-right        : 2px; 
+}
+
+
+.tr-measurement-empty {
+	background-image   : url('../images/document_16.png')
+}
+
+
+.tr-measurement-started {
+    background-image   : url('../images/hourglass.png')
+}
+
+
+.tr-measurement-calibrated {
+    background-image   : url('../images/hourglass.png')
+}
+
+
+.tr-measurement-completed {
+    background-image   : url('../images/ok.png')
+}
+
+
+.tr-measurement-failed {
+    background-image   : url('../images/flag-red.png')
+}

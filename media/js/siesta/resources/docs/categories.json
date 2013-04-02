@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Siesta",
+        "groups": [
+            {
+                "name": "Test",
+                "classes": [
+                    "Siesta.Test.ExtJS",
+                    "Siesta.Test.jQuery",
+                    "Siesta.Test.Browser",
+                    "Siesta.Test"
+                ]
+            },
+            {
+                "name": "Harness",
+                "classes": [
+                    "Siesta.Harness.Browser.ExtJS",
+                    "Siesta.Harness.Browser",
+                    "Siesta.Harness.NodeJS",
+                    "Siesta.Harness"
+                ]
+            }
+        ]
+    }
+]
