@@ -2,6 +2,8 @@ Ext.define('Fiesta.view.testCases.View', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.testCasesView',
     layout: 'border',
+    border: false,
+    closable: true,
     initComponent: function() {
         this.callParent(arguments);
     },
@@ -49,6 +51,7 @@ Ext.define('Fiesta.view.testCases.View', {
         region: 'center',
         xtype: 'form',
         layout: 'fit',
+        border: false,
         items: [{
             xtype: 'htmleditor',
             name: 'code',

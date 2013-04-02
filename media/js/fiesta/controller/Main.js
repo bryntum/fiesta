@@ -13,12 +13,9 @@ Ext.define("Fiesta.controller.Main", {
                 click: function (button) {button.up('testCasesCreate').close()}
             },
             'mainView': {
-                add: this.handleTabAdd
-            },
-            'mainView': {
+                add: this.handleTabAdd,
                 tabchange: this.handleTabChange
             }
-
         });
     },
 
@@ -76,7 +73,8 @@ Ext.define("Fiesta.controller.Main", {
                         tabId: tab.tabId
                     },
                     success: function () {
-                            customMask.hide();
+                        
+                        customMask.hide();
                     },
                     failure: function(form, action) {
                         Ext.Msg.alert('Error','Server error occure...');

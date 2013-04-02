@@ -1,7 +1,7 @@
 Ext.define("Fiesta.controller.Search", {
     extend: "Ext.app.Controller",
     views: ['testCases.List','testCases.Create','SearchForm'],
-    stores: ['TestCases','Tags','Frameworks'], 
+    stores: ['TestCases','Tags','Frameworks','Users'], 
     refs: [
         {ref: 'tabs', selector: 'mainView'},
     ],       
@@ -13,6 +13,9 @@ Ext.define("Fiesta.controller.Search", {
             'searchForm  button[action=addCase]': {
                 click: this.addTest
             },
+            'searchForm > field, searchForm  field': {
+                change: this.processFilter
+            }            
         });
     },
     onItemDblClick: function (grid, record) {
@@ -42,5 +45,13 @@ Ext.define("Fiesta.controller.Search", {
     
     addTest: function () {
         addWin = Ext.widget('testCasesCreate', { formUrl: 'ajax/addTestCase/'});
+    },
+    
+    processFilter: function (field) {
+        var searchForm = Ext.ComponentQuery.query('searchForm');
+        var params = searchForm[0].getForm().getValues();
+        params.action =  'filter';
+        Ext.getStore('TestCases').load({params: params}); 
     }
+    
 });

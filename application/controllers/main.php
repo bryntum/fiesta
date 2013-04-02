@@ -17,7 +17,7 @@ class Main extends CI_Controller {
 
         if ($this->authentication->is_signed_in())
         {
-            $this->load->view('main');        
+            $this->load->view('main', array('disqus_shortname' => $this->config->item('disqus_shortname')));        
             
         }
         

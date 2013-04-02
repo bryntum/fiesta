@@ -8,11 +8,13 @@ Ext.define("Fiesta.view.Viewport", {
             layout: 'border',
             items: [{
                 xtype: 'mainView',
+                border: false,
                 region: 'center'
             },
             {
                 region: 'south',
                 height: 200,
+                border: false,
                 scroll:true,
                 autoScroll:true,
                 contentEl: 'disqus_thread'
@@ -23,6 +25,7 @@ Ext.define("Fiesta.view.Viewport", {
             region: 'west',
             width: 250,
             layout: 'border',
+            border: false,            
             items: [
                 {
                     xtype: 'searchForm',

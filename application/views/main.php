@@ -5,13 +5,12 @@
 	<meta charset="utf-8">
 	<title>Welcome to Fiesta</title>
     <link rel="stylesheet" type="text/css" href="/media/js/ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
+
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
     <script type="text/javascript" src="/media/js/fiesta.js"></script>
     <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = 'fiestalocal'; // required: replace example with your forum shortname
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
+        var disqus_shortname = '<?php echo $disqus_shortname?>'; 
         (function() {
             var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
             dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';

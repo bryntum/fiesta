@@ -1,6 +1,7 @@
 Ext.define("Fiesta.view.SearchForm", {
     extend: "Ext.form.Panel",
     xtype: "searchForm",
+    border: false,    
     initComponent: function(){
         Ext.apply(this, {
             fieldDefaults: {
@@ -20,7 +21,8 @@ Ext.define("Fiesta.view.SearchForm", {
                     id: "name-filter",
                     xtype: "textfield",
                     flex: true,
-                    emptyText: "Filter by name"
+                    emptyText: "Filter by name",
+                    name: 'testCaseName'
                 }, {
                     action: "addCase",
                     xtype: "button",
@@ -29,19 +31,21 @@ Ext.define("Fiesta.view.SearchForm", {
                 }]
             }, {
                 id: "tags-filter",
-                xtype: "combobox",
+                xtype: "boxselect",
                 store: "Tags",
-                displayField: "name",
-                valueField: "name",
-                multiSelect: true,
-                emptyText: "Filter by tag (multiple choices)"
+                displayField: "tag",
+                valueField: "id",
+                emptyText: "Filter by tag (multiple choices)",
+                name: 'testCaseTags[]',
+                queryMode: 'remote'
             }, {
                 id: "framework-filter",
                 xtype: "combo",
                 displayField: "name",
                 valueField: "name",
                 emptyText: "Framework",
-                store: "Frameworks"
+                store: "Frameworks",
+                name: 'framework'
             },
             
             {
@@ -57,7 +61,8 @@ Ext.define("Fiesta.view.SearchForm", {
                     displayField: "name",
                     valueField: "name",
                     emptyText: "Filter by user",
-                    store: "Frameworks"
+                    store: "Users",
+                    name: 'user',
                 },
                 {
                     xtype: 'checkbox',
@@ -65,7 +70,7 @@ Ext.define("Fiesta.view.SearchForm", {
                     name: 'showMy',
                     margin: {left: 5},
                     value: 1,
-                    checked: true                    
+                    checked: true,
                 }]
             }]
         });

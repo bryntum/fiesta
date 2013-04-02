@@ -16,9 +16,37 @@ class Ajax extends CI_Controller {
     public function getTestCases()
     {
        
-        $where = array('owner_id' => $this->session->userdata('account_id'));
+        $params = $this->input->get(NULL,TRUE);
+
+        $where = array();
+
+        if(isset($params['action']) && $params['action'] == 'filter') {
+            $whereArray = array();
+            
+            if(!empty($params['testCaseName'])) {
+                $whereArray[] = "name LIKE  '%".$params['testCaseName']."%'";
+            }
+            if(!empty($params['showMy']) && $params['showMy'] == 'true') {
+                $whereArray[] = 'owner_id = '.$this->session->userdata('account_id');
+            }
+            if(count($whereArray) == 0) { 
+                $where = '';
+            }
+            else {
+                $where = implode(' AND ',$whereArray);
+            }
+            
+        }
+        else {
+            $where = array('owner_id' => $this->session->userdata('account_id'));
+        }
         
-        $testCases = $this->testCases_model->getByClause($where);        
+        if(empty($where)) {
+            $testCases = $this->testCases_model->getAll();
+        }
+        else {
+            $testCases = $this->testCases_model->getByClause($where);        
+        }
 
         echo json_encode(array('data' => $testCases, 'success' => true));
     }
@@ -61,7 +89,7 @@ class Ajax extends CI_Controller {
         
         $frameworks[] = array(
                 'id' => 2,
-                'name' => 'ExtJS 4'
+                'name' => 'ExtJS 4.1'
         );
         
         $frameworks[] = array(
@@ -70,6 +98,18 @@ class Ajax extends CI_Controller {
         );        
         echo json_encode(array('data' => $frameworks, 'success' => true));
         
+    }
+    
+    public function getTags() {
+        $params = $this->input->get(NULL,TRUE);
+        $tags = array();
+        if($params['query'] && !empty($params['query'])) {
+            $where = "tag like '%".$params['query']."%'";
+            $tags = $this->testCases_model->getTagsByClause($where);
+        }
+
+        echo json_encode(array('data' => $tags, 'success' => true));
+
     }
     
     private function getUserData () {

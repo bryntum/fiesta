@@ -32,6 +32,38 @@ class TestCases_model extends CI_Model {
         $this->db->where('tlist.testCase_id', $testCaseId);
         return $this->db->get('testCases_tags as tlist')->result();
     } 
+
+    function getTagsByClause($whereClause) {
+        $query = $this->db->select('tags.*')
+                 ->where($whereClause)
+                 ->get('tags');
+
+        return $query->result();
+    } 
+
+    function getAll() {
+
+        $query = $this->db->select('testCases.*')
+                ->get('testCases');
+
+        $results = $query->result();
+
+        if($query->num_rows() > 0) {
+            foreach($results as $rowNum => $row) {
+                $tags = $this->getTags($row->id);
+                $results[$rowNum]->tags = $tags;
+                $tagsList = array();
+                
+                foreach($tags as $tagNum => $tagRow) {
+                    $tagsList[] = $tagRow->tag;
+                }
+                
+                $results[$rowNum]->tagsList = implode(', ',$tagsList);
+            }
+        }
+        
+        return $results;
+    } 
     
     function getByClause($whereClause) {
 
