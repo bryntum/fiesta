@@ -8,7 +8,7 @@ cd $DIR/..
 git fetch --all
 git reset --hard origin/master
 
-build/after-push-listener.pl
+build/after-push-listener.pl &
 
 #echo "Stopping Fiesta server"
 #screen -S fiesta-server -X kill
