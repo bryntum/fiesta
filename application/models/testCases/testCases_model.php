@@ -1,5 +1,5 @@
 <?php
-class TestCases_model extends CI_Model {
+class Testcases_model extends CI_Model {
 
     /**
      * Get testCase by id
