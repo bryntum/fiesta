@@ -1,3 +1,4 @@
 #Ignore log files of any kind
 log-*.php
 
+.project
