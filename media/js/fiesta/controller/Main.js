@@ -12,12 +12,22 @@ Ext.define("Fiesta.controller.Main", {
             'testCasesCreate  button[action=cancel]': {
                 click: function (button) {button.up('testCasesCreate').close()}
             },
+//            'testCasesView  button[action=launch]': {
+//                click   : this.onTestLaunch,
+//                scope   : this
+//            },
             'mainView': {
                 add: this.handleTabAdd,
                 tabchange: this.handleTabChange
             }
         });
     },
+    
+//    onTestLaunch : function (button) {
+//        var testCaseView    = button.up('testCasesView');
+//        
+//        
+//    }, 
 
     submitTestCase: function(button) {
         var window = button.up('testCasesCreate'),

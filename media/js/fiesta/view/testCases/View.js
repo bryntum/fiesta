@@ -4,13 +4,17 @@ Ext.define('Fiesta.view.testCases.View', {
     layout: 'border',
     border: false,
     closable: true,
-    initComponent: function() {
-        this.callParent(arguments);
-    },
+    
+    testModel       : null,
+    
     tbar: [
         { 
-            xtype: 'button', 
-            text: 'Launch' 
+            xtype   : 'button', 
+            text    : 'Launch',
+            action  : 'launch',
+            
+            handler : this.onTestLaunch,
+            scope   : this
         },
         { 
             xtype: 'button', 
@@ -56,5 +60,24 @@ Ext.define('Fiesta.view.testCases.View', {
             xtype: 'htmleditor',
             name: 'code',
         }]
-    }]
+    }],
+    
+    initComponent: function() {
+        this.callParent(arguments);
+    },
+    
+    
+    onTestLaunch : function () {
+        var testModel       = this.testModel;
+        
+        Harness.start({
+            url         : '/getTestJs?id=' + testModel.getId(),
+            preload     : [].concat(
+                testModel.getPreload(),
+                {
+                    text    : this.testModel.get('code')
+                }
+            )
+        })
+    }
 });

@@ -13,6 +13,11 @@ class Ajax extends CI_Controller {
 
     }
     
+    public function getTestJs()
+    {
+    }
+    
+    
     public function getTestCases()
     {
        
