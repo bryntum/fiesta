@@ -33,6 +33,19 @@ Ext.define("Fiesta.controller.Main", {
         var window = button.up('testCasesCreate'),
             form = window.down('form');
 
+//        form.getForm().loadRecord()
+//          form.updateRecord(testModel)
+            
+//        Fiesta.Model.saveTestCase(
+//            testModel, 
+//            function () {
+//                // successful save
+//            }, 
+//            function () {
+//                Ext.MessageBox()
+//            }
+//        )
+            
         form.getForm().submit({
             success: function(form, action) {
                 Fiesta.getApplication().getController('Main').updateTabs(action.result.id, form.getValues());
@@ -58,8 +71,15 @@ Ext.define("Fiesta.controller.Main", {
         
         if(!tabExist) {
             newTab = Ext.widget('testCasesView',{
-                title: testCaseFields.name,
-                tabId: testCaseId
+                title       : testCaseFields.name,
+                tabId       : testCaseId,
+                testModel   : new Fiesta.model.TestCases({
+                    id              : testCaseId,
+                    name            : testCaseFields.name,
+                    code            : testCaseFields.code,
+                    frameWorkId     : testCaseFields.framework,
+                    owner           : null // TODO CONFIG.currentUser
+                })
             })
 
             activeTab = tabs.add(newTab);
@@ -95,15 +115,15 @@ Ext.define("Fiesta.controller.Main", {
     },
     handleTabChange: function (view, tab) {
         console.log('change');
-        DISQUS.reset({
-          reload: true,
-          config: function () {  
-            this.page.identifier = tab.title+'-'+tab.tabId;  
-            console.log(this.page.identifier);
-            this.page.url = SITE_URL+"/#"+tab.title+'-'+tab.tabId;
-            console.log(this.page.url);
-          }
-        });                  
+//        DISQUS.reset({
+//          reload: true,
+//          config: function () {  
+//            this.page.identifier = tab.title+'-'+tab.tabId;  
+//            console.log(this.page.identifier);
+//            this.page.url = SITE_URL+"/#"+tab.title+'-'+tab.tabId;
+//            console.log(this.page.url);
+//          }
+//        });                  
         
     }
 });

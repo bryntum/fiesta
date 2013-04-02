@@ -4,6 +4,6 @@ Ext.define("Fiesta.model.TestCases", {
     fields      : ["id", "name", "tagsList", "frameWorkId", "owner", "code"],
     
     getPreload : function () {
-        return FIESTA.getStore('Frameworks').getById(this.get('frameWorkId')).getPreload();
+        return Fiesta.getAppication().getStore('Frameworks').getById(this.get('frameWorkId')).getPreload();
     }
 });

@@ -48,7 +48,8 @@ Ext.define('Fiesta.view.testCases.Create', {
                     boxLabel: 'Private',
                     name: 'private'
                 },{
-                    xtype: 'htmleditor',
+//                    xtype: 'htmleditor',
+                    xtype: 'textarea',
                     name: 'code',
                     anchor: '100% 88%'
                 }],

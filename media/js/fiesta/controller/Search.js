@@ -34,9 +34,12 @@ Ext.define("Fiesta.controller.Search", {
         });
         
         if(!tabExist) {
-            newTab = Ext.widget('testCasesView')
-            newTab.title = record.get('name');
-            newTab.tabId = record.get('id');
+            var newTab = Ext.widget('testCasesView', {
+                title       : record.get('name'),
+                tabId       : record.get('id'),
+                
+                testModel   : record
+            })
             activeTab = tabs.add(newTab);
         }
         
