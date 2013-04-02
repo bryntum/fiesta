@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to Fiesta</title>
-    <link rel="stylesheet" type="text/css" href="/media/js/ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="/media/js/ext/resources/css/ext-all-neptune.css" />
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
 
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
