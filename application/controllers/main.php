@@ -17,6 +17,11 @@ class Main extends CI_Controller {
 
         if ($this->authentication->is_signed_in())
         {
+            $data = array (
+                'disqus_shortname' => $this->config->item('disqus_shortname'),
+                'userId' => $this->session->userdata('account_id')
+                            
+            );
             $this->load->view('main', array('disqus_shortname' => $this->config->item('disqus_shortname')));        
             
         }
@@ -27,6 +32,16 @@ class Main extends CI_Controller {
 
         
     }
+    
+    public function guestLogin() {
+            $data = array (
+                'disqus_shortname' => $this->config->item('disqus_shortname'),
+                'userId' => 'guest'
+                            
+            );
+            $this->load->view('main', $data);        
+    }
+    
     private function getUserData() {
 
         return $this->account_model->get_by_id($this->session->userdata('account_id'));        

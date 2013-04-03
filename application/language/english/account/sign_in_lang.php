@@ -14,6 +14,7 @@ $lang['sign_in_username_email'] = 'Username / Email';
 $lang['sign_in_password'] = 'Password';
 $lang['sign_in_forgot_your_password'] = 'Forgot your password?';
 $lang['sign_in_sign_in'] = 'Sign In';
+$lang['sign_in_guest'] = 'Guest enter';
 $lang['sign_in_remember_me'] = 'Remember me';
 $lang['sign_in_dont_have_account'] = "Don't have an account? %s";
 $lang['sign_in_sign_up_now'] = 'Sign up now';

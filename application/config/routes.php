@@ -38,8 +38,10 @@
 |
 */
 
-$route['default_controller'] 	= 'main';
-$route['404_override'] 			= '';
+$route['default_controller'] 	 = 'main';
+$route['guestLogin']             = 'main/guestLogin';
+$route['guestLogin/ajax/(:any)'] = 'ajax/$1';
+$route['404_override'] 			 = '';
 
 
 /* End of file routes.php */

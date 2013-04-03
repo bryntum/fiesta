@@ -69,21 +69,26 @@ class Ajax extends CI_Controller {
 
     public function addTestCase() 
     {
+        $success = false;
+        $testCaseId = 0;
+        if ($this->authentication->is_signed_in()) {       
+           $name = $this->input->post('name');
+           $frameworkId = $this->input->post('framework');
+           $private = $this->input->post('private');
+           $code = $this->input->post('code');
+           $userId = $this->session->userdata('account_id');
+           
+           $testCaseId = $this->testCases_model->createNew(array(
+                        'name' => $name, 
+                        'owner_id' => $userId, 
+                        'framework_id' => $frameworkId,
+                        'private' => $private,
+                        'code' => $code
+           )); 
+           $success = true;      
+        }
        
-       $name = $this->input->post('name');
-       $frameworkId = $this->input->post('framework');
-       $private = $this->input->post('private');
-       $code = $this->input->post('code');
-       $userId = $this->session->userdata('account_id');
-       
-       $testCaseId = $this->testCases_model->createNew(array(
-                    'name' => $name, 
-                    'owner_id' => $userId, 
-                    'framework_id' => $frameworkId,
-                    'private' => $private,
-                    'code' => $code
-       ));       
-       echo json_encode(array('id'=> $testCaseId, 'success' => true));
+       echo json_encode(array('id'=> $testCaseId, 'success' => $success));
     }
     
     public function getFrameworks() {
@@ -119,6 +124,7 @@ class Ajax extends CI_Controller {
     
     private function getUserData () {
         return $this->account_model->get_by_id($this->session->userdata('account_id'));                
+        
     }
     
     private function getUserId() {
