@@ -122,3 +122,13 @@ input.openid {
 	clear: both;
 	visibility: hidden;
 }
+
+.dropdown-menu li>a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 20px;
+    color: #333;
+    white-space: nowrap;
+}

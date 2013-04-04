@@ -3,6 +3,7 @@ Ext.define("Fiesta.view.SearchForm", {
     xtype: "searchForm",
     border: false,    
     initComponent: function(){
+
         Ext.apply(this, {
             fieldDefaults: {
                 msgTarget: "side"
@@ -46,34 +47,19 @@ Ext.define("Fiesta.view.SearchForm", {
                 emptyText: "Framework",
                 store: "Frameworks",
                 name: 'framework'
-            },
-            
-            {
-                margin: "0 0 5 0",
-                border: 0,
-                layout: {
-                    type: "hbox",
-                    align: "middle"
-                },
-                items: [{
-                    id: "user-filter",
-                    xtype: "combo",
-                    displayField: "name",
-                    valueField: "name",
-                    emptyText: "Filter by user",
-                    store: "Users",
-                    name: 'user',
-                },
-                {
-                    xtype: 'checkbox',
-                    boxLabel: 'Mine only',
-                    name: 'showMy',
-                    margin: {left: 5},
-                    value: 1,
-                    checked: true,
-                }]
             }]
         });
+        
+        if (FIESTA.isSignedIn()) {
+            this.items.push({
+                xtype: 'checkbox',
+                boxLabel: 'Mine only',
+                name: 'showMy',
+                value: 1,
+                checked: true
+            });
+        }
+
         this.callParent(arguments);
     }
 });

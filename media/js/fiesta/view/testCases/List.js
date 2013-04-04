@@ -16,6 +16,14 @@ Ext.define('Fiesta.view.testCases.List', {
 
     initComponent: function() {
         this.store = "TestCases";
+        
+        this.bbar = {
+                xtype: 'pagingtoolbar',
+                store: "TestCases",
+                dock: 'bottom',
+                displayInfo: true
+        };
+        
 
         this.callParent(arguments);
     }

@@ -74,14 +74,9 @@
                     </div>
                 </div>
 
-                <div class="control-group">
-					<?php echo form_button(array('type' => 'submit', 'class' => 'btn btn-large pull-right', 'style' => 'margin-left: 5px;', 'content' => '<i class="icon-lock"></i> '.lang('sign_in_sign_in'))); ?>
-                    <?php echo form_button(array('type' => 'button', 'class' => 'btn btn-large pull-right', 'onclick' => "window.location.assign('/guestLogin/'); return false;", 'content' => '<i class="icon-user"></i> '.lang('sign_in_guest'))); ?>
-                </div>
-                <div>
+				<?php echo form_button(array('type' => 'submit', 'class' => 'btn btn-large pull-right', 'style' => 'margin-left: 5px;', 'content' => '<i class="icon-lock"></i> '.lang('sign_in_sign_in'))); ?>
                 <p><?php echo anchor('account/forgot_password', lang('sign_in_forgot_your_password')); ?><br/>
 					<?php echo sprintf(lang('sign_in_dont_have_account'), anchor('account/sign_up', lang('sign_in_sign_up_now'))); ?></p>
-                </div>    
 
             </div>
 

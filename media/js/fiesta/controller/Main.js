@@ -6,12 +6,12 @@ Ext.define("Fiesta.controller.Main", {
     ],    
     init: function () {
         this.control({
-            'testCasesCreate  button[action=save]': {
-                click: this.submitTestCase
-            },
-            'testCasesCreate  button[action=cancel]': {
-                click: function (button) {button.up('testCasesCreate').close()}
-            },
+//            'testCasesCreate  button[action=save]': {
+//                click: this.submitTestCase
+//            },
+//            'testCasesCreate  button[action=cancel]': {
+//                click: function (button) {button.up('testCasesCreate').close()}
+//            },
 //            'testCasesView  button[action=launch]': {
 //                click   : this.onTestLaunch,
 //                scope   : this
@@ -23,39 +23,10 @@ Ext.define("Fiesta.controller.Main", {
         });
     },
     
-//    onTestLaunch : function (button) {
-//        var testCaseView    = button.up('testCasesView');
-//        
-//        
-//    }, 
 
     submitTestCase: function(button) {
-        var window = button.up('testCasesCreate'),
-            form = window.down('form');
-
-//        form.getForm().loadRecord()
-//          form.updateRecord(testModel)
-            
-//        Fiesta.Model.saveTestCase(
-//            testModel, 
-//            function () {
-//                // successful save
-//            }, 
-//            function () {
-//                Ext.MessageBox()
-//            }
-//        )
-            
-        form.getForm().submit({
-            success: function(form, action) {
-                Fiesta.getApplication().getController('Main').updateTabs(action.result.id, form.getValues());
-                window.close();
-            },
-            failure: function(form, action) {
-                Ext.Msg.alert('Failed', action.result.msg);
-            }
-        });       
     },
+    
     updateTabs: function (testCaseId, testCaseFields) {
         var tabs = this.getTabs(),
             tabExist = false,

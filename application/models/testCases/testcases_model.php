@@ -90,7 +90,7 @@ class Testcases_model extends CI_Model {
         return $results;
     } 
     
-    function createNew ($data) {
+    function create ($data) {
 
             $this->db->insert('testCases', $data);
             $testCaseId = $this->db->insert_id();
@@ -101,6 +101,25 @@ class Testcases_model extends CI_Model {
             
             return $testCaseId;
         
+    }
+
+    function createTmp ($data) {
+
+            $this->db->insert('testCases_tmp', $data);
+            $testCaseId = $this->db->insert_id();
+            
+            // Tags insertion should be here 
+            
+            //$this->db->insert('user_testCases', array('user_id' => $data['owner_id'], 'testCase_id' => $testCaseId, 'stared' => 0));
+            
+            return $testCaseId;
+        
+    }
+    
+    function update ($id, $data) {
+        $this->db->where('id', $id);
+        $result = $this->db->update('user_testCases', $data);         
+        return $result;
     }
     
 

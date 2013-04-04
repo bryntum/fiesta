@@ -61,6 +61,7 @@ class Ajax extends CI_Controller {
        // Add checking if user has access to this test
         
        $tabId = $this->input->post('tabId');
+ 
        $testCase = $this->testCases_model->getById($tabId);        
 
        echo json_encode(array('data' => $testCase, 'success' => true));
@@ -71,24 +72,66 @@ class Ajax extends CI_Controller {
     {
         $success = false;
         $testCaseId = 0;
+        $name = $this->input->post('name');
+        $frameworkId = $this->input->post('frameworkId');
+        $private = $this->input->post('private');
+        $code = $this->input->post('code');
+
         if ($this->authentication->is_signed_in()) {       
-           $name = $this->input->post('name');
-           $frameworkId = $this->input->post('framework');
-           $private = $this->input->post('private');
-           $code = $this->input->post('code');
-           $userId = $this->session->userdata('account_id');
+            $userId = $this->session->userdata('account_id');
            
-           $testCaseId = $this->testCases_model->createNew(array(
-                        'name' => $name, 
-                        'owner_id' => $userId, 
-                        'framework_id' => $frameworkId,
-                        'private' => $private,
-                        'code' => $code
-           )); 
-           $success = true;      
+            $testCaseId = $this->testCases_model->create(array(
+                'name' => $name, 
+                'owner_id' => $userId, 
+                'framework_id' => $frameworkId,
+                'private' => $private,
+                'code' => $code
+            )); 
+
+            $success = true;      
         }
+        else {
+            
+           $testCaseId = $this->testCases_model->createTmp(array(
+                'name' => $name, 
+                'session_id' => $this->session->userdata('session_id'), 
+                'framework_id' => $frameworkId,
+                'private' => $private,
+                'code' => $code
+           )); 
+
+           $testCaseId = $testCaseId.'_tmp';
+
+           $success = true; 
+        }
+
+        echo json_encode(array('id'=> $testCaseId, 'success' => $success));
+    }
+    
+    public function update() {
+        $success = false;
+        
+        if ($this->authentication->is_signed_in()) {
+            $id = $this->input->post('id');       
+            $name = $this->input->post('name');
+            $frameworkId = $this->input->post('frameworkId');
+            $private = $this->input->post('private');
+            $code = $this->input->post('code');
+            $userId = $this->session->userdata('account_id'); 
+
+            $result = $this->testCases_model->updateTestCase($id, array(
+                'name' => $name, 
+                'owner_id' => $userId, 
+                'framework_id' => $frameworkId,
+                'private' => $private,
+                'code' => $code
+            ));  
+            
+            $success = true;                 
+        }        
        
-       echo json_encode(array('id'=> $testCaseId, 'success' => $success));
+        echo json_encode(array('success' => $success));
+
     }
     
     public function getFrameworks() {

@@ -30,6 +30,10 @@ Ext.define('Fiesta.view.testCases.Create', {
                         align: "middle"
                     },
                     items: [{
+                        xtype: "hiddenfield",
+                        flex: true,
+                        name: 'id',
+                    },{
                         xtype: "textfield",
                         flex: true,
                         name: 'name',
@@ -39,7 +43,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                         xtype: "combo",
                         displayField: "name",
                         valueField: "id",
-                        name: 'framework',
+                        name: 'frameWorkId',
                         emptyText: "Framework",
                         store: "Frameworks"
                     }]
@@ -56,16 +60,67 @@ Ext.define('Fiesta.view.testCases.Create', {
             }],
             buttons: [{
                 text: 'Save',
-                action: 'save'
+                action: 'save',
+                handler: this.saveTestCase
             },{
                 text: 'Save & Run',
-                action: 'saverun'
+                action: 'saverun',
+                handler: this.saveRunTestCase                
             },{
                 text: 'Cancel',
-                action: 'cancel'
+                action: 'cancel',
+                handler: function (button) {button.up('testCasesCreate').close()}
             }]
         });
         
         this.callParent(arguments);
     },
+
+    saveTestCase: function (button) {
+        var window = button.up('testCasesCreate'),
+            form = window.down('form'),
+            values = form.getForm().getValues(),
+            testCase = Ext.create('Fiesta.model.TestCases', values);
+
+        console.log(testCase.getId());
+
+        if(testCase.getId()) {
+            Fiesta.DataModel.updateTestCase(
+                testCase, 
+                function (result) {
+                    Fiesta.getApplication().getController('Main').updateTabs(result.id, values);
+                    window.close();
+                }, 
+                function () {
+                    return true;
+                }
+            )
+            
+        }
+        else {
+            Fiesta.DataModel.saveTestCase(
+                testCase, 
+                function (result) {
+                    Fiesta.getApplication().getController('Main').updateTabs(result.id, values);
+                    window.close();
+                }, 
+                function () {
+                    return true;
+                }
+            )
+        }
+    },
+
+    updateTestCase: function () {
+        var window = button.up('testCasesCreate'),
+            form = window.down('form'),
+            values = form.getForm().getValues(),
+            testCase = Ext.create('Fiesta.model.TestCases', values);
+
+        
+    },
+    saveRunTestCase: function () {
+        
+    }
+
 });

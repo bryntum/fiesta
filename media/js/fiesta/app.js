@@ -1,4 +1,5 @@
 var SITE_URL = 'http://fiesta/';
+var FIESTA;
 Ext.Loader.setPath('Ext.ux','/media/js/ext/ux');
 
 Ext.application({
@@ -16,7 +17,15 @@ Ext.application({
         Fiesta.DataModel.on('requestfailed', function () {
             Ext.MessageBox.show()
         })        
+    },
+
+    isSignedIn: function () {
+        return (Config.userId!='guest');        
+    },
+    init: function () {
+        FIESTA = this; 
     }
+    
 });
 
 

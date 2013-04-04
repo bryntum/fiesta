@@ -2,47 +2,104 @@ Ext.define("Fiesta.view.Viewport", {
     extend: "Ext.container.Viewport",
     layout: 'border',
     margins: '5 5 5 5',
-    items: [
-        {
-            region: 'center',
-            layout: 'border',
+    initComponent: function () {
+        console.log('render');
+        Ext.apply(this, {
             items: [{
-                xtype: 'mainView',
-                border: false,
-                region: 'center'
-            },
-            {
-                region: 'south',
-                height: 200,
-                border: false,
-                scroll:true,
-                autoScroll:true,
-                contentEl: 'disqus_thread'
-            }]
-        },
-        
-        {
-            region: 'west',
-            width: 250,
-            layout: 'border',
-            border: false,            
-            items: [
-                {
-                    xtype: 'searchForm',
-                    height: 120,
-                    margins: '5 5 5 5',
-                    bodyPadding: 5,
-                    region: 'north'
+                    region: 'north',
+                    tbar: [
+                        '->', 
+                        !FIESTA.isSignedIn() ? {
+                            xtype       : 'button',
+                            text        : 'Sign In!',
+                            href        : '/account/sign_in/',
+                            hrefTarget  : '_self'
+                            
+                        } : {
+                            xtype: 'button',
+                            text: Config.userName,
+                            menu: {
+                                frame: true,
+                                items: [
+                                    {
+                                        text: 'Profile',
+                                        href: '/account/account_profile',
+                                        hrefTarget  : '_self'
+                                        
+                                    },
+                                    {
+                                        text: 'Setings',
+                                        href: '/account/account_settings',
+                                        hrefTarget  : '_self'
+                                        
+                                    },
+                                    '-',
+                                    {
+                                        text: 'Logout',
+                                        href: '/account/sign_out',
+                                        hrefTarget  : '_self'
+                                        
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
-                    xtype: 'testCasesList',
                     region: 'center',
-                    layout: 'fit',
-                    margins: '5 5 5 5',
-                    forceFit: true
+                    layout: 'border',
+                    items: [{
+                        xtype: 'mainView',
+                        border: false,
+                        region: 'center'
+                    },
+                    {
+                        region: 'south',
+                        height: 200,
+                        border: false,
+                        scroll:true,
+                        collapsible: true,
+                        split: true,
+                        title: 'Comments',
+                        collapsed: true,
+                        autoScroll:true,
+                        contentEl: 'disqus_thread'
+                    }]
+                },
+                
+                {
+                    region: 'west',
+                    width: 320,
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    border: false, 
+                    split: true,
+                    items: [
+                        {
+                            xtype: 'searchForm',
+                            bodyPadding: 5,
+                        },
+                        {
+                            xtype: 'testCasesList',
+                            region: 'center',
+                            layout: 'fit',
+                            margins: '2 2 2 2',
+                            forceFit: true,
+                            flex: true
+                        }
+                    ]
                 }
             ]
-        }
-    ]
+            // EoF items
+                
+        });
+
+        // EoF apply
+
+        this.callParent();
+        
+    }
         
 });

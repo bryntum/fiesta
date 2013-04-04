@@ -17,19 +17,26 @@ class Main extends CI_Controller {
 
         if ($this->authentication->is_signed_in())
         {
+            $account = $this->account_model->get_by_id($this->session->userdata('account_id'));
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
-                'userId' => $this->session->userdata('account_id')
+                'userId' => $this->session->userdata('account_id'),
+                'account' => $account
                             
             );
-            $this->load->view('main', array('disqus_shortname' => $this->config->item('disqus_shortname')));        
             
         }
         
         else {
-            redirect('account/sign_in');
+            $data = array (
+                'disqus_shortname' => $this->config->item('disqus_shortname'),
+                'userId' => 'guest',
+            );            
+            
+            
         }
 
+        $this->load->view('main', $data);        
         
     }
     
