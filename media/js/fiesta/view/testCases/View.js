@@ -4,9 +4,7 @@ Ext.define('Fiesta.view.testCases.View', {
     layout: 'border',
     border: false,
     closable: true,
-    
-    testModel       : null,
-    
+    testCaseModel: null,
     initComponent: function() {
         Ext.apply(this, {
             tbar: [
@@ -63,13 +61,33 @@ Ext.define('Fiesta.view.testCases.View', {
                     xtype: 'textarea',
                     name: 'code'
                 }]
-            }]
+            }],
+            listeners: {
+                afterrender: this.onTabCreate,
+                activate: this.onTabSelect
+            }
         })
         
         this.callParent(arguments);
     },
     
+    onTabCreate: function () {
+        this.down('form').getForm().loadRecord(this.testCaseModel);
+    },
     
+    onTabSelect: function () {
+        console.log('tabSelected');
+//        DISQUS.reset({
+//          reload: true,
+//          config: function () {  
+//            this.page.identifier = tab.title+'-'+tab.tabId;  
+//            console.log(this.page.identifier);
+//            this.page.url = SITE_URL+"/#"+tab.title+'-'+tab.tabId;
+//            console.log(this.page.url);
+//          }
+//        });         
+    },  
+      
     onTestLaunch : function () {
         var testModel       = this.testModel;
         var Harness         = Siesta.Harness.Browser.ExtJS
@@ -79,7 +97,7 @@ Ext.define('Fiesta.view.testCases.View', {
         })
         
         Harness.start({
-            url         : '/ajax/getTestJs?id=' + testModel.getId(),
+            url         : '/ajax/getTestJs?id=' + testCaseModel.getId(),
             preload     : [].concat(
 //                testModel.getPreload(),
                 {

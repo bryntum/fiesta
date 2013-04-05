@@ -31,7 +31,7 @@ class Ajax extends CI_Controller {
             if(!empty($params['testCaseName'])) {
                 $whereArray[] = "name LIKE  '%".$params['testCaseName']."%'";
             }
-            if(!empty($params['showMy']) && $params['showMy'] == 'true') {
+            if(!empty($params['showMy']) && $params['showMy'] == 'on') {
                 $whereArray[] = 'owner_id = '.$this->session->userdata('account_id');
             }
             if(count($whereArray) == 0) { 
@@ -43,17 +43,34 @@ class Ajax extends CI_Controller {
             
         }
         else {
-            $where = array('owner_id' => $this->session->userdata('account_id'));
+            if ($this->authentication->is_signed_in()) {
+                $where = array('owner_id' => $this->session->userdata('account_id'));
+            }
         }
         
         if(empty($where)) {
-            $testCases = $this->testCases_model->getAll();
+            $testCases = $this->testCases_model->getAll(array(
+                'page' => $params['page'], 
+                'pageSize' => $params['limit']
+            ));
+
+            $totalRecords = $this->testCases_model->getAll(array('getTotal' => true));         
+
         }
         else {
-            $testCases = $this->testCases_model->getByClause($where);        
+            $testCases = $this->testCases_model->getByClause(array(
+                'whereClause' => $where, 
+                'page' => $params['page'], 
+                'pageSize' => $params['limit']
+            ));
+            
+            $totalRecords = $this->testCases_model->getByClause(array(
+                'whereClause' => $where, 
+                'getTotal' => true
+            ));         
         }
 
-        echo json_encode(array('data' => $testCases, 'success' => true));
+        echo json_encode(array('data' => $testCases, 'total' => $totalRecords, 'success' => true));
     }
 
     public function getTestCase()
@@ -108,10 +125,10 @@ class Ajax extends CI_Controller {
         echo json_encode(array('id'=> $testCaseId, 'success' => $success));
     }
     
-    public function update() {
+    public function updateTestCase() {
         $success = false;
-        
         if ($this->authentication->is_signed_in()) {
+
             $id = $this->input->post('id');       
             $name = $this->input->post('name');
             $frameworkId = $this->input->post('frameworkId');
@@ -129,7 +146,7 @@ class Ajax extends CI_Controller {
             
             $success = true;                 
         }        
-       
+
         echo json_encode(array('success' => $success));
 
     }

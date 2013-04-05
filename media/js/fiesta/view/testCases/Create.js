@@ -23,17 +23,25 @@ Ext.define('Fiesta.view.testCases.Create', {
                     anchor: "100%"
                 },
                 items: [{
+                    xtype: "hiddenfield",
+                    flex: true,
+                    name: 'id'
+                },
+                {
+                    xtype: "hiddenfield",
+                    flex: true,
+                    name: 'ownerId',
+
+                },                
+                {
                     margin: "0 0 5 0",
                     border: false,
                     layout: {
                         type: "hbox",
                         align: "middle"
                     },
-                    items: [{
-                        xtype: "hiddenfield",
-                        flex: true,
-                        name: 'id',
-                    },{
+                    items: [
+                    {
                         xtype: "textfield",
                         flex: true,
                         name: 'name',
@@ -47,11 +55,13 @@ Ext.define('Fiesta.view.testCases.Create', {
                         emptyText: "Framework",
                         store: "Frameworks"
                     }]
-                },{
+                },
+                {
                     xtype: 'checkbox',
                     boxLabel: 'Private',
                     name: 'private'
-                },{
+                },
+                {
 //                    xtype: 'htmleditor',
                     xtype: 'textarea',
                     name: 'code',
@@ -79,17 +89,30 @@ Ext.define('Fiesta.view.testCases.Create', {
     saveTestCase: function (button) {
         var window = button.up('testCasesCreate'),
             form = window.down('form'),
-            values = form.getForm().getValues(),
-            testCase = Ext.create('Fiesta.model.TestCases', values);
+            values = form.getForm().getValues();
 
-        console.log(testCase.getId());
+            // Creating testCase record based on form values
+            testCase = Ext.create('Fiesta.model.TestCases', values); 
+
+        // Record will have id in case we are editing existing test, so we should
+        // pass form values to Fiesta.DataModel.updateTestCase, it will call backend to update records 
+        // in DB, and if backend request succeeded it return modified record to callback function
 
         if(testCase.getId()) {
             Fiesta.DataModel.updateTestCase(
                 testCase, 
-                function (result) {
-                    Fiesta.getApplication().getController('Main').updateTabs(result.id, values);
+                function (record) {
+                    if(FIESTA.isSignedIn()) {
+                        var tabs = FIESTA.getTabs(),
+                            activeTab = tabs.updateTabs(record);
+                            
+                        tabs.setActiveTab(activeTab);                        
+                    }
+                    else {
+                        FIESTA.signUp({action: 'afterUpdate'});
+                    }
                     window.close();
+                    return false;
                 }, 
                 function () {
                     return true;
@@ -97,12 +120,31 @@ Ext.define('Fiesta.view.testCases.Create', {
             )
             
         }
+
+        // In case id field is missing we should pass form values to Fiesta.DataModel.createTestCase 
+        // and it will call backend to create new record, new record with id got from backend will be 
+        // returned to callback
+        
         else {
-            Fiesta.DataModel.saveTestCase(
+            Fiesta.DataModel.createTestCase(
                 testCase, 
-                function (result) {
-                    Fiesta.getApplication().getController('Main').updateTabs(result.id, values);
+                function (record) {
+
+                    if(FIESTA.isSignedIn()) {
+                        var tabs = FIESTA.getTabs(),
+                            activeTab = tabs.updateTabs(record);
+                            
+                        tabs.setActiveTab(activeTab);                        
+                    }
+
+                    // Calling application signup method which will process signup operation
+                    else {
+                        FIESTA.signUp({action: 'afterCreate'});
+                    }
+
                     window.close();
+                    
+                    return true;
                 }, 
                 function () {
                     return true;
@@ -111,14 +153,6 @@ Ext.define('Fiesta.view.testCases.Create', {
         }
     },
 
-    updateTestCase: function () {
-        var window = button.up('testCasesCreate'),
-            form = window.down('form'),
-            values = form.getForm().getValues(),
-            testCase = Ext.create('Fiesta.model.TestCases', values);
-
-        
-    },
     saveRunTestCase: function () {
         
     }

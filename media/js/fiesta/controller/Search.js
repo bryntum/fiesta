@@ -7,9 +7,9 @@ Ext.define("Fiesta.controller.Search", {
     ],       
     init: function () {
         this.control({
-            'testCasesList': {
-                itemdblclick: this.onItemDblClick
-            },
+//            'testCasesList': {
+//                itemdblclick: this.onItemDblClick
+//            },
             'searchForm  button[action=addCase]': {
                 click: this.addTest
             },
@@ -17,33 +17,7 @@ Ext.define("Fiesta.controller.Search", {
                 change: this.processFilter
             }            
         });
-    },
-    onItemDblClick: function (grid, record) {
-
-        var tabs = this.getTabs(),
-            tabExist = false,
-            newTabId = record.get('id'),
-            activeTab = {};
-
-
-        Ext.each(tabs.items.items, function (tab) {
-            if(tab.tabId == newTabId) { 
-                tabExist = true;
-                activeTab = tab;
-            }
-        });
         
-        if(!tabExist) {
-            var newTab = Ext.widget('testCasesView', {
-                title       : record.get('name'),
-                tabId       : record.get('id'),
-                
-                testModel   : record
-            })
-            activeTab = tabs.add(newTab);
-        }
-        
-        tabs.setActiveTab(activeTab);  
     },
     
     addTest: function () {
@@ -51,10 +25,14 @@ Ext.define("Fiesta.controller.Search", {
     },
     
     processFilter: function (field) {
-        var searchForm = Ext.ComponentQuery.query('searchForm');
-        var params = searchForm[0].getForm().getValues();
+        var searchForm = Ext.ComponentQuery.query('searchForm'),
+            params = searchForm[0].getForm().getValues(),
+            store = Ext.getStore('TestCases');
+            
         params.action =  'filter';
-        Ext.getStore('TestCases').load({params: params}); 
+        store.proxy.extraParams = params;
+
+        store.load(); 
     }
     
 });

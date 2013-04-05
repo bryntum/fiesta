@@ -14,16 +14,37 @@ Ext.application({
     
     // TODO
     initApp : function () {
-        Fiesta.DataModel.on('requestfailed', function () {
-            Ext.MessageBox.show()
-        })        
+
     },
 
     isSignedIn: function () {
         return (Config.userId!='guest');        
     },
+    
+    signUp: function (params) {
+        var urlParams = Object.keys(params).map(function(k) {
+            return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
+        }).join('&');     
+
+        window.location.replace('/account/sign_up?'+urlParams)    
+    },
+
+    getTabs: function () {
+        var tabsQ = Ext.ComponentQuery.query('mainView')
+        return tabsQ[0];
+    },
+    
     init: function () {
         FIESTA = this; 
+
+        Fiesta.DataModel.on('requestfailed', function (resultObj) {
+            Ext.Msg.alert('Error',resultObj.message);
+        })        
+
+        Fiesta.DataModel.on('requestsuccess', function (resultObj) {
+
+        })        
+
     }
     
 });

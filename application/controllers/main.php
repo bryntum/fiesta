@@ -22,7 +22,6 @@ class Main extends CI_Controller {
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => $this->session->userdata('account_id'),
                 'account' => $account
-                            
             );
             
         }

@@ -41,11 +41,21 @@ class Testcases_model extends CI_Model {
         return $query->result();
     } 
 
-    function getAll() {
+    function getAll($params) {
+        if(isset($params['page']) && $params['pageSize']) {
+            $offset = ($params['page'] - 1) * $params['pageSize'];
+        }
+        
+        $this->db->select('testCases.*')
+            ->from('testCases')
+            ->order_by("created_at", 'desc');
 
-        $query = $this->db->select('testCases.*')
-                ->get('testCases');
-
+        if(isset($params['getTotal']) && $params['getTotal']) {
+            return $this->db->count_all_results();
+        }        
+            
+        $query = $this->db->limit($params['pageSize'], $offset)->get();
+        
         $results = $query->result();
 
         if($query->num_rows() > 0) {
@@ -65,14 +75,30 @@ class Testcases_model extends CI_Model {
         return $results;
     } 
     
-    function getByClause($whereClause) {
+    function getByClause($params) {
+        if(isset($params['page']) && $params['pageSize']) {
+            $offset = ($params['page'] - 1) * $params['pageSize'];
+        }
+        
+        
+        $this->db->select('testCases.*')
+            ->from('testCases')
+            ->where($params['whereClause']);
 
-        $query = $this->db->select('testCases.*')
-                ->where($whereClause)
-                ->get('testCases');
+        if(isset($params['order'])) {
+            $this->db->order_by($params['order']);
+        }                
+        
+        if(isset($params['getTotal']) && $params['getTotal']) {
+            return $this->db->count_all_results();
+        }        
+
+        $query = $this->db->limit($params['pageSize'], $offset)->get();
+
 
         $results = $query->result();
-
+        
+        
         if($query->num_rows() > 0) {
             foreach($results as $rowNum => $row) {
                 $tags = $this->getTags($row->id);
