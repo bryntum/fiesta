@@ -3,7 +3,6 @@ Ext.define("Fiesta.view.Viewport", {
     layout: 'border',
     margins: '5 5 5 5',
     initComponent: function () {
-        console.log('render');
         Ext.apply(this, {
             items: [{
                     region: 'north',
@@ -47,23 +46,34 @@ Ext.define("Fiesta.view.Viewport", {
                 },
                 {
                     region: 'center',
-                    layout: 'border',
+                    layout: 'card',
+                    
+                    // TODO move each card to its component
+
                     items: [{
-                        xtype: 'mainView',
-                        border: false,
-                        region: 'center'
+                        layout: 'fit',
+                        html: '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Wellcome to Fiesta!</div>'
                     },
                     {
-                        region: 'south',
-                        height: 200,
-                        border: false,
-                        scroll:true,
-                        collapsible: true,
-                        split: true,
-                        title: 'Comments',
-                        collapsed: true,
-                        autoScroll:true,
-                        contentEl: 'disqus_thread'
+                        layout: 'border',
+                        items: [{
+                            xtype: 'mainView',
+                            border: false,
+                            region: 'center'
+                        },
+                        {
+                            region: 'south',
+                            height: 200,
+                            border: false,
+                            scroll:true,
+                            collapsible: true,
+                            split: true,
+                            title: 'Comments',
+                            collapsed: true,
+                            autoScroll:true,
+                            contentEl: 'disqus_thread'
+                        }]
+                    
                     }]
                 },
                 
@@ -91,9 +101,17 @@ Ext.define("Fiesta.view.Viewport", {
                         }
                     ]
                 }
-            ]
+            ],
             // EoF items
-                
+            listeners: {
+                render: function () {
+                    var initialToken = Ext.util.History.getToken();
+                    
+                    if(initialToken) {
+                        Ext.util.History.fireEvent('change', initialToken);
+                    }
+                }
+            }                
         });
 
         // EoF apply

@@ -78,10 +78,23 @@ class Ajax extends CI_Controller {
        // Add checking if user has access to this test
         
        $tabId = $this->input->post('tabId');
- 
-       $testCase = $this->testCases_model->getById($tabId);        
+       $slug = $this->input->post('slug');
+       $success = false;
+       
+       if($tabId) {
+           $testCase = $this->testCases_model->getById($tabId);        
+           $success = true;
+       }
+       elseif($slug) {
+           $testCase = $this->testCases_model->getBySlug($slug);        
+           $success = true;
+       }
+       else {
+            $testCase = array();
+       }
+           
 
-       echo json_encode(array('data' => $testCase, 'success' => true));
+       echo json_encode(array('data' => $testCase, 'success' => $success));
     }
 
 
@@ -89,6 +102,7 @@ class Ajax extends CI_Controller {
     {
         $success = false;
         $testCaseId = 0;
+        $slug = '';
         $name = $this->input->post('name');
         $frameworkId = $this->input->post('frameworkId');
         $private = $this->input->post('private');
@@ -105,6 +119,7 @@ class Ajax extends CI_Controller {
                 'code' => $code
             )); 
 
+            $slug = $this->testCases_model->makeSlug($name);
             $success = true;      
         }
         else {
@@ -119,14 +134,17 @@ class Ajax extends CI_Controller {
 
            $testCaseId = $testCaseId.'_tmp';
 
+           $slug = $this->testCases_model->makeSlug($name);
            $success = true; 
         }
 
-        echo json_encode(array('id'=> $testCaseId, 'success' => $success));
+        echo json_encode(array('id'=> $testCaseId, 'slug' => $slug, 'success' => $success));
     }
     
     public function updateTestCase() {
         $success = false;
+        $slug = '';
+        
         if ($this->authentication->is_signed_in()) {
 
             $id = $this->input->post('id');       
@@ -136,7 +154,7 @@ class Ajax extends CI_Controller {
             $code = $this->input->post('code');
             $userId = $this->session->userdata('account_id'); 
 
-            $result = $this->testCases_model->updateTestCase($id, array(
+            $result = $this->testCases_model->update($id, array(
                 'name' => $name, 
                 'owner_id' => $userId, 
                 'framework_id' => $frameworkId,
@@ -145,10 +163,22 @@ class Ajax extends CI_Controller {
             ));  
             
             $success = true;                 
+            $slug = $this->testCases_model->makeSlug($name);
+            
         }        
 
-        echo json_encode(array('success' => $success));
+        echo json_encode(array('slug' => $slug, 'success' => $success));
 
+    }
+    
+    public function updateSlugs() {
+        $allRecords = $this->testCases_model->getAll();
+        foreach($allRecords as $record) {
+            $result = $this->testCases_model->update($record->id, array(
+                'name' => $record->name
+            ));             
+            
+        }
     }
     
     public function getFrameworks() {

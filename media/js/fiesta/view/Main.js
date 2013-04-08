@@ -2,6 +2,7 @@ Ext.define('Fiesta.view.Main', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.mainView',
     initComponent: function() {
+        this.on('remove', this.onTabRemove);
         this.callParent(arguments);
     },
 
@@ -13,6 +14,8 @@ Ext.define('Fiesta.view.Main', {
      */    
 
     updateTabs: function (testCaseModel) {
+
+            
             var tabs = this,
                 tabExist = false,
                 newTabId = testCaseModel.get('id'),
@@ -41,9 +44,19 @@ Ext.define('Fiesta.view.Main', {
                 activeTab.testCaseModel = testCaseModel;
                 activeTab.onTabCreate(testCaseModel);
             }
+
+            FIESTA.getCards().getLayout().setActiveItem(1);
+            FIESTA.makeHistory(testCaseModel.get('slug'))
             
             // Returning testCase tab component to the caller
             return  activeTab;
         
+    },
+    
+    onTabRemove: function () { 
+        var tabs = FIESTA.getTabs();
+        if(tabs.items.items.length == 0) {
+            FIESTA.getCards().getLayout().setActiveItem(0);
+        }
     }
 });

@@ -96,7 +96,7 @@ Ext.define('Fiesta.view.testCases.Create', {
 
         // Record will have id in case we are editing existing test, so we should
         // pass form values to Fiesta.DataModel.updateTestCase, it will call backend to update records 
-        // in DB, and if backend request succeeded it return modified record to callback function
+        // in DB, and if backend request succeeded it returns modified record to callback function
 
         if(testCase.getId()) {
             Fiesta.DataModel.updateTestCase(

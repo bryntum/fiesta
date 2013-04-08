@@ -75,8 +75,8 @@ Ext.define('Fiesta.view.testCases.View', {
         this.down('form').getForm().loadRecord(this.testCaseModel);
     },
     
-    onTabSelect: function () {
-        console.log('tabSelected');
+    onTabSelect: function (tab) {
+        FIESTA.makeHistory(tab.testCaseModel.get('slug'));
 //        DISQUS.reset({
 //          reload: true,
 //          config: function () {  

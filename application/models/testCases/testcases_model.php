@@ -17,6 +17,16 @@ class Testcases_model extends CI_Model {
         return $testCase;
 
     }
+    
+    function getBySlug($slug)
+    {
+        $this->db->select('testCases.*');
+        $this->db->where('testCases.slug', $slug);
+        $testCase = $this->db->get('testCases')->row();
+        $testCase->tags = $this->getTags($testCase->id);
+        return $testCase;
+
+    }    
 
     /**
      * Get tags for test case
@@ -41,20 +51,27 @@ class Testcases_model extends CI_Model {
         return $query->result();
     } 
 
-    function getAll($params) {
+    function getAll($params = array()) {
         if(isset($params['page']) && $params['pageSize']) {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('testCases.*')
-            ->from('testCases')
+        $this->db->select('tc.*, acc.username as ownerName')
+            ->from('testCases as tc')
+            ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->order_by("created_at", 'desc');
 
         if(isset($params['getTotal']) && $params['getTotal']) {
             return $this->db->count_all_results();
         }        
-            
-        $query = $this->db->limit($params['pageSize'], $offset)->get();
+
+        if(isset($params['page']) && isset($params['pageSize'])) {
+                    
+            $query = $this->db->limit($params['pageSize'], $offset)->get();
+        }
+        else {
+            $query = $this->db->get();            
+        }
         
         $results = $query->result();
 
@@ -80,9 +97,9 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        
-        $this->db->select('testCases.*')
-            ->from('testCases')
+        $this->db->select('tc.*, acc.username as ownerName')
+            ->from('testCases as tc')
+            ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->where($params['whereClause']);
 
         if(isset($params['order'])) {
@@ -118,6 +135,8 @@ class Testcases_model extends CI_Model {
     
     function create ($data) {
 
+            $data['slug'] = $this->makeSlug($data['name']);
+
             $this->db->insert('testCases', $data);
             $testCaseId = $this->db->insert_id();
             
@@ -131,6 +150,8 @@ class Testcases_model extends CI_Model {
 
     function createTmp ($data) {
 
+            $data['slug'] = $this->makeSlug($data['name']);
+        
             $this->db->insert('testCases_tmp', $data);
             $testCaseId = $this->db->insert_id();
             
@@ -143,11 +164,35 @@ class Testcases_model extends CI_Model {
     }
     
     function update ($id, $data) {
+        $data['slug'] = $this->makeSlug($data['name']);
+
         $this->db->where('id', $id);
-        $result = $this->db->update('user_testCases', $data);         
+        $result = $this->db->update('testCases', $data);         
         return $result;
     }
     
+    function makeSlug($text) { 
+      // replace non letter or digits by -
+      $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
 
+      // trim
+      $text = trim($text, '-');
+
+      // transliterate
+      $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+      // lowercase
+      $text = strtolower($text);
+
+      // remove unwanted characters
+      $text = preg_replace('~[^-\w]+~', '', $text);
+
+      if (empty($text))
+      {
+        return 'n-a';
+      }
+
+      return $text;
+    }
 } 
 ?>
