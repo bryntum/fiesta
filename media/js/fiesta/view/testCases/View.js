@@ -1,15 +1,18 @@
 Ext.define('Fiesta.view.testCases.View', {
-    extend: 'Ext.panel.Panel',
-    alias: 'widget.testCasesView',
-    layout: 'border',
-    border: false,
-    closable: true,
-    testCaseModel: null,
-    initComponent: function() {
+    extend      : 'Ext.panel.Panel',
+    alias       : 'widget.testCasesView',
+    
+    testCaseModel   : null,
+    
+    
+    initComponent : function() {
         Ext.apply(this, {
-            tbar: [
+            layout      : 'border',
+            border      : false,
+            closable    : true,
+            
+            tbar        : [
                 { 
-                    xtype   : 'button', 
                     text    : 'Launch',
                     action  : 'launch',
                     
@@ -17,63 +20,50 @@ Ext.define('Fiesta.view.testCases.View', {
                     scope   : this
                 },
                 { 
-                    xtype: 'button', 
-                    text: 'View DOM' 
+                    text    : 'View DOM' 
                 },
                 { 
-                    xtype: 'button', 
-                    text: 'Share' 
+                    text    : 'Share' 
                 },
                 { 
-                    xtype: 'button', 
-                    text: 'Add to favorites' 
+                    text    : 'Add to favorites' 
                 },
                 { 
-                    xtype: 'button', 
-                    text: 'Edit',
-                    handler: function () {
-                        var tab = this.up('testCasesView');
-                        addWin = Ext.widget('testCasesCreate', { formUrl: 'ajax/editTestCase/'});
-                        var customMask = new Ext.LoadMask(addWin.down('form'), {msg:'Loading...'});
-                        customMask.show();
-                        addWin.down('form').getForm().load({
-                            url: '/ajax/getTestCase',
-                            params: {
-                                tabId: tab.tabId
-                            },
-                            success: function () {
-                                    customMask.hide();
-                            },
-                            failure: function(form, action) {
-                                Ext.Msg.alert('Error','Server error occure...');
-                            }
-                        });
-                    }
+                    text    : 'Edit',
+                    handler : this.onTestEdit,
+                    scope   : this
                 }
             ],
-            items: [{
-                region: 'center',
-                xtype: 'form',
-                layout: 'fit',
-                border: false,
-                items: [{
-//                    xtype: 'htmleditor',
-                    xtype: 'textarea',
-                    name: 'code'
-                }]
-            }],
-            listeners: {
-                afterrender: this.onTabCreate,
-                activate: this.onTabSelect
+            items       : [
+                {
+                    region  : 'center',
+                    xtype   : 'form',
+                    layout  : 'fit',
+                    border  : false,
+                    items   : [
+                        {
+                            xtype: 'textarea',
+                            name: 'code'
+                        }
+                    ]
+                }
+            ],
+            listeners   : {
+                afterrender : this.onTabCreate,
+                activate    : this.onTabSelect,
+                
+                scope       : this
             }
         })
         
         this.callParent(arguments);
     },
     
+    
     onTabCreate: function () {
         this.down('form').getForm().loadRecord(this.testCaseModel);
     },
+    
     
     onTabSelect: function (tab) {
         FIESTA.makeHistory(tab.testCaseModel.get('slug'));
@@ -86,8 +76,32 @@ Ext.define('Fiesta.view.testCases.View', {
 //            console.log(this.page.url);
 //          }
 //        });         
-    },  
-      
+    },
+    
+    
+    onTestEdit : function () {
+        var addWin      = new Fiesta.view.testCases.Create(/*{ formUrl : 'ajax/editTestCase/' }*/);
+        
+        addWin.startTestEditing(this.testCaseModel)
+        
+//        var customMask  = new Ext.LoadMask(addWin.down('form'), {msg:'Loading...'});
+//        customMask.show();
+//        
+//        addWin.down('form').getForm().load({
+//            url: '/ajax/getTestCase',
+//            params: {
+//                tabId: tab.tabId
+//            },
+//            success: function () {
+//                    customMask.hide();
+//            },
+//            failure: function(form, action) {
+//                Ext.Msg.alert('Error','Server error occure...');
+//            }
+//        });
+    },
+    
+    
     onTestLaunch : function () {
         var testModel       = this.testModel;
         var Harness         = Siesta.Harness.Browser.ExtJS

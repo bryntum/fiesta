@@ -1,19 +1,27 @@
 Ext.define('Fiesta.view.testCases.Create', {
-    extend: 'Ext.window.Window',
-    alias: 'widget.testCasesCreate',
-    width: 500,
-    height: 400,
-    autoShow: true,
-    modal: true,
-    layout: 'fit',
-    title: 'Add/Edit test case',
+    extend      : 'Ext.window.Window',
+    alias       : 'widget.testCasesCreate',
+    
+    width       : 500,
+    height      : 400,
+    
+    autoShow    : true,
+    modal       : true,
+    
+    title       : 'Add/Edit test case',
+    
+//    formUrl     : null, 
+    
     initComponent: function(params) {
         
          Ext.apply(this, {
+            layout          : 'fit',
+            
+            closeAction     : 'destroy',
              
-            items:[{
+            items           :[{
                 xtype: 'form',
-                url: this.initialConfig.formUrl,
+//                url: this.formUrl,
                 border: false,
                 bodyPadding: 5,
                 fieldDefaults: {
@@ -30,8 +38,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                 {
                     xtype: "hiddenfield",
                     flex: true,
-                    name: 'ownerId',
-
+                    name: 'ownerId'
                 },                
                 {
                     margin: "0 0 5 0",
@@ -66,33 +73,37 @@ Ext.define('Fiesta.view.testCases.Create', {
                     xtype: 'textarea',
                     name: 'code',
                     anchor: '100% 88%'
-                }],
+                }]
             }],
             buttons: [{
-                text: 'Save',
-                action: 'save',
-                handler: this.saveTestCase
+                text        : 'Save',
+                action      : 'save',
+                handler     : this.saveTestCase,
+                scope       : this
             },{
-                text: 'Save & Run',
-                action: 'saverun',
-                handler: this.saveRunTestCase                
+                text        : 'Save & Run',
+                action      : 'saverun',
+                handler     : this.saveRunTestCase,
+                scope       : this
             },{
-                text: 'Cancel',
-                action: 'cancel',
-                handler: function (button) {button.up('testCasesCreate').close()}
+                text        : 'Cancel',
+                action      : 'cancel',
+                handler     : function () { this.close() },
+                scope       : this
             }]
         });
         
         this.callParent(arguments);
     },
 
+    
     saveTestCase: function (button) {
-        var window = button.up('testCasesCreate'),
-            form = window.down('form'),
-            values = form.getForm().getValues();
+        var me          = this,
+            form        = me.down('form'),
+            values      = form.getForm().getValues(),
 
             // Creating testCase record based on form values
-            testCase = Ext.create('Fiesta.model.TestCases', values); 
+            testCase    = new Fiesta.model.TestCases(values); 
 
         // Record will have id in case we are editing existing test, so we should
         // pass form values to Fiesta.DataModel.updateTestCase, it will call backend to update records 
@@ -111,7 +122,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                     else {
                         FIESTA.signUp({action: 'afterUpdate'});
                     }
-                    window.close();
+                    me.close();
                     return false;
                 }, 
                 function () {
@@ -142,7 +153,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                         FIESTA.signUp({action: 'afterCreate'});
                     }
 
-                    window.close();
+                    me.close();
                     
                     return true;
                 }, 
@@ -155,6 +166,11 @@ Ext.define('Fiesta.view.testCases.Create', {
 
     saveRunTestCase: function () {
         
+    },
+    
+    
+    startTestEditing : function (testModel) {
+        this.down('form').getForm().loadRecord(testModel)
     }
 
 });

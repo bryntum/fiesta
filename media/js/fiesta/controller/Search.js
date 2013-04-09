@@ -21,7 +21,7 @@ Ext.define("Fiesta.controller.Search", {
     },
     
     addTest: function () {
-        addWin = Ext.widget('testCasesCreate', { formUrl: 'ajax/addTestCase/'});
+        var addWin = new Fiesta.view.testCases.Create()
     },
     
     processFilter: function (field) {
