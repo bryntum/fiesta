@@ -5728,6 +5728,40 @@ Class('Siesta.Util.Serializer', {
     }
 })
 ;
+Role('Siesta.Util.Role.CanFormatStrings', {
+    
+    methods : {
+        
+        formatString: function (string, data) {
+            var match
+            var variables           = []
+            var isRaw               = []
+            var regexp              = /\{(\!)?((?:\w|-|_)+?)\}/g
+            
+            while (match = regexp.exec(string)) {
+                isRaw.push(match[ 1 ])
+                variables.push(match[ 2 ])
+            }
+            
+            var result              = string
+            
+            Joose.A.each(variables, function (variable, index) {
+                var varIsRaw        = isRaw[ index ]
+                
+                result              = result.replace(
+                    new RegExp('\\{' + (varIsRaw ? '!' : '') + variable + '\\}', 'g'), 
+                    data.hasOwnProperty(variable) ? 
+                        varIsRaw ? data[ variable ] + '' : Siesta.Util.Serializer.stringify(data[ variable ]) 
+                    : 
+                        ''
+                )
+            })
+            
+            return result
+        }
+    }
+})
+;
 Class('Siesta.Util.Queue', {
     
     has     : {
@@ -5830,6 +5864,8 @@ Class('Siesta.Util.Queue', {
             var deferer     = this.deferer
             var step        = steps.shift()
             
+            if (this.isAborted) return
+            
             if (step) {
                 var processor       = step.processor || this.processor
                 var processorScope  = step.processorScope || this.processorScope
@@ -5866,7 +5902,7 @@ Class('Siesta.Util.Queue', {
                 if (callback)
                     if (this.callbackDelay)
                         deferer(function () {
-                            callback.call(scope || this)
+                            if (!me.isAborted) callback.call(scope || this)
                         }, this.callbackDelay)
                     else
                         callback.call(scope || this)
@@ -6279,6 +6315,14 @@ Class('Siesta.Result', {
         
         toString : function () {
             return this.description
+        },
+        
+        
+        toJSON : function () {
+            return {
+                type        : this.meta.name,
+                description : this.description
+            }
         }
     },
     
@@ -6316,6 +6360,18 @@ Class('Siesta.Result.Diagnostic', {
         
         toString : function () {
             return '# ' + this.description
+        },
+        
+        
+        toJSON : function () {
+            var info        = {
+                type            : this.meta.name,
+                description     : this.description
+            }
+            
+            if (this.isWarning) info.isWarning = true
+            
+            return info
         }
     }    
 });
@@ -6357,10 +6413,14 @@ Class('Siesta.Result.Assertion', {
         annotation  : null,
         
         index       : null,
+        // stored as string
         sourceLine  : null,
         
         isSkipped   : false,
         isTodo      : false,
+        
+        isException     : false,
+        exceptionType   : null,
         
         isWaitFor   : false,
         completed   : false     // for waitFor assertions
@@ -6386,6 +6446,28 @@ Class('Siesta.Result.Assertion', {
             if (this.annotation) text += '\n' + this.annotation
             
             return text
+        },
+        
+        
+        toJSON : function () {
+            var me      = this
+            
+            var info    = {
+                type            : this.meta.name,
+                passed          : this.passed,
+                description     : this.description || 'No description'
+            }
+            
+            // copy if true
+            Joose.A.each([ 'isTodo', 'annotation', 'isWaitFor', 'isException', 'sourceLine', 'name' ], function (name) {
+                if (me[ name ]) info[ name ] = me[ name ]
+            })
+            
+            if (this.isException)   {
+                info.exceptionType  = this.exceptionType
+            }
+            
+            return info
         }
     }
 })
@@ -6407,6 +6489,35 @@ Class('Siesta.Result.SubTest', {
         
         isWorking : function () {
             return !this.test.isFinished()
+        },
+        
+        
+        toJSON : function () {
+            var test        = this.test
+            
+            var report      = {
+                type            : this.meta.name,
+                name            : test.name,
+                
+                startDate       : test.startDate - 0,
+                endDate         : test.endDate - 0,
+                
+                passed          : test.isPassed()
+            }
+            
+            if (!test.parent)   report.url          = test.url
+            if (test.specType)  report.bddSpecType  = test.specType
+            
+            var assertions  = []
+            
+            Joose.A.each(this.children, function (result) {
+                if ((result instanceof Siesta.Result.Assertion) || (result instanceof Siesta.Result.Diagnostic) || (result instanceof Siesta.Result.SubTest)) 
+                    assertions.push(result.toJSON())
+            })
+            
+            report.assertions       = assertions
+            
+            return report
         }
         
     }
@@ -7371,6 +7482,10 @@ Role('Siesta.Test.More', {
          * @param {Int} timeout The maximum amount of time (in milliseconds) to wait for the condition to be fulfilled. 
          * Defaults to the {@link Siesta.Test.ExtJS#waitForTimeout} value. If condition is not fullfilled within this time, a failed assertion will be added to the test. 
          * @param {Int} [interval=100] The polling interval (in milliseconds)
+         * 
+         * @return {Object} An object with the following properties:
+         * @return {Function} return.force A function, that will force this wait operation to immediately complete (and call the callback). 
+         * No call to checker will be performed and callback will not receive a result from it. 
          */
         waitFor : function (method, callback, scope, timeout, interval)  {
             var description         = this.typeOf(method) == 'Number' ? (method + ' ms') : ' condition to be fullfilled';
@@ -7423,14 +7538,20 @@ Role('Siesta.Test.More', {
                 
                 return true
             })
+            
+            var isDone      = false
 
             // stop polling, if this test instance has finalized (probably because of exception)
             this.on('testfinalize', function () {
+                isDone      = true
+                
                 originalClearTimeout(pollTimeout)
             }, null, { single : true })
 
             if (this.typeOf(method) == 'Number') {
                 pollTimeout = originalSetTimeout(function() {
+                    isDone      = true
+                    
                     me.finalizeWaiting(waitAssertion, true, 'Waited ' + method + ' ms');
                     me.endAsync(async); 
                     me.processCallbackFromTest(callback, [], scope || me)
@@ -7451,6 +7572,8 @@ Role('Siesta.Test.More', {
                             sourceLine          : sourceLine,
                             annotation          : 'Condition was not fullfilled during ' + timeout + 'ms'
                         }, errback)
+                        
+                        isDone      = true
                     
                         return
                     }
@@ -7466,11 +7589,15 @@ Role('Siesta.Test.More', {
                             gotDesc             : "Exception"
                         }, errback)
                     
+                        isDone      = true
+                        
                         return
                     }
                 
                     if (result != null && result !== false) {
                         me.endAsync(async);
+                        
+                        isDone      = true
                         
                         me.finalizeWaiting(waitAssertion, true, 'Waited ' + time + ' ms for ' + description);
                         
@@ -7480,6 +7607,21 @@ Role('Siesta.Test.More', {
                 }
             
                 pollFunc()
+            }
+            
+            return {
+                force : function () {
+                    // wait operation already completed 
+                    if (isDone) return
+                    
+                    originalClearTimeout(pollTimeout)
+                    
+                    me.endAsync(async);
+                    
+                    me.finalizeWaiting(waitAssertion, true, 'Forced finalization of waiting for ' + description);
+                    
+                    me.processCallbackFromTest(callback, [], scope || me)
+                }
             }
         },
         
@@ -8133,7 +8275,7 @@ Role('Siesta.Test.BDD', {
     ],
     
     has         : {
-        specType                : 'describe', // `describe` or `it`
+        specType                : null, // `describe` or `it`
         
         sequentialSubTests      : Joose.I.Array,
         
@@ -8414,6 +8556,7 @@ SYNOPSIS
 Class('Siesta.Test', {
     
     does        : [
+        Siesta.Util.Role.CanFormatStrings,
         Siesta.Test.More,
         Siesta.Test.Date,
         Siesta.Test.Function,
@@ -8450,6 +8593,10 @@ Class('Siesta.Test', {
         exceptionCatcher    : null,
         testErrorClass      : null,
         
+        generation          : function () {
+            return Math.random()
+        },
+        
         parent              : null,
         harness             : { required : true },
         
@@ -8462,7 +8609,8 @@ Class('Siesta.Test', {
 
         // indicates that test has threw an exception (not related to failed assertions)
         failed              : false,
-        failedException     : null,
+        failedException     : null, // stringified exception
+        failedExceptionType : null, // type of exception
         
         startDate           : null,
         endDate             : null,
@@ -8627,8 +8775,7 @@ Class('Siesta.Test', {
         
         
         addResult : function (result) {
-            // check for class name for cross-context instances (happens during self-testing)
-            var isAssertion = (result instanceof Siesta.Result.Assertion) || result.meta.name == 'Siesta.Result.Assertion'
+            var isAssertion = result instanceof Siesta.Result.Assertion
             
             if (isAssertion) result.isTodo = this.isTodo
             
@@ -8676,35 +8823,6 @@ Class('Siesta.Test', {
         },
         
         
-        formatDefaultDescription : function (data) {
-            var match
-            var variables           = []
-            var isRaw               = []
-            var regexp              = /\{(\!)?((?:\w|-|_)+?)\}/g
-            var descTpl             = data.descTpl
-            
-            while (match = regexp.exec(descTpl)) {
-                isRaw.push(match[ 1 ])
-                variables.push(match[ 2 ])
-            }
-            
-            var defaultDescription  = descTpl
-            
-            Joose.A.each(variables, function (variable, index) {
-                var varIsRaw        = isRaw[ index ]
-                
-                defaultDescription  = defaultDescription.replace(
-                    new RegExp('\\{' + (varIsRaw ? '!' : '') + variable + '\\}', 'g'), 
-                    data.hasOwnProperty(variable) ? 
-                        varIsRaw ? data[ variable ] + '' : Siesta.Util.Serializer.stringify(data[ variable ]) 
-                    : 
-                        ''
-                )
-            })
-            
-            return defaultDescription
-        },
-        
         /**
          * This method add the passed assertion to this test.
          * 
@@ -8727,10 +8845,10 @@ Class('Siesta.Test', {
         pass : function (desc, annotation, result) {
             if (annotation && this.typeOf(annotation) != 'String') {
                 // create a default assertion description
-                if (!desc && annotation.descTpl) desc = this.formatDefaultDescription(annotation)
+                if (!desc && annotation.descTpl) desc = this.formatString(annotation.descTpl, annotation)
                 
                 // actual annotation
-                annotation      = annotation.annotation
+                annotation          = annotation.annotation
             }
             
             if (result) {
@@ -8780,7 +8898,7 @@ Class('Siesta.Test', {
             var sourceLine          = (annotation && annotation.sourceLine) || this.getSourceLine()
             
             if (annotation && this.typeOf(annotation) != 'String') {
-                if (!desc && annotation.descTpl) desc = this.formatDefaultDescription(annotation)
+                if (!desc && annotation.descTpl) desc = this.formatString(annotation.descTpl, annotation)
                 
                 var strings             = []
                 
@@ -8965,7 +9083,7 @@ Class('Siesta.Test', {
             
             this.getResults().each(function (result) {
                 // check for class name for cross-context instances (happens during self-testing)
-                if ((result instanceof Siesta.Result.Assertion) || result.meta.name == 'Siesta.Result.Assertion') func.call(scope, result)
+                if (result instanceof Siesta.Result.Assertion) func.call(scope, result)
             })
         },
         
@@ -9435,6 +9553,7 @@ Class('Siesta.Test', {
                 global                  : this.global,
                 url                     : this.url,
                 harness                 : this.harness,
+                generation              : this.generation,
                 
                 overrideSetTimeout      : false,
                 originalSetTimeout      : this.originalSetTimeout,
@@ -9525,11 +9644,7 @@ Class('Siesta.Test', {
                 transparentEx   : false
             })
 
-            this.launchSubTest(todo, function () {
-                if (todo.isFailedWithException()) todo.diag("TODO section threw an exception: [" + todo.failedException + "]")
-                
-                callback && callback(todo)
-            })
+            this.launchSubTest(todo, callback)
         },
         
         
@@ -9592,8 +9707,26 @@ Class('Siesta.Test', {
         
         
         failWithException : function (e) {
-            this.failed             = true
-            this.failedException    = e
+            this.failed                 = true
+            
+            var stackTrace              = this.getStackTrace(e)
+            var stringified             = e + ''
+            var annotation              = (stackTrace || []).join('\n')
+
+            this.failedException        = stringified
+            this.failedExceptionType    = this.typeOf(e)
+            
+            // prepend the exception message to the stack trace if its not already there
+            if (annotation.indexOf(stringified) == -1) annotation = stringified + annotation
+            
+            this.addResult(new Siesta.Result.Assertion({
+                isException     : true,
+                exceptionType   : this.failedExceptionType,
+                passed          : false,
+                description     : (this.parent ? "Sub-test `" + this.name + "`" : 'Test ') + ' has threw an exception',
+                annotation      : annotation
+            }))
+            
             
             /**
              * This event is fired when the individual test case has threw an exception. 
@@ -9606,7 +9739,7 @@ Class('Siesta.Test', {
              * @param {Siesta.Test} test The test instance that just has threw an exception
              * @param {Object} exception The exception thrown
              */
-            this.fireEvent('testfailedwithexception', this, e, this.getStackTrace(e));
+            this.fireEvent('testfailedwithexception', this, e, stackTrace);
             
             this.finalize(true)
         },
@@ -9678,13 +9811,15 @@ Class('Siesta.Test', {
             var me                      = this
             var global                  = this.global
             
+            var scopeProvider           = this.scopeProvider
+            
             var originalSetTimeout      = this.originalSetTimeout
             var originalClearTimeout    = this.originalClearTimeout
             
             // this.overrideSetTimeout
             if (this.overrideSetTimeout) {
                 // see http://www.adequatelygood.com/2011/4/Replacing-setTimeout-Globally
-                this.scopeProvider.runCode('var setTimeout, clearTimeout;')
+                scopeProvider.runCode('var setTimeout, clearTimeout;')
                 
                 global.setTimeout = function (func, delay) {
                     
@@ -9747,19 +9882,29 @@ Class('Siesta.Test', {
             // eof this.overrideSetTimeout
             
             // we only don't need to cleanup up when doing a self-testing
-            if (this.needToCleanup) this.scopeProvider.cleanupCallback = function () {
-                if (me.overrideSetTimeout) {
-                    global.setTimeout       = originalSetTimeout
-                    global.clearTimeout     = originalClearTimeout
+            if (this.needToCleanup) {
+//                this is no longer required, since we now store already stringified exception
+//                scopeProvider.beforeCleanupCallback = function () {
+//                    // stringify the exception before the cleanup (removal of test's iframe) will happen
+//                    // this needs to be done _before_ cleanup, because in IE, trying to stringify
+//                    // the exception _after_ cleanup throws exception
+//                    if (me.failedException) me.failedException = me.failedException + ''
+//                }
+                
+                scopeProvider.cleanupCallback = function () {
+                    if (me.overrideSetTimeout) {
+                        global.setTimeout       = originalSetTimeout
+                        global.clearTimeout     = originalClearTimeout
+                    }
+                    
+                    originalSetTimeout          = me.originalSetTimeout         = null
+                    originalClearTimeout        = me.originalClearTimeout       = null
+                    
+                    me.global                   = global                        = null
+                    me.run                      = run                           = null
+                    me.exceptionCatcher         = me.testErrorClass             = null
+                    me.startTestAnchor                                          = null
                 }
-                
-                originalSetTimeout          = me.originalSetTimeout         = null
-                originalClearTimeout        = me.originalClearTimeout       = null
-                
-                me.global                   = global                        = null
-                me.run                      = run                           = null
-                me.exceptionCatcher         = me.testErrorClass             = null
-                me.startTestAnchor                                          = null
             }
             
             var run     = this.run
@@ -9848,7 +9993,7 @@ Class('Siesta.Test', {
         
         
         getSummaryMessage : function (lineBreaks) {
-            var res = []
+            var res             = []
             
             var passCount       = this.getPassCount()
             var failCount       = this.getFailCount()
@@ -9869,17 +10014,10 @@ Class('Siesta.Test', {
                     
                     if (total == assertPlanned && !failCount) res.push('All tests passed')
                 } else {
-                    if (!this.isDoneCorrectly()) res.push('Test has completed, but there was no `t.done()` call. Add it at the bottom, or use `t.beginAsync()` for asynchronous code')
+                    if (!this.isDoneCorrectly()) res.push('Test has completed, but there were no `t.done()` call. Add it at the bottom, or use `t.beginAsync()` for asynchronous code')
                     
                     if (this.isDoneCorrectly() && !failCount) res.push('All tests passed')
                 }
-                
-            } else {
-                var stack = this.getStackTrace(this.failedException)
-                if (stack)
-                    res.push.apply(res, [ 'Test suite threw an exception: ' + this.failedException].concat(stack))
-                else
-                    res.push('Test suite threw an exception: ' + this.failedException)
             }
             
             return lineBreaks ? res.join(lineBreaks) : res
@@ -10533,6 +10671,7 @@ Class('Siesta.Harness', {
         // - id - either `url` or wbs + group - computed
         // - url
         // - isMissing - true if test file is missing
+        // - testCode - a test code source (can be provided by user)
         // - testConfig - config object provided to the StartTest
         // - index - (in the group) computed
         // - scopeProvider
@@ -11023,7 +11162,7 @@ Class('Siesta.Harness', {
          */
         start : function () {
             // a bit hackish - used by Selenium reporter..
-            var me = Siesta.my.activeHarness = this
+            var me              = Siesta.my.activeHarness = this
             
             this.mainPreset     = new Siesta.Content.Preset({
                 preload     : this.processPreloadArray(this.preload)
@@ -11390,10 +11529,10 @@ Class('Siesta.Harness', {
 
         // should prepare the "seedingScript" - include it to the `scopeProvider`
         prepareScopeSeeding : function (scopeProvider, desc, contentManager) {
-            if (this.cachePreload && contentManager.hasContentOf(desc.url))
+            if (desc.testCode || this.cachePreload && contentManager.hasContentOf(desc.url))
                 scopeProvider.addPreload({
                     type        : 'js', 
-                    content     : contentManager.getContentOf(desc.url)
+                    content     : desc.testCode || contentManager.getContentOf(desc.url)
                 })
             else
                 scopeProvider.seedingScript = this.resolveURL(desc.url, scopeProvider, desc)
@@ -11422,7 +11561,7 @@ Class('Siesta.Harness', {
                 return
             }
             
-            // a magical shared object, which will contains the `test` property with test instance, once the test will be created
+            // a magical shared object, which will contain the `test` property with test instance, once the test will be created
             var testHolder      = {}
             // an array of errors occured during preload phase
             var preloadErrors   = []    
@@ -11436,8 +11575,7 @@ Class('Siesta.Harness', {
                 if (test && test.isStarted()) {
                     test.nbrExceptions++;
                     test.failWithException(msg + ' ' + url + ' ' + lineNumber)
-                }
-                else {
+                } else {
                     preloadErrors.push(msg + ' ' + url + ' ' + lineNumber)
                 }
             }
@@ -11602,6 +11740,13 @@ Class('Siesta.Harness', {
         
         
         deleteTestByURL : function (url) {
+            var test    = this.testsByURL[ url ]
+            
+            if (test) {
+                test.finalize(true)
+                this.cleanupScopeForURL(url)
+            }
+            
             delete this.testsByURL[ url ]
         },
         
@@ -11762,21 +11907,18 @@ Role('Siesta.Role.ConsoleReporter', {
         },
         
         
-        onTestFail : function (test, exception, stack) {
-            var text = stack ? stack.join('\n') : exception + ''
-                
-            this.log(this.style().bold(this.style().red(text)))
-        },
-        
-        
         onTestUpdate : function (test, result, parentResult) {
             var text            = result + ''
             var needToShow      = this.verbosity > 0
             
-            if ((result instanceof Siesta.Result.Assertion) || result.meta.name == 'Siesta.Result.Assertion') {
+            if (result instanceof Siesta.Result.Assertion) {
                 if (result.isWaitFor && !result.completed) return;
 
-                if (result.isTodo) {
+                if (result.isException && !result.isTodo) {
+                    text        = this.style().bold(this.style().red(text))
+                    
+                    needToShow  = true
+                } else if (result.isTodo) {
                     text        = this.styled(text, result.passed ? 'magenta' : 'yellow')
                     
                     if (result.passed) needToShow = true
@@ -21577,7 +21719,15 @@ Class('Siesta.Test.Action.Type', {
          * 
          * The text to type into the target
          */
-        text                : ''
+        text                : '',
+
+        /**
+         * @cfg {Object} options
+         *
+         * Any options that will be used when simulating the event. For information about possible
+         * config options, please see: https://developer.mozilla.org/en-US/docs/DOM/event.initMouseEvent
+         */
+        options             : null
     },
 
     
@@ -21588,7 +21738,7 @@ Class('Siesta.Test.Action.Type', {
             this.target = this.target || this.test.global.document.activeElement;
 
             // additional "getTarget" to allow functions as "target" value
-            this.test.type(this.getTarget(), this.text, this.next)
+            this.test.type(this.getTarget(), this.text, this.next, null, this.options);
         }
     }
 });
@@ -22951,8 +23101,9 @@ Role('Siesta.Test.Simulate.Keyboard', {
         * @param {String} text The text to type, including any names of special keys in square brackets.
         * @param {Function} callback (optional) To run this method async, provide a callback method to be called after the type operation is completed.
         * @param {Object} scope (optional) the scope for the callback
+        * @param {Object} options (optional) any extra options used to configure the DOM events (like holding shiftKey, ctrlKey etc)
         */
-        type: function (el, text, callback, scope) {
+        type: function (el, text, callback, scope, options) {
             el      = this.normalizeElement(el || this.global.document.activeElement);
 
             // Some browsers (IE/FF) do not overwrite selected text, do it manually.
@@ -22992,7 +23143,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
                         // If this happens, reuse the original el and hope all is well
                         focusedEl = el;
                     }
-                    me.keyPress(focusedEl, data.key)
+                    me.keyPress(focusedEl, data.key, options)
                 }
             })
 
@@ -25882,7 +26033,7 @@ Role('Siesta.Test.Element', {
             var me                      = this
             var originalSetTimeout      = this.originalSetTimeout;
             
-            this.waitForEvent(el, 'scroll', function () {
+            var waiter                  = this.waitForEvent(el, 'scroll', function () {
                 if (delay > 0) {
                     var async               = me.beginAsync(delay + 100)
                     
@@ -25895,7 +26046,14 @@ Role('Siesta.Test.Element', {
                     me.processCallbackFromTest(callback)
             })
             
+            var prevScrollTop   = el.scrollTop
+            
             el.scrollTop        = newTop
+            
+            // no event will be fired in this case probably - force the waiting operation to complete
+            if (el.scrollTop == prevScrollTop) {
+                waiter.force()
+            }
             
             // re-read the scrollTop value and return it (newTop can be too big for example and will be truncated)
             return el.scrollTop
@@ -26427,7 +26585,7 @@ Class('Siesta.Test.Browser', {
         
         // deprecated
         willFireNTimes: function (observable, event, n, desc, isGreaterEqual) {
-            this.firesOk(observable, event, (isGreaterEqual ? '>=' : '==') + n, desc)
+            this.firesOk(observable, event, isGreaterEqual ? '>=' + n : n, desc)
         },
         
         
@@ -26674,7 +26832,7 @@ Class('Siesta.Test.SenchaTouch', {
 
             if (!result.ready) return result;
 
-            if (this.performSetup && !this.isSTSetupDone) return {
+            if (!this.parent && this.performSetup && !this.isSTSetupDone) return {
                 ready       : false,
                 reason      : "Waiting for Ext.setup took too long - some dependency can't be loaded? Check the `Net` tab in Firebug"
             }
@@ -26691,7 +26849,8 @@ Class('Siesta.Test.SenchaTouch', {
             
             if (!Ext) return
             
-            if (this.performSetup) Ext.setup({
+            // execute "Ext.setup()" for top-level tests only 
+            if (this.performSetup && !this.parent) Ext.setup({
                 onReady : function () {
                     me.isSTSetupDone    = true
                 }
@@ -28595,7 +28754,16 @@ Ext.define('Siesta.Harness.Browser.Model.AssertionTreeStore', {
     
     
     removeAll : function () {
-        this.getRootNode().removeAll()
+//        slow
+//        this.getRootNode().removeAll()
+        
+        var newRoot = this.setRootNode({
+            id              : '__ROOT__',
+            expanded        : true,
+            loaded          : true
+        })
+        
+        this.nodeStore.setNode(newRoot)
     },
     
     
@@ -28607,7 +28775,6 @@ Ext.define('Siesta.Harness.Browser.Model.AssertionTreeStore', {
     getById : function (id) {
         return this.getNodeById(id)
     }
-
 });
 Ext.define('Siesta.Harness.Browser.UI.VersionField', {
     
@@ -29663,32 +29830,36 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         var testRecord      = this.testsStore.getNodeById(test.url),
             failCount       = test.getFailCount();
             
-        var assertionStore  = testRecord.get('assertionsStore');
-
-        var data            = {
-            id                  : result.id,
+        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
+        // test instance may change if user has restarted a test for example
+        if (testRecord.get('test').generation == test.generation) {
+            var assertionStore  = testRecord.get('assertionsStore');
+    
+            var data            = {
+                id                  : result.id,
+                
+                result              : result,
+                
+                leaf                : !(result instanceof Siesta.Result.SubTest),
+                expanded            : (result instanceof Siesta.Result.SubTest) && result.test.specType != 'it'
+            };
             
-            result              : result,
+            var alreadyInTheStore   = assertionStore.getById(result.id)
             
-            leaf                : !(result instanceof Siesta.Result.SubTest),
-            expanded            : (result instanceof Siesta.Result.SubTest) && result.test.specType != 'it'
-        };
-        
-        var alreadyInTheStore   = assertionStore.getById(result.id)
-        
-        if (alreadyInTheStore) {
-            alreadyInTheStore.triggerUIUpdate()
-        } else {
-            alreadyInTheStore   = (assertionStore.getById(parentResult.id) || assertionStore.getRootNode()).appendChild(data);
-        }
-        
-        if (result.isPassed && !result.isPassed()) alreadyInTheStore.ensureVisible()
-        
-        alreadyInTheStore.updateFolderStatus()
-        
-        if (failCount > 0 && this.getOption('breakOnFail')) {
-            this.performStop();
-            this.slots.filesTree.getSelectionModel().select(testRecord);
+            if (alreadyInTheStore) {
+                alreadyInTheStore.triggerUIUpdate()
+            } else {
+                alreadyInTheStore   = (assertionStore.getById(parentResult.id) || assertionStore.getRootNode()).appendChild(data);
+            }
+            
+            if (result.isPassed && !result.isPassed()) alreadyInTheStore.ensureVisible()
+            
+            alreadyInTheStore.updateFolderStatus()
+            
+            if (failCount > 0 && this.getOption('breakOnFail')) {
+                this.performStop();
+                this.slots.filesTree.getSelectionModel().select(testRecord);
+            }
         }
     },
 
@@ -29699,24 +29870,28 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         var testRecord          = this.testsStore.getNodeById(test.url)
         var testDescriptor      = this.harness.getScriptDescriptor(test.url)
         
-        testRecord.beginEdit()
-
-        testRecord.set({
-            'passCount'         : test.getPassCount(),
-            'failCount'         : test.getFailCount(),
-            'todoPassCount'     : test.getTodoPassCount(),
-            'todoFailCount'     : test.getTodoFailCount(),
-            'time'              : test.getDuration() + 'ms'
-        });
-  
-        testRecord.endEdit()
+        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
+        // test instance may change if user has restarted a test for example
+        if (testRecord.get('test').generation == test.generation) {
+            testRecord.beginEdit()
     
-        testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
-    
-        if (this.harness.testHasForcedIframe(test)) {
-            var resultPanel = this.slots.resultPanel;
+            testRecord.set({
+                'passCount'         : test.getPassCount(),
+                'failCount'         : test.getFailCount(),
+                'todoPassCount'     : test.getTodoPassCount(),
+                'todoFailCount'     : test.getTodoFailCount(),
+                'time'              : test.getDuration() + 'ms'
+            });
+      
+            testRecord.endEdit()
         
-            resultPanel.setCanManageDOM(true)
+            testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
+        
+            if (this.harness.testHasForcedIframe(test)) {
+                var resultPanel = this.slots.resultPanel;
+            
+                resultPanel.setCanManageDOM(true)
+            }
         }
     },
     
@@ -29724,31 +29899,29 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     // is bubbling and thus triggered for all tests (including sub-tests) 
     onEveryTestEnd : function (event, test) {
         var testRecord      = this.testsStore.getNodeById(test.url)
-        var assertionStore  = testRecord.get('assertionsStore');
         
-        var testResultNode  = assertionStore.getById(test.getResults().id)
-        
-        // can be missing for "root" tests
-        testResultNode && testResultNode.updateFolderStatus()
+        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
+        // test instance may change if user has restarted a test for example
+        if (testRecord.get('test').generation == test.generation) {
+            var assertionStore  = testRecord.get('assertionsStore');
+            var testResultNode  = assertionStore.getById(test.getResults().id)
+            
+            // can be missing for "root" tests
+            testResultNode && testResultNode.updateFolderStatus()
+        }
     },
 
 
     onTestFail : function (test, exception, stack) {
         var testRecord  = this.testsStore.getNodeById(test.url)
-    
-        testRecord.set('isFailed', true)
-    
-        testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
-    
-//        TODO
-//        // if the test failed already after its finish (some exception in the `setTimeout` for example)
-//        // need to add additional message to user
-//        // however, if the exception happened when test is still running, it will be included in the `getSummaryMessage`
-//        if (test.isFinished()) testRecord.get('assertionsStore').add({
-//            passed      : true,
-//            description : 'Test suite threw an exception: ' + exception + (stack ? '<br>' + stack.join('<br>') : ''),
-//            type        : 'Siesta.Result.Diagnostic'
-//        })
+        
+        // need to check that test record contains the same test instance as the test in arguments
+        // test instance may change if user has restarted a test for example
+        if (testRecord.get('test') == test) {
+            testRecord.set('isFailed', true)
+        
+            testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
+        }
     },
     
     
@@ -30578,20 +30751,10 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
             compiled : true 
         }
     ),
+    
+    sourceButton            : null,
+    filterButton            : null,
 
-    // This method makes sure that the min width of the card panel is respected when
-    // the width of this class changes (after resizing Test TreePanel).
-    ensureLayout : function () {
-        var availableWidth          = this.getWidth();
-        var cardPanel               = this.slots.cardContainer;
-        var domContainer            = this.slots.domContainer;
-        var domContainerWidth       = domContainer.getWidth();
-        var minimumForCard          = cardPanel.minWidth + 20; // Some splitter space
-
-        if (availableWidth - domContainerWidth < minimumForCard) {
-            domContainer.setWidth(Math.max(0, availableWidth - minimumForCard));
-        }
-    },
 
     initComponent : function() {
         this.addEvents('viewdomchange');
@@ -30702,6 +30865,22 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
             scope       : this
         })
     },
+    
+    
+    // This method makes sure that the min width of the card panel is respected when
+    // the width of this class changes (after resizing Test TreePanel).
+    ensureLayout : function () {
+        var availableWidth          = this.getWidth();
+        var cardPanel               = this.slots.cardContainer;
+        var domContainer            = this.slots.domContainer;
+        var domContainerWidth       = domContainer.getWidth();
+        var minimumForCard          = cardPanel.minWidth + 20; // Some splitter space
+
+        if (availableWidth - domContainerWidth < minimumForCard) {
+            domContainer.setWidth(Math.max(0, availableWidth - minimumForCard));
+        }
+    },
+    
 
     afterRender : function() {
         this.callParent(arguments);
@@ -30853,6 +31032,8 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     showTest : function (testFile) {
         this.slots.source.__filled__ = false;
         
+        this.filterButton.toggle(false)
+        
         if (this.testRecord !== testFile) {
             this.hideIFrame();
             
@@ -30896,11 +31077,15 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
 
     clear : function () {
+        Ext.suspendLayouts()
+        
         var grid = this.slots.grid;
         
         grid.store.removeAll();
 
         grid.getView().getEl().update('<div class="assertiongrid-initializing">Initializing test...</div>');
+        
+        Ext.resumeLayouts(true)
     },
 
     
@@ -31017,7 +31202,6 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
         
         Ext.apply(this, {
             resultTpl   : new Ext.XTemplate(
-//                '<span class="assertion-index">{index}</span><div class="assertion-status"></div><span class="assertion-text">{[this.getDescription(values)]}</span>{[this.getAnnotation(values)]}',
                 '<span class="assertion-text">{[this.getDescription(values.result)]}</span>{[this.getAnnotation(values)]}',
                 {
                     getDescription : function (result) {
@@ -31027,11 +31211,11 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                             return result.isWarning ? 'WARN: ' + result.description : result.description
                     },
                     getAnnotation : function (data) {
-                        var result  = data.result
+                        var annotation = data.result.annotation
                         
-                        if (result.annotation)
-                            return '<pre style="margin-left:' + data.depth * 16 + 'px" class="tr-assert-row-annontation">' + Ext.String.htmlEncode(result.annotation) + '</pre>'
-                        else
+                        if (annotation) {
+                            return '<pre style="margin-left:' + data.depth * 16 + 'px" class="tr-assert-row-annontation">' + Ext.String.htmlEncode(annotation) + '</pre>'
+                        } else
                             return '';
                     }
                 }
@@ -31122,6 +31306,8 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                         
                             if (result.isWaitFor) 
                                 cls += 'tr-waiting-row ' + (result.completed ? (result.passed ? 'tr-waiting-row-passed' : 'tr-assertion-row-failed tr-waiting-row-failed') : '')
+                            else if (result.isException) 
+                                cls += result.isTodo ? 'tr-exception-todo-row' : 'tr-exception-row'
                             else if (result.isTodo)
                                 cls += result.passed ? 'tr-todo-row-passed' : 'tr-todo-row-failed'
                             else
@@ -31144,11 +31330,23 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     
     
     bindStore : function (store) {
-        var me      = this;
+        var me      = this
         
+//        if (me.store) me.mun(me.store, {
+//            scope       : me,
+//            rootchange  : me.onRootChange,
+//            clear       : me.onClear
+//        });
+
         me.store    = store;
         
-        me.getView().bindStore(store.nodeStore);
+        if (me.getView().store != store.nodeStore) me.getView().bindStore(store.nodeStore);
+        
+//        me.mon(store, {
+//            scope       : me,
+//            rootchange  : me.onRootChange,
+//            clear       : me.onClear
+//        });
     }
 })
 ;
@@ -31935,6 +32133,8 @@ Role('Siesta.Harness.Report.JUnit', {
             var totalErrors     = 0
             var totalFailures   = 0
             
+            var me              = this
+            
             Joose.A.each(unifiedReport.testCases, function (testInfo) {
                 totalTests++
                 
@@ -31957,35 +32157,46 @@ Role('Siesta.Harness.Report.JUnit', {
                     
                 } else {
                     testCaseNode.setAttribute('time', (testInfo.endDate - testInfo.startDate) / 1000)
-                    
-                    if (testInfo.hasOwnProperty('exception')) {
-                        totalErrors++
                         
-                        testCaseNode.appendChild({
-                            tag             : 'error',
-                            attributes      : {
-                                type        : testInfo.exceptionType
-                            },
-                            textContent     : testInfo.exception
+                    var cascadeAssertions = function (testInfo, func, scope) {
+                        Joose.A.each(testInfo.assertions, function (assertion) {
+                            if (assertion.type == 'Siesta.Result.Assertion' && !assertion.isTodo) func.call(scope || me, assertion)
+                                
+                            if (assertion.type == 'Siesta.Result.SubTest') cascadeAssertions(assertion, func, scope)
                         })
-                    } else {
-                        // test has failed, but w/o exception - some other reason
-                        if (!testInfo.passed) totalFailures++
                     }
-                        
-                    Joose.A.each(testInfo.assertions, function (assertion) {
-                        
-                        if (!assertion.passed && !assertion.isTodo) testCaseNode.appendChild({
-                            tag         : 'failure',
-                            
-                            attributes  : {
-                                message     : assertion.description || '',
-                                type        : assertion.name || 'FAIL'
-                            },
-                            
-                            textContent : assertion.annotation || ''
-                        })
+                    
+                    var hasException    = false
+                    
+                    cascadeAssertions(testInfo, function (assertion) {
+                        if (!assertion.passed)
+                            if (assertion.isException) {
+                                totalErrors++
+                                
+                                hasException    = true
+                                
+                                testCaseNode.appendChild({
+                                    tag             : 'error',
+                                    attributes      : {
+                                        type        : assertion.exceptionType
+                                    },
+                                    textContent     : assertion.annotation
+                                })
+                            } else 
+                                testCaseNode.appendChild({
+                                    tag         : 'failure',
+                                    
+                                    attributes  : {
+                                        message     : assertion.description || '',
+                                        type        : assertion.name || 'FAIL'
+                                    },
+                                    
+                                    textContent : assertion.annotation || ''
+                                })
                     })
+                    
+                    // test has failed, but w/o exception - some other reason
+                    if (!hasException && !testInfo.passed) totalFailures++
                 }
                 
                 testSuiteNode.appendChild(testCaseNode)
@@ -32057,7 +32268,7 @@ Role('Siesta.Harness.Browser.Automation.PhantomJS', {
                     
                     var allReports      = __PAGE_REPORTS__
                     
-                    console.log('__PHANTOMJS__:summaryMessage:' + this.getSummaryMessage(this.allPagesPassed(allReports)))
+                    console.log('__PHANTOMJS__:summaryMessage:' + this.getAutomatedSummaryMessage(allReports))
                     
                     if (__REPORT_OPTIONS__) {
                         __REPORT_OPTIONS__.pageReports      = allReports
@@ -32111,7 +32322,8 @@ Role('Siesta.Harness.Browser.Automation.Selenium', {
 Role('Siesta.Harness.Browser.Automation', {
     
     does        : [
-        Siesta.Role.ConsoleReporter
+        Siesta.Role.ConsoleReporter,
+        Siesta.Util.Role.CanFormatStrings
     ],
     
     has : {
@@ -32214,13 +32426,11 @@ Role('Siesta.Harness.Browser.Automation', {
     methods : {
         
         getPageState : function () {
-            var res = JSON.stringify({
+            return JSON.stringify({
                 lastActivity        : this.lastActivity - 0,
                 log                 : this.flushLog(),
                 exitCode            : this.exitCode
             })
-            
-            return res
         },
         
         
@@ -32228,7 +32438,7 @@ Role('Siesta.Harness.Browser.Automation', {
             var allPassed       = true
             
             Joose.A.each(pageReports, function (pageReport) {
-                if (!pageReport.passed) {
+                if (!pageReport || !pageReport.passed) {
                     allPassed = false
                     return false
                 }
@@ -32290,42 +32500,7 @@ Role('Siesta.Harness.Browser.Automation', {
                 // ignore missing tests (could be skipped by test filtering)
                 if (!test) return
                 
-                var testReport  = {}
-                
-                if (descriptor.isMissing) 
-                    testReport.fileIsMissing  = true
-                else {
-                    Joose.O.extend(testReport, {
-                        url             : test.url,
-                        
-                        startDate       : test.startDate - 0,
-                        endDate         : test.endDate - 0,
-                        
-                        passed          : test.isPassed()
-                    })
-                    
-                    if (test.isFailedWithException()) {
-                        testReport.exception        = test.failedException + ''
-                        testReport.exceptionType    = me.typeOf(test.failedException)
-                    }
-                    
-                    var assertions      = testReport.assertions = []
-                    
-                    test.eachAssertion(function (assertion) {
-                        
-                        var assertionInfo   = {
-                            passed      : assertion.passed,
-                            description : assertion.description || 'No description'
-                        }
-                        
-                        if (assertion.isTodo)       assertionInfo.isTodo        = true
-                        if (assertion.annotation)   assertionInfo.annotation    = assertion.annotation
-                        
-                        assertions.push(assertionInfo)
-                    })
-                }
-                
-                report.testCases.push(testReport)
+                report.testCases.push(descriptor.isMissing ? { fileIsMissing : true } : test.getResults().toJSON())
             })
             
             return params.asJSON ? report : JSON.stringify(report)
@@ -32353,6 +32528,86 @@ Role('Siesta.Harness.Browser.Automation', {
             combinedReport.passed   = this.allPagesPassed(pageReports)
             
             return combinedReport
+        },
+        
+        
+        getAutomatedSummaryMessage : function (pageReports) {
+            var combinedReport      = this.combinePageReports(pageReports)
+            
+            var testCases           = combinedReport.testCases
+            
+            var testsTotal          = 0
+            var testsFailed         = 0
+            
+            var assertionsTotal     = 0
+            var assertionsFailed    = 0
+            
+            var todoPassed          = 0
+            var todoFailed          = 0
+            
+            var timeTotal           = testCases[ testCases.length - 1 ].endDate - testCases[ 0 ].startDate
+            var durationStr         = timeTotal + 'ms'
+            
+            if (timeTotal >= 1000) {
+                timeTotal           = timeTotal / 1000
+                durationStr         = timeTotal + 's'
+            }
+            
+            if (timeTotal >= 60) {
+                durationStr         = Math.floor(timeTotal / 60) + 'm ' + Math.floor(timeTotal % 60) + 's'
+                timeTotal           = timeTotal / 60
+            }
+            
+            if (timeTotal >= 60) {
+                durationStr         = Math.floor(timeTotal / 60) + 'h ' + Math.floor(timeTotal % 60) + 'm'
+            }
+            
+            var me                  = this
+            
+            Joose.A.each(testCases, function (testInfo) {
+                testsTotal++
+                
+                if (testInfo.fileIsMissing) {
+                    testsFailed++
+                } else {
+                    if (!testInfo.passed) testsFailed++
+                    
+                    var cascadeAssertions = function (testInfo, func, scope) {
+                        Joose.A.each(testInfo.assertions, function (assertion) {
+                            if (assertion.type == 'Siesta.Result.Assertion') func.call(scope || me, assertion)
+                            if (assertion.type == 'Siesta.Result.SubTest') cascadeAssertions(assertion, func, scope)
+                        })
+                    }
+                    
+                    cascadeAssertions(testInfo, function (assertion) {
+                        if (assertion.isTodo) {
+                            assertion.passed ? todoPassed++ : todoFailed++
+                        } else {
+                            assertionsTotal++
+                            
+                            if (!assertion.passed) assertionsFailed++
+                        }
+                    })
+                }
+            })
+            
+            return this.formatString([            
+                '{assertionsPassed} passed, {assertionsFailed} failed assertions took {!timeTotal} to complete'
+            ].join('\n'), {
+                testsFailed             : testsFailed,
+                testsPassed             : testsTotal - testsFailed,
+                testsTotal              : testsTotal,
+                
+                timeTotal               : durationStr,
+                
+                assertionsTotal         : assertionsTotal,
+                assertionsPassed        : assertionsTotal - assertionsFailed,
+                assertionsFailed        : assertionsFailed,
+                
+                todoPassed              : todoPassed,
+                todoFailed              : todoFailed
+            })
+            
         }
     }
 })

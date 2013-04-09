@@ -708,6 +708,27 @@ td.tr-td-vertical-align {
 }
 
 /*=======================================================================================================================================================================================================================
+    Exception row
+*/
+
+.tr-exception-row .x-tree-icon {
+	background-image : url(../images/flag-red.png) !important;
+}
+
+.tr-exception-row {
+    background-color        : #fc585e;
+}
+
+.tr-exception-row .x-grid-cell {
+    font-weight             : bolder;
+}
+
+.tr-exception-todo-row .x-tree-icon {
+    background-image : url(../images/flag-green.png) !important;
+}
+
+
+/*=======================================================================================================================================================================================================================
     Sub test row (including describe/it)
 */
 
