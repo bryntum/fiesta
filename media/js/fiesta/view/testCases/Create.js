@@ -10,6 +10,7 @@ Ext.define('Fiesta.view.testCases.Create', {
     
     title       : 'Add/Edit test case',
     
+    // if provided - window will "edit" the model, otherwise new empty model instance is created
     testCaseModel   : null,
     
     
@@ -90,26 +91,17 @@ Ext.define('Fiesta.view.testCases.Create', {
                 action      : 'cancel',
                 handler     : function () { this.close() },
                 scope       : this
-            }],
-            
-            listeners   : {
-                afterrender : this.onAfterRender,
-                
-                scope       : this
-            }
+            }]
         });
         
         this.callParent(arguments);
-    },
-
-    
-    onAfterRender : function () {
+        
         if (this.testCaseModel)
             this.down('form').getForm().loadRecord(this.testCaseModel)
         else
             this.testCaseModel  = new Fiesta.model.TestCases()
     },
-    
+
     
     saveTestCase: function (button) {
         var me          = this,
