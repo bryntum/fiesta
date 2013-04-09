@@ -11197,7 +11197,7 @@ Class('Siesta.Harness', {
             Joose.A.each(flattenDescriptors, function (desc) { 
                 if (desc.preset != me.mainPreset && desc.preset != me.emptyPreset) presets.push(desc.preset)
                 
-                testScriptsPreset.addResource(desc.url)
+                if (!desc.testCode) testScriptsPreset.addResource(desc.url)
                 
                 me.deleteTestByURL(desc.url)
             })
@@ -11226,8 +11226,9 @@ Class('Siesta.Harness', {
                         // if testConfig contains the "preload" or "alsoPreload" key - then we need to update the preset of the descriptor
                         if (testConfig && (testConfig.preload || testConfig.alsoPreload)) desc.preset = me.getDescriptorPreset(desc)
                     } else
+                        // if test code is provided, then test is considered not missing 
                         // allow subclasses to define there own logic when found missing test file
-                        me.markMissingFile(desc)
+                        if (!desc.testCode) me.markMissingFile(desc)
                         
                     me.normalizeScopeProvider(desc)
                 })

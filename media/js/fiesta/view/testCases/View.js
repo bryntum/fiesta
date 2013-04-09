@@ -20,9 +20,6 @@ Ext.define('Fiesta.view.testCases.View', {
                     scope   : this
                 },
                 { 
-                    text    : 'View DOM' 
-                },
-                { 
                     text    : 'Share' 
                 },
                 { 
@@ -37,13 +34,28 @@ Ext.define('Fiesta.view.testCases.View', {
             items       : [
                 {
                     region  : 'center',
-                    xtype   : 'form',
-                    layout  : 'fit',
-                    border  : false,
+                    xtype   : 'container',
+                    layout  : 'card',
+                    
+                    slot    : 'cardcontainer',
+                    
                     items   : [
+                        // card with sources editor
                         {
-                            xtype: 'textarea',
-                            name: 'code'
+                            xtype   : 'form',
+                            layout  : 'fit',
+                            border  : false,
+                            items   : [
+                                {
+                                    xtype   : 'textarea',
+                                    name    : 'code'
+                                }
+                            ]
+                        },
+                        // card with 
+                        {
+                            xtype   : 'panel',
+                            title   : 'Run'
                         }
                     ]
                 }
@@ -65,8 +77,13 @@ Ext.define('Fiesta.view.testCases.View', {
     },
     
     
-    onTabSelect: function (tab) {
-        FIESTA.makeHistory(tab.testCaseModel.get('slug'));
+    switchToResultsTab : function () {
+        this.down('[slot=cardcontainer]').getLayout().setActiveItem(1)
+    },
+    
+    
+    onTabSelect: function () {
+        FIESTA.makeHistory(this.testCaseModel.get('slug'));
 //        DISQUS.reset({
 //          reload: true,
 //          config: function () {  
@@ -87,7 +104,9 @@ Ext.define('Fiesta.view.testCases.View', {
     
     
     onTestLaunch : function () {
-        var testModel       = this.testModel;
+        this.switchToResultsTab()
+        
+        var testCaseModel   = this.testCaseModel;
         var Harness         = Siesta.Harness.Browser.ExtJS
         
         Harness.configure({
@@ -95,13 +114,9 @@ Ext.define('Fiesta.view.testCases.View', {
         })
         
         Harness.start({
-            url         : '/ajax/getTestJs?id=' + testCaseModel.getId(),
-            preload     : [].concat(
-//                testModel.getPreload(),
-                {
-                    text    : testModel.get('code')
-                }
-            )
+            testCode    : testCaseModel.get('code'),
+            url         : testCaseModel.getId(),
+            preload     : testCaseModel.getPreload()
         })
         
         Harness.on('testfinalize', function (event, test) {
