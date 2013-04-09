@@ -9,6 +9,8 @@ Ext.application({
     autoCreateViewport: true,
     requires: [
         'Ext.ux.form.field.BoxSelect',
+        'Ext.ux.FiestaTabCloseMenu',
+        'Ext.ux.TabReorderer',
         'Fiesta.DataModel'
     ],
     appFolder: '/media/js/fiesta',

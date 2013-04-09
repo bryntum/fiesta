@@ -3,6 +3,8 @@ Ext.define('Fiesta.view.Main', {
     alias: 'widget.mainView',
     initComponent: function() {
         this.on('remove', this.onTabRemove);
+        this.plugins = [{ptype: 'fiestatabclosemenu'},{ptype: 'tabreorder'}];
+
         this.callParent(arguments);
     },
 
