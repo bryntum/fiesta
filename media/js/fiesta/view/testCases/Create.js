@@ -10,21 +10,21 @@ Ext.define('Fiesta.view.testCases.Create', {
     
     title       : 'Add/Edit test case',
     
-//    formUrl     : null, 
+    testCaseModel   : null,
     
-    initComponent: function(params) {
+    
+    initComponent : function(params) {
         
          Ext.apply(this, {
             layout          : 'fit',
             
             closeAction     : 'destroy',
              
-            items           :[{
-                xtype: 'form',
-//                url: this.formUrl,
-                border: false,
-                bodyPadding: 5,
-                fieldDefaults: {
+            items           : [{
+                xtype           : 'form',
+                border          : false,
+                bodyPadding     : 5,
+                fieldDefaults   : {
                     msgTarget: "side"
                 },
                 defaults: {
@@ -90,26 +90,40 @@ Ext.define('Fiesta.view.testCases.Create', {
                 action      : 'cancel',
                 handler     : function () { this.close() },
                 scope       : this
-            }]
+            }],
+            
+            listeners   : {
+                afterrender : this.onAfterRender,
+                
+                scope       : this
+            }
         });
         
         this.callParent(arguments);
     },
 
     
+    onAfterRender : function () {
+        if (this.testCaseModel)
+            this.down('form').getForm().loadRecord(this.testCaseModel)
+        else
+            this.testCaseModel  = new Fiesta.model.TestCases()
+    },
+    
+    
     saveTestCase: function (button) {
         var me          = this,
-            form        = me.down('form'),
-            values      = form.getForm().getValues(),
-
-            // Creating testCase record based on form values
-            testCase    = new Fiesta.model.TestCases(values); 
+            formValues  = me.down('form').getForm().getValues();
+            
+        var testCase    = this.testCaseModel
+            
+        testCase.set(formValues)
 
         // Record will have id in case we are editing existing test, so we should
         // pass form values to Fiesta.DataModel.updateTestCase, it will call backend to update records 
         // in DB, and if backend request succeeded it returns modified record to callback function
 
-        if(testCase.getId()) {
+        if (testCase.getId()) {
             Fiesta.DataModel.updateTestCase(
                 testCase, 
                 function (record) {
@@ -166,11 +180,5 @@ Ext.define('Fiesta.view.testCases.Create', {
 
     saveRunTestCase: function () {
         
-    },
-    
-    
-    startTestEditing : function (testModel) {
-        this.down('form').getForm().loadRecord(testModel)
     }
-
 });

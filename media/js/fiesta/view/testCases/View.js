@@ -80,25 +80,9 @@ Ext.define('Fiesta.view.testCases.View', {
     
     
     onTestEdit : function () {
-        var addWin      = new Fiesta.view.testCases.Create(/*{ formUrl : 'ajax/editTestCase/' }*/);
-        
-        addWin.startTestEditing(this.testCaseModel)
-        
-//        var customMask  = new Ext.LoadMask(addWin.down('form'), {msg:'Loading...'});
-//        customMask.show();
-//        
-//        addWin.down('form').getForm().load({
-//            url: '/ajax/getTestCase',
-//            params: {
-//                tabId: tab.tabId
-//            },
-//            success: function () {
-//                    customMask.hide();
-//            },
-//            failure: function(form, action) {
-//                Ext.Msg.alert('Error','Server error occure...');
-//            }
-//        });
+        var addWin      = new Fiesta.view.testCases.Create({
+            testCaseModel   : this.testCaseModel
+        });
     },
     
     
