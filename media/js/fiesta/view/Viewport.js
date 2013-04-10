@@ -16,7 +16,7 @@ Ext.define("Fiesta.view.Viewport", {
                             
                         } : {
                             xtype: 'button',
-                            text: Config.userName,
+                            text: CONFIG.userName,
                             menu: {
                                 frame: true,
                                 items: [

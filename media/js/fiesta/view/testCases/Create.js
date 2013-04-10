@@ -99,7 +99,7 @@ Ext.define('Fiesta.view.testCases.Create', {
         if (this.testCaseModel)
             this.down('form').getForm().loadRecord(this.testCaseModel)
         else
-            this.testCaseModel  = new Fiesta.model.TestCases()
+            this.testCaseModel  = new Fiesta.model.TestCase()
     },
 
     

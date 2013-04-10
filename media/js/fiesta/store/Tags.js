@@ -1,5 +1,5 @@
 Ext.define("Fiesta.store.Tags", {
 	extend: "Ext.data.Store",
-	model: "Fiesta.model.Tags",
+	model: "Fiesta.model.Tag",
     autoLoad: false
 });

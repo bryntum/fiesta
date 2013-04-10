@@ -20,6 +20,7 @@ class Testcases_model extends CI_Model {
     
     function getBySlug($slug)
     {
+        
         $this->db->select('testCases.*');
         $this->db->where('testCases.slug', $slug);
         $testCase = $this->db->get('testCases')->row();
@@ -110,7 +111,12 @@ class Testcases_model extends CI_Model {
             return $this->db->count_all_results();
         }        
 
-        $query = $this->db->limit($params['pageSize'], $offset)->get();
+        if(isset($params['pageSize']) && isset($params['page'])) {
+            $query = $this->db->limit($params['pageSize'], $offset)->get();
+        }
+        else {
+            $query = $this->db->get();
+        }
 
 
         $results = $query->result();
@@ -133,6 +139,17 @@ class Testcases_model extends CI_Model {
         return $results;
     } 
     
+    
+    function getFavorites($userId) {
+        $this->db->select('utc.testCase_id')
+            ->from('user_testCases as utc')
+            ->join('testCases as tc', 'tc.id = utc.testCase_id', 'left')            
+            ->where('utc.user_id',$userId)        
+            ->where('utc.stared',1);
+            
+            return $this->db->get()->result_array();        
+    }
+    
     function create ($data) {
 
             $data['slug'] = $this->makeSlug($data['name']);
@@ -154,6 +171,8 @@ class Testcases_model extends CI_Model {
         
             $this->db->insert('testCases_tmp', $data);
             $testCaseId = $this->db->insert_id();
+
+            $this->db->update('testCases', array('slug' => $testCaseId.'-'.$data['slug']));
             
             // Tags insertion should be here 
             
@@ -164,7 +183,7 @@ class Testcases_model extends CI_Model {
     }
     
     function update ($id, $data) {
-        $data['slug'] = $this->makeSlug($data['name']);
+        $data['slug'] = $id.'-'.$this->makeSlug($data['name']);
 
         $this->db->where('id', $id);
         $result = $this->db->update('testCases', $data);         
@@ -172,19 +191,10 @@ class Testcases_model extends CI_Model {
     }
     
     function makeSlug($text) { 
-      // replace non letter or digits by -
       $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
-
-      // trim
       $text = trim($text, '-');
-
-      // transliterate
       $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-
-      // lowercase
       $text = strtolower($text);
-
-      // remove unwanted characters
       $text = preg_replace('~[^-\w]+~', '', $text);
 
       if (empty($text))
@@ -193,6 +203,30 @@ class Testcases_model extends CI_Model {
       }
 
       return $text;
+    }
+    
+    function add2Favorites($id, $userId) {
+        $data = array(
+            'user_id' => $userId,
+            'testCase_id' => $id,
+        );
+
+        $this->db->select('utc.id, utc.stared')
+            ->from('user_testCases as utc')
+            ->where('utc.user_id', $userId)
+            ->where('utc.testCase_id', $id);
+
+        $query = $this->db->get();    
+        if($query->num_rows() > 0) {
+            $result = $query->row();
+            $stared = ($result->stared == 0) ? 1 : 0;
+            $this->db->update('user_testCases', array('stared' => $stared));
+        }
+        else {  
+            $data['stared']  = 1;                
+            $this->db->insert('user_testCases', $data);
+        }
+        return true;
     }
 } 
 ?>

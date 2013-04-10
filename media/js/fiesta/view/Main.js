@@ -2,8 +2,17 @@ Ext.define('Fiesta.view.Main', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.mainView',
     initComponent: function() {
+        Ext.apply(this, {
+            plugins: [{ptype: 'fiestatabclosemenu'},{ptype: 'tabreorder'}],
+            stateId: 'tabs',
+            stateful: true,
+            getState: this.getTabsState,
+            applyState: this.applyTabState,
+            stateEvents: ['tabchange','remove','add'],              
+        }); 
+        
+               
         this.on('remove', this.onTabRemove);
-        this.plugins = [{ptype: 'fiestatabclosemenu'},{ptype: 'tabreorder'}];
 
         this.callParent(arguments);
     },
@@ -16,7 +25,6 @@ Ext.define('Fiesta.view.Main', {
      */    
 
     updateTabs: function (testCaseModel) {
-
             
             var tabs = this,
                 tabExist = false,
@@ -44,7 +52,7 @@ Ext.define('Fiesta.view.Main', {
             else {
                 activeTab.setTitle(testCaseModel.get('name'));
                 activeTab.testCaseModel = testCaseModel;
-                activeTab.onTabCreate(testCaseModel);
+                activeTab.onTabCreate(testCaseModel);  // ?????
             }
 
             FIESTA.getCards().getLayout().setActiveItem(1);
@@ -56,9 +64,48 @@ Ext.define('Fiesta.view.Main', {
     },
     
     onTabRemove: function () { 
-        var tabs = FIESTA.getTabs();
+        var tabs = this;
         if(tabs.items.items.length == 0) {
             FIESTA.getCards().getLayout().setActiveItem(0);
         }
-    }
+    },
+    getTabsState: function() {
+        var state = {},
+            tabs = this;
+
+        state.activeTabId = tabs.getActiveTab().tabId;
+        state.activeTabSlug = tabs.getActiveTab().testCaseModel.get('slug');
+        state.openedTabs = [];
+
+        Ext.each(tabs.items.items, function (tab) {
+            state.openedTabs.push(tab.testCaseModel.get('slug'));
+        });
+
+
+        
+        return state;
+    },
+    applyTabState: function(state) {
+        var tabs = this;
+
+        if(state.openedTabs.length > 0) {
+            Fiesta.DataModel.getTestCasesColl(
+                state.openedTabs, 
+                function (modelsCollection) {
+                    Ext.each(modelsCollection, function (testcaseModel) {
+                        tabs.updateTabs(testcaseModel);
+                    });
+                    
+                    if(!tabs.getActiveTab()) {
+                        tabs.setActiveTab(tabs.items.findIndex('tabId', state.activeTabId));
+                    }
+                    return false;
+                }, 
+                function () {
+                    return true;
+                }
+            )
+        }
+        
+    }                          
 });

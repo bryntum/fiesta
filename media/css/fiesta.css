@@ -1,0 +1,47 @@
+.testCasesList {
+    font-size: 14px; 
+    position: relative;
+}
+
+.star {
+    background: url('/media/img/star_emp.png');
+}
+
+.star:hover, .filledStar {
+    background: url('/media/img/star_full.png');
+}
+
+
+.testCasesList .star, .filledStar {
+    background-position: left center;
+    right: auto;
+    width: 16px; 
+    cursor: pointer;
+    white-space: nowrap; 
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0; 
+    height: 16px;    
+}
+
+.testCasesList .nameHolder {
+    line-height: 16px;
+    padding-left: 21px; 
+    color: #666666;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;    
+}
+
+.testCasesList .date {
+    font-size: 10px; 
+    position: absolute; 
+    right: 0px; 
+    color: rgb(207, 207, 207); 
+    top: -5px;    
+}
+
+    

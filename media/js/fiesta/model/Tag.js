@@ -1,10 +1,10 @@
-Ext.define("Fiesta.model.Users", {
-    extend: "Ext.data.Model",
-    idProperty: "id",
-    fields: ["id", "name"],
+Ext.define("Fiesta.model.Tag", {
+	extend: "Ext.data.Model",
+	idProperty: "id",
+	fields: ["id", "tag"],
     proxy: {
         type: "ajax",
-        url: "/ajax/getUsers",
+        url: "/ajax/getTags",
         reader: {
             type: "json",
             root: "data",

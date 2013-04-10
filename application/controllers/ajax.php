@@ -70,9 +70,34 @@ class Ajax extends CI_Controller {
             ));         
         }
 
+        if ($this->authentication->is_signed_in()) {
+            $favorites = $this->testCases_model->getFavorites($this->session->userdata('account_id'));
+        }        
+        
         echo json_encode(array('data' => $testCases, 'total' => $totalRecords, 'success' => true));
     }
 
+    
+    public function getTestCasesColl()
+    {
+        $params = $this->input->post(NULL,TRUE);
+        $ids = array();
+        
+
+        foreach($params['testCasesSlugs'] as $index => $slug) {
+            $ids[] = preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
+        }
+        
+        $where = 'tc.id IN ('.implode(',',$ids).')';
+
+        $testCases = $this->testCases_model->getByClause(array(
+            'whereClause' => $where
+        ));
+        
+
+        echo json_encode(array('data' => $testCases, 'success' => true));
+        
+    }    
     public function getTestCase()
     {
        // Add checking if user has access to this test
@@ -86,7 +111,8 @@ class Ajax extends CI_Controller {
            $success = true;
        }
        elseif($slug) {
-           $testCase = $this->testCases_model->getBySlug($slug);        
+           $idFromSlug = preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
+           $testCase = $this->testCases_model->getById($idFromSlug);        
            $success = true;
        }
        else {
@@ -221,6 +247,17 @@ class Ajax extends CI_Controller {
         return $this->session->userdata('account_id');    
     }
     
+    public function add2Favorites() {
+        $success = false;
+        $id = $this->input->post('id',TRUE);
+        if ($this->authentication->is_signed_in()) {
+            $this->testCases_model->add2Favorites($id, $this->session->userdata('account_id'));
+            $success = true;
+        }
+
+        echo json_encode(array('success' => $success));
+
+    }
 }
 
 /* End of file ajax.php */

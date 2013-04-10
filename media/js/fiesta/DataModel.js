@@ -1,23 +1,15 @@
 Ext.define('Fiesta.DataModel', {
-    singleton       : true,
+    singleton           : true,
     
-    extend          : 'Ext.util.Observable',
+    extend              : 'Ext.util.Observable',
     
-    saveUrl         : 'ajax/addTestCase/',
-    updateUrl       : 'ajax/updateTestCase/',
-    getUrl          : 'ajax/getTestCase/',
-    
-    frameworkStore  : null,
-    
-    initComponent: function () {
-
-        this.addEvents(
-            'requestsuccess',
-            'requestfailed'
-        ); 
+    saveUrl             : 'ajax/addTestCase/',
+    updateUrl           : 'ajax/updateTestCase/',
+    getUrl              : 'ajax/getTestCase/',
+    getCollectionUrl    : 'ajax/getTestCasesColl/',
         
-        this.callParent(arguments);           
-    },
+    frameworkStore  : null,
+
 
     /**
      * Creates new testCase using passed record, calls backend to save record in DB
@@ -36,7 +28,7 @@ Ext.define('Fiesta.DataModel', {
             success: function (response) {
 
                 // Trying to determin if correct JSON got from backend
-                try {o = Ext.decode(response.responseText);}
+                try {var o = Ext.decode(response.responseText);}
                 catch(e) {
                     this.fireEvent('requestfailed', {
                         url     : this.url,
@@ -104,7 +96,7 @@ Ext.define('Fiesta.DataModel', {
             url: this.updateUrl,
             params : testCaseModel.getData(),
             success: function (response) {
-                try {o = Ext.decode(response.responseText);}
+                try {var o = Ext.decode(response.responseText);}
                 catch(e) {
                     this.fireEvent('requestfailed', {
                         url     : this.url,
@@ -154,7 +146,7 @@ Ext.define('Fiesta.DataModel', {
             url: this.getUrl,
             params : params,
             success: function (response) {
-                try {o = Ext.decode(response.responseText);}
+                try {var o = Ext.decode(response.responseText);}
                 catch(e) {
                     this.fireEvent('requestfailed', {
                         url     : this.url,
@@ -165,7 +157,7 @@ Ext.define('Fiesta.DataModel', {
 
                 if(true === o.success) {
 
-                    var testCaseModel = Ext.create('Fiesta.model.TestCases', o.data)
+                    var testCaseModel = Ext.create('Fiesta.model.TestCase', o.data)
 
                     if (callback && callback(testCaseModel) !== false) {
                         
@@ -196,6 +188,63 @@ Ext.define('Fiesta.DataModel', {
             },
             scope: this
         });        
-    }
+    },
+
+    getTestCasesColl: function (slugs,callback, errback) {
+        
+        var params = { 'testCasesSlugs[]': slugs};
+        
+        Ext.Ajax.request({
+            url: this.getCollectionUrl,
+            params : params,
+            success: function (response) {
+                try {var o = Ext.decode(response.responseText);}
+                catch(e) {
+                    this.fireEvent('requestfailed', {
+                        url     : this.url,
+                        message : 'Server message:'+response.responseText
+                    })
+                    return false;
+                }
+
+                if(true === o.success) {
+                    
+                    var collection = [];
+                    
+                    Ext.each(o.data, function (testCase) {
+                        collection.push(new Fiesta.model.TestCase(testCase));
+                    });                    
+
+                    if (callback && callback(collection) !== false) {
+                        
+                        this.fireEvent('requestsuccess', {
+                            url     : this.url,
+                            message : 'Successfully loaded!' 
+                        })                    
+                    }                
+
+                    return true;
+                }
+                else {
+                    this.fireEvent('requestfailed', {
+                        url     : this.url,
+                        message : 'Server message:'+o.errorMsg
+                    })
+                    return false;
+                }
+            },
+            failure: function (response) {
+                
+                if (errback && errback(response) !== false) {
+                    this.fireEvent('requestfailed', {
+                        url     : this.url,
+                        message : 'Failed to load testcase!' 
+                    })
+                } 
+            },
+            scope: this
+        });        
+    }    
+    
 
 })

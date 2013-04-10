@@ -23,7 +23,8 @@ Ext.define('Fiesta.view.testCases.View', {
                     text    : 'Share' 
                 },
                 { 
-                    text    : 'Add to favorites' 
+                    text    : 'Add to favorites',
+                    iconCls : 'filledStar' 
                 },
                 { 
                     text    : 'Edit',

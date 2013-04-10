@@ -1,4 +1,4 @@
-Ext.define("Fiesta.model.Frameworks", {
+Ext.define("Fiesta.model.Framework", {
 	extend: "Ext.data.Model",
 	idProperty: "id",
 	fields: ["id", "name"],

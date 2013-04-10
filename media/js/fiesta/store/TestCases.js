@@ -1,6 +1,6 @@
 Ext.define("Fiesta.store.TestCases", {
 	extend: "Ext.data.Store",
-	model: "Fiesta.model.TestCases",
+	model: "Fiesta.model.TestCase",
 	autoLoad: true,
     
     proxy: {

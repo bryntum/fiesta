@@ -1,7 +1,7 @@
-Ext.define("Fiesta.model.TestCases", {
+Ext.define("Fiesta.model.TestCase", {
     extend      : "Ext.data.Model",
     idProperty  : "id",
-    fields      : ["id", "name", "tagsList", "frameWorkId", "ownerId", "ownerName", "code", 'tags', 'slug'],
+    fields      : ["id", "name", "tagsList", "frameWorkId", "ownerId", "ownerName", "code", 'tags', 'slug','stared'],
     
     getPreload : function () {
         var frameWorkId     = this.get('frameWorkId')

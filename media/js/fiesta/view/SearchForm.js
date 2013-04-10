@@ -5,6 +5,8 @@ Ext.define("Fiesta.view.SearchForm", {
     initComponent: function(){
 
         Ext.apply(this, {
+            stateId: 'searchForm',
+            stateful: true,            
             fieldDefaults: {
                 msgTarget: "side"
             },
