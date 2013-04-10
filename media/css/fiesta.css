@@ -11,7 +11,7 @@
     background: url('/media/img/star_full.png');
 }
 
-
+/*
 .testCasesList .star, .filledStar {
     background-position: left center;
     right: auto;
@@ -26,10 +26,10 @@
     top: 0; 
     height: 16px;    
 }
+*/
 
 .testCasesList .nameHolder {
     line-height: 16px;
-    padding-left: 21px; 
     color: #666666;
     display: block;
     overflow: hidden;
@@ -43,5 +43,14 @@
     color: rgb(207, 207, 207); 
     top: -5px;    
 }
+
+.x-grid-cell-inner .star {
+    display: none;
+}
+
+.x-grid-row-over .star {
+    display: block;
+}
+
 
     

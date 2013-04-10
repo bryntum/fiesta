@@ -120,7 +120,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                 testCase, 
                 function (record) {
                     if(FIESTA.isSignedIn()) {
-                        var tabs = FIESTA.getTabs(),
+                        var tabs = FIESTA.getMainView(),
                             activeTab = tabs.updateTabs(record);
                             
                         tabs.setActiveTab(activeTab);                        
@@ -148,7 +148,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                 function (record) {
 
                     if(FIESTA.isSignedIn()) {
-                        var tabs = FIESTA.getTabs(),
+                        var tabs = FIESTA.getMainView(),
                             activeTab = tabs.updateTabs(record);
                             
                         tabs.setActiveTab(activeTab);                        

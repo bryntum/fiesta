@@ -31,6 +31,8 @@ Ext.define('Fiesta.view.Main', {
                 newTabId = testCaseModel.get('id'),
                 activeTab = {};
 
+             console.log(testCaseModel);
+
             //Searchin for tab with id passed in testCaseModel
             Ext.each(tabs.items.items, function (tab) {
                 if(tab.tabId == newTabId) { 
@@ -42,16 +44,18 @@ Ext.define('Fiesta.view.Main', {
             // Creating new tab for testCase if no tab with the same id exists
             if(!tabExist) {
                 var newTab = Ext.widget('testCasesView', {
-                    title           : testCaseModel.get('name'),
+                    title           : Ext.String.ellipsis(testCaseModel.get('name'), 15),
                     tabId           : testCaseModel.get('id'),
+                    iconCls         : testCaseModel.get('stared') ? 'filledStar' : '',
                     testCaseModel   : testCaseModel
                 })
                 activeTab = tabs.add(newTab);
             }
             // Updating testCase's tab if it was found in currently opened tabs
             else {
-                activeTab.setTitle(testCaseModel.get('name'));
+                activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
                 activeTab.testCaseModel = testCaseModel;
+                activeTab.setIconCls(testCaseModel.get('stared') ? 'filledStar' : '');
                 activeTab.onTabCreate(testCaseModel);  // ?????
             }
 

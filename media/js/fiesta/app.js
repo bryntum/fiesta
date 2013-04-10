@@ -31,7 +31,7 @@ Ext.application({
         window.location.replace('/account/sign_up?'+urlParams)    
     },
 
-    getTabs: function () {
+    getMainView: function () {
         var tabsQ = Ext.ComponentQuery.query('mainView')
         return tabsQ[0];
     },
@@ -50,20 +50,25 @@ Ext.application({
         
     },
     
-    add2Favorites: function (id, starEl) {
+    add2Favorites: function (record) {
         if(this.isSignedIn()) {
             var queryRes = Ext.ComponentQuery.query('testCasesList'),
-                record = queryRes[0].store.findRecord('id', id);
-                record.set('stared', record.get('stared') ? 0 : 1);
+                tabs = this.getMainView();
+
+            record.set('stared', record.get('stared') ? 0 : 1);
+
+            tabs.updateTabs(record);
 
             Ext.Ajax.request({
                 url: '/ajax/add2Favorites',
-                params : {id: id},
+                params : {id: record.get('id')},
                 success: function (response) {
                     try {var o = Ext.decode(response.responseText);}
                     catch(e) {
                         Ext.Msg.alert('Error','Failed due to server error');
                         record.set('stared', record.get('stared') ? 0 : 1);
+                        tabs.updateTabs(record);
+
                         return false;
                     }
 
@@ -73,6 +78,7 @@ Ext.application({
                     else {
                         Ext.Msg.alert('Error','Failed due to server error');
                         record.set('stared', record.get('stared') ? 0 : 1);
+                        tabs.updateTabs(record);
                         return false;
                     }
                 },
@@ -80,6 +86,8 @@ Ext.application({
 
                     Ext.Msg.alert('Error','Failed due to server error');
                     record.set('stared', record.get('stared') ? 0 : 1);
+                    tabs.updateTabs(record);
+
                 },
                 scope: this
             });        
@@ -93,7 +101,7 @@ Ext.application({
         Ext.util.History.on('change', function(token) {
 
             if (token) {
-                var tabs = FIESTA.getTabs(),
+                var tabs = FIESTA.getMainView(),
                     activeTab = null;
                 
                 Ext.each(tabs.items.items, function (tab) {

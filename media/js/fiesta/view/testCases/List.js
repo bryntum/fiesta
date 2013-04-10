@@ -8,13 +8,10 @@ Ext.define('Fiesta.view.testCases.List', {
             text: "Tests",
             tpl: [ 
                 '<div class="testCasesList">',
-                '<div class="date>04/01/2013</div>',
+                '<div class="date">04/01/2013</div>',
                 '<p style="margin-bottom: 0px; clear: both; font-size: 14px; margin-top: 5px; white-space: normal; margin-right: 55px;">',
                 "<span class='nameHolder'>{name}</span>",
-                "<span  onclick='FIESTA.add2Favorites({id}, this);' class='",
-                '<tpl if="stared == 1">filledStar<tpl else>star</tpl>',
-                "'>",
-                '</span></p>',
+                '</p>',
                 '<div style="font-weight: normal; font-size: 10px; text-align: left; color: rgb(172, 172, 172); float: right;">by {ownerName}</div>',
                 '<div style="font-size: 10px; padding-left: 2px; font-style: italic; width: 50%; white-space: normal;">Tags:</div>',
                 '<ul class="x-boxselect-list" style="margin-top: 0px; margin-bottom: 0px; padding-left: 0px;">',
@@ -28,6 +25,21 @@ Ext.define('Fiesta.view.testCases.List', {
             ],
             flex:1            
             
+        }, {
+            xtype:'actioncolumn',
+            width:20,
+            iconCls: 'star',
+            scope: this,
+            getClass: function(v, meta, rec) {
+                if (rec.get('stared') == 1) {
+                    return 'filledStar'; 
+                } else {
+                    return 'star'; 
+                }
+            },            
+            handler: function (grid, rowIndex, colIndex) {
+                FIESTA.add2Favorites(grid.getStore().getAt(rowIndex)) 
+            }            
         }
 /*        
                 
@@ -55,7 +67,7 @@ Ext.define('Fiesta.view.testCases.List', {
             },
             listeners: {
                 itemclick: function (grid, record) {
-                    var tabs = FIESTA.getTabs(),
+                    var tabs = FIESTA.getMainView(),
                         activeTab = tabs.updateTabs(record);
                         
                     tabs.setActiveTab(activeTab);  

@@ -46,6 +46,8 @@ Ext.define('Fiesta.DataModel', {
                         ownerId     : Config.userId
                     });
 
+                    this.fireEvent('tabCreated', testCaseModel);                    
+
                     //Processing callback and firing the event
                     if (callback && callback(testCaseModel) !== false) {
                         this.fireEvent('requestsuccess', {
@@ -108,6 +110,8 @@ Ext.define('Fiesta.DataModel', {
                 if(true === o.success) {
 
                     testCaseModel.set('slug',o.slug);
+
+                    this.fireEvent('tabUpdated', testCaseModel);                    
 
                     if (callback && callback(testCaseModel) !== false) {
                         
