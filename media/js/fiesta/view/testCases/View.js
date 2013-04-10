@@ -55,8 +55,25 @@ Ext.define('Fiesta.view.testCases.View', {
                         },
                         // card with 
                         {
-                            xtype   : 'panel',
-                            title   : 'Run'
+                            xtype               : 'resultpanel',
+                            title               : 'Run',
+                            
+                            store               : new Siesta.Harness.Browser.Model.AssertionTreeStore({
+                                model       : 'Siesta.Harness.Browser.Model.Assertion',
+                                
+                                proxy       : { 
+                                    type        : 'memory',
+                                    reader      : { type : 'json' }
+                                },
+                                
+                                root        : {
+                                    id              : '__ROOT__',
+                                    expanded        : true,
+                                    loaded          : true
+                                }
+                            }),
+                            
+                            disableSelection    : true
                         }
                     ]
                 }
