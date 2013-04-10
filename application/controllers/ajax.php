@@ -112,12 +112,7 @@ class Ajax extends CI_Controller {
        }
        elseif($slug) {
            $idFromSlug = preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
-           if(!empty($idFromSlug) ) {
-               $testCase = $this->testCases_model->getById($idFromSlug);        
-           }
-           else {
-            $testCase = [];
-           }
+           $testCase = $this->testCases_model->getById($idFromSlug);        
            $success = true;
        }
        else {
