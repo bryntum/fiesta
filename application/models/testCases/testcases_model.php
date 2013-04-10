@@ -10,16 +10,11 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId)
     {
-        if(!empty($testCaseId)) {
-            $this->db->select('testCases.*');
-            $this->db->where('testCases.id', $testCaseId);
-            $testCase = $this->db->get('testCases')->row();
-            $testCase->tags = $this->getTags($testCaseId);
-        }
-        else {
-            $testCase = [];
-        }
-        
+        $this->db->select('testCases.*');
+        $this->db->where('testCases.id', $testCaseId);
+        $testCase = $this->db->get('testCases')->row();
+        $testCase->tags = $this->getTags($testCaseId);
+
         return $testCase;
         
 
