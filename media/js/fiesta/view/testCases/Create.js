@@ -59,6 +59,7 @@ Ext.define('Fiesta.view.testCases.Create', {
                         xtype: "combo",
                         displayField: "name",
                         valueField: "id",
+                        editable: false,
                         name: 'frameWorkId',
                         emptyText: "Framework",
                         store: "Frameworks"

@@ -49,10 +49,14 @@ Ext.define("Fiesta.view.SearchForm", {
                 valueField: "id",
                 emptyText: "Filter by tag (multiple choices)",
                 name: 'testCaseTags[]',
+                listeners: {
+                    change: this.processFilter
+                },
                 queryMode: 'remote'
             }, {
                 id: "framework-filter",
                 xtype: "combo",
+                editable: false,
                 displayField: "name",
                 valueField: "name",
                 emptyText: "Framework",

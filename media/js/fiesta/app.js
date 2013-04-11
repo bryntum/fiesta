@@ -149,11 +149,11 @@ Ext.application({
         
         Fiesta.DataModel.on('requestfailed', function (resultObj) {
             Ext.Msg.alert('Error',resultObj.message);
-        })        
+        });        
 
         Fiesta.DataModel.on('requestsuccess', function (resultObj) {
 
-        })        
+        });        
         
     }
     

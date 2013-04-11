@@ -10,7 +10,7 @@ Ext.define('Fiesta.view.testCases.List', {
             cls: 'testNameColumn',
             tpl: [ 
                 '<div class="testCasesList">',
-                '<div class="date">04/01/2013</div>',
+                '<div class="date">{created_at:date("d/m/Y")}</div>',
                 '<p style="margin-bottom: 0px; clear: both; font-size: 14px; margin-top: 5px; white-space: normal; margin-right: 55px;">',
                 "<span class='nameHolder'>{name}</span>",
                 '</p>',
