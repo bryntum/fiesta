@@ -80,8 +80,9 @@ Ext.define('Fiesta.plugins.FiestaTabCloseMenu', {
         
         this.tabPanel.items.each(function(item,index){
             if(item.closable){
-                if(index < currentTabIndex)
-                this.tabPanel.remove(item);
+                if(index < currentTabIndex) {
+                    this.tabPanel.remove(item);
+                }
             }
         }, this);
 
@@ -92,8 +93,9 @@ Ext.define('Fiesta.plugins.FiestaTabCloseMenu', {
         
         this.tabPanel.items.each(function(item,index){
             if(item.closable){
-                if(index > currentTabIndex)
-                this.tabPanel.remove(item);
+                if(index > currentTabIndex) {
+                    this.tabPanel.remove(item);
+                }
             }
         }, this);
     }            

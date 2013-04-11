@@ -10,5 +10,4 @@ Ext.define("Fiesta.model.User", {
             root: "data"
         }
     }
-
 });

@@ -18,24 +18,24 @@ Ext.application({
     isSignedIn: function () {
         return (CONFIG.userId!='guest');        
     },
-    
+
     signUp: function (params) {
-/*
+        /*
         var urlParams = Object.keys(params).map(function(k) {
-            return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
+        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
         }).join('&');     
-*/
+        */
         window.location.replace('/account/sign_up');    
     },
 
     getMainView: function () {
-        var tabsQ = Ext.ComponentQuery.query('mainView')
+        var tabsQ = Ext.ComponentQuery.query('mainView');
         return tabsQ[0];
     },
 
     getCards: function () {
         var cardsQ = Ext.ComponentQuery.query('viewport > panel[region=center]:first');
-        
+
         return cardsQ[0];
     },
 
@@ -44,13 +44,13 @@ Ext.application({
         if(oldtoken === null || oldtoken.search(newtoken) === -1) {
             Ext.History.add(newtoken);
         }
-        
+
     },
-    
+
     add2Favorites: function (record) {
         if(this.isSignedIn()) {
             var queryRes = Ext.ComponentQuery.query('testCasesList'),
-                tabs = this.getMainView();
+            tabs = this.getMainView();
 
             record.set('starred', record.get('starred') ? 0 : 1);
 
@@ -93,21 +93,21 @@ Ext.application({
             Ext.Msg.alert('Error', 'Please sign in to be able to access this action!');
 
         }
-        
+
     },
-    
+
     init: function () {
         Ext.util.History.init();        
         Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
             expires     :   new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
         }));     
-      
+
 
         Ext.util.History.on('change', this.onHistoryChange);        
 
         FIESTA = this; 
 
-        
+
         Fiesta.DataModel.on('requestfailed', function (resultObj) {
             Ext.Msg.alert('Error',resultObj.message);
         });        
@@ -115,23 +115,23 @@ Ext.application({
         Fiesta.DataModel.on('requestsuccess', function (resultObj) {
 
         });        
-        
+
     },
     onHistoryChange: function(token) {
 
         if (token) {
             var tabs = FIESTA.getMainView(),
-                activeTab = null;
-                
+            activeTab = null;
+
             tabs.items.each(function (tab) {
                 if(tab.testCaseModel.get('slug') === token) { 
                     activeTab = tab;
                     return false;
                 }
             });
-            
+
             if(!activeTab) {
-                
+
                 Fiesta.DataModel.getTestCase(
                     {
                         slug: token                            
@@ -140,7 +140,7 @@ Ext.application({
                         tabs.setActiveTab(tabs.updateTabs(record));
                         return false;
                     }
-                    
+
                 );
             }
             else {
@@ -148,7 +148,6 @@ Ext.application({
             }
         }
     }
-    
 });
 
 

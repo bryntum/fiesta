@@ -5,78 +5,80 @@ Ext.define("Fiesta.view.Viewport", {
     initComponent: function () {
         Ext.apply(this, {
             items: [{
-                    region: 'north',
-                    tbar: [
-                        '->', 
-                        !FIESTA.isSignedIn() ? {
-                            xtype       : 'button',
-                            text        : 'Sign In!',
-                            href        : '/account/sign_in/',
-                            hrefTarget  : '_self'
-                            
-                        } : {
-                            xtype: 'button',
-                            text: CONFIG.userName,
-                            menu: {
-                                frame: true,
-                                items: [
-                                    {
-                                        text: 'Profile',
-                                        href: '/account/account_profile',
-                                        hrefTarget  : '_self'
-                                        
-                                    },
-                                    {
-                                        text: 'Setings',
-                                        href: '/account/account_settings',
-                                        hrefTarget  : '_self'
-                                        
-                                    },
-                                    '-',
-                                    {
-                                        text: 'Logout',
-                                        href: '/account/sign_out',
-                                        hrefTarget  : '_self'
-                                        
-                                    }
-                                ]
-                            }
+                region: 'north',
+                tbar: [
+                    '->', 
+                    !FIESTA.isSignedIn() ? {
+                        xtype       : 'button',
+                        text        : 'Sign In!',
+                        href        : '/account/sign_in/',
+                        hrefTarget  : '_self'
+
+                    } : {
+                        xtype: 'button',
+                        text: CONFIG.userName,
+                        menu: {
+                            frame: true,
+                            items: [
+                                {
+                                    text: 'Profile',
+                                    href: '/account/account_profile',
+                                    hrefTarget  : '_self'
+
+                                },
+                                {
+                                    text: 'Setings',
+                                    href: '/account/account_settings',
+                                    hrefTarget  : '_self'
+
+                                },
+                                '-',
+                                {
+                                    text: 'Logout',
+                                    href: '/account/sign_out',
+                                    hrefTarget  : '_self'
+
+                                }
+                            ]
                         }
-                    ]
+                    }
+                ]
                 },
                 {
                     region: 'center',
                     layout: 'card',
-                    
+
                     // TODO move each card to its component
 
-                    items: [{
-                        layout: 'fit',
-                        html: '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Welcome to Fiesta!</div>'
-                    },
-                    {
-                        layout: 'border',
-                        items: [{
-                            xtype: 'mainView',
-                            border: false,
-                            region: 'center'
+                    items: [
+                        {
+                            layout: 'fit',
+                            html: '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Welcome to Fiesta!</div>'
                         },
                         {
-                            region: 'south',
-                            height: 200,
-                            border: false,
-                            scroll:true,
-                            collapsible: true,
-                            split: true,
-                            title: 'Comments',
-                            collapsed: true,
-                            autoScroll:true,
-                            contentEl: 'disqus_thread'
-                        }]
-                    
-                    }]
+                            layout: 'border',
+                            items: [{
+                                xtype: 'mainView',
+                                border: false,
+                                region: 'center'
+                                },
+                                {
+                                    region: 'south',
+                                    height: 200,
+                                    border: false,
+                                    scroll:true,
+                                    collapsible: true,
+                                    split: true,
+                                    title: 'Comments',
+                                    collapsed: true,
+                                    autoScroll:true,
+                                    contentEl: 'disqus_thread'
+                            }]
+
+                        }
+                    ]
                 },
-                
+
                 {
                     region: 'west',
                     width: 320,
@@ -89,7 +91,7 @@ Ext.define("Fiesta.view.Viewport", {
                     items: [
                         {
                             xtype: 'searchForm',
-                            bodyPadding: 5,
+                            bodyPadding: 5
                         },
                         {
                             xtype: 'testCasesList',
@@ -106,7 +108,7 @@ Ext.define("Fiesta.view.Viewport", {
             listeners: {
                 render: function () {
                     var initialToken = Ext.util.History.getToken();
-                    
+
                     if(initialToken) {
                         Ext.util.History.fireEvent('change', initialToken);
                     }
@@ -117,7 +119,7 @@ Ext.define("Fiesta.view.Viewport", {
         // EoF apply
 
         this.callParent();
-        
+
     }
-        
+
 });

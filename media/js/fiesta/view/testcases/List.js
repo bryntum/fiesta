@@ -2,7 +2,7 @@ Ext.define('Fiesta.view.testcases.List', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.testCasesList',
     requires: ['Fiesta.store.TestCases'],
-    
+
     initComponent: function() {
         Ext.apply(this, {
 
@@ -16,7 +16,7 @@ Ext.define('Fiesta.view.testcases.List', {
                     if (record.get('starred')) {
                         cls += ' filledStar '; 
                     } 
-                    
+
                     return cls;
                 }                         
 
@@ -38,34 +38,34 @@ Ext.define('Fiesta.view.testcases.List', {
                     '<div style="font-size: 10px; padding-left: 2px; font-style: italic; width: 50%; white-space: normal;"></div>',
                     '<ul class="x-boxselect-list" style="margin-top: 0px; margin-bottom: 0px; padding-left: 0px;">',
                     '<tpl foreach="tags">',
-                        '<li class="x-tab-default x-boxselect-item" style="margin-right: 2px;" qtip="test">',
-                        '<div style="padding-right: 5px; line-height: 10px; font-size: 12px; font-weight: normal;">{tag}</div>',
-                        '</li>',
+                    '<li class="x-tab-default x-boxselect-item" style="margin-right: 2px;" qtip="test">',
+                    '<div style="padding-right: 5px; line-height: 10px; font-size: 12px; font-weight: normal;">{tag}</div>',
+                    '</li>',
                     '</tpl>',
                     '</ul>',
                     '</div>'
                 ],
                 flex:1
-                
-            }, {
-                xtype:  'actioncolumn',
-                width:  20,
-                iconCls: 'star',
-                scope: this,
-                getClass: function(v, meta, rec) {
-                    if (rec.get('starred')) {
-                        return 'filledStar'; 
-                    } else {
-                        return 'star'; 
-                    }
-                },            
-                handler: function (grid, rowIndex, colIndex) {
-                    FIESTA.add2Favorites(grid.getStore().getAt(rowIndex)) 
-                }            
+
+                }, {
+                    xtype:  'actioncolumn',
+                    width:  20,
+                    iconCls: 'star',
+                    scope: this,
+                    getClass: function(v, meta, rec) {
+                        if (rec.get('starred')) {
+                            return 'filledStar'; 
+                        } else {
+                            return 'star'; 
+                        }
+                    },            
+                    handler: function (grid, rowIndex, colIndex) {
+                        FIESTA.add2Favorites(grid.getStore().getAt(rowIndex));
+                    }            
             }],
             emptyText: 'No tests found...',
 
-            
+
             store: new Fiesta.store.TestCases(),
             bbar: {
                 xtype: 'pagingtoolbar',
@@ -78,14 +78,14 @@ Ext.define('Fiesta.view.testcases.List', {
                 scope: this
             }
         });
-        
+
         this.callParent(arguments);
     },
-    
+
     onMyItemClick: function (grid, record) {
         var tabs = FIESTA.getMainView(),
-            activeTab = tabs.updateTabs(record);
-            
+        activeTab = tabs.updateTabs(record);
+
         tabs.setActiveTab(activeTab);  
     },
     onMyAfterRender: function() {
@@ -93,16 +93,16 @@ Ext.define('Fiesta.view.testcases.List', {
         menu.items.get('columnItem').hide();
         menu.items.get('ascItem').hide();
         menu.items.get('descItem').hide();
-        
+
         menu.processSort = function() {
             var me = this;
-            
+
             Ext.each(menu.items.items, function(item) {
                 if(item.itemId != me.itemId) {
                     item.setIconCls('');
                 }
             });
-            
+
             if(this.iconCls == 'sortDesc') {
                 this.setIconCls('sortAsc');
                 console.log(this.sortField);
@@ -113,8 +113,8 @@ Ext.define('Fiesta.view.testcases.List', {
                 Ext.getStore('TestCases').sort(this.sortField, 'ASC');
             }
 
-        }
-        
+        };
+
         menu.add([{
             text: 'Sort by date',
             iconCls: 'sortDesc',
@@ -136,6 +136,6 @@ Ext.define('Fiesta.view.testcases.List', {
             sortField: 'ownerName',
             handler: menu.processSort
         }]);           
-    
+
     }                
 });
