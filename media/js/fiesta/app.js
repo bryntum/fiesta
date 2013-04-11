@@ -7,9 +7,9 @@ Ext.application({
         'Ext.ux.TabReorderer',
         'Fiesta.DataModel',
         'Fiesta.view.Main',
-        'Fiesta.view.testCases.View',
-        'Fiesta.view.testCases.List',
-        'Fiesta.view.testCases.Create',
+        'Fiesta.view.testcases.View',
+        'Fiesta.view.testcases.List',
+        'Fiesta.view.testcases.Create',
         'Fiesta.view.SearchForm'
 
     ],

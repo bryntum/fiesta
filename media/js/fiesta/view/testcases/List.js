@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testCases.List', {
+Ext.define('Fiesta.view.testcases.List', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.testCasesList',
     requires: ['Fiesta.store.TestCases'],

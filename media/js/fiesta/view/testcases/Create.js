@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testCases.Create', {
+Ext.define('Fiesta.view.testcases.Create', {
     extend      : 'Ext.window.Window',
     alias       : 'widget.testCasesCreate',
     

@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testCases.View', {
+Ext.define('Fiesta.view.testcases.View', {
     extend      : 'Ext.panel.Panel',
     alias       : 'widget.testCasesView',
     
@@ -115,7 +115,7 @@ Ext.define('Fiesta.view.testCases.View', {
     
     
     onTestEdit : function () {
-        var addWin      = new Fiesta.view.testCases.Create({
+        var addWin      = new Fiesta.view.testcases.Create({
             testCaseModel   : this.testCaseModel
         });
     },

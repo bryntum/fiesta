@@ -84,7 +84,7 @@ Ext.define("Fiesta.view.SearchForm", {
     },
     
     addTest: function () {
-        var addWin = new Fiesta.view.testCases.Create()
+        var addWin = new Fiesta.view.testcases.Create()
     },
     
     processFilter: function (field) {

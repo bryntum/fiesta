@@ -62,7 +62,7 @@ Ext.define('Fiesta.view.Main', {
      
     /**
      * Visualy updates test case tab content and linked record, basicly called from saveTestCase
-     * method of Fiesta.view.testCases.Create and Fiesta.view.testCases.List clickitem event
+     * method of Fiesta.view.testcases.Create and Fiesta.view.testcases.List clickitem event
      * @param {Ext.data.record} testCaseModel Tab record to operate with
      * @return {Ext.Component} Tab component for passed testCaseModel
      */    
