@@ -9492,6 +9492,33 @@ Class('Siesta.Test', {
         },
         
         
+        processSubTestConfig : function (config) {
+            return Joose.O.extend({
+                trait                   : Siesta.Test.Sub,
+                
+                parent                  : this,
+                
+                isTodo                  : this.isTodo,
+                transparentEx           : this.transparentEx,
+                
+                defaultTimeout          : this.defaultTimeout,
+                timeout                 : this.subTestTimeout,
+                
+                global                  : this.global,
+                url                     : this.url,
+                scopeProvider           : this.scopeProvider,
+                harness                 : this.harness,
+                generation              : this.generation,
+                
+                overrideSetTimeout      : false,
+                originalSetTimeout      : this.originalSetTimeout,
+                originalClearTimeout    : this.originalClearTimeout,
+                
+                needToCleanup           : false
+            }, config)            
+        },
+        
+        
         /**
          * Returns a new instance of the test class, configured as being a "sub test" of the current test.
          * 
@@ -9540,27 +9567,7 @@ Class('Siesta.Test', {
                 throw new Error('Code body of sub test [' + name + '] does not declare a test instance as 1st argument')
             }
             
-            var subTest     = new (config.meta || this.constructor)(Joose.O.extend({
-                trait                   : Siesta.Test.Sub,
-                
-                parent                  : this,
-                
-                isTodo                  : this.isTodo,
-                transparentEx           : this.transparentEx,
-                
-                timeout                 : this.subTestTimeout,
-                
-                global                  : this.global,
-                url                     : this.url,
-                harness                 : this.harness,
-                generation              : this.generation,
-                
-                overrideSetTimeout      : false,
-                originalSetTimeout      : this.originalSetTimeout,
-                originalClearTimeout    : this.originalClearTimeout,
-                
-                needToCleanup           : false,
-                
+            var subTest     = new (config.meta || this.constructor)(Joose.O.extend(this.processSubTestConfig(config), {
                 callback                : function () {
                     callback && callback()
                     
@@ -9568,8 +9575,9 @@ Class('Siesta.Test', {
                     subTest.global                  = null
                     subTest.originalSetTimeout      = null
                     subTest.originalClearTimeout    = null
+                    subTest.scopeProvider           = null
                 }
-            }, config))
+            }))
             
             return subTest
         },
@@ -21909,7 +21917,25 @@ Class('Siesta.Test.Action.MoveCursor', {
     
     has : {
         requiredTestMethod  : 'moveMouseTo',
+        
+        /**
+         * @cfg {Siesta.Test.ActionTarget/Function} to 
+         * 
+         * The target point the cursor should be moved to. Can be provided as the DOM element, the array with screen coordinates: `[ x, y ]`, or the function
+         * returning one of those.
+         * 
+         * Exactly one of the `to` and `by` configuration options should be provided for this action.
+         */
         to                  : null,
+        
+        
+        /**
+         * @cfg {Array/Function} by 
+         * 
+         * The delta for moving cursor. Should be provided as the array with delta value for each coordinate: `[ dX, dY ]` or the function returning such.
+         * 
+         * Exactly one of the `to` and `by` configuration options should be provided for this action.
+         */
         by                  : null
     },
 
@@ -21935,12 +21961,18 @@ Class('Siesta.Test.Action.MoveCursor', {
             var next = this.next;
 
             if (this.to) {
-                var normalizedTarget    = test.normalizeActionTarget(this.getTo())
-                test.moveMouseTo(this.getTo(), function() { next(normalizedTarget); })
+                var to                  = this.getTo()
+                
+                var normalizedTarget    = test.normalizeActionTarget(to)
+                
+                test.moveMouseTo(to, function() { next(normalizedTarget); })
             } else {
-                var currentXY = test.currentPosition;
-                var normalizedTarget = test.normalizeActionTarget([currentXY[0] + this.getBy()[0], currentXY[1] + this.getBy()[1]]);
-                test.moveMouseBy(this.getBy(), function() { next(normalizedTarget); })
+                var by                  = this.getBy()
+                var currentXY           = test.currentPosition
+                
+                var normalizedTarget    = test.normalizeActionTarget([ currentXY[ 0 ] + by[ 0 ], currentXY[ 1 ] + by[ 1 ] ]);
+                
+                test.moveMouseBy(by, function() { next(normalizedTarget); })
             }
         }
     }
@@ -22101,12 +22133,13 @@ Role('Siesta.Test.Simulate.Mouse', {
 
                 $.extend(event, options);
 
-                event.button = { 0: 1, 1: 4, 2: 2 }[event.button] || event.button;
+                event.button = { 0: 1, 1: 4, 2: 2 }[ event.button ] || event.button;
             }
 
             // Mouse over is used in some certain edge cases which interfer with this tracking
             if (type !== 'mouseover' && type !== 'mouseout') {
-                this.currentPosition = [options.clientX, options.clientY];
+                this.currentPosition[ 0 ]   = options.clientX
+                this.currentPosition[ 1 ]   = options.clientY
             }
             return event;
         },
@@ -22674,10 +22707,10 @@ Role('Siesta.Test.Simulate.Mouse', {
                 return;
             }
 
-            var sourceXY = sourceContext.xy;
-            targetXY = [ sourceXY[0] + delta[0], sourceXY[1] + delta[1] ];
+            var sourceXY    = sourceContext.xy;
+            var targetXY    = [ sourceXY[0] + delta[0], sourceXY[1] + delta[1] ];
             
-            var args = [ sourceXY, targetXY, callback, scope, options, dragOnly ];
+            var args        = [ sourceXY, targetXY, callback, scope, options, dragOnly ];
             
             if (this.moveCursorBetweenPoints && callback) {
                 this.syncCursor(sourceXY, this.simulateDrag, args);
@@ -26233,8 +26266,13 @@ Class('Siesta.Test.Browser', {
     ],
 
     has : {
+        // this will be a shared array instance between all subtests
+        // it should not be overwritten, instead modify individual elements:
+        // NO: this.currentPosition = [ 1, 2 ]
+        // YES: this.currentPosition[ 0 ] = 1
+        // YES: this.currentPosition[ 1 ] = 2
         currentPosition : {
-           init : function () { return [0, 0]; }
+           init : function () { return [ 0, 0 ]; }
         }
     },
 
@@ -26242,6 +26280,24 @@ Class('Siesta.Test.Browser', {
         $ : function () {
             var local$ = $.rebindWindowContext(this.global);
             return local$.apply(this.global, arguments);
+        },
+        
+        
+        processSubTestConfig : function () {
+            var res             = this.SUPERARG(arguments)
+            var me              = this
+            
+            Joose.A.each([ 
+                'currentPosition', 
+                'actionDelay', 'afterActionDelay', 
+                'simulateEventsWith',
+                'waitForTimeout', 'waitForPollInterval',
+                'dragDelay', 'moveCursorBetweenPoints', 'dragPrecision', 'overEls'
+            ], function (name) {
+                res[ name ]     = me[ name ]
+            })
+            
+            return res
         },
         
         
@@ -29720,7 +29776,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         var resultPanel = this.slots.resultPanel;
     
         // if resultPanel has no testRecord it hasn't yet been assigned a test record
-        if (!resultPanel.testRecord || resultPanel.testRecord.get('test') != test) {
+        if (!resultPanel.testRecord || resultPanel.testRecord.get('test').generation != test.generation) {
             return false;
         }
     
@@ -30399,8 +30455,9 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
 
     onEventSimulated : function (event, test, el, type, evt) {
         // Make sure this test is visible in DOM right now
-        if (test.scopeProvider.iframe && type.match('touch|mouse|click|contextmenu') && this.host.isTestRunningVisible(test) &&
-            Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)) {
+        if (
+            type.match(/touch|mouse|click|contextmenu/) && this.host.isTestRunningVisible(test) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)
+        ) {
             var bd = Ext.getBody(),
                 frameOffsets = Ext.fly(test.scopeProvider.iframe).getOffsetsTo(bd),
                 x = evt.clientX + frameOffsets[0],
@@ -30824,9 +30881,10 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
                         {
                             xtype       : 'assertiongrid',
                             slot        : 'grid',
+                            store       : this.store,
                             listeners   : {
-                                itemdblclick : this.onAssertionDoubleClick,
-                                scope : this
+                                itemdblclick    : this.onAssertionDoubleClick,
+                                scope           : this
                             }
                         },
                         // eof grid with assertion
@@ -31330,7 +31388,7 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     },
     
     
-    bindStore : function (store) {
+    bindStore : function (store, isInitial) {
         var me      = this
         
 //        if (me.store) me.mun(me.store, {
@@ -31341,7 +31399,7 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
 
         me.store    = store;
         
-        if (me.getView().store != store.nodeStore) me.getView().bindStore(store.nodeStore);
+        if (me.getView().store != store.nodeStore) me.getView().bindStore(store.nodeStore, isInitial);
         
 //        me.mon(store, {
 //            scope       : me,

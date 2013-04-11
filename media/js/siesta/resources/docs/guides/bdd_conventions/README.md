@@ -1,8 +1,7 @@
 Intro
 -----
 
-BDD style testing is focused on the readability of the test, aiming that test 
-report should form a human readable documentation for the system being tested.
+BDD style testing focuses on readable tests, with the goal that the test suite should form a readable documentation.
 
 Siesta allows you to write tests in the BDD style. Keep in mind though, 
 that not every test, especially the ones involving
@@ -12,8 +11,8 @@ If you find yourself confused what BDD construct to use - just fallback to
 
 ### Test suites and specs
 
-In BDD terms *test suite* is a function containing test *specs* or other suites.
-Test suite can be started with {@link Siesta.Test#describe describe} method:
+In BDD terms, a *test suite* is a function containing test *specs* or other suites.
+A test suite can be started with {@link Siesta.Test#describe describe} method:
 
     StartTest(function (t) {
         t.describe("My system", function (t) {
@@ -22,7 +21,7 @@ Test suite can be started with {@link Siesta.Test#describe describe} method:
     })
 
 In turn, test *spec* is also a function, containing test *specs* or other suites.
-It can be started with method: {@link Siesta.Test#it it}. 
+It can be started with the {@link Siesta.Test#it it} function.
 
     StartTest(function (t) {
         t.describe("My system", function (t) {
@@ -50,7 +49,7 @@ you have for your system".
 ### Expectations
 
 Assertions in BDD testing are called *expectations* or, sometimes, "matchers". They should
-reside inside of test specs and can be created with method {@link Siesta.Test#expect expect}
+reside inside the test specs and can be created with the {@link Siesta.Test#expect expect} method.
 
     StartTest(function (t) {
         t.describe("My system", function (t) {
@@ -74,9 +73,8 @@ Please refer to the {@link Siesta.Test.BDD.Expectation} for the list of supporte
 
 ### Under the hood
 
-Internally, test specs and test suites are regular Siesta sub-tests, created with {@link Siesta.Test#getSubTest} method.
-Any regular Siesta assertion or method of the test class can be used inside of test/spec, including the ones, responsible
-for asynchronous testing, like {@link Siesta.Test#chain}, {@link Siesta.Test#beginAsync}
+Internally, test specs and test suites are regular Siesta sub-tests, created with the {@link Siesta.Test#getSubTest} method.
+Any regular Siesta assertion or method of the test class can be used inside of a test or spec, including asynchronous methods like {@link Siesta.Test#chain} or {@link Siesta.Test#beginAsync}.
 
 
 ### Execution order
@@ -85,33 +83,37 @@ Test suites and specs are executed in the order they are declared. Note, that th
 block is executed:  
 
     StartTest(function (t) {
-        var a = 1
+        var a = 1;
+
         t.describe("Something", function (t) {
             // "a" is "3" here
-            var b = 1
+            var b = 1;
+
             t.it("Should do this", function (t) {
                 // "b" is "3" here
-            })
+            });
         
-            b = 2
+            b = 2;
+
             t.it("Should do this", function (t) {
-            })
-            b = 3
+            });
+
+            b = 3;
         })
         
-        a = 2
+        a = 2;
         
         t.describe("Something", function (t) {
             t.it("Should do this", function (t) {
-            })
+            });
         
             t.it("Should do this", function (t) {
-            })
+            });
         })
-        a = 3
-    })
+        a = 3;
+    });
 
-The following suite/spec starts its execution only **after the previous one completes**. This includes various delays, caused by 
+The following suite/spec starts its execution only **after the previous one completes**. This includes any delays caused by
 testing asynchronous code. For example:
 
     StartTest(function (t) {
@@ -121,19 +123,19 @@ testing asynchronous code. For example:
             t.it("Should do this", function (t) {
                 t.waitFor(300, function () {
                     ...
-                })
-            })
+                });
+            });
         
             // this spec will start only after previous - including waiting from `waitFor` method
             // in turn, this spec will be considered completed only after matching `endAsync` call
             t.it("Should do this", function (t) {
-                var async = t.beginAsync()
+                var async = t.beginAsync();
                 ...
-            })
-        })
-    })
+            });
+        });
+    });
 
-Also, test suite/spec will wait for completion of all its child suite/specs. 
+Also, a test suite or spec will wait for of all its child suite/specs to complete before its considered complete as a whole.
  
 
 Buy this product
@@ -145,7 +147,7 @@ Visit our store: <http://bryntum.com/store/siesta>
 Support
 ---------
 
-Ask question in our community forum: <http://www.bryntum.com/forum/viewforum.php?f=20>
+Ask a question in our community forum: <http://www.bryntum.com/forum/viewforum.php?f=20>
 
 Share your experience in our IRC channel: [#bryntum](http://webchat.freenode.net/?randomnick=1&channels=bryntum&prompt=1)
 
