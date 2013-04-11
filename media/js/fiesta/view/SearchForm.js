@@ -49,9 +49,6 @@ Ext.define("Fiesta.view.SearchForm", {
                 valueField: "id",
                 emptyText: "Filter by tag (multiple choices)",
                 name: 'testCaseTags[]',
-                listeners: {
-                    change: this.processFilter
-                },
                 queryMode: 'remote'
             }, {
                 id: "framework-filter",
@@ -75,7 +72,11 @@ Ext.define("Fiesta.view.SearchForm", {
                 boxLabel: 'Mine only',
                 name: 'showMy',
                 value: 1,
-                checked: true
+                checked: true,
+                listeners: {
+                    change: this.processFilter
+                }
+                
             });
         }
 
