@@ -7,8 +7,7 @@ Ext.define("Fiesta.model.Tag", {
         url: "/ajax/getTags",
         reader: {
             type: "json",
-            root: "data",
-            idProperty: 'id'
+            root: "data"
         }
     }
 

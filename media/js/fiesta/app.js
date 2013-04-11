@@ -1,11 +1,3 @@
-var SITE_URL = 'http://fiesta/';
-var FIESTA;
-Ext.Loader.setPath('Ext.ux','/media/js/ext/ux');
-Ext.util.History.init();        
-Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
-  expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
-}));  
-
 Ext.application({
     name: 'Fiesta',
     autoCreateViewport: true,
@@ -60,7 +52,7 @@ Ext.application({
             var queryRes = Ext.ComponentQuery.query('testCasesList'),
                 tabs = this.getMainView();
 
-            record.set('stared', record.get('stared') ? 0 : 1);
+            record.set('starred', record.get('starred') ? 0 : 1);
 
             tabs.updateTabs(record);
 
@@ -71,7 +63,7 @@ Ext.application({
                     try {var o = Ext.decode(response.responseText);}
                     catch(e) {
                         Ext.Msg.alert('Error','Failed due to server error');
-                        record.set('stared', record.get('stared') ? 0 : 1);
+                        record.set('starred', record.get('starred') ? 0 : 1);
                         tabs.updateTabs(record);
 
                         return false;
@@ -82,7 +74,7 @@ Ext.application({
                     }
                     else {
                         Ext.Msg.alert('Error', o.errorMsg);
-                        record.set('stared', record.get('stared') ? 0 : 1);
+                        record.set('starred', record.get('starred') ? 0 : 1);
                         tabs.updateTabs(record);
                         return false;
                     }
@@ -90,7 +82,7 @@ Ext.application({
                 failure: function (response) {
 
                     Ext.Msg.alert('Error','Failed due to server error');
-                    record.set('stared', record.get('stared') ? 0 : 1);
+                    record.set('starred', record.get('starred') ? 0 : 1);
                     tabs.updateTabs(record);
 
                 },
@@ -105,44 +97,13 @@ Ext.application({
     },
     
     init: function () {
+        Ext.util.History.init();        
+        Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
+            expires     :   new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
+        }));     
       
 
-        Ext.util.History.on('change', function(token) {
-
-            if (token) {
-                var tabs = FIESTA.getMainView(),
-                    activeTab = null;
-                
-                Ext.each(tabs.items.items, function (tab) {
-                    if(tab.testCaseModel.get('slug') == token) { 
-                        tabExist = true;
-                        activeTab = tab;
-                    }
-                });
-                
-                if(activeTab === null) {
-                    
-                    Fiesta.DataModel.getTestCase(
-                        {
-                            slug: token                            
-                        },                
-                        function (record) {
-                            tabs.setActiveTab(tabs.updateTabs(record));
-                            return false;
-                        }, 
-                        function () {
-                            return true;
-                        }
-                    );
-
-                    return;
-                                                           
-                }
-                else {
-                    tabs.setActiveTab(activeTab);
-                }
-            }
-        });        
+        Ext.util.History.on('change', this.onHistoryChange);        
 
         FIESTA = this; 
 
@@ -155,6 +116,37 @@ Ext.application({
 
         });        
         
+    },
+    onHistoryChange: function(token) {
+
+        if (token) {
+            var tabs = FIESTA.getMainView(),
+                activeTab = null;
+                
+            tabs.items.each(function (tab) {
+                if(tab.testCaseModel.get('slug') === token) { 
+                    activeTab = tab;
+                    return false;
+                }
+            });
+            
+            if(!activeTab) {
+                
+                Fiesta.DataModel.getTestCase(
+                    {
+                        slug: token                            
+                    },                
+                    function (record) {
+                        tabs.setActiveTab(tabs.updateTabs(record));
+                        return false;
+                    }
+                    
+                );
+            }
+            else {
+                tabs.setActiveTab(activeTab);
+            }
+        }
     }
     
 });

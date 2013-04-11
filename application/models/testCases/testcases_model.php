@@ -147,7 +147,7 @@ class Testcases_model extends CI_Model {
             ->from('user_testCases as utc')
             ->join('testCases as tc', 'tc.id = utc.testCase_id', 'left')            
             ->where('utc.user_id',$userId)        
-            ->where('utc.stared',1);
+            ->where('utc.starred',1);
             
             return $this->db->get()->result_array();        
     }
@@ -217,7 +217,7 @@ class Testcases_model extends CI_Model {
             'testCase_id' => $id,
         );
 
-        $this->db->select('utc.id, utc.stared')
+        $this->db->select('utc.id, utc.starred')
             ->from('user_testCases as utc')
             ->where('utc.user_id', $userId)
             ->where('utc.testCase_id', $id);

@@ -67,4 +67,16 @@
 .sortAsc {
     background-image: url("/media/img/sort_asc.png");    
 }
+
+.x-grid-row-alt .x-grid-td {
+    background-color: #FFF;
+}
+
+.mineTest .x-grid-td, .mineTest .x-grid-td, .mineTest .x-grid-row-alt .x-grid-td {
+    background-color: #FFF6EA;
+}
+
+.x-grid-row-over {
+    cursor: pointer; 
+}
     

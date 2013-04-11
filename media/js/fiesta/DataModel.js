@@ -46,7 +46,7 @@ Ext.define('Fiesta.DataModel', {
                         ownerId     : CONFIG.userId
                     });
 
-                    this.fireEvent('tabCreated', testCaseModel);                    
+                    this.fireEvent('testCreated', testCaseModel);                    
 
                     //Processing callback and firing the event
                     if (callback && callback(testCaseModel) !== false) {
@@ -68,7 +68,7 @@ Ext.define('Fiesta.DataModel', {
             },
             failure: function (response) {
                 
-                if (errback && errback(response) !== false) {
+                if (!errback || errback(response) !== false) {
                     this.fireEvent('requestfailed', {
                         url     : this.url,
                         message : 'Failed to save due to server error!' 
@@ -111,7 +111,7 @@ Ext.define('Fiesta.DataModel', {
 
                     testCaseModel.set('slug',o.slug);
 
-                    this.fireEvent('tabUpdated', testCaseModel);                    
+                    this.fireEvent('testUpdated', testCaseModel);                    
 
                     if (callback && callback(testCaseModel) !== false) {
                         
@@ -133,7 +133,7 @@ Ext.define('Fiesta.DataModel', {
             },
             failure: function (response) {
                 
-                if (errback && errback(response) !== false) {
+                if (!errback || errback(response) !== false) {
                     this.fireEvent('requestfailed', {
                         url     : this.url,
                         message : 'Failed to save due to server error!' 
@@ -183,7 +183,7 @@ Ext.define('Fiesta.DataModel', {
             },
             failure: function (response) {
                 
-                if (errback && errback(response) !== false) {
+                if (!errback || errback(response) !== false) {
                     this.fireEvent('requestfailed', {
                         url     : this.url,
                         message : 'Failed to load testcase!' 

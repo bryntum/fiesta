@@ -9,8 +9,7 @@ Ext.define("Fiesta.store.TestCases", {
         url: "/ajax/getTestCases",
         reader: {
             type: "json",
-            root: "data",
-            idProperty: 'id'
+            root: "data"
         }
     }
 });

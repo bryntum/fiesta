@@ -37,19 +37,16 @@ Ext.define('Fiesta.view.Main', {
                
         this.on('remove', this.onTabRemove);
         
-        Fiesta.DataModel.on('tabCreated', this.onTabChanged, this);        
-        Fiesta.DataModel.on('tabUpdated', this.onTabChanged, this);        
+        Fiesta.DataModel.on('testCreated', this.onTestCaseChanged, this);        
+        Fiesta.DataModel.on('testUpdated', this.onTestCaseChanged, this);        
 
         this.callParent(arguments);
     },
     
-    onTabChanged: function (record) {
+    onTestCaseChanged: function (record) {
 
         if(FIESTA.isSignedIn()) {
-            var tabs = this,
-                activeTab = tabs.updateTabs(record);
-                
-            tabs.setActiveTab(activeTab);                        
+            this.activateTabFor(record);
         }
 
         // Calling application signup method which will process signup operation
@@ -58,6 +55,11 @@ Ext.define('Fiesta.view.Main', {
         }
         
     },
+
+    activateTabFor: function (testCaseModel) {
+        this.setActiveTab(this.updateTab(testCaseModel));
+    },
+     
     /**
      * Visualy updates test case tab content and linked record, basicly called from saveTestCase
      * method of Fiesta.view.testCases.Create and Fiesta.view.testCases.List clickitem event
@@ -65,46 +67,49 @@ Ext.define('Fiesta.view.Main', {
      * @return {Ext.Component} Tab component for passed testCaseModel
      */    
 
-    updateTabs: function (testCaseModel) {
-            
-            var tabs = this,
-                tabExist = false,
-                newTabId = testCaseModel.get('id'),
-                activeTab = {};
+    updateTab: function (testCaseModel) {
+        var tabs = this,
+            tabExist = false,
+            newTabId = testCaseModel.get('id'),
+            activeTab = {};
 
 
-            //Searchin for tab with id passed in testCaseModel
-            Ext.each(tabs.items.items, function (tab) {
-                if(tab.tabId == newTabId) { 
-                    tabExist = true;
-                    activeTab = tab;
-                }
-            });
-           
-            // Creating new tab for testCase if no tab with the same id exists
-            if(!tabExist) {
-                var newTab = Ext.widget('testCasesView', {
-                    title           : Ext.String.ellipsis(testCaseModel.get('name'), 15),
-                    tabId           : testCaseModel.get('id'),
-                    iconCls         : testCaseModel.get('stared') ? 'filledStar' : '',
-                    testCaseModel   : testCaseModel
-                })
-                activeTab = tabs.add(newTab);
-            }
-            // Updating testCase's tab if it was found in currently opened tabs
-            else {
-                activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
-                activeTab.testCaseModel = testCaseModel;
-                activeTab.setIconCls(testCaseModel.get('stared') ? 'filledStar' : '');
-                activeTab.onTabCreate(testCaseModel); 
-            }
-
-            FIESTA.getCards().getLayout().setActiveItem(1);
-            FIESTA.makeHistory(testCaseModel.get('slug'))
-            
-            // Returning testCase tab component to the caller
-            return  activeTab;
+        //Searchin for tab with id passed in testCaseModel
         
+        // TODO Replace with componentQuery
+        //      Change tabId to test_id
+        //      
+        Ext.each(tabs.items.items, function (tab) {
+            if(tab.tabId == newTabId) { 
+                tabExist = true;
+                activeTab = tab;
+            }
+        });
+       
+        // Creating new tab for testCase if no tab with the same id exists
+        if(!tabExist) {
+            var newTab = Ext.widget('testCasesView', {
+                title           : Ext.String.ellipsis(testCaseModel.get('name'), 15),
+                tabId           : testCaseModel.get('id'),
+                iconCls         : testCaseModel.get('stared') ? 'filledStar' : '',
+                testCaseModel   : testCaseModel
+            })
+            activeTab = tabs.add(newTab);
+        }
+        // Updating testCase's tab if it was found in currently opened tabs
+        else {
+            activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
+            activeTab.testCaseModel = testCaseModel;
+            activeTab.setIconCls(testCaseModel.get('stared') ? 'filledStar' : '');
+            activeTab.onTabCreate(testCaseModel); 
+        }
+
+        FIESTA.getCards().getLayout().setActiveItem(1);
+        FIESTA.makeHistory(testCaseModel.get('slug'))
+        
+        // Returning testCase tab component to the caller
+        return  activeTab;
+    
     },
     
     onTabRemove: function () { 

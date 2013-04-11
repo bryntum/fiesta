@@ -52,7 +52,7 @@ Ext.define("Fiesta.view.Viewport", {
 
                     items: [{
                         layout: 'fit',
-                        html: '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Wellcome to Fiesta!</div>'
+                        html: '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Welcome to Fiesta!</div>'
                     },
                     {
                         layout: 'border',

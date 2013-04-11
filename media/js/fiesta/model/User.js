@@ -7,8 +7,7 @@ Ext.define("Fiesta.model.User", {
         url: "/ajax/getUsers",
         reader: {
             type: "json",
-            root: "data",
-            idProperty: 'id'
+            root: "data"
         }
     }
 

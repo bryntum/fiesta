@@ -122,10 +122,6 @@ Ext.define('Fiesta.view.testCases.Create', {
                 testCase, 
                 function (record) {
                     me.close();
-                    return false;
-                }, 
-                function () {
-                    return true;
                 }
             )
             
@@ -139,13 +135,7 @@ Ext.define('Fiesta.view.testCases.Create', {
             Fiesta.DataModel.createTestCase(
                 testCase, 
                 function (record) {
-
                     me.close();
-                    
-                    return true;
-                }, 
-                function () {
-                    return true;
                 }
             )
         }

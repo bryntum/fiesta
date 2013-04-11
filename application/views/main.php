@@ -1,4 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,16 +6,17 @@
     <link rel="stylesheet" type="text/css" href="/media/js/ext/resources/css/ext-all-neptune.css" />
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
-
-    <script type="text/javascript">
+    <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
+    <script> 
         CONFIG = {
             disqus_shortname    : '<?php echo $disqus_shortname?>',
             userId              : '<?php echo $userId?>',
             userName            : '<?php echo isset($account) ? $account->username : 'Guest';?>'
         };
-    </script>
 
-    <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
+        var FIESTA;
+        Ext.Loader.setPath('Ext.ux','/media/js/ext/ux');
+    </script>
     <script type="text/javascript" src="/media/js/siesta/siesta-all.js"></script>
     <script type="text/javascript" src="/media/js/fiesta/app.js"></script>
     <script>

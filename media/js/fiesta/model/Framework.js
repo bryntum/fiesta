@@ -7,11 +7,12 @@ Ext.define("Fiesta.model.Framework", {
         url: "/ajax/getFrameworks",
         reader: {
             type: "json",
-            root: "data",
-            idProperty: 'id'
+            root: "data"
         }
     },
-    
+    getName: function () {
+        return this.get('name');
+    },
     getPreload : function () {
         switch (this.getName()) {
             case 'ExtJS4.1.0' : return [
