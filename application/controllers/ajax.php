@@ -85,7 +85,7 @@ class Ajax extends CI_Controller {
         
 
         foreach($params['testCasesSlugs'] as $index => $slug) {
-            $ids[] = preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
+            $ids[] = (int) preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
         }
         
         $where = 'tc.id IN ('.implode(',',$ids).')';
@@ -250,12 +250,14 @@ class Ajax extends CI_Controller {
     public function add2Favorites() {
         $success = false;
         $id = $this->input->post('id',TRUE);
+        $error = 'Please sign in to be able to access this action!';
         if ($this->authentication->is_signed_in()) {
             $this->testCases_model->add2Favorites($id, $this->session->userdata('account_id'));
             $success = true;
+            $error='';
         }
 
-        echo json_encode(array('success' => $success));
+        echo json_encode(array('success' => $success, 'errorMsg' => $error));
 
     }
 }

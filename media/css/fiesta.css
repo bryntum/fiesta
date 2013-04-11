@@ -52,5 +52,19 @@
     display: block;
 }
 
+.x-column-header-over .x-column-header-trigger {
+    display: none;
+}
 
+.testNameColumn .x-column-header-trigger {
+    display: block;
+}
+
+.sortDesc {
+    background-image: url("/media/img/sort_desc.png");    
+}
+
+.sortAsc {
+    background-image: url("/media/img/sort_asc.png");    
+}
     

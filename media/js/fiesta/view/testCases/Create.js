@@ -116,18 +116,10 @@ Ext.define('Fiesta.view.testCases.Create', {
         // in DB, and if backend request succeeded it returns modified record to callback function
 
         if (testCase.getId()) {
+            
             Fiesta.DataModel.updateTestCase(
                 testCase, 
                 function (record) {
-                    if(FIESTA.isSignedIn()) {
-                        var tabs = FIESTA.getMainView(),
-                            activeTab = tabs.updateTabs(record);
-                            
-                        tabs.setActiveTab(activeTab);                        
-                    }
-                    else {
-                        FIESTA.signUp({action: 'afterUpdate'});
-                    }
                     me.close();
                     return false;
                 }, 
@@ -146,18 +138,6 @@ Ext.define('Fiesta.view.testCases.Create', {
             Fiesta.DataModel.createTestCase(
                 testCase, 
                 function (record) {
-
-                    if(FIESTA.isSignedIn()) {
-                        var tabs = FIESTA.getMainView(),
-                            activeTab = tabs.updateTabs(record);
-                            
-                        tabs.setActiveTab(activeTab);                        
-                    }
-
-                    // Calling application signup method which will process signup operation
-                    else {
-                        FIESTA.signUp({action: 'afterCreate'});
-                    }
 
                     me.close();
                     

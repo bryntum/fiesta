@@ -1,11 +1,13 @@
 Ext.define('Fiesta.view.testCases.List', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.testCasesList',
+    requires: ['Fiesta.store.TestCases'],
     columns: [
     
         {
             xtype: 'templatecolumn', 
             text: "Tests",
+            cls: 'testNameColumn',
             tpl: [ 
                 '<div class="testCasesList">',
                 '<div class="date">04/01/2013</div>',
@@ -58,10 +60,10 @@ Ext.define('Fiesta.view.testCases.List', {
     initComponent: function() {
         Ext.apply(this, {
             
-            store: "TestCases",
+            store: new Fiesta.store.TestCases,
             bbar: {
                 xtype: 'pagingtoolbar',
-                store: "TestCases",
+                store: Ext.getStore('TestCases'),
                 dock: 'bottom',
                 displayInfo: true
             },
@@ -71,9 +73,60 @@ Ext.define('Fiesta.view.testCases.List', {
                         activeTab = tabs.updateTabs(record);
                         
                     tabs.setActiveTab(activeTab);  
-                }
+                },
+                afterrender: function() {
+                    var menu = this.headerCt.getMenu();
+                    menu.items.get('columnItem').hide();
+                    menu.items.get('ascItem').hide();
+                    menu.items.get('descItem').hide();
+                    
+                    menu.processSort = function() {
+                        var me = this;
+                        
+                        Ext.each(menu.items.items, function(item) {
+                            if(item.itemId != me.itemId) {
+                                item.setIconCls('');
+                            }
+                        });
+                        
+                        if(this.iconCls == 'sortDesc') {
+                            this.setIconCls('sortAsc');
+                            console.log(this.sortField);
+                            console.log(Ext.getStore('TestCases').sort(this.sortField, 'ASC'));
+                        }
+                        else {
+                            this.setIconCls('sortDesc');
+                            Ext.getStore('TestCases').sort(this.sortField, 'ASC');
+                        }
+
+                    }
+                    
+                    menu.add([{
+                        text: 'Sort by date',
+                        iconCls: 'sortDesc',
+                        itemId: 'sortDate',
+                        sortField: 'created_at',
+                        handler: menu.processSort
+                    }]);           
+
+                    menu.add([{
+                        text: 'Sort by name',
+                        itemId: 'sortName',
+                        sortField: 'name',
+                        handler: menu.processSort
+                    }]);           
+
+                    menu.add([{
+                        text: 'Sort by user',
+                        itemId: 'sortUser',
+                        sortField: 'ownerName',
+                        handler: menu.processSort
+                    }]);           
+                
+                }                
             }
         });
+        
         this.on('beforeselect', function () { return false;});        
         this.callParent(arguments);
     }

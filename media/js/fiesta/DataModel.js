@@ -43,7 +43,7 @@ Ext.define('Fiesta.DataModel', {
                     testCaseModel.set({
                         id          : o.id,
                         slug        : o.slug,
-                        ownerId     : Config.userId
+                        ownerId     : CONFIG.userId
                     });
 
                     this.fireEvent('tabCreated', testCaseModel);                    

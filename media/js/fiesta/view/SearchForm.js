@@ -1,5 +1,6 @@
 Ext.define("Fiesta.view.SearchForm", {
     extend: "Ext.form.Panel",
+    requires: ['Fiesta.store.Frameworks','Fiesta.store.Tags'],    
     xtype: "searchForm",
     border: false,    
     initComponent: function(){
@@ -11,7 +12,10 @@ Ext.define("Fiesta.view.SearchForm", {
                 msgTarget: "side"
             },
             defaults: {
-                anchor: "100%"
+                anchor: "100%",
+                listeners: {
+//                    change: this.processFilter
+                }
             },
             items: [{
                 margin: "0 0 5 0",
@@ -25,17 +29,22 @@ Ext.define("Fiesta.view.SearchForm", {
                     xtype: "textfield",
                     flex: true,
                     emptyText: "Filter by name",
-                    name: 'testCaseName'
+                    name: 'testCaseName',
+                    listeners: {
+                        change: this.processFilter
+                    }
                 }, {
                     action: "addCase",
                     xtype: "button",
                     text: "Add new",
-                    margin: {left: 5}
+                    handler: this.addTest,
+                    margin: {left: 5},
+                    scope: this
                 }]
             }, {
                 id: "tags-filter",
                 xtype: "boxselect",
-                store: "Tags",
+                store: new Fiesta.store.Tags,
                 displayField: "tag",
                 valueField: "id",
                 emptyText: "Filter by tag (multiple choices)",
@@ -47,8 +56,12 @@ Ext.define("Fiesta.view.SearchForm", {
                 displayField: "name",
                 valueField: "name",
                 emptyText: "Framework",
-                store: "Frameworks",
-                name: 'framework'
+                store: new Fiesta.store.Frameworks,
+                name: 'framework',
+                listeners: {
+                    change: this.processFilter
+                }
+                
             }]
         });
         
@@ -63,5 +76,21 @@ Ext.define("Fiesta.view.SearchForm", {
         }
 
         this.callParent(arguments);
-    }
+    },
+    
+    addTest: function () {
+        var addWin = new Fiesta.view.testCases.Create()
+    },
+    
+    processFilter: function (field) {
+    
+        var searchForm = Ext.ComponentQuery.query('searchForm'),
+            params = searchForm[0].getForm().getValues(),
+            store = Ext.getStore('TestCases');
+         
+        params.action =  'filter';
+        store.proxy.extraParams = params;
+
+        store.load(); 
+    }    
 });

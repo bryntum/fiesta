@@ -1,4 +1,4 @@
-Ext.define('Ext.ux.FiestaTabCloseMenu', {
+Ext.define('Fiesta.plugins.FiestaTabCloseMenu', {
     alias: 'plugin.fiestatabclosemenu',
     extend: 'Ext.ux.TabCloseMenu',
     
@@ -76,7 +76,7 @@ Ext.define('Ext.ux.FiestaTabCloseMenu', {
     
     onCloseLeft: function () {
         
-        currentTabIndex = this.tabPanel.items.indexOf(this.item);
+        var currentTabIndex = this.tabPanel.items.indexOf(this.item);
         
         this.tabPanel.items.each(function(item,index){
             if(item.closable){
@@ -88,7 +88,7 @@ Ext.define('Ext.ux.FiestaTabCloseMenu', {
     },
                 
     onCloseRight: function () {
-        currentTabIndex = this.tabPanel.items.indexOf(this.item);
+        var currentTabIndex = this.tabPanel.items.indexOf(this.item);
         
         this.tabPanel.items.each(function(item,index){
             if(item.closable){

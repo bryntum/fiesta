@@ -3,7 +3,30 @@ Ext.define('Fiesta.view.Main', {
     alias: 'widget.mainView',
     initComponent: function() {
         Ext.apply(this, {
-            plugins: [{ptype: 'fiestatabclosemenu'},{ptype: 'tabreorder'}],
+            plugins: [{
+                ptype: 'fiestatabclosemenu',
+                listeners: {
+                    beforemenu: function (menu, item) {
+                        var tabs = FIESTA.getMainView(),
+                            currentTabIndex = tabs.items.indexOf(item),
+                            tabsCount = tabs.items.length;
+
+                        menu.child('[text="Close tabs on left"]').enable();
+                        menu.child('[text="Close tabs on right"]').enable();
+                        
+                        if(currentTabIndex == 0) { 
+                            menu.child('[text="Close tabs on left"]').disable();
+                        }
+                        
+                        if(currentTabIndex == tabsCount - 1) {
+                            menu.child('[text="Close tabs on right"]').disable();
+                        }
+                    }
+                }
+            },
+            {
+                ptype: 'tabreorder'
+            }],
             stateId: 'tabs',
             stateful: true,
             getState: this.getTabsState,
@@ -13,10 +36,28 @@ Ext.define('Fiesta.view.Main', {
         
                
         this.on('remove', this.onTabRemove);
+        
+        Fiesta.DataModel.on('tabCreated', this.onTabChanged, this);        
+        Fiesta.DataModel.on('tabUpdated', this.onTabChanged, this);        
 
         this.callParent(arguments);
     },
+    
+    onTabChanged: function (record) {
 
+        if(FIESTA.isSignedIn()) {
+            var tabs = this,
+                activeTab = tabs.updateTabs(record);
+                
+            tabs.setActiveTab(activeTab);                        
+        }
+
+        // Calling application signup method which will process signup operation
+        else {
+            FIESTA.signUp({action: 'afterCreate'});
+        }
+        
+    },
     /**
      * Visualy updates test case tab content and linked record, basicly called from saveTestCase
      * method of Fiesta.view.testCases.Create and Fiesta.view.testCases.List clickitem event
@@ -31,7 +72,6 @@ Ext.define('Fiesta.view.Main', {
                 newTabId = testCaseModel.get('id'),
                 activeTab = {};
 
-             console.log(testCaseModel);
 
             //Searchin for tab with id passed in testCaseModel
             Ext.each(tabs.items.items, function (tab) {
@@ -56,7 +96,7 @@ Ext.define('Fiesta.view.Main', {
                 activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
                 activeTab.testCaseModel = testCaseModel;
                 activeTab.setIconCls(testCaseModel.get('stared') ? 'filledStar' : '');
-                activeTab.onTabCreate(testCaseModel);  // ?????
+                activeTab.onTabCreate(testCaseModel); 
             }
 
             FIESTA.getCards().getLayout().setActiveItem(1);

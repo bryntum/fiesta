@@ -158,7 +158,10 @@ class Testcases_model extends CI_Model {
 
             $this->db->insert('testCases', $data);
             $testCaseId = $this->db->insert_id();
-            
+
+
+            $this->db->where('id', $testCaseId);
+            $this->db->update('testCases', array('slug' => $testCaseId.'-'.$data['slug']));
             // Tags insertion should be here 
             
             $this->db->insert('user_testCases', array('user_id' => $data['owner_id'], 'testCase_id' => $testCaseId, 'stared' => 0));
@@ -174,7 +177,8 @@ class Testcases_model extends CI_Model {
             $this->db->insert('testCases_tmp', $data);
             $testCaseId = $this->db->insert_id();
 
-            $this->db->update('testCases', array('slug' => $testCaseId.'-'.$data['slug']));
+            $this->db->where('id', $testCaseId);
+            $this->db->update('testCases_tmp', array('slug' => $testCaseId.'-'.$data['slug']));
             
             // Tags insertion should be here 
             

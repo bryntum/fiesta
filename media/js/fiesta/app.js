@@ -11,24 +11,29 @@ Ext.application({
     autoCreateViewport: true,
     requires: [
         'Ext.ux.form.field.BoxSelect',
-        'Ext.ux.FiestaTabCloseMenu',
+        'Fiesta.plugins.FiestaTabCloseMenu',
         'Ext.ux.TabReorderer',
-        'Fiesta.DataModel'
+        'Fiesta.DataModel',
+        'Fiesta.view.Main',
+        'Fiesta.view.testCases.View',
+        'Fiesta.view.testCases.List',
+        'Fiesta.view.testCases.Create',
+        'Fiesta.view.SearchForm'
+
     ],
     appFolder: '/media/js/fiesta',
-    controllers: ['Search','Main'],
-
 
     isSignedIn: function () {
         return (CONFIG.userId!='guest');        
     },
     
     signUp: function (params) {
+/*
         var urlParams = Object.keys(params).map(function(k) {
             return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
         }).join('&');     
-
-        window.location.replace('/account/sign_up?'+urlParams)    
+*/
+        window.location.replace('/account/sign_up');    
     },
 
     getMainView: function () {
@@ -76,7 +81,7 @@ Ext.application({
                         return true;
                     }
                     else {
-                        Ext.Msg.alert('Error','Failed due to server error');
+                        Ext.Msg.alert('Error', o.errorMsg);
                         record.set('stared', record.get('stared') ? 0 : 1);
                         tabs.updateTabs(record);
                         return false;
@@ -91,6 +96,10 @@ Ext.application({
                 },
                 scope: this
             });        
+        } else {
+
+            Ext.Msg.alert('Error', 'Please sign in to be able to access this action!');
+
         }
         
     },
