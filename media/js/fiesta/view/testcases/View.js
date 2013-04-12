@@ -1,88 +1,88 @@
 Ext.define('Fiesta.view.testcases.View', {
-    extend: 'Ext.panel.Panel',
-    alias: 'widget.testCasesView',
+    extend          : 'Ext.panel.Panel',
+    alias           : 'widget.testCasesView',
 
-    testCaseModel: null,
+    testCaseModel   : null,
 
 
-    initComponent: function () {
+    initComponent : function () {
         Ext.apply(this, {
-            layout: 'border',
-            border: false,
-            closable: true,
+            layout      : 'border',
+            border      : false,
+            closable    : true,
 
-            tbar: [
+            tbar        : [
                 {
-                    text: 'Launch',
-                    action: 'launch',
+                    text        : 'Launch',
+                    action      : 'launch',
 
-                    handler: this.onTestLaunch,
-                    scope: this
+                    handler     : this.onTestLaunch,
+                    scope       : this
                 },
                 {
-                    text: 'Share'
+                    text        : 'Share'
                 },
                 {
-                    text: 'Add to favorites',
-                    iconCls: 'filledStar'
+                    text        : 'Add to favorites',
+                    iconCls     : 'filledStar'
                 },
                 {
-                    text: 'Edit',
-                    handler: this.onTestEdit,
-                    scope: this
+                    text        : 'Edit',
+                    handler     : this.onTestEdit,
+                    scope       : this
                 }
             ],
             items: [
                 {
-                    region: 'center',
-                    xtype: 'container',
-                    layout: 'card',
+                    region      : 'center',
+                    xtype       : 'container',
+                    layout      : 'card',
 
-                    slot: 'cardcontainer',
+                    slot        : 'cardcontainer',
 
-                    items: [
+                    items       : [
                         // card with sources editor
                         {
-                            xtype: 'form',
-                            layout: 'fit',
-                            border: false,
-                            items: [
+                            xtype       : 'form',
+                            layout      : 'fit',
+                            border      : false,
+                            items       : [
                                 {
-                                    xtype: 'textarea',
-                                    name: 'code'
+                                    xtype   : 'textarea',
+                                    name    : 'code'
                                 }
                             ]
                         },
                         // card with
                         {
-                            xtype: 'resultpanel',
-                            title: 'Run',
+                            xtype       : 'resultpanel',
+                            title       : 'Run',
 
-                            store: new Siesta.Harness.Browser.Model.AssertionTreeStore({
-                                model: 'Siesta.Harness.Browser.Model.Assertion',
+                            store       : new Siesta.Harness.Browser.Model.AssertionTreeStore({
+                                model   : 'Siesta.Harness.Browser.Model.Assertion',
 
-                                proxy: {
+                                proxy   : {
                                     type: 'memory',
                                     reader: { type: 'json' }
                                 },
 
-                                root: {
+                                root    : {
                                     id: '__ROOT__',
                                     expanded: true,
                                     loaded: true
                                 }
                             }),
 
-                            disableSelection: true
+                            disableSelection    : true
                         }
                     ]
                 }
             ],
-            listeners: {
-                afterrender: this.onTabCreate,
-                activate: this.onTabSelect,
+            listeners   : {
+                afterrender     : this.onTabCreate,
+                activate        : this.onTabSelect,
 
-                scope: this
+                scope           : this
             }
         });
 
@@ -116,7 +116,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
     onTestEdit: function () {
         var addWin = new Fiesta.view.testcases.Create({
-            testCaseModel: this.testCaseModel
+            testCaseModel   : this.testCaseModel
         });
     },
 
@@ -124,17 +124,17 @@ Ext.define('Fiesta.view.testcases.View', {
     onTestLaunch: function () {
         this.switchToResultsTab();
 
-        var testCaseModel = this.testCaseModel;
-        var Harness = Siesta.Harness.Browser.ExtJS;
+        var testCaseModel   = this.testCaseModel;
+        var Harness         = Siesta.Harness.Browser.ExtJS;
 
         Harness.configure({
-            needUI: false
+            needUI          : false
         });
 
         Harness.start({
-            testCode: testCaseModel.get('code'),
-            url: testCaseModel.getId(),
-            preload: testCaseModel.getPreload()
+            testCode        : testCaseModel.get('code'),
+            url             : testCaseModel.getId(),
+            preload         : testCaseModel.getPreload()
         });
 
         Harness.on('testfinalize', function (event, test) {

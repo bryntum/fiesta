@@ -1,7 +1,8 @@
 Ext.application({
-    name: 'Fiesta',
-    autoCreateViewport: true,
-    requires: [
+    name                    : 'Fiesta',
+    autoCreateViewport      : true,
+    
+    requires        : [
         'Ext.ux.form.field.BoxSelect',
         'Fiesta.plugins.FiestaTabCloseMenu',
         'Ext.ux.TabReorderer',
@@ -13,10 +14,17 @@ Ext.application({
         'Fiesta.view.SearchForm'
 
     ],
-    appFolder: '/media/js/fiesta',
+    appFolder       : '/media/js/fiesta',
+    
+//    harness         : {
+//        browser         : Siesta.Harness.Browser,
+//        extjs           : Siesta.Harness.Browser.ExtJS,
+//        senchatouch     : Siesta.Harness.Browser.SenchaTouch
+//    },
+    
 
     isSignedIn: function () {
-        return (CONFIG.userId!='guest');        
+        return CONFIG.userId != 'guest';        
     },
 
     signUp: function (params) {
