@@ -1,7 +1,7 @@
 Ext.define('Fiesta.view.testcases.List', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.testCasesList',
-    requires: ['Fiesta.store.TestCases'],
+    requires: ['Fiesta.store.TestCases','Fiesta.view.testcases.ColumnTpl'],
 
     initComponent: function() {
         Ext.apply(this, {
@@ -24,30 +24,12 @@ Ext.define('Fiesta.view.testcases.List', {
             selModel: {
                 mode: 'SINGLE'
             },
-            columns: [{
-                xtype: 'templatecolumn', 
-                text: "Tests",
-                cls: 'testNameColumn',
-                tpl: [ 
-                    '<div class="testCasesList">',
-                    '<div class="date">{created_at:date("d/m/Y")}</div>',
-                    '<p style="margin-bottom: 0px; clear: both; font-size: 14px; margin-top: 5px; white-space: normal; margin-right: 55px;">',
-                    "<span class='nameHolder'>{name}</span>",
-                    '</p>',
-                    '<div style="font-weight: normal; font-size: 10px; text-align: left; color: rgb(172, 172, 172); float: right;">{ownerName}</div>',
-                    '<div style="font-size: 10px; padding-left: 2px; font-style: italic; width: 50%; white-space: normal;"></div>',
-                    '<ul class="x-boxselect-list" style="margin-top: 0px; margin-bottom: 0px; padding-left: 0px;">',
-                    '<tpl foreach="tags">',
-                    '<li class="x-tab-default x-boxselect-item" style="margin-right: 2px;" qtip="test">',
-                    '<div style="padding-right: 5px; line-height: 10px; font-size: 12px; font-weight: normal;">{tag}</div>',
-                    '</li>',
-                    '</tpl>',
-                    '</ul>',
-                    '</div>'
-                ],
-                flex:1
+            columns: [
+                {
+                    xtype: 'testCasesColumnTpl'
+                },
 
-                }, {
+                {
                     xtype:  'actioncolumn',
                     width:  20,
                     iconCls: 'star',
@@ -62,7 +44,8 @@ Ext.define('Fiesta.view.testcases.List', {
                     handler: function (grid, rowIndex, colIndex) {
                         FIESTA.add2Favorites(grid.getStore().getAt(rowIndex));
                     }            
-            }],
+                }
+            ],
             emptyText: 'No tests found...',
 
 
@@ -84,7 +67,7 @@ Ext.define('Fiesta.view.testcases.List', {
 
     onMyItemClick: function (grid, record) {
         var tabs = FIESTA.getMainView(),
-        activeTab = tabs.updateTabs(record);
+        activeTab = tabs.updateTab(record);
 
         tabs.setActiveTab(activeTab);  
     },

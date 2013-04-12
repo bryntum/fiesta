@@ -144,7 +144,7 @@ Ext.define('Fiesta.view.Main', {
                 state.openedTabs,
                 function (modelsCollection) {
                     Ext.each(modelsCollection, function (testcaseModel) {
-                        tabs.updateTabs(testcaseModel);
+                        tabs.updateTab(testcaseModel);
                     });
 
                     if (!tabs.getActiveTab()) {

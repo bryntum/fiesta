@@ -70,6 +70,19 @@ Ext.define('Fiesta.view.testcases.Create', {
                             ]
                         },
                         {
+                            xtype: "boxselect",
+                            store: new Fiesta.store.Tags(),
+                            displayField: "tag",
+                            valueField: "id",
+                            emptyText: "Tags (multiple choices)",
+                            name: 'testCaseTags[]',
+                            queryMode: 'remote',
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            forceSelection: false
+                        },
+
+                        {
                             xtype: 'checkbox',
                             boxLabel: 'Private',
                             name: 'private'

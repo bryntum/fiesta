@@ -54,7 +54,7 @@ Ext.application({
 
             record.set('starred', record.get('starred') ? 0 : 1);
 
-            tabs.updateTabs(record);
+            tabs.updateTab(record);
 
             Ext.Ajax.request({
                 url: '/ajax/add2Favorites',
@@ -64,7 +64,7 @@ Ext.application({
                     catch(e) {
                         Ext.Msg.alert('Error','Failed due to server error');
                         record.set('starred', record.get('starred') ? 0 : 1);
-                        tabs.updateTabs(record);
+                        tabs.updateTab(record);
 
                         return false;
                     }
@@ -75,7 +75,7 @@ Ext.application({
                     else {
                         Ext.Msg.alert('Error', o.errorMsg);
                         record.set('starred', record.get('starred') ? 0 : 1);
-                        tabs.updateTabs(record);
+                        tabs.updateTab(record);
                         return false;
                     }
                 },
@@ -83,7 +83,7 @@ Ext.application({
 
                     Ext.Msg.alert('Error','Failed due to server error');
                     record.set('starred', record.get('starred') ? 0 : 1);
-                    tabs.updateTabs(record);
+                    tabs.updateTab(record);
 
                 },
                 scope: this
@@ -137,7 +137,7 @@ Ext.application({
                         slug: token                            
                     },                
                     function (record) {
-                        tabs.setActiveTab(tabs.updateTabs(record));
+                        tabs.activateTabFor(record);
                         return false;
                     }
 

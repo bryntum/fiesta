@@ -72,11 +72,67 @@
     background-color: #FFF;
 }
 
-.mineTest .x-grid-td, .mineTest .x-grid-td, .mineTest .x-grid-row-alt .x-grid-td {
-    background-color: #FFF6EA;
+.mineTest .x-grid-td,
+.mineTest .x-grid-row-alt .x-grid-td,
+.mineTest  .x-grid-row-over .x-grid-td,
+.mineTest  .x-grid-row-selected .x-grid-td
+{
+    background-color: #FFF6EA !important;
 }
 
 .x-grid-row-over {
     cursor: pointer; 
 }
+
+.x-grid-row-over .x-grid-td {
+    background-color: #FFF;
+    border-color: #E2EFF8;
+    cursor: pointer;
+}
+
+.x-grid-row-selected .x-grid-td {
+    background-color: #FFF;
+}
+
+.testCasesList p {
+    margin-bottom: 0px;
+    clear: both;
+    font-size: 14px;
+    margin-top: 5px;
+    white-space: normal;
+    margin-right: 55px;
+}
+
+.testCasesList .userName{
+    font-weight: normal;
+    font-size: 10px;
+    text-align: left;
+    color: rgb(172, 172, 172);
+    float: right;
+}
+
+.testCasesList ul {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+}
+
+.testCasesList ul > li {
+    margin-right: 2px;
+}
+
+.testCasesList ul > li:hover {
+    background-color: #ABC7FC;
+    cursor: pointer;
+}
+
+.testCasesList ul > li > div {
+
+    padding-right: 5px;
+    line-height: 10px;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+
     

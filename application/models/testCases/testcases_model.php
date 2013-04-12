@@ -10,7 +10,7 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId)
     {
-        $this->db->select('testCases.*');
+        $this->db->select('testCases.*, testCases.owner_id as ownerId');
         $this->db->where('testCases.id', $testCaseId);
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCaseId);
@@ -23,7 +23,7 @@ class Testcases_model extends CI_Model {
     function getBySlug($slug)
     {
         
-        $this->db->select('testCases.*');
+        $this->db->select('testCases.*, testCases.owner_id as ownerId');
         $this->db->where('testCases.slug', $slug);
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCase->id);
@@ -59,7 +59,7 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, acc.username as ownerName')
+        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId')
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->order_by("created_at", 'desc');
@@ -100,7 +100,7 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, acc.username as ownerName')
+        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId')
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->where($params['whereClause']);
@@ -225,8 +225,8 @@ class Testcases_model extends CI_Model {
         $query = $this->db->get();    
         if($query->num_rows() > 0) {
             $result = $query->row();
-            $stared = ($result->stared == 0) ? 1 : 0;
-            $this->db->update('user_testCases', array('stared' => $stared));
+            $starred = ($result->starred == 0) ? 1 : 0;
+            $this->db->update('user_testCases', array('starred' => $starred));
         }
         else {  
             $data['stared']  = 1;                
