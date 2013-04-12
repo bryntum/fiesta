@@ -6545,6 +6545,17 @@ Role('Siesta.Test.Function', {
         },
 
         /**
+         * This assertion passes if the function is called exactly one time during the test life span.
+         *
+         * @param {Function/String} fn The function itself or the name of the function on the host object (2nd argument)
+         * @param {Object} host The "owner" of the method
+         * @param {String} desc The description of the assertion.
+         */
+        isCalledOnce : function(fn, obj, desc) {
+            this.isCalledNTimes(fn, obj, 1, desc, false);
+        },
+
+        /**
          * This assertion passes if the function is called exactly (n) times during the test life span.
          * 
          * @param {Function/String} fn The function itself or the name of the function on the host object (2nd argument)
@@ -6561,8 +6572,9 @@ Role('Siesta.Test.Function', {
                 if (counter === n || (isGreaterEqual && counter > n)) {
                     me.pass(desc || (prop + ' method was called exactly ' + n + ' times'));
                 } else {
+
                     me.fail(desc || prop, {
-                        assertionName       : 'isCalledNTimes ' + prop, 
+                        assertionName       : 'isCalledNTimes ' + prop,
                         got                 : counter, 
                         need                : n ,
                         needDesc            : ("Need " + (isGreaterEqual ? 'at least ' : 'exactly '))
@@ -6572,7 +6584,7 @@ Role('Siesta.Test.Function', {
 
             var counter = 0;
             fn = obj[prop];
-            obj[prop] = function () { counter++; fn.apply(obj, arguments); };
+            obj[prop] = function () { counter++; return fn.apply(obj, arguments); };
         },
 
         /**
@@ -6690,7 +6702,7 @@ Role('Siesta.Test.Date', {
          * 
          * @param {Date} got The 1st date to compare
          * @param {Date} expectedDate The 2nd date to compare
-         * @param {String} description The description of the assertion
+         * @param {String} [description] The description of the assertion
          */
         isDateEqual: function (got, expectedDate, description) {
             if (got - expectedDate === 0) {
@@ -8607,7 +8619,7 @@ Class('Siesta.Test', {
          */
         isReadyTimeout      : 10000,
 
-        // indicates that test has threw an exception (not related to failed assertions)
+        // indicates that a test has thrown an exception (not related to failed assertions)
         failed              : false,
         failedException     : null, // stringified exception
         failedExceptionType : null, // type of exception
@@ -9501,6 +9513,8 @@ Class('Siesta.Test', {
                 isTodo                  : this.isTodo,
                 transparentEx           : this.transparentEx,
                 
+                waitForTimeout          : this.waitForTimeout,
+                waitForPollInterval     : this.waitForPollInterval,
                 defaultTimeout          : this.defaultTimeout,
                 timeout                 : this.subTestTimeout,
                 
@@ -9514,6 +9528,7 @@ Class('Siesta.Test', {
                 originalSetTimeout      : this.originalSetTimeout,
                 originalClearTimeout    : this.originalClearTimeout,
                 
+                autoCheckGlobals        : false,
                 needToCleanup           : false
             }, config)            
         },
@@ -9731,20 +9746,20 @@ Class('Siesta.Test', {
                 isException     : true,
                 exceptionType   : this.failedExceptionType,
                 passed          : false,
-                description     : (this.parent ? "Sub-test `" + this.name + "`" : 'Test ') + ' has threw an exception',
+                description     : (this.parent ? "Sub-test `" + this.name + "`" : 'Test ') + ' threw an exception',
                 annotation      : annotation
             }))
             
             
             /**
-             * This event is fired when the individual test case has threw an exception. 
+             * This event is fired when an individual test case has thrown an exception.
              * 
              * This event bubbles up to the {@link Siesta.Harness harness}, you can observe it on harness as well.
              * 
              * @event testfailedwithexception
              * @member Siesta.Test
              * @param {JooseX.Observable.Event} event The event instance
-             * @param {Siesta.Test} test The test instance that just has threw an exception
+             * @param {Siesta.Test} test The test instance that just threw an exception
              * @param {Object} exception The exception thrown
              */
             this.fireEvent('testfailedwithexception', this, e, stackTrace);
@@ -10120,6 +10135,17 @@ Class('Siesta.Test', {
             })
             
             return failCount
+        },
+        
+        
+        getFailedAssertions : function () {
+            var failed      = [];
+            
+            this.eachAssertion(function (assertion) {
+                if (!assertion.isPassed()) failed.push(assertion)
+            })
+            
+            return failed
         },
         
         
@@ -10934,7 +10960,9 @@ Class('Siesta.Harness', {
         /**
          * @cfg {Number} pauseBetweenTests Default timeout between tests (in milliseconds). Increase this settings for big test suites, to give browser time for memory cleanup.
          */
-        pauseBetweenTests       : 300
+        pauseBetweenTests       : 300,
+        
+        setupDone               : false
     },
     
     
@@ -10948,7 +10976,7 @@ Class('Siesta.Harness', {
             })
             
             me.on('testfailedwithexception', function (event, test, exception, stack) {
-                if (!test.parent) me.onTestFail(test, exception, stack);
+                me.onTestFail(test, exception, stack);
             })
             
             me.on('teststart', function (event, test) {
@@ -11089,8 +11117,33 @@ Class('Siesta.Harness', {
         },
         
         
+        startSingle : function (desc) {
+            var me              = this
+            
+            this.__counter__    = (this.__counter__ || 0) 
+            
+            var startSingle     = function () {
+                me.launch([ me.normalizeDescriptor(desc, me, me.__counter__++) ])
+            }
+            
+            me.setupDone ? startSingle() : this.setup(startSingle)
+        },
+        
+        
         setup : function (callback) {
-            this.populateCleanScopeGlobals(this.scopeProvider, callback)
+            var me              = this
+            
+            this.mainPreset     = new Siesta.Content.Preset({
+                preload     : this.processPreloadArray(this.preload)
+            })
+            
+            this.emptyPreset    = new Siesta.Content.Preset()
+            
+            this.populateCleanScopeGlobals(this.scopeProvider, function () {
+                me.setupDone        = true
+                
+                callback()
+            })
         },
         
         /**
@@ -11170,20 +11223,15 @@ Class('Siesta.Harness', {
          */
         start : function () {
             // a bit hackish - used by Selenium reporter..
-            var me              = Siesta.my.activeHarness = this
-            
-            this.mainPreset     = new Siesta.Content.Preset({
-                preload     : this.processPreloadArray(this.preload)
-            })
-            
-            this.emptyPreset    = new Siesta.Content.Preset()
-            
-            var descriptors     = this.descriptors = Joose.A.map(Array.prototype.concat.apply([], arguments), function (desc, index) {
-                return me.normalizeDescriptor(desc, me, index)
-            })
+            var me      = Siesta.my.activeHarness = this
+            var args    = Array.prototype.concat.apply([], arguments)
             
             this.setup(function () {
-                me.launch(descriptors)
+                me.descriptors    = Joose.A.map(args, function (desc, index) { 
+                    return me.normalizeDescriptor(desc, me, index)
+                })
+                
+                me.launch(me.descriptors)
             })
         },
 
@@ -11770,7 +11818,7 @@ Class('Siesta.Harness', {
                 
                 var test    = me.getTestByURL(descriptor.url)
                 
-                // ignore missing tests (could be skipped by test filtering
+                // ignore missing tests (could be skipped by test filtering)
                 if (!test) return
                 
                 allPassed = allPassed && test.isPassed()
@@ -23268,6 +23316,14 @@ Role('Siesta.Test.Simulate.Keyboard', {
                 if (keyCode === KeyCodes.BACKSPACE && !supports.canSimulateBackspace && el.value.length > 0) {
                     el.value = el.value.substring(0, el.value.length - 1);
                 }
+
+                if (keyCode === KeyCodes.ENTER && !supports.enterSubmitsForm) {
+                    var form = $(el).closest('form');
+
+                    if (form.length) {
+                        form.submit();
+                    }
+                }
             }
 
             if (keyCode === KeyCodes.ENTER && !supports.enterOnAnchorTriggersClick) {
@@ -23929,7 +23985,7 @@ Role('Siesta.Test.ExtJS.Ajax', {
          * This assertion passes if there is at least one ongoing ajax call.
          * 
          * @param {Object} object (optional) The options object passed to Ext.Ajax.request
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         isAjaxLoading: function (obj, description) {
             var Ext = this.Ext();
@@ -24115,7 +24171,7 @@ Role('Siesta.Test.ExtJS.Store', {
          * Passes if the passed store has no data.
          * 
          * @param {Ext.data.AbstractStore} store
-         * @param {String} description The description of the assertion
+         * @param {String} [description] The description of the assertion
          */
         isStoreEmpty : function(store, description) {
             this.is(store.getCount(), 0, description);
@@ -24224,7 +24280,7 @@ Role('Siesta.Test.ExtJS.Observable', {
          * 
          * @param {Ext.util.Observable} The observable
          * @param {String} eventName The name of the event
-         * @param {String} description The description of the assertion.
+         * @param {String} [description] The description of the assertion.
          */
         hasListener : function (observable, eventName, description) {
             if (!observable || !observable.hasListener) {
@@ -24716,7 +24772,7 @@ Role('Siesta.Test.ExtJS.Component', {
         * @param {Ext.Component/String} component An Ext.Component instance or a ComponentQuery 
         * @param {Int} width
         * @param {Int} height
-        * @param {String} description The description of the assertion
+        * @param {String} [description] The description of the assertion
         */
         hasSize: function (component, width, height, description) {
             component = this.normalizeComponent(component);
@@ -24729,7 +24785,7 @@ Role('Siesta.Test.ExtJS.Component', {
         * @param {Ext.Component/String} component An Ext.Component instance or a ComponentQuery 
         * @param {Int} x
         * @param {Int} y
-        * @param {String} description The description of the assertion
+        * @param {String} [description] The description of the assertion
         */
         hasPosition: function (component, x, y, description) {
             component = this.normalizeComponent(component);
@@ -24744,7 +24800,7 @@ Role('Siesta.Test.ExtJS.Component', {
          * - that each component was actually destoyed (since destroy can be canceled in the "beforedestroy" event listener)  
          * 
          * @param {Ext.Component/Array[Ext.Component]/String} components A single instance of Ext.Component, an array of such or a string with component query 
-         * @param {String} description The description of the assertion
+         * @param {String} [description] The description of the assertion
          */
         destroysOk : function (components, description) {
             var Ext     = this.Ext();
@@ -24952,7 +25008,7 @@ Role('Siesta.Test.ExtJS.Grid', {
          * @param {Int} row The row index
          * @param {Int} column The column index
          * @param {String/RegExp} string The string to find or RegExp to match
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         matchGridCellContent : function(grid, rowIndex, colIndex, string, description) {
             grid = this.normalizeComponent(grid);
@@ -25048,7 +25104,7 @@ Role('Siesta.Test.ExtJS.Element', {
          * 
          * @param {Ext.Element} el The element
          * @param {Ext.util.Region} region The region to compare to.
-         * @param {String} description The description of the assertion
+         * @param {String} [description] The description of the assertion
          */
         hasRegion : function(el, region, description) {
             var elRegion = el.getRegion();
@@ -25075,7 +25131,7 @@ Role('Siesta.Test.ExtJS.FormField', {
          * 
          * @param {Ext.form.field.Field/String} field A form field or a ComponentQuery
          * @param {Mixed} value The value to compare to.
-         * @param {String} description The description of the assertion
+         * @param {String} [description] The description of the assertion
          */
         fieldHasValue : function(field, value, description) {
             field = this.normalizeComponent(field);
@@ -25091,7 +25147,7 @@ Role('Siesta.Test.ExtJS.FormField', {
          * Passes if the passed Field has no value ("" or null).
          * 
          * @param {Ext.form.field.Field/String} field A form field or a ComponentQuery
-         * @param {String} description The description of the assertion
+         * @param {String} [description] The description of the assertion
          */
         isFieldEmpty : function(field, description) {
             field = this.normalizeComponent(field);
@@ -25225,7 +25281,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} text The text to match 
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         contentLike : function(el, text, description) {
             el = this.normalizeElement(el);
@@ -25238,7 +25294,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} text The text to match 
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         contentNotLike : function(el, text, description) {
             el = this.normalizeElement(el);
@@ -25300,7 +25356,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to upon which to unleash the "monkey".
          * @param {Int} nbrInteractions The number of random interactions to perform. 
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          * @param {Function} callback The callback to call after the CSS selector has been found
          * @param {Object} scope The scope for the callback
          */
@@ -25407,7 +25463,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} cls The class name to check for
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         hasCls : function (el, cls, description) {
             el = this.normalizeElement(el);
@@ -25435,7 +25491,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} cls The class name to check for
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         hasNotCls : function (el, cls, description) {
             el = this.normalizeElement(el);
@@ -25461,7 +25517,7 @@ Role('Siesta.Test.Element', {
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} property The style property to check for
          * @param {String} value The style value to check for
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         hasStyle : function (el, property, value, description) {
             el = this.normalizeElement(el);
@@ -25490,7 +25546,7 @@ Role('Siesta.Test.Element', {
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} property The style property to check for
          * @param {String} value The style value to check for
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         hasNotStyle : function (el, property, value, description) {
             el = this.normalizeElement(el);
@@ -25782,7 +25838,7 @@ Role('Siesta.Test.Element', {
         /**
          * Passes if the element is visible.
          * @param {Siesta.Test.ActionTarget} el The element 
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         elementIsVisible : function(el, description) {
             el = this.normalizeElement(el);
@@ -25792,7 +25848,7 @@ Role('Siesta.Test.Element', {
         /**
          * Passes if the element is not visible.
          * @param {Siesta.Test.ActionTarget} el The element 
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         elementIsNotVisible : function(el, description) {
             el = this.normalizeElement(el);
@@ -25822,7 +25878,7 @@ Role('Siesta.Test.Element', {
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {Array} xy The xy coordinate to query.
          * @param {Boolean} allowChildren true to also include child nodes. False to strictly check for the passed element.
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         elementIsAt : function(el, xy, allowChildren, description) {
             el = this.normalizeElement(el);
@@ -25882,7 +25938,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to look for.
          * @param {Boolean} allowChildren true to also include child nodes. False to strictly check for the passed element.
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          * @param {Boolean} strict true to check all four corners of the element. False to only check at element center.
          */
         elementIsTopElement : function(el, allowChildren, description, strict) {
@@ -25911,7 +25967,7 @@ Role('Siesta.Test.Element', {
          * 
          * @param {Siesta.Test.ActionTarget} el The element to look for.
          * @param {Boolean} allowChildren true to also include child nodes. False to strictly check for the passed element.
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         elementIsNotTopElement : function(el, allowChildren, description) {
             el              = this.normalizeElement(el);
@@ -25940,7 +25996,7 @@ Role('Siesta.Test.Element', {
          * @param {String} selector The selector to query for
          * @param {Array} xy The xy coordinate to query.
          * @param {Boolean} allowChildren true to also include child nodes. False to strictly check for the passed element.
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         selectorIsAt : function(selector, xy, description) {
             if (!selector) throw 'A CSS selector must be supplied';
@@ -25969,7 +26025,7 @@ Role('Siesta.Test.Element', {
          * Passes if the selector is found in the DOM
          * 
          * @param {String} selector The selector to query for
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         selectorExists : function(selector, description) {
             if (!selector) throw 'A CSS selector must be supplied';
@@ -25988,7 +26044,7 @@ Role('Siesta.Test.Element', {
          * Passes if the selector is not found in the DOM
          * 
          * @param {String} selector The selector to query for
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         selectorNotExists : function(selector, description) {
             if (this.$(selector).length > 0) {
@@ -26175,12 +26231,58 @@ Role('Siesta.Test.Element', {
             this.chainClick(result, function () { callback && callback.call(scope || this, result) })
         },
         
+        
+        /**
+         * This assertion passes when the DOM query with specified selector returns the expected number of elements
+         * 
+         * You can specify the optional `root` element to start the query from:
+         * 
+         *      t.selectorCountIs('.x-grid-row', grid, 5, "Grid has 5 rows")
+         *      
+         * or omit it (query will start from the document):
+         * 
+         *      t.selectorCountIs('.x-grid-row', 0, "No grid rows on the page")
+         * 
+         * @param {String} selector DOM query selector
+         * @param {Siesta.Test.ActionTarget} [root] An optional root element to start the query from, if omited query will start from the document
+         * @param {Number} count The expected number of elements in the query result
+         * @param {String} [description] The description for the assertion
+         */
+        selectorCountIs : function (selector, root, count, description) {
+            if (!selector) throw 'A CSS selector must be supplied';
+
+            if (this.typeOf(root) == 'Number') {
+                description     = count
+                count           = root
+                root            = null
+            } else
+                root            = this.normalizeElement(root)
+            
+            var inDOMCount  = this.$(selector, root).length
+            
+            if (inDOMCount != count) {
+                this.fail(description, {
+                    assertionName   : 'selectorCountIs',
+                    descTpl         : 'Different number of elements matching the selector {selector} found',
+                    selector        : selector,
+                    got             : inDOMCount,
+                    need            : count
+                });
+            } else {
+                this.pass(description, {
+                    descTpl         : 'Found exactly {count} elements matching matching CSS selector {selector}',
+                    count           : count,
+                    selector        : selector
+                });
+            } 
+        },
+        
 
         /**
          * Passes if the passed element is inside of the visible viewport
          * 
          * @param {Siesta.Test.ActionTarget} el The element
-         * @param {Description} description The description for the assertion
+         * @param {String} [description] The description for the assertion
          */
         isInView : function (el, description) {
             if (this.elementIsInView(el))
@@ -26271,9 +26373,12 @@ Class('Siesta.Test.Browser', {
         // NO: this.currentPosition = [ 1, 2 ]
         // YES: this.currentPosition[ 0 ] = 1
         // YES: this.currentPosition[ 1 ] = 2
-        currentPosition : {
+        currentPosition         : {
            init : function () { return [ 0, 0 ]; }
-        }
+        },
+        
+        
+        forceDOMVisible         : false
     },
 
     methods : { 
@@ -26283,6 +26388,14 @@ Class('Siesta.Test.Browser', {
         },
         
         
+        hasForcedIframe : function () {
+            if (this.forceDOMVisible && (this.scopeProvider instanceof Scope.Provider.IFrame))
+                return this.scopeProvider.iframe
+            else
+                return null
+        },
+
+        
         processSubTestConfig : function () {
             var res             = this.SUPERARG(arguments)
             var me              = this
@@ -26291,7 +26404,6 @@ Class('Siesta.Test.Browser', {
                 'currentPosition', 
                 'actionDelay', 'afterActionDelay', 
                 'simulateEventsWith',
-                'waitForTimeout', 'waitForPollInterval',
                 'dragDelay', 'moveCursorBetweenPoints', 'dragPrecision', 'overEls'
             ], function (name) {
                 res[ name ]     = me[ name ]
@@ -27687,7 +27799,7 @@ Class('Siesta.Harness.Browser', {
                 
                 var iframe
                 
-                if (iframe = this.testHasForcedIframe(test)) {
+                if (iframe = test.hasForcedIframe()) {
                     if (this.currentlyForcedIFrame) this.hideForcedIFrame(this.currentlyForcedIFrame)
                 
                     this.showForcedIFrame(iframe, test)
@@ -27710,8 +27822,7 @@ Class('Siesta.Harness.Browser', {
             onTestEnd : function (test) {
                 var iframe
                 
-                if (iframe = this.testHasForcedIframe(test)) {
-                
+                if (iframe = test.hasForcedIframe()) {
                     this.hideForcedIFrame(iframe)
                 
                     this.currentlyForcedIFrame  = null
@@ -27873,6 +27984,8 @@ Class('Siesta.Harness.Browser', {
                 
                 if (this.hasOwnProperty('simulateEventsWith')) config.simulateEventsWith = this.simulateEventsWith
                 
+                config.forceDOMVisible  = this.getDescriptorConfig(desc, 'forceDOMVisible')
+                
                 return config
             },
             
@@ -27953,15 +28066,6 @@ Class('Siesta.Harness.Browser', {
                 absBaseUrl          = absBaseUrl.replace(/\/?$/, '/')
                 
                 return absBaseUrl + url
-            },
-            
-            
-            // encapsulates the dirty-ness of the "forcedIframe" logic
-            testHasForcedIframe : function (test) {
-                if (this.getDescriptorConfig(this.getScriptDescriptor(test.url), 'forceDOMVisible') && (test.scopeProvider instanceof Scope.Provider.IFrame))
-                    return test.scopeProvider.iframe
-                else
-                    return null
             },
             
             
@@ -28070,6 +28174,30 @@ Singleton('Siesta.Harness.Browser.FeatureSupport', {
                         var result = input.val() === 'A';
                  
                         input.remove();
+                        return result;
+                    }
+                },
+
+                {
+                    id : "enterSubmitsForm",
+                    fn : function() {
+                        var sim     = this.simulator,
+                            E       = Siesta.Test.Simulate.KeyCodes().keys.ENTER,
+                            result  = false;
+
+                        var form = $('<form method="post"><input type="text"/></form>');
+                        var input = $(form).find('input');
+                        $('body').append(form);
+
+                        form[0].onsubmit = function(e) {
+                            result = true;
+                            return false;
+                        };
+
+                        input.focus();
+                        sim.simulateEvent(input, 'keypress', { keyCode : E, charCode : 0 }, true);
+
+                        form.remove();
                         return result;
                     }
                 }
@@ -28282,16 +28410,6 @@ Ext.Container.override({
                 var parentNode = this.parentNode
     
                 if (parentNode && !parentNode.isRoot()) parentNode.updateFolderStatus()
-            },
-    
-            getFailedAssertions : function () {
-                var failed      = [];
-                
-                this.get('test').eachAssertion(function (assertion) {
-                    if (!assertion.isPassed()) failed.push(assertion)
-                })
-                
-                return failed;
             }
         }, isSenchaTouch ? { config : config } : config),
         // eof Ext.apply
@@ -29462,7 +29580,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
                         'filter-group-change'   : this.saveState,
                             
                         scope                   : this,
-                        resize : function() {
+                        resize                  : function() {
                             // Make sure the minWidth of the assertion grid is respected
                             this.slots.resultPanel.ensureLayout();
                         }
@@ -29481,14 +29599,14 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
                     maintainViewportSize    : this.harness.maintainViewportSize,
 
                     listeners       : {
-                        viewdomchange : function(g, value) {
+                        viewdomchange   : function(g, value) {
                             this.setOption('viewDOM', value);
                             this.saveState();
                         },
                 
-                        rerun         : this.rerunTest,
+                        rerun           : this.rerunTest,
 
-                        scope : this
+                        scope           : this
                     }
 //                  items       : [{ xtype : 'centerpanel', slot : 'splashpanel' }]
 
@@ -29511,8 +29629,6 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
             
             scope               : this
         })
-        
-        this.harness.on('testendbubbling', this.onEveryTestEnd, this)
     },
 
     
@@ -29619,8 +29735,9 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     
         if (selectedRecords.length) {
             var testFile        = selectedRecords[ 0 ]
+            var test            = testFile.get('test')
         
-            if (testFile.get('test')) this.activateAssertionsGridFor(testFile)
+            if (test) this.slots.resultPanel.showTest(test, testFile.get('assertionsStore'))
         
             this.selectedURL = testFile.getId()
         
@@ -29737,23 +29854,6 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     },
 
 
-    activateAssertionsGridFor : function (testFile, canManageDOM) {
-        var resultPanel         = this.slots.resultPanel;
-    
-        resultPanel.showTest(testFile);
-    
-        resultPanel.setViewDOM(this.getOption('viewDOM'), true);
-        
-        if (canManageDOM != undefined) resultPanel.setCanManageDOM(canManageDOM)
-        
-        // REMOVE_AFTER_SPLASH 
-        resultPanel.el.removeCls('tr-main-area-centered')
-        // REMOVE_AFTER_SPLASH 
-        
-        if (resultPanel.isFrameVisible()) testFile.get('test').fireEvent('testframeshow')
-    },
-
-
     // looks less nice than setting it only after preload for some reason
     onBeforeScopePreload : function (scopeProvider, url) {
         var testRecord          = this.testsStore.getNodeById(url)
@@ -29852,14 +29952,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
     onTestStart : function (test) {
         var testRecord          = this.testsStore.getNodeById(test.url)
-        var testDescriptor      = this.harness.getScriptDescriptor(test.url)
         
-        var resultPanel         = this.slots.resultPanel
-        
-        if (resultPanel.testRecord === testRecord) {
-            resultPanel.clear();
-        }
-
         testRecord.beginEdit()
     
         // will trigger an update in grid
@@ -29872,20 +29965,17 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         
         var currentSelection    = this.slots.filesTree.getSelectionModel().getLastSelected()
     
-        resultPanel.hideIFrame();
-
         // activate the assertions grid for currently selected row, or, if the main area is empty
         if (currentSelection && currentSelection.getId() == test.url) {
-            // when starting the test with forcedIframe - do not allow the assertion grid to change the location of the iframe
-            // (canManageDOM is set to false)
-            this.activateAssertionsGridFor(testRecord, !this.harness.testHasForcedIframe(test))
+            var resultPanel         = this.slots.resultPanel
+            
+            resultPanel.showTest(test, testRecord.get('assertionsStore'))
         }
     },
 
 
     onTestUpdate : function (test, result, parentResult) {
-        var testRecord      = this.testsStore.getNodeById(test.url),
-            failCount       = test.getFailCount();
+        var testRecord      = this.testsStore.getNodeById(test.url)
             
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
@@ -29913,7 +30003,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
             
             alreadyInTheStore.updateFolderStatus()
             
-            if (failCount > 0 && this.getOption('breakOnFail')) {
+            if (this.getOption('breakOnFail') && test.getFailCount() > 0) {
                 this.performStop();
                 this.slots.filesTree.getSelectionModel().select(testRecord);
             }
@@ -29925,7 +30015,6 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     // only triggered for "root" tests
     onTestEnd : function (test) {
         var testRecord          = this.testsStore.getNodeById(test.url)
-        var testDescriptor      = this.harness.getScriptDescriptor(test.url)
         
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
@@ -29943,38 +30032,16 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
             testRecord.endEdit()
         
             testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
-        
-            if (this.harness.testHasForcedIframe(test)) {
-                var resultPanel = this.slots.resultPanel;
-            
-                resultPanel.setCanManageDOM(true)
-            }
         }
     },
     
     
-    // is bubbling and thus triggered for all tests (including sub-tests) 
-    onEveryTestEnd : function (event, test) {
-        var testRecord      = this.testsStore.getNodeById(test.url)
-        
-        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
-        // test instance may change if user has restarted a test for example
-        if (testRecord.get('test').generation == test.generation) {
-            var assertionStore  = testRecord.get('assertionsStore');
-            var testResultNode  = assertionStore.getById(test.getResults().id)
-            
-            // can be missing for "root" tests
-            testResultNode && testResultNode.updateFolderStatus()
-        }
-    },
-
-
     onTestFail : function (test, exception, stack) {
         var testRecord  = this.testsStore.getNodeById(test.url)
         
         // need to check that test record contains the same test instance as the test in arguments
         // test instance may change if user has restarted a test for example
-        if (testRecord.get('test') == test) {
+        if (testRecord.get('test').generation == test.generation && !test.isTodo) {
             testRecord.set('isFailed', true)
         
             testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
@@ -30782,25 +30849,25 @@ Ext.define('Siesta.Harness.Browser.UI.TestGrid', {
 })
 ;
 Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
-
     extend          : 'Ext.Panel',
-
     alias           : 'widget.resultpanel',
-
 
     slots                   : true,
     
-    testRecord              : null,
+    test                    : null,
+    testListeners           : null,
 
     maintainViewportSize    : true,
-    viewportSize            : null,
-    minWidth                : 100,
 
     viewDOM                 : false,
     canManageDOM            : true,
+    
+    isStandalone            : false,
+    
     title                   : '&nbsp;',
     style                   : 'background:transparent',
     bodyStyle               : 'background:transparent',
+    minWidth                : 100,
 
     verticalCenteredTpl     : new Ext.XTemplate(
         '<div class="tr-vertical-align-helper-content {cls}">{text}</div>',
@@ -30881,6 +30948,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
                         {
                             xtype       : 'assertiongrid',
                             slot        : 'grid',
+                            // required for Fiesta
                             store       : this.store,
                             listeners   : {
                                 itemdblclick    : this.onAssertionDoubleClick,
@@ -30957,18 +31025,17 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         var cardContainer   = slots.cardContainer
         var sourceCt        = slots.source
         var sourceCtEl      = sourceCt.el
+        
+        var test            = this.test
     
         cardContainer.layout.setActiveItem(sourceCt);
         this.sourceButton.toggle(true);
 
-        if (this.testRecord && !sourceCt.__filled__) {
+        if (test && !sourceCt.__filled__) {
             sourceCt.__filled__ = true;
             
             sourceCt.update(
-                Ext.String.format(
-                    '<pre class="brush: javascript;">{0}</pre>', 
-                    this.testRecord.get('test').getSource()
-                )
+                Ext.String.format('<pre class="brush: javascript;">{0}</pre>', test.getSource())
             );
         
             SyntaxHighlighter.highlight(sourceCtEl);
@@ -30978,7 +31045,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
         if (arguments.length === 0) {
             // Highlight all failed rows
-            Ext.each(this.testRecord.getFailedAssertions(), function (assertion) {
+            Ext.each(test.getFailedAssertions(), function (assertion) {
                 if (assertion.sourceLine != null) sourceCtEl.select('.line.number' + assertion.sourceLine).addCls('highlighted');
             });
         }
@@ -31001,7 +31068,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         this.sourceButton.toggle(false);
     },
 
-    setViewDOM : function (value, suppressEvent) {
+    setViewDOM : function (value) {
         var domContainer    = this.slots.domContainer
         
         if (value)
@@ -31020,12 +31087,12 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
 
     getIFrame : function () {
-        if (this.testRecord) {
-            var test = this.testRecord.get('test');
-    
+        var test = this.test;
+        
+        if (test) 
             return this.canManageDOM && test.scopeProvider && test.scopeProvider.iframe
-        }
-        return null;
+        else
+            return null;
     },
 
 
@@ -31049,10 +31116,10 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
     onDomContainerCollapse : function() {
         this.hideIFrame();
-        this.viewDOM = false;
+        this.viewDOM    = false;
         this.fireEvent('viewdomchange', this, false);
         
-        var test    = this.testRecord && this.testRecord.get('test')
+        var test        = this.test
         
         if (test) {
             test.fireEvent('testframehide')
@@ -31062,10 +31129,10 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
     onDomContainerExpand : function() {
         this.alignIFrame();
-        this.viewDOM = true;
+        this.viewDOM    = true;
         this.fireEvent('viewdomchange', this, true);
         
-        var test    = this.testRecord && this.testRecord.get('test')
+        var test        = this.test
         
         if (test) {
             test.fireEvent('testframeshow')
@@ -31086,34 +31153,98 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     onRerun : function() {
         this.fireEvent('rerun', this);
     },
-
     
-    showTest : function (testFile) {
+    
+    showTest : function (test, assertionsStore) {
         this.slots.source.__filled__ = false;
         
-        this.filterButton.toggle(false)
-        
-        if (this.testRecord !== testFile) {
-            this.hideIFrame();
+        if (this.test) {
+            Joose.A.each(this.testListeners, function (listener) { listener.remove() })
             
-            this.testRecord = testFile;
-            this.sourceButton.enable()
+            this.testListeners   = []
+            
+            this.hideIFrame()
         }
         
+        this.filterButton.toggle(false)
         this.hideSource();
+        
+        this.test   = test
+        this.sourceButton.enable()
+    
+        this.testListeners   = [
+            test.on('testfinalize', this.onTestFinalize, this),
+            test.on('testendbubbling', this.onEveryTestEnd, this)
+        ].concat(
+            this.isStandalone ? test.on('testupdate', this.onTestUpdate, this) : []
+        )
 
-        var url         = testFile.get('url');
-        var grid        = this.slots.grid;
+        var url         = test.url
+        var grid        = this.slots.grid
 
-        grid.reconfigure(testFile.get('assertionsStore'));
+        if (assertionsStore) 
+            grid.reconfigure(assertionsStore)
+        else
+            grid.store.removeAll()
 
         Ext.suspendLayouts();
         // This triggers an unnecessary layout recalc
         this.setTitle(url);
         Ext.resumeLayouts();
         
+        // when starting the test with forcedIframe - do not allow the assertion grid to change the location of the iframe
+        // (canManageDOM is set to false)
+        this.setCanManageDOM(!test.hasForcedIframe())
+        
         this.alignIFrame();
+        
+        if (this.isFrameVisible()) test.fireEvent('testframeshow')
     },
+
+    
+    onTestUpdate : function (event, test, result, parentResult) {
+        var assertionStore  = this.slots.grid.store
+
+        var data            = {
+            id                  : result.id,
+            
+            result              : result,
+            
+            leaf                : !(result instanceof Siesta.Result.SubTest),
+            expanded            : (result instanceof Siesta.Result.SubTest) && result.test.specType != 'it'
+        };
+        
+        var alreadyInTheStore   = assertionStore.getById(result.id)
+        
+        if (alreadyInTheStore) {
+            alreadyInTheStore.triggerUIUpdate()
+        } else {
+            alreadyInTheStore   = (assertionStore.getById(parentResult.id) || assertionStore.getRootNode()).appendChild(data);
+        }
+        
+        if (result.isPassed && !result.isPassed()) alreadyInTheStore.ensureVisible()
+        
+        alreadyInTheStore.updateFolderStatus()
+    },
+    
+    
+    onTestFinalize : function () {
+        this.setCanManageDOM(true)
+    },
+    
+    
+    // is bubbling and thus triggered for all tests (including sub-tests) 
+    onEveryTestEnd : function (event, test) {
+        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
+        // test instance may change if user has restarted a test for example
+        if (this.test.generation == test.generation) {
+            var testResultNode  = this.slots.grid.store.getById(test.getResults().id)
+            
+            // can be missing for "root" tests
+            testResultNode && testResultNode.updateFolderStatus()
+        }
+    },
+    
 
     onAssertionFilterClick : function(btn) {
         var assertionsStore     = this.slots.grid.store;
@@ -32009,15 +32140,13 @@ Siesta.Harness.Browser.my.meta.extend({
          */
         separateContext             : false,
         
-        testScopesByURL             : null
-    },
-    
-    before : {
-        
-        start : function () {
-            this.testScopesByURL = {}
+        // can't just set the attribute to Joose.I.Object, because its a static class 
+        // that has already been created, so attribute initializer won't be called
+        testScopesByURL             : {
+            lazy    : Joose.I.Object
         }
     },
+    
         
     override : {
         
@@ -32035,7 +32164,7 @@ Siesta.Harness.Browser.my.meta.extend({
             // 
             if (!this.getDescriptorConfig(desc, 'separateContext')) return this.SUPERARG(arguments)
             
-            var testScriptScopeProvider     = this.testScopesByURL[ url ] = new Scope.Provider.IFrame({
+            var testScriptScopeProvider     = this.getTestScopesByURL()[ url ] = new Scope.Provider.IFrame({
                 seedingCode     : this.getSeedingCode()
             })
             
@@ -32079,7 +32208,7 @@ Siesta.Harness.Browser.my.meta.extend({
                 //                             a little bit hackish - will be set in the `launchTest`
                 //                                      |
                 //                                     \/
-                var testScriptScopeProvider = this.testScopesByURL[ desc.url ]
+                var testScriptScopeProvider = this.getTestScopesByURL()[ desc.url ]
                 
                 config.originalSetTimeout   = testScriptScopeProvider.scope.setTimeout
                 config.originalClearTimeout = testScriptScopeProvider.scope.clearTimeout
@@ -32092,10 +32221,10 @@ Siesta.Harness.Browser.my.meta.extend({
         cleanupScopeForURL : function (url) {
             this.SUPER(url)
             
-            var testScriptScopeProvider = this.testScopesByURL[ url ]
+            var testScriptScopeProvider = this.getTestScopesByURL()[ url ]
             
             if (testScriptScopeProvider) {
-                delete this.testScopesByURL[ url ]
+                delete this.getTestScopesByURL()[ url ]
                 
                 testScriptScopeProvider.cleanup()
             }
