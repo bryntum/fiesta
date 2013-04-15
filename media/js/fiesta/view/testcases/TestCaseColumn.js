@@ -17,7 +17,7 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
                             '{tag}',
                         '</li>',
                     '</tpl>',
-                '</ul>',
+                '</ul>'
             ]
 
         });
