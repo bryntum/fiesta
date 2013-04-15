@@ -126,6 +126,7 @@ class Ajax extends CI_Controller {
 
     public function addTestCase() 
     {
+        echo "123";
         $success = false;
         $testCaseId = 0;
         $slug = '';

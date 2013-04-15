@@ -75,11 +75,12 @@ Ext.define('Fiesta.view.testcases.Create', {
                             displayField: "tag",
                             valueField: "id",
                             emptyText: "Tags (multiple choices)",
-                            name: 'testCaseTags[]',
+                            name: 'tags',
                             queryMode: 'remote',
                             createNewOnEnter: true,
                             createNewOnBlur: true,
-                            forceSelection: false
+                            forceSelection: false,
+                            minChars: 3
                         },
 
                         {
@@ -123,6 +124,7 @@ Ext.define('Fiesta.view.testcases.Create', {
         this.callParent(arguments);
 
         if (this.testCaseModel) {
+            console.log(this.testCaseModel);
             this.down('form').getForm().loadRecord(this.testCaseModel);
         }
         else {
@@ -134,6 +136,7 @@ Ext.define('Fiesta.view.testcases.Create', {
     saveTestCase: function (button) {
         var me = this,
             formValues = me.down('form').getForm().getValues();
+
 
         var testCase = this.testCaseModel;
 

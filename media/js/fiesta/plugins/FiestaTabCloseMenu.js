@@ -71,6 +71,7 @@ Ext.define('Fiesta.plugins.FiestaTabCloseMenu', {
             });
         }
 
+        me.on('beforemenu', me.onBeforeMenu);
         return me.menu;
     },
     
@@ -98,7 +99,24 @@ Ext.define('Fiesta.plugins.FiestaTabCloseMenu', {
                 }
             }
         }, this);
-    }            
+    },
+
+    onBeforeMenu: function (menu, item) {
+        var tabs = FIESTA.getMainView(),
+            currentTabIndex = tabs.items.indexOf(item),
+            tabsCount = tabs.items.length;
+
+        menu.child('[text="'+this.closeLeftTabsText+'"]').enable();
+        menu.child('[text="'+this.closeRightTabsText+'"]').enable();
+
+        if (currentTabIndex == 0) {
+            menu.child('[text="'+this.closeLeftTabsText+'"]').disable();
+        }
+
+        if (currentTabIndex == tabsCount - 1) {
+            menu.child('[text="'+this.closeRightTabsText+'"]').disable();
+        }
+    }
     
 
 });

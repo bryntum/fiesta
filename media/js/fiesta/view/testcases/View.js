@@ -1,7 +1,7 @@
 Ext.define('Fiesta.view.testcases.View', {
     extend          : 'Ext.panel.Panel',
     alias           : 'widget.testCasesView',
-
+    requires        : ['Fiesta.plugins.jsEditor'],
     testCaseModel   : null,
 
 
@@ -48,7 +48,7 @@ Ext.define('Fiesta.view.testcases.View', {
                             border      : false,
                             items       : [
                                 {
-                                    xtype   : 'textarea',
+                                    xtype   : 'jseditor',
                                     name    : 'code'
                                 }
                             ]
@@ -85,6 +85,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope           : this
             }
         });
+
 
         this.callParent(arguments);
     },
@@ -142,4 +143,5 @@ Ext.define('Fiesta.view.testcases.View', {
 
         });
     }
+
 });

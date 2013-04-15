@@ -5,25 +5,7 @@ Ext.define('Fiesta.view.Main', {
         Ext.apply(this, {
             plugins: [
                 {
-                    ptype: 'fiestatabclosemenu',
-                    listeners: {
-                        beforemenu: function (menu, item) {
-                            var tabs = FIESTA.getMainView(),
-                                currentTabIndex = tabs.items.indexOf(item),
-                                tabsCount = tabs.items.length;
-
-                            menu.child('[text="Close tabs on left"]').enable();
-                            menu.child('[text="Close tabs on right"]').enable();
-
-                            if (currentTabIndex == 0) {
-                                menu.child('[text="Close tabs on left"]').disable();
-                            }
-
-                            if (currentTabIndex == tabsCount - 1) {
-                                menu.child('[text="Close tabs on right"]').disable();
-                            }
-                        }
-                    }
+                    ptype: 'fiestatabclosemenu'
                 },
                 {
                     ptype: 'tabreorder'
@@ -41,6 +23,7 @@ Ext.define('Fiesta.view.Main', {
 
         Fiesta.DataModel.on('testCreated', this.onTestCaseChanged, this);
         Fiesta.DataModel.on('testUpdated', this.onTestCaseChanged, this);
+
 
         this.callParent(arguments);
     },
@@ -78,11 +61,9 @@ Ext.define('Fiesta.view.Main', {
 
         //Searchin for tab with id passed in testCaseModel
 
-        // TODO Replace with componentQuery
-        //      Change tabId to test_id
-        //      
-        Ext.each(tabs.items.items, function (tab) {
-            if (tab.tabId == newTabId) {
+
+        tabs.items.each(function (tab) {
+            if (tab.testCaseModel.get('id') == newTabId) {
                 tabExist = true;
                 activeTab = tab;
             }
@@ -92,7 +73,6 @@ Ext.define('Fiesta.view.Main', {
         if (!tabExist) {
             var newTab = Ext.widget('testCasesView', {
                 title: Ext.String.ellipsis(testCaseModel.get('name'), 15),
-                tabId: testCaseModel.get('id'),
                 iconCls: testCaseModel.get('stared') ? 'filledStar' : '',
                 testCaseModel: testCaseModel
             });
@@ -125,11 +105,11 @@ Ext.define('Fiesta.view.Main', {
         var state = {},
             tabs = this;
 
-        state.activeTabId = tabs.getActiveTab().tabId;
+        state.activeTabId = tabs.getActiveTab().testCaseModel.get('id')
         state.activeTabSlug = tabs.getActiveTab().testCaseModel.get('slug');
         state.openedTabs = [];
 
-        Ext.each(tabs.items.items, function (tab) {
+        tabs.items.each(function (tab) {
             state.openedTabs.push(tab.testCaseModel.get('slug'));
         });
 
@@ -148,7 +128,11 @@ Ext.define('Fiesta.view.Main', {
                     });
 
                     if (!tabs.getActiveTab()) {
-                        tabs.setActiveTab(tabs.items.findIndex('tabId', state.activeTabId));
+                        tabs.items.each(function (tab) {
+                            if(state.activeTabId == tab.testCaseModel.get('id')) {
+                                tabs.setActiveTab(tab);
+                            }
+                        });
                     }
                     return false;
                 },

@@ -7,19 +7,7 @@ Ext.define('Fiesta.view.testcases.List', {
         Ext.apply(this, {
 
             viewConfig: {
-                getRowClass: function(record, index) {
-                    var cls = '';
-
-                    if(record.get('ownerId') === CONFIG.userId) {
-                        cls += ' mineTest ';       
-                    }
-                    if (record.get('starred')) {
-                        cls += ' filledStar '; 
-                    } 
-
-                    return cls;
-                }                         
-
+                getRowClass: this.getCls
             },
             selModel: {
                 mode: 'SINGLE'
@@ -80,7 +68,7 @@ Ext.define('Fiesta.view.testcases.List', {
         menu.processSort = function() {
             var me = this;
 
-            Ext.each(menu.items.items, function(item) {
+            menu.items.each(function(item) {
                 if(item.itemId != me.itemId) {
                     item.setIconCls('');
                 }
@@ -88,8 +76,7 @@ Ext.define('Fiesta.view.testcases.List', {
 
             if(this.iconCls == 'sortDesc') {
                 this.setIconCls('sortAsc');
-                console.log(this.sortField);
-                console.log(Ext.getStore('TestCases').sort(this.sortField, 'ASC'));
+                Ext.getStore('TestCases').sort(this.sortField, 'ASC');
             }
             else {
                 this.setIconCls('sortDesc');
@@ -120,5 +107,17 @@ Ext.define('Fiesta.view.testcases.List', {
             handler: menu.processSort
         }]);           
 
-    }                
+    },
+    getCls: function(record, index) {
+        var cls = '';
+
+        if(record.get('ownerId') === CONFIG.userId) {
+            cls += ' mineTest ';
+        }
+        if (record.get('starred')) {
+            cls += ' filledStar ';
+        }
+
+        return cls;
+    }
 });

@@ -116,11 +116,11 @@ Ext.application({
         FIESTA = this; 
 
 
-        Fiesta.DataModel.on('requestfailed', function (resultObj) {
+        Fiesta.DataModel.on('requestfailed', function (event, resultObj) {
             Ext.Msg.alert('Error',resultObj.message);
         });        
 
-        Fiesta.DataModel.on('requestsuccess', function (resultObj) {
+        Fiesta.DataModel.on('requestsuccess', function (event, resultObj) {
 
         });        
 

@@ -22,6 +22,8 @@ Ext.define('Fiesta.DataModel', {
      */
 
     createTestCase: function (testCaseModel, callback, errback) {
+        var me = this;
+
         Ext.Ajax.request({
             url: this.saveUrl,
             params: testCaseModel.getData(),
@@ -32,7 +34,7 @@ Ext.define('Fiesta.DataModel', {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + response.responseText
                     });
@@ -49,11 +51,11 @@ Ext.define('Fiesta.DataModel', {
                         ownerId: CONFIG.userId
                     });
 
-                    this.fireEvent('testCreated', testCaseModel);
+                    this.fireEvent('testCreated', this, testCaseModel);
 
                     //Processing callback and firing the event
                     if (callback && callback(testCaseModel) !== false) {
-                        this.fireEvent('requestsuccess', {
+                        this.fireEvent('requestsuccess', this, {
                             url: this.saveUrl,
                             message: 'Successfully saved'
                         });
@@ -62,7 +64,7 @@ Ext.define('Fiesta.DataModel', {
                     return true;
                 }
                 else {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + o.errorMsg
                     });
@@ -73,7 +75,7 @@ Ext.define('Fiesta.DataModel', {
             failure: function (response) {
 
                 if (!errback || errback(response) !== false) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Failed to save due to server error!'
                     });
@@ -97,6 +99,7 @@ Ext.define('Fiesta.DataModel', {
      */
 
     updateTestCase: function (testCaseModel, callback, errback) {
+        var ne = this;
 
         Ext.Ajax.request({
             url: this.updateUrl,
@@ -106,7 +109,7 @@ Ext.define('Fiesta.DataModel', {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + response.responseText
                     });
@@ -118,11 +121,11 @@ Ext.define('Fiesta.DataModel', {
 
                     testCaseModel.set('slug', o.slug);
 
-                    this.fireEvent('testUpdated', testCaseModel);
+                    this.fireEvent('testUpdated', this, testCaseModel);
 
                     if (callback && callback(testCaseModel) !== false) {
 
-                        this.fireEvent('requestsuccess', {
+                        this.fireEvent('requestsuccess', this, {
                             url: this.url,
                             message: 'Successfully saved'
                         });
@@ -131,7 +134,7 @@ Ext.define('Fiesta.DataModel', {
                     return true;
                 }
                 else {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + o.errorMsg
                     });
@@ -142,7 +145,7 @@ Ext.define('Fiesta.DataModel', {
             failure: function (response) {
 
                 if (!errback || errback(response) !== false) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Failed to save due to server error!'
                     });
@@ -154,6 +157,8 @@ Ext.define('Fiesta.DataModel', {
     },
 
     getTestCase: function (params, callback, errback) {
+        var me = this;
+
         Ext.Ajax.request({
             url: this.getUrl,
             params: params,
@@ -162,7 +167,7 @@ Ext.define('Fiesta.DataModel', {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + response.responseText
                     });
@@ -175,7 +180,7 @@ Ext.define('Fiesta.DataModel', {
 
                     if (callback && callback(testCaseModel) !== false) {
 
-                        this.fireEvent('requestsuccess', {
+                        this.fireEvent('requestsuccess', this, {
                             url: this.url,
                             message: 'Successfully loaded!'
                         });
@@ -184,7 +189,7 @@ Ext.define('Fiesta.DataModel', {
                     return true;
                 }
                 else {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + o.errorMsg
                     });
@@ -195,7 +200,7 @@ Ext.define('Fiesta.DataModel', {
             failure: function (response) {
 
                 if (!errback || errback(response) !== false) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Failed to load testcase!'
                     });
@@ -207,7 +212,8 @@ Ext.define('Fiesta.DataModel', {
 
     getTestCasesColl: function (slugs, callback, errback) {
 
-        var params = { 'testCasesSlugs[]': slugs};
+        var me = this,
+            params = { 'testCasesSlugs[]': slugs};
 
         Ext.Ajax.request({
             url: this.getCollectionUrl,
@@ -217,7 +223,7 @@ Ext.define('Fiesta.DataModel', {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + response.responseText
                     });
@@ -235,7 +241,7 @@ Ext.define('Fiesta.DataModel', {
 
                     if (callback && callback(collection) !== false) {
 
-                        this.fireEvent('requestsuccess', {
+                        this.fireEvent('requestsuccess', this, {
                             url: this.url,
                             message: 'Successfully loaded!'
                         });
@@ -244,7 +250,7 @@ Ext.define('Fiesta.DataModel', {
                     return true;
                 }
                 else {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Server message:' + o.errorMsg
                     });
@@ -255,7 +261,7 @@ Ext.define('Fiesta.DataModel', {
             failure: function (response) {
 
                 if (errback && errback(response) !== false) {
-                    this.fireEvent('requestfailed', {
+                    this.fireEvent('requestfailed', this, {
                         url: this.url,
                         message: 'Failed to load testcase!'
                     });
