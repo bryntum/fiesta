@@ -2,9 +2,16 @@ Ext.define('Fiesta.view.testcases.View', {
     extend          : 'Ext.panel.Panel',
     alias           : 'widget.testCasesView',
     requires        : ['Fiesta.plugins.jsEditor'],
-    testCaseModel   : null,
+    testCaseModel       : null,
+    
+    harness             : Siesta.Harness.Browser.ExtJS,
+    
+    currentTest         : null,
+    currentListeners    : null,
 
-
+    resultPanel         : null,
+    
+    
     initComponent : function () {
         Ext.apply(this, {
             layout      : 'border',
@@ -32,7 +39,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope       : this
                 }
             ],
-            items: [
+            items       : [
                 {
                     region      : 'center',
                     xtype       : 'container',
@@ -57,19 +64,21 @@ Ext.define('Fiesta.view.testcases.View', {
                         {
                             xtype       : 'resultpanel',
                             title       : 'Run',
+                            
+                            isStandalone    : true,
 
                             store       : new Siesta.Harness.Browser.Model.AssertionTreeStore({
                                 model   : 'Siesta.Harness.Browser.Model.Assertion',
 
                                 proxy   : {
-                                    type: 'memory',
-                                    reader: { type: 'json' }
+                                    type        : 'memory',
+                                    reader      : { type: 'json' }
                                 },
 
                                 root    : {
-                                    id: '__ROOT__',
-                                    expanded: true,
-                                    loaded: true
+                                    id          : '__ROOT__',
+                                    expanded    : true,
+                                    loaded      : true
                                 }
                             }),
 
@@ -78,6 +87,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     ]
                 }
             ],
+            // eof items
             listeners   : {
                 afterrender     : this.onTabCreate,
                 activate        : this.onTabSelect,
@@ -85,9 +95,14 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope           : this
             }
         });
+        // eof apply
 
 
         this.callParent(arguments);
+        
+        this.resultPanel    = this.down('resultpanel')
+        
+        this.harness.on('teststart', this.onTestStart, this)
     },
 
 
@@ -120,28 +135,34 @@ Ext.define('Fiesta.view.testcases.View', {
             testCaseModel   : this.testCaseModel
         });
     },
+    
+    
+    onTestStart : function (event, test) {
+        if (this.test && this.test.url == test.url) this.resultPanel.showTest(test)
+    },
 
 
     onTestLaunch: function () {
         this.switchToResultsTab();
 
+        var me              = this
         var testCaseModel   = this.testCaseModel;
-        var Harness         = Siesta.Harness.Browser.ExtJS;
+        var harness         = this.harness
 
-        Harness.configure({
-            needUI          : false
-        });
-
-        Harness.start({
+        harness.startSingle({
+            transparentEx   : false,
             testCode        : testCaseModel.get('code'),
             url             : testCaseModel.getId(),
             preload         : testCaseModel.getPreload()
-        });
-
-        Harness.on('testfinalize', function (event, test) {
-            debugger
-
-        });
+        })
+    },
+    
+    
+    destroy : function () {
+        this.harness.deleteTestByURL(this.testCaseModel.getId())
+        this.harness.un('teststart', this.onTestStart, this)
+        
+        this.callParent(arguments)
     }
 
 });

@@ -16,11 +16,11 @@ Ext.application({
     ],
     appFolder       : '/media/js/fiesta',
     
-//    harness         : {
-//        browser         : Siesta.Harness.Browser,
-//        extjs           : Siesta.Harness.Browser.ExtJS,
-//        senchatouch     : Siesta.Harness.Browser.SenchaTouch
-//    },
+    harness         : {
+        browser         : Siesta.Harness.Browser,
+        extjs           : Siesta.Harness.Browser.ExtJS,
+        senchatouch     : Siesta.Harness.Browser.SenchaTouch
+    },
     
 
     isSignedIn: function () {
@@ -122,7 +122,16 @@ Ext.application({
 
         Fiesta.DataModel.on('requestsuccess', function (event, resultObj) {
 
-        });        
+        });
+        
+        Ext.Object.each(this.harness, function (key, harness) {
+            harness.configure({
+                needUI              : false,
+                autoCheckGlobals    : true
+            })
+            
+//            harness.setup()
+        })
 
     },
     onHistoryChange: function(token) {
