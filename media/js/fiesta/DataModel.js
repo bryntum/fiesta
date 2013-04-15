@@ -22,7 +22,11 @@ Ext.define('Fiesta.DataModel', {
      */
 
     createTestCase: function (testCaseModel, callback, errback) {
-        var me = this;
+        var me = this,
+            params = testCaseModel.getData();
+
+        params.tagsList = params.tagsList.join(',');
+
 
         Ext.Ajax.request({
             url: this.saveUrl,
@@ -99,11 +103,14 @@ Ext.define('Fiesta.DataModel', {
      */
 
     updateTestCase: function (testCaseModel, callback, errback) {
-        var ne = this;
+        var me = this,
+            params = testCaseModel.getData();
+
+            params.tagsList = params.tagsList.join(',');
 
         Ext.Ajax.request({
             url: this.updateUrl,
-            params: testCaseModel.getData(),
+            params: params,
             success: function (response) {
                 try {
                     var o = Ext.decode(response.responseText);

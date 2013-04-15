@@ -53,7 +53,7 @@ Ext.define('Ext.ux.layout.component.field.CodeMirror', {
 });
 
 
-Ext.define('Fiesta.plugins.jsEditor', {
+Ext.define('Fiesta.plugins.JsEditor', {
     extend: 'Ext.Component',
     mixins: {
         labelable: 'Ext.form.Labelable',

@@ -126,7 +126,6 @@ class Ajax extends CI_Controller {
 
     public function addTestCase() 
     {
-        echo "123";
         $success = false;
         $testCaseId = 0;
         $slug = '';
@@ -134,6 +133,7 @@ class Ajax extends CI_Controller {
         $frameworkId = $this->input->post('frameworkId');
         $private = $this->input->post('private');
         $code = $this->input->post('code');
+        $tagsList = $this->input->post('tagsList');
 
         if ($this->authentication->is_signed_in()) {       
             $userId = $this->session->userdata('account_id');
@@ -143,7 +143,8 @@ class Ajax extends CI_Controller {
                 'owner_id' => $userId, 
                 'framework_id' => $frameworkId,
                 'private' => $private,
-                'code' => $code
+                'code' => $code,
+                'tagsList' => $tagsList
             )); 
 
             $slug = $this->testCases_model->makeSlug($name);
@@ -156,7 +157,9 @@ class Ajax extends CI_Controller {
                 'session_id' => $this->session->userdata('session_id'), 
                 'framework_id' => $frameworkId,
                 'private' => $private,
-                'code' => $code
+                'code' => $code,
+                'tagsList' => $tagsList
+
            )); 
 
            $testCaseId = $testCaseId.'_tmp';
@@ -179,14 +182,16 @@ class Ajax extends CI_Controller {
             $frameworkId = $this->input->post('frameworkId');
             $private = $this->input->post('private');
             $code = $this->input->post('code');
-            $userId = $this->session->userdata('account_id'); 
+            $userId = $this->session->userdata('account_id');
+            $tagsList = $this->input->post('tagsList');
 
             $result = $this->testCases_model->update($id, array(
                 'name' => $name, 
                 'owner_id' => $userId, 
                 'framework_id' => $frameworkId,
                 'private' => $private,
-                'code' => $code
+                'code' => $code,
+                'tagsList' => $tagsList
             ));  
             
             $success = true;                 

@@ -1,7 +1,7 @@
 Ext.define('Fiesta.view.testcases.Create', {
     extend: 'Ext.window.Window',
     alias: 'widget.testCasesCreate',
-
+    requires: ['Fiesta.plugins.TagSelect'],
     width: 500,
     height: 400,
 
@@ -70,12 +70,12 @@ Ext.define('Fiesta.view.testcases.Create', {
                             ]
                         },
                         {
-                            xtype: "boxselect",
+                            xtype: "tagselect",
                             store: new Fiesta.store.Tags(),
                             displayField: "tag",
                             valueField: "id",
                             emptyText: "Tags (multiple choices)",
-                            name: 'tags',
+                            name: 'tagsList',
                             queryMode: 'remote',
                             createNewOnEnter: true,
                             createNewOnBlur: true,
@@ -139,6 +139,8 @@ Ext.define('Fiesta.view.testcases.Create', {
 
 
         var testCase = this.testCaseModel;
+
+        console.log(formValues);
 
         testCase.set(formValues);
 

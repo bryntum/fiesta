@@ -1,7 +1,7 @@
 Ext.define('Fiesta.view.testcases.View', {
     extend          : 'Ext.panel.Panel',
     alias           : 'widget.testCasesView',
-    requires        : ['Fiesta.plugins.jsEditor'],
+    requires        : ['Fiesta.plugins.JsEditor'],
     testCaseModel       : null,
     
     harness             : Siesta.Harness.Browser.ExtJS,

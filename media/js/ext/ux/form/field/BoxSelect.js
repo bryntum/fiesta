@@ -1240,6 +1240,7 @@ Ext.define('Ext.ux.form.field.BoxSelect', {
      * @return {Ext.form.field.Field/Boolean} this, or `false` if asynchronously querying for unknown values
 	 */
     setValue: function(value, doSelect, skipLoad) {
+
         var me = this,
         valueStore = me.valueStore,
         valueField = me.valueField,
