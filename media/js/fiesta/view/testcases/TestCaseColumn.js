@@ -1,6 +1,6 @@
-Ext.define('Fiesta.view.testcases.ColumnTpl', {
+Ext.define('Fiesta.view.testcases.TestCaseColumn', {
     extend: 'Ext.grid.column.Template',
-    alias: 'widget.testCasesColumnTpl',
+    alias: 'widget.testCaseColumn',
     initComponent: function () {
         Ext.apply(this, {
             text: "Tests",
@@ -8,20 +8,16 @@ Ext.define('Fiesta.view.testcases.ColumnTpl', {
             flex: 1,
 
             tpl: [
-                '<div class="testCasesList">',
                 '<div class="date">{created_at:date("d/m/Y")}</div>',
-                '<p>',
-                '<span class="nameHolder">{name}</span>',
-                '</p>',
+                '<div class="nameHolder">{name}</div>',
                 '<div class="userName">{ownerName}</div>',
                 '<ul class="x-boxselect-list">',
-                '<tpl foreach="tags">',
-                '<li class="x-tab-default x-boxselect-item">',
-                '<div>{tag}</div>',
-                '</li>',
-                '</tpl>',
+                    '<tpl foreach="tags">',
+                        '<li class="x-tab-default x-boxselect-item">',
+                            '{tag}',
+                        '</li>',
+                    '</tpl>',
                 '</ul>',
-                '</div>'
             ]
 
         });
