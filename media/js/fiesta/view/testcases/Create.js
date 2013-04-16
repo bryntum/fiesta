@@ -65,7 +65,13 @@ Ext.define('Fiesta.view.testcases.Create', {
                                     editable: false,
                                     name: 'frameworkId',
                                     emptyText: "Framework",
-                                    store: "Frameworks"
+                                    store: "Frameworks",
+                                    queryMode: 'local',
+                                    listeners: {
+                                        afterrender: function () {
+                                            console.log(this.store);
+                                        }
+                                    }
                                 }
                             ]
                         },
@@ -111,6 +117,13 @@ Ext.define('Fiesta.view.testcases.Create', {
                     scope: this
                 },
                 {
+                    text: 'Test',
+                    handler: function () {
+                        this.down('form').getForm().setValues({frameworkId:2});
+                    },
+                    scope: this
+                },
+                {
                     text: 'Cancel',
                     action: 'cancel',
                     handler: function () {
@@ -125,7 +138,8 @@ Ext.define('Fiesta.view.testcases.Create', {
 
         if (this.testCaseModel) {
             this.on('afterrender', function () {
-                this.down('form').getForm().loadRecord(this.testCaseModel)
+                this.down('form').getForm().loadRecord(this.testCaseModel);
+                console.log(this.testCaseModel);
             });
         }
         else {

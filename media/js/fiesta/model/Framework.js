@@ -1,7 +1,7 @@
 Ext.define("Fiesta.model.Framework", {
 	extend: "Ext.data.Model",
 	idProperty: "id",
-	fields: ["id", "name"],
+	fields: [{name: "id", type: 'int'}, "name"],
     proxy: {
         type: "ajax",
         url: "/ajax/getFrameworks",
