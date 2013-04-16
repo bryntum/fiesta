@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
     <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-all.css">
 
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
     <script> 
