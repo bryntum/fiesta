@@ -158,7 +158,7 @@ Ext.define('Fiesta.view.testcases.View', {
     
     
     onTestStart : function (event, test) {
-        if (this.test && this.test.url == test.url) this.resultPanel.showTest(test)
+        if (test.url == this.testCaseModel.getId()) this.resultPanel.showTest(test)
     },
 
 
@@ -170,7 +170,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var harness         = this.harness
 
         harness.startSingle({
-            transparentEx   : false,
+            transparentEx   : true,
             testCode        : testCaseModel.get('code'),
             url             : testCaseModel.getId(),
             preload         : testCaseModel.getPreload()
