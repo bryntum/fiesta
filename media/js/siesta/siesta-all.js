@@ -31524,7 +31524,8 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
 
         this.callParent(arguments);
     },           
-                
+          
+    
     resultRenderer : function (value, metaData, record, rowIndex, colIndex, store) {
         return this.resultTpl.apply(record.data);
     },

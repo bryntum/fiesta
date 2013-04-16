@@ -136,11 +136,24 @@ Ext.define('Fiesta.view.testcases.View', {
         
         cardContainer.getLayout().setActiveItem(1);
         
-        this.down('button[action=launch]').setText('Edit')
-        this.down('button[action=launch]').setHandler(function () {
-            cardContainer.getLayout().setActiveItem(0)
-        })
+        var button          = this.down('button[action=launch]')
+        
+        button.setText('Edit')
+        button.setHandler(this.switchToEditTab)
     },
+    
+    
+    switchToEditTab: function () {
+        var cardContainer   = this.down('[slot=cardcontainer]')
+        
+        cardContainer.getLayout().setActiveItem(0);
+        
+        var button          = this.down('button[action=launch]')
+        
+        button.setText('Launch')
+        button.setHandler(this.switchToResultsTab)
+    },
+    
 
 
     onTabSelect: function () {
