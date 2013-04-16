@@ -49,19 +49,19 @@
     top: -5px;    
 }
 
-.x-grid-cell-inner .star {
+.testCasesList .x-grid-cell-inner .star {
     display: none;
 }
 
-.x-grid-row-over .star {
+.testCasesList .x-grid-row-over .star {
     display: block;
 }
 
-.x-column-header-over .x-column-header-trigger {
+.testCasesList .testNameColumn .x-column-header-over .x-column-header-trigger {
     display: none;
 }
 
-.testNameColumn .x-column-header-trigger {
+.testCasesList .starredColumn .x-column-header-trigger {
     display: block;
 }
 
@@ -73,14 +73,14 @@
     background-image: url("/media/img/sort_asc.png");    
 }
 
-.x-grid-row-alt .x-grid-td {
+.testCasesList .x-grid-row-alt .x-grid-td {
     background-color: #FFF;
 }
 
-.mineTest .x-grid-td,
-.mineTest .x-grid-row-alt .x-grid-td,
-.mineTest  .x-grid-row-over .x-grid-td,
-.mineTest  .x-grid-row-selected .x-grid-td
+.testCasesList .mineTest .x-grid-td,
+.testCasesList .mineTest .x-grid-row-alt .x-grid-td,
+.testCasesList .mineTest  .x-grid-row-over .x-grid-td,
+.testCasesList .mineTest  .x-grid-row-selected .x-grid-td
 {
     background-color: #FFF6EA !important;
 }
@@ -101,10 +101,6 @@
 
 .testCasesList .x-grid-cell-inner {
     position: relative;
-}
-
-.testCasesList p {
-
 }
 
 .testCasesList .userName{

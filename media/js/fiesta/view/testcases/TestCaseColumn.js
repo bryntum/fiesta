@@ -24,5 +24,9 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
 
         this.callParent(arguments);
 
+    },
+
+    onTagClick : function () {
+        console.log('tag');
     }
 });

@@ -21,6 +21,7 @@ Ext.define('Fiesta.view.testcases.List', {
                     xtype: 'actioncolumn',
                     width: 20,
                     iconCls: 'star',
+                    cls: 'starredColumn',
                     scope: this,
                     getClass: function (v, meta, rec) {
                         if (rec.get('starred')) {

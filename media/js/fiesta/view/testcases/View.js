@@ -27,7 +27,27 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope       : this
                 },
                 {
-                    text        : 'Share'
+                    text        : 'Share',
+                    menu        : [
+                        {
+                            text    : "Twitter",
+                            scope   : this,
+                            handler : this.shareTwitter
+                        },
+                        {
+                            text    : "Facebook",
+                            scope   : this,
+                            handler : this.shareFb
+                        },
+                        {
+                            text    : "Google+",
+                            scope   : this,
+                            handler : this.shareGoogle
+                        }
+
+
+                    ]
+
                 },
                 {
                     text        : 'Add to favorites',
@@ -156,8 +176,42 @@ Ext.define('Fiesta.view.testcases.View', {
             preload         : testCaseModel.getPreload()
         })
     },
-    
-    
+
+    shareTwitter: function () {
+
+        var twitterUrl = 'https://twitter.com/share?'+
+            'text='+encodeURIComponent(this.title)+
+            '&hashtags='+encodeURIComponent(this.testCaseModel.get('tagsList'))+
+            '&url='+encodeURIComponent(window.location.href);
+
+        window.open(twitterUrl,'sharer','toolbar=0,status=0,width=580,height=325');
+    },
+
+    shareFb: function () {
+
+        var fbUrl = 'http://www.facebook.com/sharer.php?s=100'+
+            '&amp;p[title]='+encodeURIComponent(this.title)+
+            '&amp;p[summary]='+encodeURIComponent(this.title+' was created by '+this.testCaseModel.get('ownerName'))+
+            '&amp;p[url]='+encodeURIComponent(window.location.href)+
+            '&amp;p[images][0]=';
+
+        window.open(fbUrl,'sharer','toolbar=0,status=0,width=580,height=325');
+    },
+
+    shareGoogle: function () {
+
+        var googleUrl = 'http://plus.google.com/share?'+
+            'text='+encodeURIComponent(this.title)+
+            '&url='+encodeURIComponent(window.location.href);
+
+        console.log(googleUrl);
+
+        window.open(googleUrl);
+    },
+
+
+
+
     destroy : function () {
         this.harness.deleteTestByURL(this.testCaseModel.getId())
         this.harness.un('teststart', this.onTestStart, this)
