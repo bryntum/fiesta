@@ -31542,7 +31542,10 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
 
         me.store    = store;
         
-        if (me.getView().store != store.nodeStore) me.getView().bindStore(store.nodeStore, isInitial);
+        if (me.getView().store != store.nodeStore) {
+            me.getView().bindStore(store.nodeStore, isInitial);
+            me.getView().dataSource     = store.nodeStore
+        }
         
 //        me.mon(store, {
 //            scope       : me,
