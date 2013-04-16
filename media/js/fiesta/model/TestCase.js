@@ -5,7 +5,7 @@ Ext.define("Fiesta.model.TestCase", {
         "id", 
         "name", 
         "tagsList", 
-        "frameWorkId", 
+        "frameworkId",
         "ownerId", 
         "ownerName", 
         "code", 

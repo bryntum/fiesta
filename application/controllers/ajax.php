@@ -164,7 +164,7 @@ class Ajax extends CI_Controller {
 
            $testCaseId = $testCaseId.'_tmp';
 
-           $slug = $this->testCases_model->makeSlug($name);
+           $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
            $success = true; 
         }
 
@@ -177,7 +177,7 @@ class Ajax extends CI_Controller {
         
         if ($this->authentication->is_signed_in()) {
 
-            $id = $this->input->post('id');       
+            $testCaseId = $this->input->post('id');
             $name = $this->input->post('name');
             $frameworkId = $this->input->post('frameworkId');
             $private = $this->input->post('private');
@@ -185,7 +185,7 @@ class Ajax extends CI_Controller {
             $userId = $this->session->userdata('account_id');
             $tagsList = $this->input->post('tagsList');
 
-            $result = $this->testCases_model->update($id, array(
+            $this->testCases_model->update($testCaseId, array(
                 'name' => $name, 
                 'owner_id' => $userId, 
                 'framework_id' => $frameworkId,
@@ -195,7 +195,7 @@ class Ajax extends CI_Controller {
             ));  
             
             $success = true;                 
-            $slug = $this->testCases_model->makeSlug($name);
+            $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
             
         }        
 
@@ -253,12 +253,12 @@ class Ajax extends CI_Controller {
         return $this->session->userdata('account_id');    
     }
     
-    public function add2Favorites() {
+    public function addToFavorites() {
         $success = false;
         $id = $this->input->post('id',TRUE);
         $error = 'Please sign in to be able to access this action!';
         if ($this->authentication->is_signed_in()) {
-            $this->testCases_model->add2Favorites($id, $this->session->userdata('account_id'));
+            $this->testCases_model->addToFavorites($id, $this->session->userdata('account_id'));
             $success = true;
             $error='';
         }

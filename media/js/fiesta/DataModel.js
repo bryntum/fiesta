@@ -30,7 +30,7 @@ Ext.define('Fiesta.DataModel', {
 
         Ext.Ajax.request({
             url: this.saveUrl,
-            params: testCaseModel.getData(),
+            params: params,
             success: function (response) {
 
                 // Trying to determin if correct JSON got from backend

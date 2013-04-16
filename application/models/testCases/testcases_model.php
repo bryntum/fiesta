@@ -10,7 +10,7 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId');
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, tc.framework_id as frameworkId');
         $this->db->where('testCases.id', $testCaseId);
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCaseId);
@@ -23,7 +23,7 @@ class Testcases_model extends CI_Model {
     function getBySlug($slug)
     {
         
-        $this->db->select('testCases.*, testCases.owner_id as ownerId');
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, tc.framework_id as frameworkId');
         $this->db->where('testCases.slug', $slug);
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCase->id);
@@ -59,7 +59,7 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId')
+        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->order_by("created_at", 'desc');
@@ -100,7 +100,7 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId')
+        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->where($params['whereClause']);
@@ -156,14 +156,20 @@ class Testcases_model extends CI_Model {
 
             $data['slug'] = $this->makeSlug($data['name']);
 
+            $tagsList = $data['tagsList'];
+            unset($data['tagsList']);
+
             $this->db->insert('testCases', $data);
             $testCaseId = $this->db->insert_id();
 
 
             $this->db->where('id', $testCaseId);
             $this->db->update('testCases', array('slug' => $testCaseId.'-'.$data['slug']));
-            // Tags insertion should be here 
-            
+
+            if(!empty($tagsList)) {
+                $this->updateTestCaseTags($testCaseId,$tagsList);
+            }
+
             $this->db->insert('user_testCases', array('user_id' => $data['owner_id'], 'testCase_id' => $testCaseId, 'starred' => 0));
             
             return $testCaseId;
@@ -173,7 +179,8 @@ class Testcases_model extends CI_Model {
     function createTmp ($data) {
 
             $data['slug'] = $this->makeSlug($data['name']);
-        
+            unset($data['tagsList']);
+
             $this->db->insert('testCases_tmp', $data);
             $testCaseId = $this->db->insert_id();
 
@@ -181,19 +188,79 @@ class Testcases_model extends CI_Model {
             $this->db->update('testCases_tmp', array('slug' => $testCaseId.'-'.$data['slug']));
             
             // Tags insertion should be here 
-            
+
+            if(!empty($tagsList)) {
+                $this->updateTestCaseTags($testCaseId,$tagsList);
+            }
+
             //$this->db->insert('user_testCases', array('user_id' => $data['owner_id'], 'testCase_id' => $testCaseId, 'starred' => 0));
             
             return $testCaseId;
         
     }
     
-    function update ($id, $data) {
-        $data['slug'] = $id.'-'.$this->makeSlug($data['name']);
+    function update ($testCaseId, $data) {
+        $data['slug'] = $testCaseId.'-'.$this->makeSlug($data['name']);
 
-        $this->db->where('id', $id);
-        $result = $this->db->update('testCases', $data);         
+        $tagsList = $data['tagsList'];
+        unset($data['tagsList']);
+
+        $this->db->where('id', $testCaseId);
+        $result = $this->db->update('testCases', $data);
+
+        if(!empty($tagsList)) {
+            $this->updateTestCaseTags($testCaseId,$tagsList);
+        }
+
         return $result;
+    }
+
+    function updateTestCaseTags ($testCaseId, $tagsList) {
+        $tagIds = array();
+        $diff = array();
+        $newTagsData = array();
+
+        $newTags = explode(',',$tagsList);
+
+        $this->db->where('testCase_id', $testCaseId);
+        $this->db->delete('testCases_tags');
+
+        $existingTags = $this->db->select('tags.*')
+            ->where_in('tag', $newTags)
+            ->get('tags')
+            ->result();
+
+        foreach($existingTags as $tag) {
+            $tagsToLink[] = array(
+                'tag_id' => $tag->id,
+                'testCase_id' => $testCaseId
+            );
+
+            $diff[] = $tag->tag;
+        }
+
+        $newTags = array_diff($newTags, $diff);
+
+
+        foreach($newTags as $ind => $newTag) {
+            $newTagsData[] = array('tag' => $newTag);
+        }
+
+        if(count($newTagsData) > 0) {
+            foreach($newTagsData as $newTagData) {
+                $this->db->insert('tags',$newTagData);
+                $tagsToLink[] = array(
+                    'tag_id' => $this->db->insert_id(),
+                    'testCase_id' => $testCaseId
+                );
+            }
+        }
+
+
+        $this->db->insert_batch('testCases_tags', $tagsToLink);
+
+        return true;
+
     }
     
     function makeSlug($text) { 
@@ -211,7 +278,7 @@ class Testcases_model extends CI_Model {
       return $text;
     }
     
-    function add2Favorites($id, $userId) {
+    function addToFavorites($id, $userId) {
         $data = array(
             'user_id' => $userId,
             'testCase_id' => $id,

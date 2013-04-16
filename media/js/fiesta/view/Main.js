@@ -28,7 +28,7 @@ Ext.define('Fiesta.view.Main', {
         this.callParent(arguments);
     },
 
-    onTestCaseChanged: function (record) {
+    onTestCaseChanged: function (event, record) {
 
         if (FIESTA.isSignedIn()) {
             this.activateTabFor(record);
@@ -53,6 +53,7 @@ Ext.define('Fiesta.view.Main', {
      */
 
     updateTab: function (testCaseModel) {
+        console.log(testCaseModel);
         var tabs = this,
             tabExist = false,
             newTabId = testCaseModel.get('id'),

@@ -31,7 +31,7 @@ Ext.define('Fiesta.view.testcases.List', {
                         }
                     },
                     handler: function (grid, rowIndex, colIndex) {
-                        FIESTA.add2Favorites(grid.getStore().getAt(rowIndex));
+                        FIESTA.addToFavorites(grid.getStore().getAt(rowIndex));
                     }
                 }
             ],

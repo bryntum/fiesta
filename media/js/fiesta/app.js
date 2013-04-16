@@ -55,7 +55,7 @@ Ext.application({
 
     },
 
-    add2Favorites: function (record) {
+    addToFavorites: function (record) {
         if(this.isSignedIn()) {
             var queryRes = Ext.ComponentQuery.query('testCasesList'),
             tabs = this.getMainView();
@@ -65,7 +65,7 @@ Ext.application({
             tabs.updateTab(record);
 
             Ext.Ajax.request({
-                url: '/ajax/add2Favorites',
+                url: '/ajax/addToFavorites',
                 params : {id: record.get('id')},
                 success: function (response) {
                     try {var o = Ext.decode(response.responseText);}
