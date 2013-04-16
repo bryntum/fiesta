@@ -132,7 +132,14 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     switchToResultsTab: function () {
-        this.down('[slot=cardcontainer]').getLayout().setActiveItem(1);
+        var cardContainer   = this.down('[slot=cardcontainer]')
+        
+        cardContainer.getLayout().setActiveItem(1);
+        
+        this.down('button[action=launch]').setText('Edit')
+        this.down('button[action=launch]').setHandler(function () {
+            cardContainer.getLayout().setActiveItem(0)
+        })
     },
 
 
@@ -158,7 +165,7 @@ Ext.define('Fiesta.view.testcases.View', {
     
     
     onTestStart : function (event, test) {
-        if (test.url == this.testCaseModel.getId()) this.resultPanel.showTest(test)
+        if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
 
 
@@ -172,7 +179,7 @@ Ext.define('Fiesta.view.testcases.View', {
         harness.startSingle({
             transparentEx   : true,
             testCode        : testCaseModel.get('code'),
-            url             : testCaseModel.getId(),
+            url             : testCaseModel.internalId,
             preload         : testCaseModel.getPreload()
         })
     },
@@ -208,8 +215,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
         window.open(googleUrl);
     },
-
-
 
 
     destroy : function () {

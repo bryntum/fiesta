@@ -31463,7 +31463,7 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                     // to 
                     //                         |_
                     //                         |
-                    if (index == store.getCount() - 1) this.refreshNode(index - 1)
+                    if (index > 0 && index == store.getCount() - 1) this.refreshNode(index - 1)
                     
                     // TODO also need to update previous nodes, when adding a node with different depth
                     
