@@ -10,7 +10,7 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, tc.framework_id as frameworkId');
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId');
         $this->db->where('testCases.id', $testCaseId);
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCaseId);
@@ -23,7 +23,7 @@ class Testcases_model extends CI_Model {
     function getBySlug($slug)
     {
         
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, tc.framework_id as frameworkId');
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId');
         $this->db->where('testCases.slug', $slug);
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCase->id);

@@ -134,7 +134,7 @@ Ext.application({
         })
 
     },
-    onHistoryChange: function(token) {
+    onHistoryChange: function(event, token) {
 
         if (token) {
             var tabs = FIESTA.getMainView(),
