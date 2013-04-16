@@ -82,25 +82,11 @@ Ext.define('Fiesta.view.testcases.View', {
                         },
                         // card with
                         {
-                            xtype       : 'resultpanel',
-                            title       : 'Run',
+                            xtype               : 'resultpanel',
+                            title               : 'Run',
                             
-                            isStandalone    : true,
-
-                            store       : new Siesta.Harness.Browser.Model.AssertionTreeStore({
-                                model   : 'Siesta.Harness.Browser.Model.Assertion',
-
-                                proxy   : {
-                                    type        : 'memory',
-                                    reader      : { type: 'json' }
-                                },
-
-                                root    : {
-                                    id          : '__ROOT__',
-                                    expanded    : true,
-                                    loaded      : true
-                                }
-                            }),
+                            isStandalone        : true,
+                            showToolbar         : false,
 
                             disableSelection    : true
                         }
@@ -139,7 +125,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var button          = this.down('button[action=launch]')
         
         button.setText('Edit')
-        button.setHandler(this.switchToEditTab)
+        button.setHandler(this.switchToEditTab, this)
     },
     
     
@@ -151,7 +137,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var button          = this.down('button[action=launch]')
         
         button.setText('Launch')
-        button.setHandler(this.switchToResultsTab)
+        button.setHandler(this.onTestLaunch, this)
     },
     
 

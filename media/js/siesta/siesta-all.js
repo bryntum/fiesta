@@ -30872,6 +30872,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     canManageDOM            : true,
     
     isStandalone            : false,
+    showToolbar             : true,
     
     title                   : '&nbsp;',
     style                   : 'background:transparent',
@@ -30893,8 +30894,23 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     initComponent : function() {
         this.addEvents('viewdomchange');
         
+        if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
+            model   : 'Siesta.Harness.Browser.Model.Assertion',
+
+            proxy   : {
+                type        : 'memory',
+                reader      : { type: 'json' }
+            },
+
+            root    : {
+                id          : '__ROOT__',
+                expanded    : true,
+                loaded      : true
+            }
+        })
+        
         Ext.apply(this, {
-            tbar : [
+            tbar : !this.showToolbar ? null : [
                 this.sourceButton = new Ext.Button({
                     text            : 'View source', 
                     iconCls         : 'view-source',
@@ -31038,7 +31054,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         var test            = this.test
     
         cardContainer.layout.setActiveItem(sourceCt);
-        this.sourceButton.toggle(true);
+        this.sourceButton && this.sourceButton.toggle(true);
 
         if (test && !sourceCt.__filled__) {
             sourceCt.__filled__ = true;
@@ -31074,7 +31090,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         var cardContainer   = slots.cardContainer
         
         cardContainer.layout.setActiveItem(slots.grid);
-        this.sourceButton.toggle(false);
+        this.sourceButton && this.sourceButton.toggle(false);
     },
 
     setViewDOM : function (value) {
@@ -31177,11 +31193,11 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
             this.hideIFrame()
         }
         
-        this.filterButton.toggle(false)
+        this.filterButton && this.filterButton.toggle(false)
         this.hideSource();
         
         this.test   = test
-        this.sourceButton.enable()
+        this.sourceButton && this.sourceButton.enable()
     
         this.testListeners   = [
             test.on('testfinalize', this.onTestFinalize, this),
