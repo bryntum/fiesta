@@ -1,7 +1,7 @@
 Ext.define('Fiesta.view.testcases.Create', {
     extend: 'Ext.window.Window',
     alias: 'widget.testCasesCreate',
-    requires: ['Fiesta.plugins.TagSelect'],
+    requires: ['Fiesta.plugins.TagSelect','Fiesta.plugins.JsEditor'],
     width: 500,
     height: 400,
 
@@ -90,7 +90,7 @@ Ext.define('Fiesta.view.testcases.Create', {
                         },
                         {
                             //                    xtype: 'htmleditor',
-                            xtype: 'textarea',
+                            xtype: 'jseditor',
                             name: 'code',
                             anchor: '100% 88%'
                         }
@@ -124,8 +124,9 @@ Ext.define('Fiesta.view.testcases.Create', {
         this.callParent(arguments);
 
         if (this.testCaseModel) {
-            console.log(this.testCaseModel);
-            this.down('form').getForm().loadRecord(this.testCaseModel);
+            this.on('afterrender', function () {
+                this.down('form').getForm().loadRecord(this.testCaseModel)
+            });
         }
         else {
             this.testCaseModel = new Fiesta.model.TestCase();
