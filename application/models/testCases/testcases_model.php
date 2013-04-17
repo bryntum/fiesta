@@ -8,10 +8,12 @@ class Testcases_model extends CI_Model {
      * @param int $testCaseId
      * @return object testCase object
      */
-    function getById($testCaseId)
+    function getById($testCaseId,$userId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId');
-        $this->db->where('testCases.id', $testCaseId);
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+            ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
+            ->where('testCases.id', $testCaseId);
+
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCaseId);
 
@@ -20,11 +22,13 @@ class Testcases_model extends CI_Model {
 
     }
     
-    function getBySlug($slug)
+    function getBySlug($slug,$userId)
     {
         
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId');
-        $this->db->where('testCases.slug', $slug);
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+            ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
+            ->where('testCases.slug', $slug);
+
         $testCase = $this->db->get('testCases')->row();
         $testCase->tags = $this->getTags($testCase->id);
         return $testCase;
@@ -54,12 +58,13 @@ class Testcases_model extends CI_Model {
         return $query->result();
     } 
 
-    function getAll($params = array()) {
+    function getAll($params = array(), $userId = 0) {
         if(isset($params['page']) && $params['pageSize']) {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
-        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
+        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred')
             ->from('testCases as tc')
+            ->join('user_testCases as st', "st.testCase_id = tc.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left');
 
 
@@ -100,14 +105,15 @@ class Testcases_model extends CI_Model {
         return $results;
     } 
     
-    function getByClause($params) {
+    function getByClause($params, $userId = 0) {
         if(isset($params['page']) && $params['pageSize']) {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
+        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred')
             ->from('testCases as tc')
-            ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
+            ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')
+            ->join('user_testCases as st', "st.testCase_id = tc.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->where($params['whereClause']);
 
         if(isset($params['sort']) && count($params['sort']) > 0) {
@@ -296,11 +302,15 @@ class Testcases_model extends CI_Model {
             ->where('utc.user_id', $userId)
             ->where('utc.testCase_id', $id);
 
-        $query = $this->db->get();    
+        $query = $this->db->get();
+
         if($query->num_rows() > 0) {
             $result = $query->row();
             $starred = ($result->starred == 0) ? 1 : 0;
-            $this->db->update('user_testCases', array('starred' => $starred));
+
+            $this->db->where('user_id', $userId)
+                ->where('testCase_id', $id)
+                ->update('user_testCases', array('starred' => $starred));
         }
         else {  
             $data['starred']  = 1;

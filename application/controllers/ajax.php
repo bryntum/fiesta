@@ -11,6 +11,13 @@ class Ajax extends CI_Controller {
         $this->load->model(array('account/account_model'));
         $this->load->model(array('testCases/testCases_model'));
 
+        if ($this->authentication->is_signed_in()) {
+            $this->authUserID = $this->session->userdata('account_id');
+        }
+        else {
+            $this->authUserID = 0;
+        }
+
     }
     
     public function getTestJs()
@@ -34,7 +41,7 @@ class Ajax extends CI_Controller {
                 $whereArray[] = "name LIKE  '%".$params['testCaseName']."%'";
             }
             if(!empty($params['showMy']) && $params['showMy'] == 'on') {
-                $whereArray[] = 'owner_id = '.$this->session->userdata('account_id');
+                $whereArray[] = 'owner_id = '.$this->authUserID;
             }
             if(count($whereArray) == 0) { 
                 $where = '';
@@ -46,7 +53,7 @@ class Ajax extends CI_Controller {
         }
         else {
             if ($this->authentication->is_signed_in()) {
-                $where = array('owner_id' => $this->session->userdata('account_id'));
+                $where = array('owner_id' => $this->authUserID);
             }
         }
 
@@ -62,7 +69,7 @@ class Ajax extends CI_Controller {
                 'page'     => $params['page'],
                 'pageSize' => $params['limit'],
                 'sort'     => $sort
-            ));
+            ),$this->authUserID);
 
             $totalRecords = $this->testCases_model->getAll(array('getTotal' => true));         
 
@@ -73,7 +80,7 @@ class Ajax extends CI_Controller {
                 'page'        => $params['page'],
                 'pageSize'    => $params['limit'],
                 'sort'        => $sort
-            ));
+            ),$this->authUserID);
             
             $totalRecords = $this->testCases_model->getByClause(array(
                 'whereClause' => $where, 
@@ -101,14 +108,18 @@ class Ajax extends CI_Controller {
         
         $where = 'tc.id IN ('.implode(',',$ids).')';
 
-        $testCases = $this->testCases_model->getByClause(array(
+        $testCases = $this->testCases_model->getByClause(
+            array(
             'whereClause' => $where
-        ));
+            ),
+            $this->authUserID
+        );
         
 
         echo json_encode(array('data' => $testCases, 'success' => true));
         
-    }    
+    }
+
     public function getTestCase()
     {
        // Add checking if user has access to this test
@@ -118,12 +129,12 @@ class Ajax extends CI_Controller {
        $success = false;
        
        if($tabId) {
-           $testCase = $this->testCases_model->getById($tabId);        
+           $testCase = $this->testCases_model->getById($tabId,$this->authUserID);
            $success = true;
        }
        elseif($slug) {
            $idFromSlug = preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
-           $testCase = $this->testCases_model->getById($idFromSlug);        
+           $testCase = $this->testCases_model->getById($idFromSlug,$this->authUserID);
            $success = true;
        }
        else {
