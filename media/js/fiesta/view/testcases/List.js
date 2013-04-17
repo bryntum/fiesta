@@ -17,23 +17,23 @@ Ext.define('Fiesta.view.testcases.List', {
                     xtype: 'testCaseColumn'
                 },
 
-                {
-                    xtype: 'actioncolumn',
-                    width: 20,
-                    iconCls: 'star',
-                    cls: 'starredColumn',
-                    scope: this,
-                    getClass: function (v, meta, rec) {
-                        if (rec.get('starred')) {
-                            return 'filledStar';
-                        } else {
-                            return 'star';
-                        }
-                    },
-                    handler: function (grid, rowIndex, colIndex) {
-                        FIESTA.addToFavorites(grid.getStore().getAt(rowIndex));
-                    }
-                }
+//                {
+//                    xtype: 'actioncolumn',
+//                    width: 20,
+//                    iconCls: 'star',
+//                    cls: 'starredColumn',
+//                    scope: this,
+//                    getClass: function (v, meta, rec) {
+//                        if (rec.get('starred')) {
+//                            return 'filledStar';
+//                        } else {
+//                            return 'star';
+//                        }
+//                    },
+//                    handler: function (grid, rowIndex, colIndex) {
+//                        FIESTA.addToFavorites(grid.getStore().getAt(rowIndex));
+//                    }
+//                }
             ],
             emptyText: 'No tests found...',
 
@@ -54,11 +54,34 @@ Ext.define('Fiesta.view.testcases.List', {
         this.callParent(arguments);
     },
 
-    onMyItemClick: function (grid, record) {
-        var tabs = FIESTA.getMainView(),
-            activeTab = tabs.updateTab(record);
+    onMyItemClick: function (grid, record, item, index, e) {
+        var target = Ext.get(e.getTarget()),
+            tabs = FIESTA.getMainView();
 
-        tabs.setActiveTab(activeTab);
+        if (target.hasCls('x-tab-default')) {
+            var searchForm = Ext.ComponentQuery.query('searchForm')[0],
+                selTag = {id: null, tag: target.getHTML()},
+                tags = record.get('tags');
+
+            tags.forEach(function(tag){
+                if(tag.tag == selTag.tag) {
+                    selTag.id = parseInt(tag.id);
+                    return;
+                }
+            });
+
+            searchForm.addTagFilter(selTag);
+        }
+
+        else if (target.hasCls('star')) {
+
+            FIESTA.addToFavorites(grid.getStore().getAt(index));
+
+        }
+
+        else {
+            tabs.activateTabFor(record);
+        }
     },
     onMyAfterRender: function () {
         var menu = this.headerCt.getMenu();
@@ -81,7 +104,7 @@ Ext.define('Fiesta.view.testcases.List', {
             }
             else {
                 this.setIconCls('sortDesc');
-                Ext.getStore('TestCases').sort(this.sortField, 'ASC');
+                Ext.getStore('TestCases').sort(this.sortField, 'DESC');
             }
 
         };

@@ -7,10 +7,20 @@
     background: url('/media/img/star_emp.png');
 }
 
-.star:hover, .filledStar {
+.star:hover, .filledStar .star{
     background: url('/media/img/star_full.png');
 }
 
+.filledStar .star {
+    display: block !important;
+}
+
+
+.x-grid-cell .star  {
+    float: right;
+    width: 16px;
+    height: 16px;
+}
 /*
 .testCasesList .star, .filledStar {
     background-position: left center;
@@ -27,6 +37,12 @@
     height: 16px;    
 }
 */
+
+.testCasesList .colHolder {
+    width: 90%;
+    float: left;
+    position: relative;
+}
 
 .testCasesList .nameHolder {
     margin-bottom: 0px;
@@ -57,11 +73,8 @@
     display: block;
 }
 
-.testCasesList .testNameColumn .x-column-header-over .x-column-header-trigger {
-    display: none;
-}
 
-.testCasesList .starredColumn .x-column-header-trigger {
+.testCasesList .testNameColumn .x-column-header-trigger {
     display: block;
 }
 
@@ -96,7 +109,7 @@
 }
 
 .testCasesList .x-grid-row-selected .x-grid-td {
-    background-color: #FFF;
+    background-color: #FFF !important;
 }
 
 .testCasesList .x-grid-cell-inner {
@@ -128,7 +141,7 @@
 
 .testCasesList ul > li {
 
-    padding: 2px !important;
+    padding: 0px 2px !important;
     display: block;
     float: left;
     font-size: 10px;

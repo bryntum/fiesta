@@ -91,12 +91,24 @@ Ext.define("Fiesta.view.SearchForm", {
     processFilter: function (field) {
 
         var searchForm = Ext.ComponentQuery.query('searchForm'),
-        params = searchForm[0].getForm().getValues(),
-        store = Ext.getStore('TestCases');
+            params = searchForm[0].getForm().getValues(),
+            store = Ext.getStore('TestCases');
 
         params.action =  'filter';
         store.proxy.extraParams = params;
 
         store.load(); 
-    }    
+    },
+
+    addTagFilter: function (tag) {
+        var curValue = this.getForm().findField('tags-filter').getValue();
+        if(curValue.indexOf(tag.id) == -1) {
+
+            curValue.push(tag.id);
+
+            this.getForm().findField('tags-filter').store.add(tag);
+            this.getForm().findField('tags-filter').setValue(curValue);
+            this.processFilter();
+        }
+    }
 });

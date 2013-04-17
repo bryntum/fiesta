@@ -8,16 +8,19 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
             flex: 1,
 
             tpl: [
-                '<div class="date">{created_at:date("d/m/Y")}</div>',
-                '<div class="nameHolder">{name}</div>',
-                '<div class="userName">{ownerName}</div>',
-                '<ul class="x-boxselect-list">',
-                    '<tpl foreach="tags">',
-                        '<li class="x-tab-default x-boxselect-item">',
-                            '{tag}',
-                        '</li>',
-                    '</tpl>',
-                '</ul>'
+                '<div class="colHolder">' +
+                    '<div class="date">{created_at:date("d/m/Y")}</div>',
+                    '<div class="nameHolder">{name}</div>',
+                    '<div class="userName">{ownerName}</div>',
+                    '<ul class="x-boxselect-list">',
+                        '<tpl foreach="tags">',
+                            '<li class="x-tab-default x-boxselect-item">',
+                                '{tag}',
+                            '</li>',
+                        '</tpl>',
+                    '</ul>',
+                '</div>',
+                '<div class="star"></div>'
             ]
 
         });

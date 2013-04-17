@@ -58,15 +58,20 @@ class Testcases_model extends CI_Model {
         if(isset($params['page']) && $params['pageSize']) {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
-        
-        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
+        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
             ->from('testCases as tc')
-            ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
-            ->order_by("created_at", 'desc');
+            ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left');
+
 
         if(isset($params['getTotal']) && $params['getTotal']) {
             return $this->db->count_all_results();
-        }        
+        }
+
+        if(isset($params['sort']) && count($params['sort']) > 0) {
+            foreach($params['sort'] as $sortItem) {
+                $this->db->order_by($sortItem->property, $sortItem->direction);
+            }
+        }
 
         if(isset($params['page']) && isset($params['pageSize'])) {
                     
@@ -100,13 +105,15 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
+        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId')
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')            
             ->where($params['whereClause']);
 
-        if(isset($params['order'])) {
-            $this->db->order_by($params['order']);
+        if(isset($params['sort']) && count($params['sort']) > 0) {
+            foreach($params['sort'] as $sortItem) {
+                $this->db->order_by($sortItem->property, $sortItem->direction);
+            }
         }                
         
         if(isset($params['getTotal']) && $params['getTotal']) {

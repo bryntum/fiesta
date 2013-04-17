@@ -24,6 +24,8 @@ class Ajax extends CI_Controller {
         $params = $this->input->get(NULL,TRUE);
 
         $where = array();
+        $sort = array();
+
 
         if(isset($params['action']) && $params['action'] == 'filter') {
             $whereArray = array();
@@ -47,11 +49,19 @@ class Ajax extends CI_Controller {
                 $where = array('owner_id' => $this->session->userdata('account_id'));
             }
         }
-        
+
+        if(isset($params['sort'])) {
+            $sort = json_decode($params['sort']);
+        }
+        else {
+            $sort = json_decode('[{"property":"created_at","direction":"DESC"}]');
+        }
+
         if(empty($where)) {
             $testCases = $this->testCases_model->getAll(array(
-                'page' => $params['page'], 
-                'pageSize' => $params['limit']
+                'page'     => $params['page'],
+                'pageSize' => $params['limit'],
+                'sort'     => $sort
             ));
 
             $totalRecords = $this->testCases_model->getAll(array('getTotal' => true));         
@@ -60,8 +70,9 @@ class Ajax extends CI_Controller {
         else {
             $testCases = $this->testCases_model->getByClause(array(
                 'whereClause' => $where, 
-                'page' => $params['page'], 
-                'pageSize' => $params['limit']
+                'page'        => $params['page'],
+                'pageSize'    => $params['limit'],
+                'sort'        => $sort
             ));
             
             $totalRecords = $this->testCases_model->getByClause(array(

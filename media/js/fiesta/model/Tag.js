@@ -1,7 +1,13 @@
 Ext.define("Fiesta.model.Tag", {
 	extend: "Ext.data.Model",
 	idProperty: "id",
-	fields: ["id", "tag"],
+	fields: [
+        {
+            name:"id",
+            type:"int"
+        },
+        "tag"
+    ],
     proxy: {
         type: "ajax",
         url: "/ajax/getTags",
