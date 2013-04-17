@@ -11120,7 +11120,7 @@ Class('Siesta.Harness', {
         startSingle : function (desc) {
             var me              = this
             
-            this.__counter__    = (this.__counter__ || 0) 
+            this.__counter__    = this.__counter__ || 0 
             
             var startSingle     = function () {
                 me.launch([ me.normalizeDescriptor(desc, me, me.__counter__++) ])
@@ -22162,6 +22162,14 @@ Role('Siesta.Test.Simulate.Mouse', {
                 }, options);
             }
 
+            // Not supported in IE
+            if ("screenX" in window) {
+                options = $.extend(options, {
+                    screenX: this.global.screenX + options.clientX,
+                    screenY: this.global.screenY + options.clientY
+                });
+            }
+
             var doc = el.ownerDocument
 
             // use W3C standard when available and allowed by "simulateEventsWith" option
@@ -22189,6 +22197,7 @@ Role('Siesta.Test.Simulate.Mouse', {
                 this.currentPosition[ 0 ]   = options.clientX
                 this.currentPosition[ 1 ]   = options.clientY
             }
+
             return event;
         },
         
@@ -24261,7 +24270,7 @@ Role('Siesta.Test.ExtJS.Observable', {
             
                 observable.on(event, function () { eventFired = true }, null, { single : true })
             
-                this.waitFor({
+                return this.waitFor({
                     method          : function() { return eventFired; }, 
                     callback        : callback,
                     scope           : scope,
@@ -24270,7 +24279,7 @@ Role('Siesta.Test.ExtJS.Observable', {
                     description     : ' observable to fire its "' + event + '" event'
                 });
             } else {
-                this.SUPERARG(arguments);
+                return this.SUPERARG(arguments);
             }
         },
         
@@ -25910,7 +25919,7 @@ Role('Siesta.Test.Element', {
                     });
                 }
             } else {
-                if (foundEl.dom === el.dom) {
+                if (foundEl === el) {
                     this.pass(description, {
                         descTpl         : 'DOM element is at [ {x}, {y} ] coordinates',
                         x               : xy[ 0 ],
@@ -26540,7 +26549,7 @@ Class('Siesta.Test.Browser', {
             
             this.$(observable).bind(event, function () { eventFired = true })
             
-            this.waitFor({
+            return this.waitFor({
                 method          : function() { return eventFired; }, 
                 callback        : callback,
                 scope           : scope,
@@ -29876,7 +29885,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         var resultPanel = this.slots.resultPanel;
     
         // if resultPanel has no testRecord it hasn't yet been assigned a test record
-        if (!resultPanel.testRecord || resultPanel.testRecord.get('test').generation != test.generation) {
+        if (!resultPanel.test || resultPanel.test.generation != test.generation) {
             return false;
         }
     
@@ -30863,6 +30872,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     canManageDOM            : true,
     
     isStandalone            : false,
+    showToolbar             : true,
     
     title                   : '&nbsp;',
     style                   : 'background:transparent',
@@ -30884,8 +30894,23 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     initComponent : function() {
         this.addEvents('viewdomchange');
         
+        if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
+            model   : 'Siesta.Harness.Browser.Model.Assertion',
+
+            proxy   : {
+                type        : 'memory',
+                reader      : { type: 'json' }
+            },
+
+            root    : {
+                id          : '__ROOT__',
+                expanded    : true,
+                loaded      : true
+            }
+        })
+        
         Ext.apply(this, {
-            tbar : [
+            tbar : !this.showToolbar ? null : [
                 this.sourceButton = new Ext.Button({
                     text            : 'View source', 
                     iconCls         : 'view-source',
@@ -31029,7 +31054,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         var test            = this.test
     
         cardContainer.layout.setActiveItem(sourceCt);
-        this.sourceButton.toggle(true);
+        this.sourceButton && this.sourceButton.toggle(true);
 
         if (test && !sourceCt.__filled__) {
             sourceCt.__filled__ = true;
@@ -31065,7 +31090,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         var cardContainer   = slots.cardContainer
         
         cardContainer.layout.setActiveItem(slots.grid);
-        this.sourceButton.toggle(false);
+        this.sourceButton && this.sourceButton.toggle(false);
     },
 
     setViewDOM : function (value) {
@@ -31114,6 +31139,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         if (!this.maintainViewportSize) Ext.fly(iframe).setSize(domContainer.el.getSize())
     },
 
+    
     onDomContainerCollapse : function() {
         this.hideIFrame();
         this.viewDOM    = false;
@@ -31139,6 +31165,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         }
     },
 
+    
     hideIFrame : function () {
         var iframe          = this.getIFrame()
     
@@ -31166,11 +31193,11 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
             this.hideIFrame()
         }
         
-        this.filterButton.toggle(false)
+        this.filterButton && this.filterButton.toggle(false)
         this.hideSource();
         
         this.test   = test
-        this.sourceButton.enable()
+        this.sourceButton && this.sourceButton.enable()
     
         this.testListeners   = [
             test.on('testfinalize', this.onTestFinalize, this),
@@ -31452,7 +31479,7 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                     // to 
                     //                         |_
                     //                         |
-                    if (index == store.getCount() - 1) this.refreshNode(index - 1)
+                    if (index > 0 && index == store.getCount() - 1) this.refreshNode(index - 1)
                     
                     // TODO also need to update previous nodes, when adding a node with different depth
                     
@@ -31513,7 +31540,8 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
 
         this.callParent(arguments);
     },           
-                
+          
+    
     resultRenderer : function (value, metaData, record, rowIndex, colIndex, store) {
         return this.resultTpl.apply(record.data);
     },
@@ -31530,7 +31558,10 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
 
         me.store    = store;
         
-        if (me.getView().store != store.nodeStore) me.getView().bindStore(store.nodeStore, isInitial);
+        if (me.getView().store != store.nodeStore) {
+            me.getView().bindStore(store.nodeStore, isInitial);
+            me.getView().dataSource     = store.nodeStore
+        }
         
 //        me.mon(store, {
 //            scope       : me,
@@ -31674,9 +31705,13 @@ Class('Siesta.Harness.Browser.ExtJS', {
             },
             
             setup : function (callback) {
-                if (this.allowExtVersionChange) this.extVersion     = this.findExtVersion()
+                var me      = this
                 
-                this.SUPER(callback)
+                this.SUPER(function () {
+                    if (me.allowExtVersionChange) me.extVersion = me.findExtVersion()
+                    
+                    callback()
+                })
             },
             
         

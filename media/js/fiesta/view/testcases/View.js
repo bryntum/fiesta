@@ -82,25 +82,11 @@ Ext.define('Fiesta.view.testcases.View', {
                         },
                         // card with
                         {
-                            xtype       : 'resultpanel',
-                            title       : 'Run',
+                            xtype               : 'resultpanel',
+                            title               : 'Run',
                             
-                            isStandalone    : true,
-
-                            store       : new Siesta.Harness.Browser.Model.AssertionTreeStore({
-                                model   : 'Siesta.Harness.Browser.Model.Assertion',
-
-                                proxy   : {
-                                    type        : 'memory',
-                                    reader      : { type: 'json' }
-                                },
-
-                                root    : {
-                                    id          : '__ROOT__',
-                                    expanded    : true,
-                                    loaded      : true
-                                }
-                            }),
+                            isStandalone        : true,
+                            showToolbar         : false,
 
                             disableSelection    : true
                         }
@@ -132,8 +118,28 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     switchToResultsTab: function () {
-        this.down('[slot=cardcontainer]').getLayout().setActiveItem(1);
+        var cardContainer   = this.down('[slot=cardcontainer]')
+        
+        cardContainer.getLayout().setActiveItem(1);
+        
+        var button          = this.down('button[action=launch]')
+        
+        button.setText('Edit')
+        button.setHandler(this.switchToEditTab, this)
     },
+    
+    
+    switchToEditTab: function () {
+        var cardContainer   = this.down('[slot=cardcontainer]')
+        
+        cardContainer.getLayout().setActiveItem(0);
+        
+        var button          = this.down('button[action=launch]')
+        
+        button.setText('Launch')
+        button.setHandler(this.onTestLaunch, this)
+    },
+    
 
 
     onTabSelect: function () {
@@ -158,7 +164,7 @@ Ext.define('Fiesta.view.testcases.View', {
     
     
     onTestStart : function (event, test) {
-        if (this.test && this.test.url == test.url) this.resultPanel.showTest(test)
+        if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
 
 
@@ -170,9 +176,9 @@ Ext.define('Fiesta.view.testcases.View', {
         var harness         = this.harness
 
         harness.startSingle({
-            transparentEx   : false,
+            transparentEx   : true,
             testCode        : testCaseModel.get('code'),
-            url             : testCaseModel.getId(),
+            url             : testCaseModel.internalId,
             preload         : testCaseModel.getPreload()
         })
     },
@@ -208,8 +214,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
         window.open(googleUrl);
     },
-
-
 
 
     destroy : function () {
