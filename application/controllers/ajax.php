@@ -43,7 +43,12 @@ class Ajax extends CI_Controller {
             if(!empty($params['showMy']) && $params['showMy'] == 'on') {
                 $whereArray[] = 'owner_id = '.$this->authUserID;
             }
-            if(count($whereArray) == 0) { 
+
+            if(!empty($params['frameworkId'])) {
+                $whereArray[] = 'framework_id = '.$params['frameworkId'];
+            }
+
+            if(count($whereArray) == 0) {
                 $where = '';
             }
             else {

@@ -55,10 +55,10 @@ Ext.define("Fiesta.view.SearchForm", {
                     xtype: "combo",
                     editable: false,
                     displayField: "name",
-                    valueField: "name",
+                    valueField: "id",
                     emptyText: "Framework",
                     store: new Fiesta.store.Frameworks(),
-                    name: 'framework',
+                    name: 'frameworkId',
                     listeners: {
                         change: this.processFilter
                     }
