@@ -28516,9 +28516,9 @@ Ext.Container.override({
 
             
             computeFolderStatus : function () {
-                if (!this.childNodes.length) return 'yellow'
-                
                 if (!this.isLeaf() && this.getResult().isWorking()) return 'working'
+                
+                if (!this.childNodes.length) return 'yellow'
                 
                 var isWorking   = false
                 var hasFailed   = false
@@ -29638,6 +29638,8 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
             
             scope               : this
         })
+        
+        this.harness.on('testendbubbling', this.onEveryTestEnd, this)
     },
 
     
@@ -30045,6 +30047,21 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     },
     
     
+    // is bubbling and thus triggered for all tests (including sub-tests) 
+    onEveryTestEnd : function (event, test) {
+        var testRecord          = this.testsStore.getNodeById(test.url)
+        
+        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
+        // test instance may change if user has restarted a test for example
+        if (testRecord.get('test').generation == test.generation) {
+            var testResultNode  = testRecord.get('assertionsStore').getById(test.getResults().id)
+            
+            // can be missing for "root" tests
+            testResultNode && testResultNode.updateFolderStatus()
+        }
+    },
+    
+    
     onTestFail : function (test, exception, stack) {
         var testRecord  = this.testsStore.getNodeById(test.url)
         
@@ -30290,7 +30307,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     launchTest : function (testFile) {
         var resultPanel     = this.slots.resultPanel
         
-        if (testFile.data.leaf && (testFile == resultPanel.testRecord || !resultPanel.testRecord)) {
+        if (testFile.data.leaf && (testFile.get('test') == resultPanel.test || !resultPanel.test)) {
             // clear the content of the result panel, but only in case we are launching a currently shown test
             // (we could be also launching some other test)
             // assertions of the tests being launched will be cleared in the `onTestSuiteStart` method
@@ -31133,6 +31150,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         if (domContainer.collapsed || !iframe) return
        
         Ext.fly(iframe).removeCls('tr-iframe-hidden')
+        Ext.fly(iframe).removeCls('tr-iframe-forced')
         
         Ext.fly(iframe).setXY(domContainer.el.getXY())
         
@@ -31200,10 +31218,12 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         this.sourceButton && this.sourceButton.enable()
     
         this.testListeners   = [
-            test.on('testfinalize', this.onTestFinalize, this),
-            test.on('testendbubbling', this.onEveryTestEnd, this)
+            test.on('testfinalize', this.onTestFinalize, this)
         ].concat(
-            this.isStandalone ? test.on('testupdate', this.onTestUpdate, this) : []
+            this.isStandalone ? [
+                test.on('testupdate', this.onTestUpdate, this),
+                test.on('testendbubbling', this.onEveryTestEnd, this)
+            ] : []
         )
 
         var url         = test.url
@@ -31255,8 +31275,12 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     },
     
     
-    onTestFinalize : function () {
+    onTestFinalize : function (event, test) {
         this.setCanManageDOM(true)
+        
+        // this prevents harness from hiding the iframe, because "test.hasForcedIframe()" will return null
+        // we've moved the iframe to the correct position, and it can never be "forced" again anyway
+        test.forceDOMVisible    = false
     },
     
     
@@ -31559,8 +31583,8 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
         me.store    = store;
         
         if (me.getView().store != store.nodeStore) {
-            me.getView().bindStore(store.nodeStore, isInitial);
             me.getView().dataSource     = store.nodeStore
+            me.getView().bindStore(store.nodeStore, isInitial);
         }
         
 //        me.mon(store, {
