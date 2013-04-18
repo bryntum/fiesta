@@ -7,11 +7,13 @@ Ext.application({
         'Fiesta.plugins.FiestaTabCloseMenu',
         'Ext.ux.TabReorderer',
         'Fiesta.DataModel',
+        'Fiesta.view.UserPanel',
         'Fiesta.view.Main',
         'Fiesta.view.testcases.View',
         'Fiesta.view.testcases.List',
         'Fiesta.view.testcases.Create',
-        'Fiesta.view.SearchForm'
+        'Fiesta.view.SearchForm',
+        'Fiesta.view.account.SignIn'
 
     ],
     appFolder       : '/media/js/fiesta',

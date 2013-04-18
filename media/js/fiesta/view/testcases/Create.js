@@ -2,13 +2,6 @@ Ext.define('Fiesta.view.testcases.Create', {
     extend: 'Ext.window.Window',
     alias: 'widget.testCasesCreate',
     requires: ['Fiesta.plugins.TagSelect','Fiesta.plugins.JsEditor'],
-    width: 500,
-    height: 400,
-
-    autoShow: true,
-    modal: true,
-
-    title: 'Add/Edit test case',
 
     // if provided - window will "edit" the model, otherwise new empty model instance is created
     testCaseModel: null,
@@ -17,6 +10,14 @@ Ext.define('Fiesta.view.testcases.Create', {
     initComponent: function (params) {
 
         Ext.apply(this, {
+            width: 500,
+            height: 400,
+
+            autoShow: true,
+            modal: true,
+
+            title: 'Add/Edit test case',
+
             layout: 'fit',
 
             closeAction: 'destroy',
