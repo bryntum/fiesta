@@ -89,7 +89,7 @@ Ext.define('Fiesta.view.Main', {
         }
 
         FIESTA.getCards().getLayout().setActiveItem(1);
-        FIESTA.makeHistory(testCaseModel.get('slug'));
+        // FIESTA.makeHistory(testCaseModel.get('slug'));
 
         // Returning testCase tab component to the caller
         return  activeTab;
@@ -135,6 +135,7 @@ Ext.define('Fiesta.view.Main', {
                             }
                         });
                     }
+
                     return false;
                 },
                 function () {

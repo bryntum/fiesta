@@ -191,23 +191,10 @@ class Testcases_model extends CI_Model {
 
     function createTmp ($data) {
 
-            $data['slug'] = $this->makeSlug($data['name']);
-            unset($data['tagsList']);
 
             $this->db->insert('testCases_tmp', $data);
             $testCaseId = $this->db->insert_id();
 
-            $this->db->where('id', $testCaseId);
-            $this->db->update('testCases_tmp', array('slug' => $testCaseId.'-'.$data['slug']));
-            
-            // Tags insertion should be here 
-
-            if(!empty($tagsList)) {
-                $this->updateTestCaseTags($testCaseId,$tagsList);
-            }
-
-            //$this->db->insert('user_testCases', array('user_id' => $data['owner_id'], 'testCase_id' => $testCaseId, 'starred' => 0));
-            
             return $testCaseId;
         
     }
@@ -317,6 +304,36 @@ class Testcases_model extends CI_Model {
             $this->db->insert('user_testCases', $data);
         }
         return true;
+    }
+
+    function assignTmpTest ($sessionId, $userId) {
+        $tpmTestCases = $this->getTmpTestBySID ($sessionId);
+        $assignedTestCase = array();
+
+        foreach($tpmTestCases as $tpmTestCase) {
+
+             $inserted_id = $this->create(array(
+                'name' => $tpmTestCase->name,
+                'owner_id' => $userId,
+                'framework_id' => $tpmTestCase->framework_id,
+                'private' => $tpmTestCase->private,
+                'code' => $tpmTestCase->code,
+                'tagsList' => $tpmTestCase->tags_list
+            ));
+
+            $assignedTestCase[] = $inserted_id.'-'.$this->makeSlug($tpmTestCase->name);
+        }
+
+        return $assignedTestCase;
+
+    }
+
+    function getTmpTestBySID ($sessionId) {
+
+        return  $this->db->from('testCases_tmp')
+            ->where('session_id', $sessionId)
+            ->get()
+            ->result();
     }
 } 
 ?>

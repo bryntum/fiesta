@@ -50,6 +50,7 @@ Ext.application({
     },
 
     makeHistory: function (newtoken) {
+        console.log('history');
         var oldtoken = Ext.util.History.getToken();
         if(oldtoken === null || oldtoken.search(newtoken) === -1) {
             Ext.History.add(newtoken);
@@ -113,7 +114,7 @@ Ext.application({
         }));     
 
 
-        Ext.util.History.on('change', this.onHistoryChange);        
+        Ext.util.History.on('change', this.onHistoryChange);
 
         FIESTA = this; 
 
@@ -136,18 +137,25 @@ Ext.application({
         })
 
     },
-    onHistoryChange: function(event, token) {
-
+    onHistoryChange: function(token) {
         if (token) {
             var tabs = FIESTA.getMainView(),
             activeTab = null;
 
+            console.log(token);
+            console.log('alalala');
+
             tabs.items.each(function (tab) {
-                if(tab.testCaseModel.get('slug') === token) { 
+                console.log(token);
+                console.log(111);
+
+                if(tab.testCaseModel.get('slug') === token) {
                     activeTab = tab;
                     return false;
                 }
             });
+
+            console.log(activeTab);
 
             if(!activeTab) {
 

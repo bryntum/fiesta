@@ -17,18 +17,19 @@ class Connect_google extends CI_Controller {
 		$this->load->library(array('account/authentication'));
 		$this->load->model(array('account/account_model', 'account/account_openid_model'));
 		$this->load->language(array('general', 'account/sign_in', 'account/account_linked', 'account/connect_third_party'));
+
 	}
 
 
 	function index()
 	{
+
 		// Enable SSL?
 		maintain_ssl($this->config->item("ssl_enabled"));
 
 		// Get OpenID store object
 		$store = new Auth_OpenID_FileStore($this->config->item("openid_file_store_path"));
-        var_dump($store);
-        echo "123";
+
 		// Get OpenID consumer object
 		$consumer = new Auth_OpenID_Consumer($store);
 
@@ -49,6 +50,8 @@ class Connect_google extends CI_Controller {
 						// Run sign in routine
 						$this->authentication->sign_in($user->account_id);
 					}
+
+
 					$user->account_id === $this->session->userdata('account_id') ? $this->session->set_flashdata('linked_error', sprintf(lang('linked_linked_with_this_account'), lang('connect_google'))) : $this->session->set_flashdata('linked_error', sprintf(lang('linked_linked_with_another_account'), lang('connect_google')));
 					redirect('account/account_linked');
 				}

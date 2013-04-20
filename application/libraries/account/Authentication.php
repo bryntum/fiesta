@@ -12,7 +12,7 @@ class Authentication {
 		// Obtain a reference to the ci super object
 		$this->CI =& get_instance();
 
-		$this->CI->load->library('session');
+		// $this->CI->load->library('session');
 	}
 
 	// --------------------------------------------------------------------
@@ -40,7 +40,17 @@ class Authentication {
 	 */
 	function sign_in($account_id, $remember = FALSE)
 	{
-		$remember ? $this->CI->session->cookie_monster(TRUE) : $this->CI->session->cookie_monster(FALSE);
+
+        $this->CI->load->model(array('testCases/testCases_model'));
+        $redirectToTestCase = '';
+
+        $assignedTestCases = $this->CI->testCases_model->assignTmpTest($this->CI->session->userdata('session_id'), $account_id);
+
+        if(count($assignedTestCases) > 0) {
+            $redirectToTestCase = '/#'.$assignedTestCases[count($assignedTestCases)-1];
+        }
+
+        $remember ? $this->CI->session->cookie_monster(TRUE) : $this->CI->session->cookie_monster(FALSE);
 
 		$this->CI->session->set_userdata('account_id', $account_id);
 
@@ -52,7 +62,8 @@ class Authentication {
 		if ($redirect = $this->CI->session->userdata('sign_in_redirect'))
 		{
 			$this->CI->session->unset_userdata('sign_in_redirect');
-			redirect($redirect);
+
+            redirect($redirect);
 		}
 		// Redirect signed in user with GET continue
 		elseif ($this->CI->input->get('continue'))
@@ -60,7 +71,8 @@ class Authentication {
 			redirect($this->CI->input->get('continue'));
 		}
 
-		redirect('');
+
+		redirect($redirectToTestCase);
 	}
 
 	// --------------------------------------------------------------------

@@ -23,12 +23,15 @@ class MY_Session extends CI_Session {
 	 */
 	function cookie_monster($asleep)
 	{
-		$asleep ? setcookie($this->sess_cookie_name.'_cm', 'true', 0, $this->cookie_path, $this->cookie_domain, 0) : setcookie($this->sess_cookie_name.'_cm', 'false', 0, $this->cookie_path, $this->cookie_domain, 0);
+
+        $asleep ? setcookie($this->sess_cookie_name.'_cm', 'true', 0, $this->cookie_path, $this->cookie_domain, 0) : setcookie($this->sess_cookie_name.'_cm', 'false', 0, $this->cookie_path, $this->cookie_domain, 0);
 
 		$_COOKIE[$this->sess_cookie_name.'_cm'] = $asleep ? 'true' : 'false';
 
 		$this->sess_time_to_update = - 1;
 		$this->sess_update();
+
+
 	}
 
 	// ------------------------------------------------------------------------

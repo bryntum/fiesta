@@ -93,6 +93,7 @@ Ext.define('Fiesta.view.testcases.Create', {
                         {
                             xtype: 'checkbox',
                             boxLabel: 'Private',
+                            inputValue: '1',
                             name: 'private'
                         },
                         {
@@ -153,6 +154,9 @@ Ext.define('Fiesta.view.testcases.Create', {
         var me = this,
             formValues = me.down('form').getForm().getValues();
 
+        if(!formValues.private) {
+            formValues.private = 0;
+        }
 
         var testCase = this.testCaseModel;
 

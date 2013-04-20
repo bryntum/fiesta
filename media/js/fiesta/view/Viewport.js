@@ -77,7 +77,7 @@ Ext.define("Fiesta.view.Viewport", {
                     var initialToken = Ext.util.History.getToken();
 
                     if (initialToken) {
-                        Ext.util.History.fireEvent('change', this, initialToken);
+                        Ext.util.History.fireEvent('change', initialToken);
                     }
                 }
             }

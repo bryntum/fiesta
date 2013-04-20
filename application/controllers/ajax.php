@@ -33,6 +33,7 @@ class Ajax extends CI_Controller {
         $where = array();
         $sort = array();
 
+        // TODO: needs to be a little bit refactored to use native activerecrod style where, where_and
 
         if(isset($params['action']) && $params['action'] == 'filter') {
             $whereArray = array();
@@ -49,18 +50,34 @@ class Ajax extends CI_Controller {
             }
 
             if(count($whereArray) == 0) {
-                $where = '';
+                if ($this->authentication->is_signed_in()) {
+                    $where = '(private = 1 AND owner_id = '.$this->authUserID.') OR private = 0';
+                } else {
+                    $where = 'private = 0';
+                }
             }
             else {
                 $where = implode(' AND ',$whereArray);
+
+                if ($this->authentication->is_signed_in()) {
+                    $where .= ' AND (private = 1 AND owner_id = '.$this->authUserID.') OR private = 0';
+                } else {
+                    $where .= ' AND private = 0';
+                }
             }
-            
+
+
         }
         else {
             if ($this->authentication->is_signed_in()) {
-                $where = array('owner_id' => $this->authUserID);
+                $where = 'owner_id ='.$this->authUserID;
+            }
+            else {
+                $where = 'private = 0';
             }
         }
+
+
 
         if(isset($params['sort'])) {
             $sort = json_decode($params['sort']);
@@ -69,17 +86,17 @@ class Ajax extends CI_Controller {
             $sort = json_decode('[{"property":"created_at","direction":"DESC"}]');
         }
 
-        if(empty($where)) {
-            $testCases = $this->testCases_model->getAll(array(
-                'page'     => $params['page'],
-                'pageSize' => $params['limit'],
-                'sort'     => $sort
-            ),$this->authUserID);
-
-            $totalRecords = $this->testCases_model->getAll(array('getTotal' => true));         
-
-        }
-        else {
+//        if(empty($where)) {
+//            $testCases = $this->testCases_model->getAll(array(
+//                'page'     => $params['page'],
+//                'pageSize' => $params['limit'],
+//                'sort'     => $sort
+//            ),$this->authUserID);
+//
+//            $totalRecords = $this->testCases_model->getAll(array('getTotal' => true));
+//
+//        }
+//        else {
             $testCases = $this->testCases_model->getByClause(array(
                 'whereClause' => $where, 
                 'page'        => $params['page'],
@@ -91,11 +108,11 @@ class Ajax extends CI_Controller {
                 'whereClause' => $where, 
                 'getTotal' => true
             ));         
-        }
+//        }
 
-        if ($this->authentication->is_signed_in()) {
-            $favorites = $this->testCases_model->getFavorites($this->session->userdata('account_id'));
-        }        
+//        if ($this->authentication->is_signed_in()) {
+//            $favorites = $this->testCases_model->getFavorites($this->session->userdata('account_id'));
+//        }
         
         echo json_encode(array('data' => $testCases, 'total' => $totalRecords, 'success' => true));
     }
@@ -185,7 +202,7 @@ class Ajax extends CI_Controller {
                 'framework_id' => $frameworkId,
                 'private' => $private,
                 'code' => $code,
-                'tagsList' => $tagsList
+                'tags_list' => $tagsList
 
            )); 
 

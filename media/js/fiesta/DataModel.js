@@ -25,7 +25,9 @@ Ext.define('Fiesta.DataModel', {
         var me = this,
             params = testCaseModel.getData();
 
-        params.tagsList = params.tagsList.join(',');
+        if(params.tagsList.length > 0) {
+            params.tagsList = params.tagsList.join(',');
+        }
 
 
         Ext.Ajax.request({
@@ -105,8 +107,9 @@ Ext.define('Fiesta.DataModel', {
     updateTestCase: function (testCaseModel, callback, errback) {
         var me = this,
             params = testCaseModel.getData();
-
+        if(params.tagsList.length > 0) {
             params.tagsList = params.tagsList.join(',');
+        }
 
         Ext.Ajax.request({
             url: this.updateUrl,

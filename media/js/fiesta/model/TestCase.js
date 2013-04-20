@@ -11,6 +11,7 @@ Ext.define("Fiesta.model.TestCase", {
         "code", 
         'tags', 
         'slug',
+        'private',
         {name: 'starred', type: 'bool'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'}
     ],

@@ -9,6 +9,7 @@ class Main extends CI_Controller {
         $this->load->helper(array('language', 'url', 'form', 'account/ssl'));
         $this->load->library(array('account/authentication'));
         $this->load->model(array('account/account_model'));
+
     }
 
     public function index()
@@ -17,6 +18,7 @@ class Main extends CI_Controller {
 
         if ($this->authentication->is_signed_in())
         {
+
             $account = $this->account_model->get_by_id($this->session->userdata('account_id'));
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
