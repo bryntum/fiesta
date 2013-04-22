@@ -50,7 +50,6 @@ Ext.application({
     },
 
     makeHistory: function (newtoken) {
-        console.log('history');
         var oldtoken = Ext.util.History.getToken();
         if(oldtoken === null || oldtoken.search(newtoken) === -1) {
             Ext.History.add(newtoken);
@@ -137,38 +136,40 @@ Ext.application({
         })
 
     },
-    onHistoryChange: function(token) {
+    onHistoryChange: function(token, initialToken) {
+        console.log('historyChanged, new token:'+token);
+
+        if(typeof(initialToken) == 'undefined') {
+            initialToken = false;
+        }
+
+
         if (token) {
+
             var tabs = FIESTA.getMainView(),
             activeTab = null;
 
-            console.log(token);
-            console.log('alalala');
-
             tabs.items.each(function (tab) {
-                console.log(token);
-                console.log(111);
-
                 if(tab.testCaseModel.get('slug') === token) {
                     activeTab = tab;
                     return false;
                 }
             });
 
-            console.log(activeTab);
 
             if(!activeTab) {
+                if(initialToken) {
+                    Fiesta.DataModel.getTestCase(
+                        {
+                            slug: token
+                        },
+                        function (record) {
+                            tabs.activateTabFor(record);
+                            return false;
+                        }
 
-                Fiesta.DataModel.getTestCase(
-                    {
-                        slug: token                            
-                    },                
-                    function (record) {
-                        tabs.activateTabFor(record);
-                        return false;
-                    }
-
-                );
+                    );
+                }
             }
             else {
                 tabs.setActiveTab(activeTab);

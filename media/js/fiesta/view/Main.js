@@ -42,7 +42,7 @@ Ext.define('Fiesta.view.Main', {
     },
 
     activateTabFor: function (testCaseModel) {
-        this.setActiveTab(this.updateTab(testCaseModel));
+        this.setActiveTab(this.updateTab(testCaseModel, true));
     },
 
     /**
@@ -52,8 +52,14 @@ Ext.define('Fiesta.view.Main', {
      * @return {Ext.Component} Tab component for passed testCaseModel
      */
 
-    updateTab: function (testCaseModel) {
-        console.log(testCaseModel);
+    updateTab: function (testCaseModel, updateHistory) {
+
+        console.log('updateTab');
+
+        if(typeof(updateHistory) == 'undefined') {
+            var updateHistory = false;
+        }
+
         var tabs = this,
             tabExist = false,
             newTabId = testCaseModel.get('id'),
@@ -89,7 +95,10 @@ Ext.define('Fiesta.view.Main', {
         }
 
         FIESTA.getCards().getLayout().setActiveItem(1);
-        // FIESTA.makeHistory(testCaseModel.get('slug'));
+
+        if(updateHistory) {
+            FIESTA.makeHistory(testCaseModel.get('slug'));
+        }
 
         // Returning testCase tab component to the caller
         return  activeTab;
@@ -114,11 +123,16 @@ Ext.define('Fiesta.view.Main', {
             state.openedTabs.push(tab.testCaseModel.get('slug'));
         });
 
+        console.log('getstate');
+        console.log(state);
 
         return state;
     },
     applyTabState: function (state) {
         var tabs = this;
+
+        console.log('stateApply');
+        console.log(state);
 
         if (state.openedTabs.length > 0) {
             Fiesta.DataModel.getTestCasesColl(

@@ -179,5 +179,37 @@ li.myspace { background: url(/resource/img/auth_icons/myspace.png) no-repeat }
 li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
 
 
+.addNewBtn {
 
-    
+
+}
+
+.addNewBtn {
+    border-color: #126daf;
+}
+
+/* line 143, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.addNewBtn {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    padding: 3px 3px 3px 3px;
+    border-width: 1px;
+    border-style: solid;
+    background-image: none;
+    background-color: #75AB00;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #75AB00), color-stop(50%, #85BC05), color-stop(51%, #75AB00), color-stop(100%, #75AB00));
+    background-image: -webkit-linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
+    background-image: -moz-linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
+    background-image: -o-linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
+    background-image: linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
+}
+
+
+/* line 218, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.x-nlg .addNewBtn {
+    background-image: url(images/btn/btn-default-small-bg.gif);
+    background-position: 0 top;
+}

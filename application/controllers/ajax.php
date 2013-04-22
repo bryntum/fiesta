@@ -32,6 +32,7 @@ class Ajax extends CI_Controller {
 
         $where = array();
         $sort = array();
+        $tagsList = array();
 
         // TODO: needs to be a little bit refactored to use native activerecrod style where, where_and
 
@@ -41,17 +42,25 @@ class Ajax extends CI_Controller {
             if(!empty($params['testCaseName'])) {
                 $whereArray[] = "name LIKE  '%".$params['testCaseName']."%'";
             }
+
             if(!empty($params['showMy']) && $params['showMy'] == 'on') {
                 $whereArray[] = 'owner_id = '.$this->authUserID;
+            }
+
+            if(!empty($params['showStarred']) && $params['showStarred'] == 'on') {
+                $whereArray[] = 'st.starred IS NOT NULL';
             }
 
             if(!empty($params['frameworkId'])) {
                 $whereArray[] = 'framework_id = '.$params['frameworkId'];
             }
 
+            if(!empty($params['testCaseTags'])) {
+                $tagsList = $params['testCaseTags'];
+            }
             if(count($whereArray) == 0) {
                 if ($this->authentication->is_signed_in()) {
-                    $where = '(private = 1 AND owner_id = '.$this->authUserID.') OR private = 0';
+                    $where = '((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
                 } else {
                     $where = 'private = 0';
                 }
@@ -60,7 +69,7 @@ class Ajax extends CI_Controller {
                 $where = implode(' AND ',$whereArray);
 
                 if ($this->authentication->is_signed_in()) {
-                    $where .= ' AND (private = 1 AND owner_id = '.$this->authUserID.') OR private = 0';
+                    $where .= ' AND ((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
                 } else {
                     $where .= ' AND private = 0';
                 }
@@ -101,19 +110,25 @@ class Ajax extends CI_Controller {
                 'whereClause' => $where, 
                 'page'        => $params['page'],
                 'pageSize'    => $params['limit'],
-                'sort'        => $sort
+                'sort'        => $sort,
+                'tagsList'    => $tagsList
             ),$this->authUserID);
             
             $totalRecords = $this->testCases_model->getByClause(array(
-                'whereClause' => $where, 
+                'whereClause' => $where,
+                'tagsList'    => $tagsList,
                 'getTotal' => true
-            ));         
+            ));
 //        }
 
 //        if ($this->authentication->is_signed_in()) {
 //            $favorites = $this->testCases_model->getFavorites($this->session->userdata('account_id'));
 //        }
-        
+
+        foreach($testCases as $ind => $test) {
+            $testCases[$ind]->humanTime = $this->makeHumanTime($test->created_at);
+        }
+
         echo json_encode(array('data' => $testCases, 'total' => $totalRecords, 'success' => true));
     }
 
@@ -275,7 +290,15 @@ class Ajax extends CI_Controller {
         echo json_encode(array('data' => $frameworks, 'success' => true));
         
     }
-    
+
+    public function getAllTags() {
+        $tags = array();
+        $tags = $this->testCases_model->getAllTags();
+
+        echo json_encode(array('data' => $tags, 'success' => true));
+
+    }
+
     public function getTags() {
         $params = $this->input->get(NULL,TRUE);
         $tags = array();
@@ -309,6 +332,33 @@ class Ajax extends CI_Controller {
 
         echo json_encode(array('success' => $success, 'errorMsg' => $error));
 
+    }
+    function makeHumanTime($ptime) {
+        $etime = time() - strtotime($ptime);
+
+        if ($etime < 1) {
+            return '0 seconds';
+        }
+
+        if($etime > 5 * 86400 ) {
+            return date('d/m/Y', strtotime($ptime));
+        }
+
+        $a = array( 12 * 30 * 24 * 60 * 60  =>  'year',
+            30 * 24 * 60 * 60       =>  'month',
+            24 * 60 * 60            =>  'day',
+            60 * 60                 =>  'hour',
+            60                      =>  'minute',
+            1                       =>  'second'
+        );
+
+        foreach ($a as $secs => $str) {
+            $d = $etime / $secs;
+            if ($d >= 1) {
+                $r = round($d);
+                return $r . ' ' . $str . ($r > 1 ? 's' : '') . ' ago';
+            }
+        }
     }
 }
 

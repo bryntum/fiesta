@@ -32,17 +32,9 @@
     <script src="/media/js/codemirror/addon/lint/javascript-lint.js"></script>
     <script src="/media/js/codemirror/addon/lint/json-lint.js"></script>
 
-    <script>
-    /*
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + Config.disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    */
-    </script>
 </head>
 <body>
-<div id="disqus_thread" style="height: 100%; padding: 5px; position: relative; top: -10000px;"></div>
+<div id="disqus_thread" style="height: 100%; padding: 5px; position: relative;"></div>
+<script src="http://<?php echo $disqus_shortname?>.disqus.com/embed.js"></script>
 </body>
 </html>

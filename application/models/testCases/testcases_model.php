@@ -50,13 +50,22 @@ class Testcases_model extends CI_Model {
         return $this->db->get('testCases_tags as tlist')->result();
     } 
 
+// TODO move it to TAGS model!!!
+
     function getTagsByClause($whereClause) {
         $query = $this->db->select('tags.*')
                  ->where($whereClause)
                  ->get('tags');
 
         return $query->result();
-    } 
+    }
+
+    function getAllTags() {
+        $query = $this->db->select('tags.*')
+            ->get('tags');
+
+        return $query->result();
+    }
 
     function getAll($params = array(), $userId = 0) {
         if(isset($params['page']) && $params['pageSize']) {
@@ -111,10 +120,20 @@ class Testcases_model extends CI_Model {
         }
         
         $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+            ->distinct()
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = tc.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->where($params['whereClause']);
+
+        if(isset($params['tagsList']) && count($params['tagsList']) > 0) {
+            $tagsList = implode(',', $params['tagsList']);
+
+            if(!empty($tagsList)) {
+                $this->db->join('testCases_tags as tt', "tt.testCase_id = tc.id AND tt.tag_id IN (".$tagsList.")", 'left')
+                    ->where('tt.tag_id IS NOT NULL');
+            }
+        }
 
         if(isset($params['sort']) && count($params['sort']) > 0) {
             foreach($params['sort'] as $sortItem) {

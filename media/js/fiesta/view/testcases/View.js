@@ -13,52 +13,64 @@ Ext.define('Fiesta.view.testcases.View', {
     
     
     initComponent : function () {
+        var topBar =  [
+            {
+                text        : 'Launch',
+                action      : 'launch',
+
+                handler     : this.onTestLaunch,
+                scope       : this
+            },
+            {
+                text        : 'Share',
+                menu        : [
+                    {
+                        text    : "Twitter",
+                        scope   : this,
+                        handler : this.shareTwitter
+                    },
+                    {
+                        text    : "Facebook",
+                        scope   : this,
+                        handler : this.shareFb
+                    },
+                    {
+                        text    : "Google+",
+                        scope   : this,
+                        handler : this.shareGoogle
+                    }
+
+
+                ]
+
+            },
+            {
+                text        : 'Add to favorites',
+                iconCls     : 'filledStar'
+            }
+        ];
+
+        if(this.testCaseModel.get('ownerId') == CONFIG.userId) {
+            topBar.push({
+                text        : 'Edit',
+                handler     : this.onTestEdit,
+                scope       : this
+            });
+        }
+        else {
+            topBar.push({
+                text        : 'Clone',
+                disabled    : true,
+                scope       : this
+            });
+        }
+
+
         Ext.apply(this, {
             layout      : 'border',
             border      : false,
             closable    : true,
-
-            tbar        : [
-                {
-                    text        : 'Launch',
-                    action      : 'launch',
-
-                    handler     : this.onTestLaunch,
-                    scope       : this
-                },
-                {
-                    text        : 'Share',
-                    menu        : [
-                        {
-                            text    : "Twitter",
-                            scope   : this,
-                            handler : this.shareTwitter
-                        },
-                        {
-                            text    : "Facebook",
-                            scope   : this,
-                            handler : this.shareFb
-                        },
-                        {
-                            text    : "Google+",
-                            scope   : this,
-                            handler : this.shareGoogle
-                        }
-
-
-                    ]
-
-                },
-                {
-                    text        : 'Add to favorites',
-                    iconCls     : 'filledStar'
-                },
-                {
-                    text        : 'Edit',
-                    handler     : this.onTestEdit,
-                    scope       : this
-                }
-            ],
+            tbar        : topBar,
             items       : [
                 {
                     region      : 'center',
@@ -143,16 +155,17 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     onTabSelect: function () {
+        var me = this;
+
         FIESTA.makeHistory(this.testCaseModel.get('slug'));
-//        DISQUS.reset({
-//          reload: true,
-//          config: function () {  
-//            this.page.identifier = tab.title+'-'+tab.tabId;  
-//            console.log(this.page.identifier);
-//            this.page.url = SITE_URL+"/#"+tab.title+'-'+tab.tabId;
-//            console.log(this.page.url);
-//          }
-//        });         
+
+        DISQUS.reset({
+          reload: true,
+          config: function () {
+            this.page.identifier = me.testCaseModel.get('slug');
+            this.page.url = SITE_URL+"/#"+me.testCaseModel.get('slug');
+          }
+        });
     },
 
 

@@ -10,7 +10,7 @@ Ext.define("Fiesta.model.Tag", {
     ],
     proxy: {
         type: "ajax",
-        url: "/ajax/getTags",
+        url: "/ajax/getAllTags",
         reader: {
             type: "json",
             root: "data"

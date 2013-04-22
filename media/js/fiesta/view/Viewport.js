@@ -74,10 +74,11 @@ Ext.define("Fiesta.view.Viewport", {
             // EoF items
             listeners: {
                 render: function () {
+                    console.log('render happened');
                     var initialToken = Ext.util.History.getToken();
 
                     if (initialToken) {
-                        Ext.util.History.fireEvent('change', initialToken);
+                        Ext.util.History.fireEvent('change', initialToken, true);
                     }
                 }
             }

@@ -13,7 +13,8 @@ Ext.define("Fiesta.model.TestCase", {
         'slug',
         'private',
         {name: 'starred', type: 'bool'},
-        {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'}
+        {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
+        'humanTime'
     ],
     
     getPreload : function () {

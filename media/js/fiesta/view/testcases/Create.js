@@ -57,13 +57,15 @@ Ext.define('Fiesta.view.testcases.Create', {
                                     flex: true,
                                     name: 'name',
                                     emptyText: "Title",
+                                    allowBlank: false,
                                     margin: '0 20 0 0'
                                 },
                                 {
                                     xtype: "combo",
                                     displayField: "name",
                                     valueField: "id",
-                                    editable: false,
+                                    editable: true,
+                                    forceSelection: true,
                                     name: 'frameworkId',
                                     emptyText: "Framework",
                                     store: "Frameworks",

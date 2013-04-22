@@ -36,6 +36,7 @@ Ext.define("Fiesta.view.SearchForm", {
                             action: "addCase",
                             xtype: "button",
                             text: "Add new",
+                            cls: 'addNewBtn',
                             handler: this.addTest,
                             margin: {left: 5},
                             scope: this
@@ -49,7 +50,12 @@ Ext.define("Fiesta.view.SearchForm", {
                     valueField: "id",
                     emptyText: "Filter by tag (multiple choices)",
                     name: 'testCaseTags[]',
-                    queryMode: 'remote'
+                    queryMode: 'local',
+                    forceSelection: true,
+                    listeners: {
+                        change: this.processFilter
+                    }
+
                 }, {
                     id: "framework-filter",
                     xtype: "combo",
@@ -69,15 +75,33 @@ Ext.define("Fiesta.view.SearchForm", {
 
         if (FIESTA.isSignedIn()) {
             this.items.push({
-                xtype: 'checkbox',
-                boxLabel: 'Mine only',
-                name: 'showMy',
-                value: 1,
-                checked: true,
-                listeners: {
-                    change: this.processFilter
-                }
-
+                margin: '0 0 5 0',
+                border: 0,
+                layout: {
+                    type: "hbox",
+                    align: "middle"
+                },
+                items: [{
+                    xtype: 'checkbox',
+                    boxLabel: 'Mine only',
+                    name: 'showMy',
+                    value: 1,
+                    checked: true,
+                    listeners: {
+                        change: this.processFilter
+                    }
+                },
+                {
+                    xtype: 'checkbox',
+                    boxLabel: 'Starred only',
+                    name: 'showStarred',
+                    value: 1,
+                    margin: '0 0 0 10',
+                    checked: false,
+                    listeners: {
+                        change: this.processFilter
+                    }
+                }]
             });
         }
 
@@ -106,7 +130,7 @@ Ext.define("Fiesta.view.SearchForm", {
 
             curValue.push(tag.id);
 
-            this.getForm().findField('tags-filter').store.add(tag);
+            //this.getForm().findField('tags-filter').store.add(tag);
             this.getForm().findField('tags-filter').setValue(curValue);
             this.processFilter();
         }
