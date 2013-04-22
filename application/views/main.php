@@ -34,7 +34,10 @@
 
 </head>
 <body>
-<div id="disqus_thread" style="height: 100%; padding: 5px; position: relative;"></div>
+<div id="disqus_thread" style="height: 100%; padding: 5px;"></div>
 <script src="http://<?php echo $disqus_shortname?>.disqus.com/embed.js"></script>
+<script>
+    var disqus_developer = 1;
+</script>
 </body>
 </html>
