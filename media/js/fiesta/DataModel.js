@@ -7,6 +7,7 @@ Ext.define('Fiesta.DataModel', {
     updateUrl: 'ajax/updateTestCase/',
     getUrl: 'ajax/getTestCase/',
     getCollectionUrl: 'ajax/getTestCasesColl/',
+    updateRatingUrl:    'ajax/updateRating/',
 
     frameworkStore: null,
 
@@ -279,6 +280,86 @@ Ext.define('Fiesta.DataModel', {
             },
             scope: this
         });
+    },
+
+    rate: function (record, dir) {
+        if(FIESTA.isSignedIn()) {
+            var params = {
+                userId      : CONFIG.userId,
+                testCaseId  : record.get('id'),
+                direction   : dir
+            };
+
+            if(dir == 'up') {
+                record.set('rating', record.get('rating') + 1);
+
+            }
+            else {
+                record.set('rating', record.get('rating') - 1);
+            }
+
+            Ext.Ajax.request({
+                url: this.updateRatingUrl,
+                params: params,
+                success: function (response) {
+                    try {
+                        var o = Ext.decode(response.responseText);
+                    }
+                    catch (e) {
+                        this.fireEvent('requestfailed', this, {
+                            url: this.url,
+                            message: 'Server message:' + response.responseText
+                        });
+
+                        if(dir == 'up') {
+                            record.set('rating', record.get('rating') - 1);
+                        }
+                        else {
+                            record.set('rating', record.get('rating') + 1);
+                        }
+
+
+                        return false;
+                    }
+
+                    if (true === o.success) {
+                        return true;
+                    }
+                    else {
+                        this.fireEvent('requestfailed', this, {
+                            url: this.url,
+                            message: 'Server message:' + o.errorMsg
+                        });
+
+                        if(dir == 'up') {
+                            record.set('rating', record.get('rating') - 1);
+                        }
+                        else {
+                            record.set('rating', record.get('rating') + 1);
+                        }
+
+                        return false;
+                    }
+                },
+                failure: function (response) {
+
+                    this.fireEvent('requestfailed', this, {
+                        url: this.url,
+                        message: 'Failed to update rating!'
+                    });
+
+                    if(dir == 'up') {
+                        record.set('rating', record.get('rating') - 1);
+                    }
+                    else {
+                        record.set('rating', record.get('rating') + 1);
+                    }
+
+                },
+                scope: this
+            });
+
+        }
     }
 
 

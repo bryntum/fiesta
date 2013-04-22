@@ -85,7 +85,7 @@ Ext.define('Fiesta.view.testcases.Create', {
                             valueField: "id",
                             emptyText: "Tags (multiple choices)",
                             name: 'tagsList',
-                            queryMode: 'remote',
+                            queryMode: 'local',
                             createNewOnEnter: true,
                             createNewOnBlur: true,
                             forceSelection: false,

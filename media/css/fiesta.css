@@ -213,3 +213,19 @@ li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
     background-image: url(images/btn/btn-default-small-bg.gif);
     background-position: 0 top;
 }
+
+.rating {
+    font-size: 10px;
+}
+
+.rate_down {
+    margin-right: 10px;
+    color: #FF0000;
+    font-size: 14px;
+}
+
+.rate_up {
+    margin-left: 10px;
+    color:#00FF00;
+    font-size: 14px;
+}

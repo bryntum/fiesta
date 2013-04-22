@@ -354,5 +354,21 @@ class Testcases_model extends CI_Model {
             ->get()
             ->result();
     }
+
+    function updateRating ($id, $dir) {
+        $this->db->where('id', $id);
+
+        if($dir == 'up') {
+            $this->db->set('rating','`rating`+1',FALSE);
+        }
+        else {
+            $this->db->set('rating','`rating`-1', FALSE);
+        }
+
+
+        $this->db->update('testCases');
+
+        return true;
+    }
 } 
 ?>

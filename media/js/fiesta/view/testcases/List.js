@@ -73,6 +73,12 @@ Ext.define('Fiesta.view.testcases.List', {
             searchForm.addTagFilter(selTag);
         }
 
+        else if (target.hasCls('rate_up')) {
+            Fiesta.DataModel.rate(record, 'up');
+        }
+        else if (target.hasCls('rate_down')) {
+            Fiesta.DataModel.rate(record, 'down');
+        }
         else if (target.hasCls('star')) {
 
             FIESTA.addToFavorites(grid.getStore().getAt(index));

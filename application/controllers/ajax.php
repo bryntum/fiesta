@@ -360,6 +360,21 @@ class Ajax extends CI_Controller {
             }
         }
     }
+
+    function updateRating() {
+        $success = false;
+        $error = 'Please sign in to be able to rate tests!';
+        $params = $this->input->post(NULL,TRUE);
+
+        if ($this->authentication->is_signed_in() && !empty($params['testCaseId']) && !empty($params['direction'])) {
+            $this->testCases_model->updateRating($params['testCaseId'], $params['direction']);
+            $success = true;
+            $error='';
+        }
+
+        echo json_encode(array('success' => $success, 'errorMsg' => $error));
+
+    }
 }
 
 /* End of file ajax.php */
