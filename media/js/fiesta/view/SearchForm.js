@@ -105,11 +105,41 @@ Ext.define("Fiesta.view.SearchForm", {
             });
         }
 
+
+        this.items.push({
+            margin      : '0 0 5 0',
+            border      : false,
+            xtype       : 'component',
+            html        : '<span class="clrFilter">Clear filters</span>',
+
+            listeners   : {
+                click:  {
+                    element : 'el',
+                    scope   : this,
+                    fn      : this.clearFilters
+                }
+            }
+        });
+
         this.callParent(arguments);
     },
 
     addTest: function () {
         var addWin = new Fiesta.view.testcases.Create();
+    },
+
+    clearFilters: function () {
+        var store = Ext.getStore('TestCases');
+
+        this.getForm().reset();
+        this.getForm().findField('showMy').suspendEvents();
+
+        this.getForm().setValues({showMy:false});
+
+        this.getForm().findField('showMy').resumeEvents();
+
+        store.proxy.extraParams = {};
+        store.load();
     },
 
     processFilter: function (field) {

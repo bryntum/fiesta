@@ -229,3 +229,11 @@ li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
     color:#00FF00;
     font-size: 14px;
 }
+
+.clrFilter {
+    float: right;
+    color: blue;
+    cursor: pointer;
+    font-size: 10px;
+}
+
