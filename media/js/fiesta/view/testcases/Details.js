@@ -1,15 +1,15 @@
 Ext.define('Fiesta.view.testcases.Details', {
-    extend      : 'Ext.Panel',
-    region      : 'south',
-    alias       : 'widget.detailspanel',
-    height      : 200,
-    border      : false,
-    scroll      : true,
-    collapsible : true,
-    split       : true,
-    title       : 'Details & Comments',
+    extend        : 'Ext.Panel',
+    region        : 'south',
+    alias         : 'widget.detailspanel',
+    height        : 200,
+    border        : false,
+    scroll        : true,
+    collapsible   : true,
+    split         : true,
+    title         : 'Details & Comments',
 //    collapsed   : true,
-    autoScroll  : true,
+    autoScroll    : true,
     titleCollapse : true,
     testCaseModel : null,
 
@@ -41,13 +41,26 @@ Ext.define('Fiesta.view.testcases.Details', {
                         {
                             fieldLabel     : 'Tags',
                             xtype          : 'tagselect',
-                            cls            : 'details-tags',
+                            cls            : 'details-tags details-combo',
                             store          : "Tags",
                             displayField   : "tag",
                             valueField     : "tag",
                             name           : 'tagsList',
                             queryMode      : 'local',
                             forceSelection : false
+                        },
+                        {
+                            xtype          : "combo",
+                            fieldLabel     : 'Framework',
+                            cls            : 'details-combo',
+                            displayField   : "name",
+                            valueField     : "id",
+                            editable       : true,
+                            forceSelection : true,
+                            name           : 'frameworkId',
+                            emptyText      : "Framework",
+                            store          : "Frameworks",
+                            queryMode      : 'local'
                         },
                         {
                             xtype      : 'checkbox',
@@ -69,7 +82,7 @@ Ext.define('Fiesta.view.testcases.Details', {
     },
 
 
-    setTestCaseModel : function(model) {
+    setTestCaseModel : function (model) {
         this.testCaseModel = model;
         this.getForm().loadRecord(model);
     }
