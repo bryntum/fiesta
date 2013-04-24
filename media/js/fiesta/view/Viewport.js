@@ -1,7 +1,7 @@
 Ext.define("Fiesta.view.Viewport", {
     extend: "Ext.container.Viewport",
     layout: 'border',
-    margins: '5 5 5 5',
+    margins: 5,
     initComponent: function () {
         Ext.apply(this, {
             items: [
@@ -21,27 +21,8 @@ Ext.define("Fiesta.view.Viewport", {
                             html    : '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Welcome to Fiesta!</div>'
                         },
                         {
-                            layout  : 'border',
-                            items   : [
-                                {
-                                    xtype   : 'mainView',
-                                    border  : false,
-                                    region  : 'center'
-                                },
-                                {
-                                    region      : 'south',
-                                    height      : 200,
-                                    border      : false,
-                                    scroll      : true,
-                                    collapsible : true,
-                                    split       : true,
-                                    title       : 'Comments',
-                                    collapsed   : true,
-                                    autoScroll  : true,
-                                    contentEl   : 'disqus_thread'
-                                }
-                            ]
-
+                            xtype   : 'mainView',
+                            border  : false
                         }
                     ]
                 },
@@ -64,7 +45,7 @@ Ext.define("Fiesta.view.Viewport", {
                             xtype       : 'testCasesList',
                             region      : 'center',
                             layout      : 'fit',
-                            margins     : '2 2 2 2',
+                            margins     : 2,
                             forceFit    : true,
                             flex        : true
                         }
@@ -74,7 +55,6 @@ Ext.define("Fiesta.view.Viewport", {
             // EoF items
             listeners: {
                 render: function () {
-                    console.log('render happened');
                     var initialToken = Ext.util.History.getToken();
 
                     if (initialToken) {
