@@ -1,0 +1,46 @@
+.testdetailsform .x-panel-body {
+    background : #eee;
+}
+
+.testdetailsform .details-text .x-form-text {
+    border-radius : 4px;
+    background    : linear-gradient(#fefefe, #F4F4F4) repeat scroll 0 0 #EFEFEF;
+    border        : 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow    : 0 1px 3px 0 rgba(0, 0, 0, 0.2) inset, 0 1px 0 rgba(255, 255, 255, 0.2);
+    font-size     : 16px;
+    margin        : 0;
+    padding       : 4px 5px;
+    text-shadow   : 0 1px 0 #FFFFFF;
+    line-height   : 1.4;
+    height        : 29px;
+    color         : #444;
+}
+
+.details-tags .x-form-trigger-wrap {
+    background    : linear-gradient(#fefefe, #F4F4F4) repeat scroll 0 0 #EFEFEF;
+    box-shadow    : 0 1px 3px 0 rgba(0, 0, 0, 0.2) inset, 0 1px 0 rgba(255, 255, 255, 0.2);
+    border        : 1px solid rgba(0, 0, 0, 0.3);
+    border-radius : 4px;
+}
+
+.details-tags .x-form-text
+{
+    background: none transparent;
+}
+
+.details-tags .x-trigger-cell
+{
+    border-left:1px solid #ddd;
+    border-top-right-radius : 4px;
+    border-bottom-right-radius : 4px;
+}
+
+.details-tags ul.x-boxselect-list
+{
+    padding-right:0;
+}
+
+.details-tags .x-boxselect-input
+{
+    width:100% !important;
+}

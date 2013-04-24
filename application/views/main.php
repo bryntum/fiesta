@@ -5,6 +5,7 @@
 	<title>Welcome to Fiesta</title>
     <link rel="stylesheet" type="text/css" href="/media/js/ext/resources/css/ext-all-neptune.css" />
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/test.details.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
     <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-all.css">

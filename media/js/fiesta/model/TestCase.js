@@ -22,5 +22,9 @@ Ext.define("Fiesta.model.TestCase", {
         var frameWorkId     = this.get('frameWorkId')
         
         return frameWorkId ? FIESTA.getStore('Frameworks').getById(frameWorkId).getPreload() : [];
+    },
+
+    isEditable : function() {
+        return this.get('ownerId') == CONFIG.userId || /* isAdmin() */ true ;
     }
 });

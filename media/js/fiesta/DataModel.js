@@ -53,7 +53,7 @@ Ext.define('Fiesta.DataModel', {
 
                     // Updating passed record with id got from backend and ownerId stored in config
                     testCaseModel.set({
-                        id: o.id,
+                        id      : o.id,
                         slug: o.slug,
                         ownerId: CONFIG.userId,
                         ownerName: CONFIG.userName

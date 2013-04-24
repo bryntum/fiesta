@@ -1,18 +1,21 @@
 Ext.define('Fiesta.view.testcases.TestCaseColumn', {
-    extend: 'Ext.grid.column.Template',
-    alias: 'widget.testCaseColumn',
-    initComponent: function () {
-        Ext.apply(this, {
-            text: "Tests",
-            cls: 'testNameColumn',
-            flex: 1,
+    extend        : 'Ext.grid.column.Template',
+    alias         : 'widget.testCaseColumn',
+    text          : "Tests",
+    cls           : 'testNameColumn',
+    flex          : 1,
 
-            tpl: [
+    initComponent : function () {
+
+        Ext.apply(this, {
+            tpl : [
                 '<div class="colHolder">' +
                     '<div class="date">{humanTime}</div>',
                     '<div class="nameHolder">{name}</div>',
                     '<div class="userName">{ownerName}</div>',
-                    '<div class="rating"><span class="rate_down">-</span>{rating}<span class="rate_up">+</span></span></div>',
+                    '<div class="rating">',
+                        '<span class="rate_down">-</span>{rating}<span class="rate_up">+</span></span>',
+                    '</div>',
                     '<ul class="x-boxselect-list">',
                         '<tpl foreach="tags">',
                             '<li class="x-tab-default x-boxselect-item">',
@@ -27,7 +30,6 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
         });
 
         this.callParent(arguments);
-
     },
 
     onTagClick : function () {
