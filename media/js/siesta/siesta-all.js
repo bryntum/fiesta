@@ -3238,8 +3238,7 @@ Class('Scope.Provider', {
             init    : Joose.I.Array
         },
         
-        cleanupCallback         : null,
-        beforeCleanupCallback   : null
+        cleanupCallback     : null
     },
     
         
@@ -3857,8 +3856,6 @@ Class('Scope.Provider.IFrame', {
             // wait for 1000ms to allow time for possible `setTimeout` in the scope of iframe
             setTimeout(function () {
                 
-                if (me.beforeCleanupCallback) me.beforeCleanupCallback()
-                
                 // chaging the page, triggering `onunload` and hopefully preventing browser from caching the content of iframe
                 iframe.src              = 'javascript:false'
                 
@@ -4075,8 +4072,6 @@ Class('Scope.Provider.Window', {
         
         
         cleanup : function () {
-            if (this.beforeCleanupCallback) this.beforeCleanupCallback()
-            
             this.popupWindow.close()
             
             this.popupWindow = null
@@ -4331,7 +4326,6 @@ Class('Scope.Provider.NodeJS', {
         
         
         cleanup : function () {
-            if (this.beforeCleanupCallback) this.beforeCleanupCallback()
             if (this.cleanupCallback) this.cleanupCallback()
         }
     }
@@ -8016,7 +8010,7 @@ Class('Siesta.Test.BDD.Expectation', {
         /**
          * This assertion compares the value provided to the {@link Siesta.Test#expect expect} method with the `expectedValue` argument.
          * Comparison is done with `===` operator, so it should be used only with the primitivies - numbers, strings, booleans etc.
-         * To deeply compare JSON objects and arrays, use {@link #toBeEqual} method. 
+         * To deeply compare JSON objects and arrays, use {@link #toEqual} method.
          * 
          * This method works correctly with the placeholders generated with {@link Siesta.Test#any any} method
          * 
@@ -8145,7 +8139,7 @@ Class('Siesta.Test.BDD.Expectation', {
          * This assertion passes in 2 cases:
          * 
          * 1) When the value provided to the {@link Siesta.Test#expect expect} method is a string, and it contains a passed substring.
-         * 2) When the value provided to the {@link Siesta.Test#expect expect} method is an array, and it contains a passed element.
+         * 2) When the value provided to the {@link Siesta.Test#expect expect} method is an array (or array-like), and it contains a passed element.
          * 
          * @param {String/Mixed} element The element of the array or a sub-string
          */
@@ -8154,29 +8148,32 @@ Class('Siesta.Test.BDD.Expectation', {
             var t           = this.t
             
             var passed      = false
-            
-            if (t.typeOf(value) == 'Array') {
-                for (var i = 0; i < value.length; i++) 
+
+            if (t.typeOf(value) == 'String') {
+                this.process(value.indexOf(element) >= 0, {
+                    descTpl             : 'Expect {got} {!not}to contain {need}',
+                    assertionName       : 'expect(got).toContain(need)',
+                    need                : element,
+                    needDesc            : this.isNot ? 'Need string not containing' : 'Need string containing'
+                })
+            } else {
+                // Normalize to allow NodeList, Arguments etc.
+                value = Array.prototype.slice.call(value);
+
+                for (var i = 0; i < value.length; i++)
                     if (t.compareObjects(element, value[ i ], true)) {
                         passed      = true
                         break
                     }
-                    
+
                 this.process(passed, {
                     descTpl             : 'Expect {got} {!not}to contain {need}',
                     assertionName       : 'expect(got).toContain(need)',
                     need                : element,
                     needDesc            : this.isNot ? 'Need array not containing' : 'Need array containing'
                 })
-                    
-            } else
-                if (t.typeOf(value) == 'String') 
-                    this.process(value.indexOf(element) >= 0, {
-                        descTpl             : 'Expect {got} {!not}to contain {need}',
-                        assertionName       : 'expect(got).toContain(need)',
-                        need                : element,
-                        needDesc            : this.isNot ? 'Need string not containing' : 'Need string containing'
-                    })
+
+            }
         },
         
         
@@ -8432,7 +8429,7 @@ Role('Siesta.Test.BDD', {
         /**
          * This method returns a *placeholder*, denoting any instance of the provided class constructor. Such placeholder can be used in various
          * comparison assertions, like {@link #is}, {@link #isDeeply}, {@link Siesta.Test.BDD.Expectation#toBe expect().toBe()}, 
-         * {@link Siesta.Test.BDD.Expectation#toBe expect().toBeEqual()} and so on.
+         * {@link Siesta.Test.BDD.Expectation#toBe expect().toEqual()} and so on.
          * 
          * For example:
 
@@ -8442,7 +8439,7 @@ Role('Siesta.Test.BDD', {
     
     t.isDeeply({ name : 'John', age : 45 }, { name : 'John', age : t.any(Number))
     
-    t.expect({ name : 'John', age : 45 }).toBeEqual({ name : 'John', age : t.any(Number))
+    t.expect({ name : 'John', age : 45 }).toEqual({ name : 'John', age : t.any(Number))
     
     t.is(NaN, t.any(), 'When class constructor is not provided `t.any()` should match anything')
 
@@ -8772,6 +8769,12 @@ Class('Siesta.Test', {
                 reason  : 'No code provided to test'
             }
         },
+        
+        
+        isFromTheSameGeneration : function (test2) {
+            return this.generation == test2.generation
+        },
+        
 
         toString : function() {
             return this.url
@@ -11117,13 +11120,13 @@ Class('Siesta.Harness', {
         },
         
         
-        startSingle : function (desc) {
+        startSingle : function (desc, callback) {
             var me              = this
             
             this.__counter__    = this.__counter__ || 0 
             
             var startSingle     = function () {
-                me.launch([ me.normalizeDescriptor(desc, me, me.__counter__++) ])
+                me.launch([ me.normalizeDescriptor(desc, me, me.__counter__++) ], callback)
             }
             
             me.setupDone ? startSingle() : this.setup(startSingle)
@@ -21074,13 +21077,9 @@ Class("JooseX.SimpleRequest", {
             try {
                 req.onreadystatechange = function (event) {  
                     if (async && req.readyState == 4) {  
-                        // status is set to 0 for failed cross-domain requests..
-                        // but if the response text presents - we treat this as successfull request
-                        // see https://www.assembla.com/spaces/bryntum/tickets/590
-                        if (req.status == 200 || req.status == 0 && req.responseText.length > 0) 
-                            callback.call(scope || this, true, req.responseText)
-                        else 
-                            callback.call(scope || this, false, "File not found: " + url)
+                        // status is set to 0 for failed cross-domain requests.. 
+                        if (req.status == 200 /*|| req.status == 0*/) callback.call(scope || this, true, req.responseText)
+                        else callback.call(scope || this, false, "File not found: " + url)
                     }  
                 };  
                 req.send(null)
@@ -21089,10 +21088,7 @@ Class("JooseX.SimpleRequest", {
             }
             
             if (!async)
-                if (req.status == 200 || req.status == 0 && req.responseText.length > 0) 
-                    return req.responseText; 
-                else 
-                    throw "File not found: " + url
+                if (req.status == 200 || req.status == 0) return req.responseText; else throw "File not found: " + url
             
             return null
         }
@@ -21837,7 +21833,7 @@ Class('Siesta.Test.Action.Drag', {
         /**
          * @cfg {Siesta.Test.ActionTarget/Function} target
          * 
-         * The initial point of dragging operation. Can be provided as Siesta.Test.ActionTarget or the function it. 
+         * The initial point of dragging operation. Can be provided as Siesta.Test.ActionTarget or the function returning it. 
          * Will also be passed further to the next step.
          */
          
@@ -21939,7 +21935,7 @@ Siesta.Test.ActionRegistry.registerAction('drag', Siesta.Test.Action.Drag);
 @extends Siesta.Test.Action
 @mixin Siesta.Test.Action.Role.HasTarget
 
-This action can be included in the `t.chain` call with "moveCursorTo" shortcut:
+This action can be included in the `t.chain` call with "moveCursor" shortcut:
 
     t.chain(
         {
@@ -22477,7 +22473,8 @@ Role('Siesta.Test.Simulate.Mouse', {
 
             options.clientX = options.clientX != null ? options.clientX : info.xy[0];
             options.clientY = options.clientY != null ? options.clientY : info.xy[1];
-            el = el || info.el;
+            
+            el              = el || info.el;
 
             this.simulateEvent(el, 'mousedown', options);
         },
@@ -22496,7 +22493,8 @@ Role('Siesta.Test.Simulate.Mouse', {
 
             options.clientX = options.clientX != null ? options.clientX : info.xy[0];
             options.clientY = options.clientY != null ? options.clientY : info.xy[1];
-            el = el || info.el;
+            
+            el              = el || info.el;
 
             this.simulateEvent(el, 'mouseup', options);
         },
@@ -22711,9 +22709,8 @@ Role('Siesta.Test.Simulate.Mouse', {
         * @param {Boolean} dragOnly true to skip the mouseup and not finish the drop operation.
         */
         dragTo : function(source, target, callback, scope, options, dragOnly) {
-            if (!source) {
-                throw 'No drag source defined';
-            }
+            source = source || this.currentPosition;
+
             if (!target) {
                 throw 'No drag target defined';
             }
@@ -22750,9 +22747,8 @@ Role('Siesta.Test.Simulate.Mouse', {
         * @param {Boolean} dragOnly true to skip the mouseup and not finish the drop operation.
         */
         dragBy : function(source, delta, callback, scope, options, dragOnly) {
-            if (!source) {
-                throw 'No drag source defined';
-            }
+            source = source || this.currentPosition;
+
             if (!delta) {
                 throw 'No drag delta defined';
             }
@@ -25377,6 +25373,8 @@ Role('Siesta.Test.Element', {
                 offset      = me.$(el).offset(),
                 right       = offset.left + me.$(el).width(),
                 bottom      = offset.top + me.$(el).height();
+                
+            var actionLog   = []
 
             var queue       = new Siesta.Util.Queue({
                 deferer         : me.originalSetTimeout,
@@ -25387,19 +25385,25 @@ Role('Siesta.Test.Element', {
                 observeTest     : this,
                 
                 processor   : function (data) {
-                    if (me.nbrExceptions || me.failed)
+                    if (me.nbrExceptions || me.failed) {
+                        me.warn("Monkey action log:" + JSON2.stringify(actionLog))
                         // do not continue if the test has detected an exception thrown
                         queue.abort()
-                    else
+                    } else
                         data.action(data)
                 }
             });
             
             for (var i = 0; i < nbrInteractions; i++) {
-                var xy = [me.randomBetween(offset.left, right), me.randomBetween(offset.top, bottom)];
+                var xy = [ me.randomBetween(offset.left, right), me.randomBetween(offset.top, bottom) ];
 
-                switch (i % 4) {
+                switch (Math.floor(Math.random() * 4)) {
                     case 0:
+                        actionLog.push({
+                            action  : 'click',
+                            target  : xy
+                        })
+                        
                         queue.addAsyncStep({
                             action          : function (data) {
                                 me.click(data.xy, data.next)
@@ -25409,6 +25413,11 @@ Role('Siesta.Test.Element', {
                     break;
 
                     case 1:
+                        actionLog.push({
+                            action  : 'doubleclick',
+                            target  : xy
+                        })
+                        
                         queue.addAsyncStep({
                             action          : function (data) {
                                 me.doubleClick(data.xy, data.next)
@@ -25418,6 +25427,11 @@ Role('Siesta.Test.Element', {
                     break;
 
                     case 2:
+                        actionLog.push({
+                            action  : 'rightclick',
+                            target  : xy
+                        })
+                    
                         queue.addAsyncStep({
                             action          : function (data) {
                                 me.rightClick(data.xy, data.next)
@@ -25427,16 +25441,20 @@ Role('Siesta.Test.Element', {
                     break;
 
                     default:
+                        var dragTo      = [ me.randomBetween(offset.left, right), me.randomBetween(offset.top, bottom) ]
+                        
+                        actionLog.push({
+                            action  : 'drag',
+                            target  : xy,
+                            to      : dragTo
+                        })
+                        
                         queue.addAsyncStep({
                             action          : function (data) {
-                                me.drag(
-                                    data.xy, 
-                                    [ me.randomBetween(offset.left, right), me.randomBetween(offset.top, bottom) ],
-                                    null,
-                                    data.next
-                                )
+                                me.drag(data.dragFrom, data.dragTo, null, data.next)
                             },
-                            xy              : xy
+                            dragFrom        : xy,
+                            dragTo          : dragTo
                         });
                     break;
                 }
@@ -25447,12 +25465,19 @@ Role('Siesta.Test.Element', {
             var assertionChecker    = function () {
                 checkerActivated    = true
                 
+                if (me.nbrExceptions) me.warn("Monkey action log:" + JSON.stringify(actionLog))
+                
                 me.is(me.nbrExceptions, 0, description || '0 exceptions thrown during monkey test');
             }
             
             this.on('beforetestfinalizeearly', assertionChecker) 
 
-            var async       = me.beginAsync();
+            var async       = me.beginAsync(null, function (test) {
+                test.fail("Monkey testing queue did not complete properly - probably some exception was thrown")
+                me.warn("Monkey action log:" + JSON.stringify(actionLog))
+                
+                return true
+            });
             
             queue.run(function () {
                 me.endAsync(async);
@@ -26121,6 +26146,28 @@ Role('Siesta.Test.Element', {
         },
         
         
+        /**
+         * This method changes the "scrollTop" property of the dom element, then waits for the "scroll" event from it and calls the provided callback.
+         * 
+         * For example:
+         * 
+
+    // scroll the domEl to the 100px offset, wait for "scroll" event, call the callback
+    t.scrollVerticallyTo(domEl, 100, function () { ... })
+
+         * Optionally it can also wait some additional time before calling the callback:
+         * 
+    // scroll the domEl to the 100px offset, wait for "scroll" event, wait 1000ms more, call the callback
+    t.scrollVerticallyTo(domEl, 100, 1000, function () { ... })
+ 
+         * 
+         * @param {Siesta.Test.ActionTarget} el The element
+         * @param {Number} newTop The value for the "scrollTop" property
+         * @param {Number} [delay] Additional delay, this argument can be omitted
+         * @param {Function} callback A function to call after "scroll" event has been fired and additional delay completed (if any)
+         * 
+         * @return {Number} The new value of the "scrollTop" property of the dom element
+         */
         scrollVerticallyTo : function (el, newTop, delay, callback) {
             el                          = this.normalizeElement(el);
             
@@ -26157,6 +26204,67 @@ Role('Siesta.Test.Element', {
             // re-read the scrollTop value and return it (newTop can be too big for example and will be truncated)
             return el.scrollTop
         },
+        
+        
+        /**
+         * This method changes the "scrollLeft" property of the dom element, then waits for the "scroll" event from it and calls the provided callback.
+         * 
+         * For example:
+         * 
+
+    // scroll the domEl to the 100px offset, wait for "scroll" event, call the callback
+    t.scrollHorizontallyTo(domEl, 100, function () { ... })
+
+         * Optionally it can also wait some additional time before calling the callback:
+         * 
+    // scroll the domEl to the 100px offset, wait for "scroll" event, wait 1000ms more, call the callback
+    t.scrollHorizontallyTo(domEl, 100, 1000, function () { ... })
+ 
+         * 
+         * @param {Siesta.Test.ActionTarget} el The element
+         * @param {Number} newLeft The value for the "scrollLeft" property
+         * @param {Number} [delay] Additional delay, this argument can be omitted
+         * @param {Function} callback A function to call after "scroll" event has been fired and additional delay completed (if any)
+         * 
+         * @return {Number} The new value of the "scrollLeft" property of the dom element
+         */
+        scrollHorizontallyTo : function (el, newLeft, delay, callback) {
+            el                          = this.normalizeElement(el);
+            
+            if (this.typeOf(delay) != 'Number') {
+                callback                = delay
+                delay                   = null
+            }
+            
+            var me                      = this
+            var originalSetTimeout      = this.originalSetTimeout;
+            
+            var waiter                  = this.waitForEvent(el, 'scroll', function () {
+                if (delay > 0) {
+                    var async               = me.beginAsync(delay + 100)
+                    
+                    originalSetTimeout(function () {
+                        me.endAsync(async)
+                        
+                        me.processCallbackFromTest(callback)
+                    }, delay)
+                } else
+                    me.processCallbackFromTest(callback)
+            })
+            
+            var prevScrollLeft  = el.scrollLeft
+            
+            el.scrollLeft       = newLeft
+            
+            // no event will be fired in this case probably - force the waiting operation to complete
+            if (el.scrollLeft == prevScrollLeft) {
+                waiter.force()
+            }
+            
+            // re-read the scrollLeft value and return it (newLeft can be too big for example and will be truncated)
+            return el.scrollLeft
+        },
+        
         
         
         /**
@@ -29880,14 +29988,14 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     
         // if there is a "forced to be on top" test then we only need to compare the tests instances
         if (this.harness.testOfForcedIFrame) {
-            return this.harness.testOfForcedIFrame == test;
+            return this.harness.testOfForcedIFrame.isFromTheSameGeneration(test)
         }
     
         // otherwise the only possibly visible test is the one of the current assertion grid
         var resultPanel = this.slots.resultPanel;
     
         // if resultPanel has no testRecord it hasn't yet been assigned a test record
-        if (!resultPanel.test || resultPanel.test.generation != test.generation) {
+        if (!resultPanel.test || !resultPanel.test.isFromTheSameGeneration(test)) {
             return false;
         }
     
@@ -29990,7 +30098,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
             
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
-        if (testRecord.get('test').generation == test.generation) {
+        if (testRecord.get('test').isFromTheSameGeneration(test)) {
             var assertionStore  = testRecord.get('assertionsStore');
     
             var data            = {
@@ -30029,7 +30137,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
-        if (testRecord.get('test').generation == test.generation) {
+        if (testRecord.get('test').isFromTheSameGeneration(test)) {
             testRecord.beginEdit()
     
             testRecord.set({
@@ -30053,7 +30161,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
-        if (testRecord.get('test').generation == test.generation) {
+        if (testRecord.get('test').isFromTheSameGeneration(test)) {
             var testResultNode  = testRecord.get('assertionsStore').getById(test.getResults().id)
             
             // can be missing for "root" tests
@@ -30067,7 +30175,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         
         // need to check that test record contains the same test instance as the test in arguments
         // test instance may change if user has restarted a test for example
-        if (testRecord.get('test').generation == test.generation && !test.isTodo) {
+        if (testRecord.get('test').isFromTheSameGeneration(test) && !test.isTodo) {
             testRecord.set('isFailed', true)
         
             testRecord.parentNode && testRecord.parentNode.updateFolderStatus()
@@ -31280,7 +31388,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         
         // this prevents harness from hiding the iframe, because "test.hasForcedIframe()" will return null
         // we've moved the iframe to the correct position, and it can never be "forced" again anyway
-        test.forceDOMVisible    = false
+        if (this.isFrameVisible()) test.forceDOMVisible    = false
     },
     
     
@@ -31288,7 +31396,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     onEveryTestEnd : function (event, test) {
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
-        if (this.test.generation == test.generation) {
+        if (this.test.isFromTheSameGeneration(test)) {
             var testResultNode  = this.slots.grid.store.getById(test.getResults().id)
             
             // can be missing for "root" tests
@@ -31435,12 +31543,13 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     forceFit            : true,
     minWidth            : 100,
     trackMouseOver      : false,
-
+    autoScrollToBottom  : true,
     resultTpl           : null,
     
     
     initComponent : function() {
-        
+        var me = this;
+
         Ext.apply(this, {
             resultTpl   : new Ext.XTemplate(
                 '<span class="assertion-text">{[this.getDescription(values.result)]}</span>{[this.getAnnotation(values)]}',
@@ -31506,8 +31615,13 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                     if (index > 0 && index == store.getCount() - 1) this.refreshNode(index - 1)
                     
                     // TODO also need to update previous nodes, when adding a node with different depth
-                    
-                    return val;
+
+                    // Scroll to bottom
+                    if (me.autoScrollToBottom) {
+                        var el = this.getEl().dom;
+                        el.scrollTop = el.scrollHeight;
+                        return val;
+                    }
                 },
                 
                 onUpdate                : function () {
@@ -32798,15 +32912,15 @@ Role('Siesta.Harness.Browser.Automation', {
             if (timeTotal >= 1000) {
                 timeTotal           = timeTotal / 1000
                 durationStr         = timeTotal + 's'
-            }
-            
-            if (timeTotal >= 60) {
-                durationStr         = Math.floor(timeTotal / 60) + 'm ' + Math.floor(timeTotal % 60) + 's'
-                timeTotal           = timeTotal / 60
-            }
-            
-            if (timeTotal >= 60) {
-                durationStr         = Math.floor(timeTotal / 60) + 'h ' + Math.floor(timeTotal % 60) + 'm'
+                
+                if (timeTotal >= 60) {
+                    durationStr         = Math.floor(timeTotal / 60) + 'm ' + Math.floor(timeTotal % 60) + 's'
+                    timeTotal           = timeTotal / 60
+                    
+                    if (timeTotal >= 60) {
+                        durationStr         = Math.floor(timeTotal / 60) + 'h ' + Math.floor(timeTotal % 60) + 'm'
+                    }
+                }
             }
             
             var me                  = this
