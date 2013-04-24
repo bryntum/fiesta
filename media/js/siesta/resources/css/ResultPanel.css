@@ -9,16 +9,42 @@
 
 .tr-container .x-panel-collapsed {
     display        : block !important;
-    
+
     visibility     : hidden !important;
-    
+
     z-index        : -1 !important;
 }
 
 
 td.tr-td-vertical-align {
-	vertical-align     : middle;
+    vertical-align     : middle;
 }
+
+iframe {
+    position    : absolute;
+
+    left        : -10000px;
+    top         : -10000px;
+
+    background-color    : white;
+}
+
+iframe.tr-iframe-forced {
+    z-index                    : 100000;
+
+    border                     : 5px solid;
+    border-color               : #d5e7f0;
+    -moz-border-radius         : 14px;
+    -webkit-border-radius      : 14px;
+    border-radius              : 14px;
+}
+
+iframe.tr-iframe-hidden {
+    left        : -10000px !important;
+    top         : -10000px !important;
+}
+
+
 
 /*=======================================================================================================================================================================================================================
     Toolbar icons
@@ -38,8 +64,8 @@ td.tr-td-vertical-align {
 
 /* fixes row height sync in Chrome */
 .syntaxhighlighter .line {
-	height         : 1.2em !important;
-	vertical-align : middle !important;
+    height         : 1.2em !important;
+    vertical-align : middle !important;
 }
 
 

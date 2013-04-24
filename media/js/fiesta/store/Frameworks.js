@@ -1,6 +1,6 @@
 Ext.define("Fiesta.store.Frameworks", {
-	extend: "Ext.data.Store",
-	model: "Fiesta.model.Framework",
-    autoLoad: true,
-    storeId: 'Frameworks'    
+    extend   : "Ext.data.Store",
+    model    : "Fiesta.model.Framework",
+    autoLoad : true,
+    storeId  : 'Frameworks'
 });

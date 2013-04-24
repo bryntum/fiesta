@@ -22,15 +22,15 @@ Ext.define('Fiesta.view.testcases.View', {
                 cls    : 'run-testcase',
                 action : 'launch',
 
-                handler : this.onTestLaunch,
+                handler : this.runTest,
                 scope   : this
             },
             {
-                text   : 'Save',
-                width  : 80,
-                iconCls: 'icon-save',
-                cls    : 'save-testcase',
-                action : 'save',
+                text    : 'Save',
+                width   : 80,
+                iconCls : 'icon-save',
+                cls     : 'save-testcase',
+                action  : 'save',
 
                 handler : this.onSave,
                 scope   : this
@@ -80,20 +80,24 @@ Ext.define('Fiesta.view.testcases.View', {
                 {
                     region : 'center',
                     xtype  : 'container',
-                    layout : 'card',
+                    layout : 'border',
 
                     slot : 'cardcontainer',
 
                     items : [
                         // card with sources editor
                         {
-                            xtype : 'jseditor'
+                            xtype  : 'jseditor',
+                            region : 'center',
                         },
                         // card with
                         {
-                            xtype : 'resultpanel',
-                            title : 'Run',
-
+                            xtype        : 'resultpanel',
+                            flex         : 1,
+                            region       : 'east',
+                            split        : true,
+                            header       : false,
+                            border       : false,
                             isStandalone : true,
                             showToolbar  : false,
 
@@ -102,7 +106,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     ]
                 },
                 {
-                    xtype       : 'detailspanel'
+                    xtype : 'detailspanel'
                 }
             ],
             // eof items
@@ -119,13 +123,25 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments);
 
         this.resultPanel = this.down('resultpanel')
+        this.editor = this.down('jseditor');
+
+        this.editor.on({
+            keyevent : function(sender, event) {
+                var e = new Ext.EventObjectImpl(event);
+
+                if (e.ctrlKey && e.getKey() === e.ENTER) {
+                    this.runTest();
+                }
+            },
+            scope : this
+        });
 
         this.harness.on('teststart', this.onTestStart, this)
     },
 
 
     onTabCreate : function () {
-        this.down('jseditor').setValue(this.testCaseModel.get('code'));
+        this.editor.setValue(this.testCaseModel.get('code'));
         this.down('#testdetailsform').getForm().loadRecord(this.testCaseModel);
 
         this.down('[action=save]').setVisible(this.testCaseModel.isEditable());
@@ -149,15 +165,14 @@ Ext.define('Fiesta.view.testcases.View', {
         if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
 
-
-    onTestLaunch : function () {
+    runTest : function () {
         var me = this
         var testCaseModel = this.testCaseModel;
         var harness = this.harness
 
         harness.startSingle({
             transparentEx : true,
-            testCode      : testCaseModel.get('code'),
+            testCode      : 'StartTest(function(t){ ' + this.editor.getValue() + '})',
             url           : testCaseModel.internalId,
             preload       : testCaseModel.getPreload()
         })
@@ -203,7 +218,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments)
     },
 
-    onSave : function() {
+    onSave : function () {
         var form = this.down('#testdetailsform').getForm();
         var saveBtn = this.down('[action=save]');
         var oldCls = saveBtn.iconCls;
@@ -215,10 +230,10 @@ Ext.define('Fiesta.view.testcases.View', {
         Fiesta.DataModel.updateTestCase(
             this.testCaseModel,
 
-            function() {
+            function () {
                 saveBtn.setIconCls(oldCls);
             },
-            function() {
+            function () {
                 saveBtn.setIconCls(oldCls);
             }
         );
