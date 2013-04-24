@@ -80,9 +80,10 @@ Ext.define('Fiesta.view.testcases.Create', {
                         },
                         {
                             xtype: "tagselect",
-                            store: new Fiesta.store.Tags(),
+                            store: 'Tags',
                             displayField: "tag",
-                            valueField: "id",
+//                            valueField: "id",
+                            valueField: "tag",
                             emptyText: "Tags (multiple choices)",
                             name: 'tagsList',
                             queryMode: 'local',
@@ -143,7 +144,6 @@ Ext.define('Fiesta.view.testcases.Create', {
         if (this.testCaseModel) {
             this.on('afterrender', function () {
                 this.down('form').getForm().loadRecord(this.testCaseModel);
-                console.log(this.testCaseModel);
             });
         }
         else {
@@ -160,20 +160,17 @@ Ext.define('Fiesta.view.testcases.Create', {
             formValues.private = 0;
         }
 
-        var testCase = this.testCaseModel;
 
-        console.log(formValues);
-
-        testCase.set(formValues);
+        this.testCaseModel.set(formValues);
 
         // Record will have id in case we are editing existing test, so we should
         // pass form values to Fiesta.DataModel.updateTestCase, it will call backend to update records 
         // in DB, and if backend request succeeded it returns modified record to callback function
 
-        if (testCase.getId()) {
+        if (this.testCaseModel.getId()) {
 
             Fiesta.DataModel.updateTestCase(
-                testCase,
+                this.testCaseModel,
                 function (record) {
                     me.close();
                 }
@@ -187,7 +184,7 @@ Ext.define('Fiesta.view.testcases.Create', {
 
         else {
             Fiesta.DataModel.createTestCase(
-                testCase,
+                this.testCaseModel,
                 function (record) {
                     me.close();
                 }

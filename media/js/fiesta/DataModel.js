@@ -58,6 +58,8 @@ Ext.define('Fiesta.DataModel', {
                         ownerId: CONFIG.userId
                     });
 
+                    this.updateTestcasesList(testCaseModel);
+
                     this.fireEvent('testCreated', this, testCaseModel);
 
                     //Processing callback and firing the event
@@ -131,6 +133,8 @@ Ext.define('Fiesta.DataModel', {
                 if (true === o.success) {
 
                     testCaseModel.set('slug', o.slug);
+
+                    this.updateTestcasesList(testCaseModel);
 
                     this.fireEvent('testUpdated', this, testCaseModel);
 
@@ -359,6 +363,29 @@ Ext.define('Fiesta.DataModel', {
                 scope: this
             });
 
+        }
+    },
+
+    updateTestcasesList: function (testCaseModel) {
+        var tagsStore = Ext.getStore('Tags'),
+            record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
+            newTagsArr = [];
+
+
+        if(record) {
+
+            Ext.each(testCaseModel.get('tagsList'), function (tag) {
+                var newTag = tagsStore.findRecord('tag', tag);
+                newTagsArr.push({ id: newTag.get('id'), tag: newTag.get('tag')});
+            });
+
+
+            testCaseModel.data.tags = newTagsArr;
+
+            record.set(testCaseModel.data);
+        }
+        else {
+            Ext.getStore('TestCases').load();
         }
     }
 

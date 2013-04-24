@@ -233,6 +233,7 @@ class Ajax extends CI_Controller {
     public function updateTestCase() {
         $success = false;
         $slug = '';
+        $errorMsg = 'Please login!';
         
         if ($this->authentication->is_signed_in()) {
 
@@ -255,10 +256,12 @@ class Ajax extends CI_Controller {
             
             $success = true;                 
             $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
+            $errorMsg = '';
             
         }        
 
-        echo json_encode(array('slug' => $slug, 'success' => $success));
+        echo json_encode(array('slug' => $slug, 'errorMsg' => $errorMsg, 'success' => $success));
+
 
     }
     
