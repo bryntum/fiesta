@@ -1,21 +1,21 @@
 Ext.define('Fiesta.view.Main', {
-    extend: 'Ext.tab.Panel',
-    alias: 'widget.mainView',
-    initComponent: function () {
+    extend        : 'Ext.tab.Panel',
+    alias         : 'widget.mainView',
+    initComponent : function () {
         Ext.apply(this, {
-            plugins: [
+            plugins     : [
                 {
-                    ptype: 'fiestatabclosemenu'
+                    ptype : 'fiestatabclosemenu'
                 },
                 {
-                    ptype: 'tabreorder'
+                    ptype : 'tabreorder'
                 }
             ],
-            stateId: 'tabs',
-            stateful: true,
-            getState: this.getTabsState,
-            applyState: this.applyTabState,
-            stateEvents: ['tabchange', 'remove', 'add']
+            stateId     : 'tabs',
+            stateful    : true,
+            getState    : this.getTabsState,
+            applyState  : this.applyTabState,
+            stateEvents : ['tabchange', 'remove', 'add']
         });
 
 
@@ -28,7 +28,7 @@ Ext.define('Fiesta.view.Main', {
         this.callParent(arguments);
     },
 
-    onTestCaseChanged: function (event, record) {
+    onTestCaseChanged : function (event, record) {
 
         if (FIESTA.isSignedIn()) {
             this.activateTabFor(record);
@@ -36,12 +36,12 @@ Ext.define('Fiesta.view.Main', {
 
         // Calling application signup method which will process signup operation
         else {
-            FIESTA.signUp({action: 'afterCreate'});
+            FIESTA.signUp({action : 'afterCreate'});
         }
 
     },
 
-    activateTabFor: function (testCaseModel) {
+    activateTabFor : function (testCaseModel) {
         this.setActiveTab(this.updateTab(testCaseModel, true));
     },
 
@@ -52,11 +52,11 @@ Ext.define('Fiesta.view.Main', {
      * @return {Ext.Component} Tab component for passed testCaseModel
      */
 
-    updateTab: function (testCaseModel, updateHistory) {
+    updateTab : function (testCaseModel, updateHistory) {
 
         console.log('updateTab');
 
-        if(typeof(updateHistory) == 'undefined') {
+        if (typeof(updateHistory) == 'undefined') {
             var updateHistory = false;
         }
 
@@ -79,9 +79,9 @@ Ext.define('Fiesta.view.Main', {
         // Creating new tab for testCase if no tab with the same id exists
         if (!tabExist) {
             var newTab = Ext.widget('testCasesView', {
-                title: Ext.String.ellipsis(testCaseModel.get('name'), 15),
-                iconCls: testCaseModel.get('stared') ? 'filledStar' : '',
-                testCaseModel: testCaseModel
+                title         : Ext.String.ellipsis(testCaseModel.get('name'), 15),
+                iconCls       : testCaseModel.get('starred') ? 'filledStar' : '',
+                testCaseModel : testCaseModel
             });
 
             activeTab = tabs.add(newTab);
@@ -96,7 +96,7 @@ Ext.define('Fiesta.view.Main', {
 
         FIESTA.getCards().getLayout().setActiveItem(1);
 
-        if(updateHistory) {
+        if (updateHistory) {
             FIESTA.makeHistory(testCaseModel.get('slug'));
         }
 
@@ -105,13 +105,14 @@ Ext.define('Fiesta.view.Main', {
 
     },
 
-    onTabRemove: function () {
+    onTabRemove   : function () {
         var tabs = this;
         if (tabs.items.items.length == 0) {
             FIESTA.getCards().getLayout().setActiveItem(0);
         }
     },
-    getTabsState: function () {
+
+    getTabsState  : function () {
         var state = {},
             tabs = this;
 
@@ -128,7 +129,8 @@ Ext.define('Fiesta.view.Main', {
 
         return state;
     },
-    applyTabState: function (state) {
+
+    applyTabState : function (state) {
         var tabs = this;
 
         console.log('stateApply');
@@ -144,7 +146,7 @@ Ext.define('Fiesta.view.Main', {
 
                     if (!tabs.getActiveTab()) {
                         tabs.items.each(function (tab) {
-                            if(state.activeTabId == tab.testCaseModel.get('id')) {
+                            if (state.activeTabId == tab.testCaseModel.get('id')) {
                                 tabs.setActiveTab(tab);
                             }
                         });
