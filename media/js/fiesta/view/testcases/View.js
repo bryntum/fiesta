@@ -29,6 +29,7 @@ Ext.define('Fiesta.view.testcases.View', {
             {
                 text   : 'Save',
                 width  : 80,
+                iconCls: 'icon-save',
                 cls    : 'save-testcase',
                 action : 'save',
 
@@ -56,10 +57,7 @@ Ext.define('Fiesta.view.testcases.View', {
                         scope   : this,
                         handler : this.shareGoogle
                     }
-
-
                 ]
-
             },
             {
                 text    : 'Add to favorites',
@@ -208,10 +206,22 @@ Ext.define('Fiesta.view.testcases.View', {
 
     onSave : function() {
         var form = this.down('#testdetailsform').getForm();
+        var saveBtn = this.down('[action=save]');
+        var oldCls = saveBtn.iconCls;
+
         form.updateRecord(this.testCaseModel);
 
+        saveBtn.setIconCls('icon-loading');
+
         Fiesta.DataModel.updateTestCase(
-            this.testCaseModel
+            this.testCaseModel,
+
+            function() {
+                saveBtn.setIconCls(oldCls);
+            },
+            function() {
+                saveBtn.setIconCls(oldCls);
+            }
         );
     }
 
