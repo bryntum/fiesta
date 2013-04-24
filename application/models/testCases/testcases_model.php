@@ -49,7 +49,13 @@ class Testcases_model extends CI_Model {
         $this->db->select('tags.*');
         $this->db->join('tags','tags.id = tlist.tag_id','left');
         $this->db->where('tlist.testCase_id', $testCaseId);
-        return $this->db->get('testCases_tags as tlist')->result();
+        $result = $this->db->get('testCases_tags as tlist')->result();
+        if(count($result) > 0) {
+            foreach($result as $ind => $tag) {
+                $result[$ind]->id = (int) $tag->id;
+            }
+        }
+        return $result;
     } 
 
 // TODO move it to TAGS model!!!
@@ -65,8 +71,14 @@ class Testcases_model extends CI_Model {
     function getAllTags() {
         $query = $this->db->select('tags.*')
             ->get('tags');
+        $result = $query->result();
+        if(count($result) > 0) {
+            foreach($result as $ind => $tag ) {
+                $result[$ind]->id = (int) $tag->id;
+            }
+        }
 
-        return $query->result();
+        return $result;
     }
 
     function getAll($params = array(), $userId = 0) {
@@ -109,7 +121,7 @@ class Testcases_model extends CI_Model {
                     $tagsList[] = $tagRow->tag;
                 }
                 
-                $results[$rowNum]->tagsList = implode(', ',$tagsList);
+                $results[$rowNum]->tagsList = $tagsList; //implode(', ',$tagsList);
             }
         }
         
@@ -168,7 +180,7 @@ class Testcases_model extends CI_Model {
                     $tagsList[] = $tagRow->tag;
                 }
                 
-                $results[$rowNum]->tagsList = implode(', ',$tagsList);
+                $results[$rowNum]->tagsList = $tagsList; //implode(', ',$tagsList);
             }
         }
         

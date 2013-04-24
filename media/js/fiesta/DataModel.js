@@ -55,7 +55,8 @@ Ext.define('Fiesta.DataModel', {
                     testCaseModel.set({
                         id: o.id,
                         slug: o.slug,
-                        ownerId: CONFIG.userId
+                        ownerId: CONFIG.userId,
+                        ownerName: CONFIG.userName
                     });
 
                     this.updateTestcasesList(testCaseModel);
