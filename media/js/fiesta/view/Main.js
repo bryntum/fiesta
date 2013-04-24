@@ -48,7 +48,7 @@ Ext.define('Fiesta.view.Main', {
     /**
      * Visualy updates test case tab content and linked record, basicly called from saveTestCase
      * method of Fiesta.view.testcases.Create and Fiesta.view.testcases.List clickitem event
-     * @param {Ext.data.record} testCaseModel Tab record to operate with
+     * @param {Ext.data.Model} testCaseModel Tab record to operate with
      * @return {Ext.Component} Tab component for passed testCaseModel
      */
 
@@ -57,7 +57,7 @@ Ext.define('Fiesta.view.Main', {
         console.log('updateTab');
 
         if (typeof(updateHistory) == 'undefined') {
-            var updateHistory = false;
+            updateHistory = false;
         }
 
         var tabs = this,
@@ -66,13 +66,12 @@ Ext.define('Fiesta.view.Main', {
             activeTab = {};
 
 
-        //Searchin for tab with id passed in testCaseModel
-
-
+        //Searching for tab with id passed in testCaseModel
         tabs.items.each(function (tab) {
             if (tab.testCaseModel.get('id') == newTabId) {
                 tabExist = true;
                 activeTab = tab;
+                return false;
             }
         });
 
