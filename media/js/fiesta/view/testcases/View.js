@@ -132,7 +132,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments);
 
         this.resultPanel = this.down('resultpanel')
-        this.editor = this.down('jseditor');
+        this.editor = this.down('codeeditor');
         this.saveButton = this.down('[action=save]');
         this.runButton = this.down('[action=run]');
 
@@ -241,12 +241,14 @@ Ext.define('Fiesta.view.testcases.View', {
 
     save : function () {
         var form = this.down('#testdetailsform').getForm();
-        var saveBtn = this.saveButton;
-        var oldCls = saveBtn.iconCls;
-
         form.updateRecord(this.testCaseModel);
 
+        this.testCaseModel.set('code', this.editor.getValue());
+
         if (this.testCaseModel.isValid()) {
+            var saveBtn = this.saveButton;
+            var oldCls = saveBtn.iconCls;
+
             saveBtn.disable();
             saveBtn.setIconCls('icon-loading');
 
@@ -262,6 +264,12 @@ Ext.define('Fiesta.view.testcases.View', {
                     saveBtn.enable();
                 }
             );
+        } else {
+            if (!this.testCaseModel.get('name')) {
+                Ext.Msg.alert('Error', 'Must set a name for the test case')
+            } else {
+                Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
+            }
         }
     }
 

@@ -32,5 +32,14 @@ Ext.define('Fiesta.view.testcases.Editor', {
         });
 
         this.callParent(arguments);
+        this.editor = this.down('jseditor');
+    },
+
+    getValue : function() {
+        return this.editor.getValue.apply(this.editor, arguments);
+    },
+
+    setValue : function() {
+        return this.editor.setValue.apply(this.editor, arguments);
     }
 });
