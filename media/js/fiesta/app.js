@@ -150,7 +150,7 @@ Ext.application({
             activeTab = null;
 
             tabs.items.each(function (tab) {
-                if(tab.testCaseModel.get('slug') === token) {
+                if(tab.testCaseModel && tab.testCaseModel.get('slug') === token) {
                     activeTab = tab;
                     return false;
                 }

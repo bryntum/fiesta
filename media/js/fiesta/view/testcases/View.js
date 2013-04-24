@@ -14,7 +14,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
     resultPanel : null,
 
-
     initComponent : function () {
         var topBar = [
             {

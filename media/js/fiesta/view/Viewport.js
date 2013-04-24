@@ -10,21 +10,9 @@ Ext.define("Fiesta.view.Viewport", {
                     xtype   : 'userpanel'
                 },
                 {
+                    xtype   : 'mainView',
                     region  : 'center',
-                    layout  : 'card',
-
-                    // TODO move each card to its component
-
-                    items: [
-                        {
-                            layout  : 'fit',
-                            html    : '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Welcome to Fiesta!</div>'
-                        },
-                        {
-                            xtype   : 'mainView',
-                            border  : false
-                        }
-                    ]
+                    border  : false
                 },
 
                 {
