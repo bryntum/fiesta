@@ -353,7 +353,7 @@ Ext.define('Fiesta.plugins.JsEditor', {
             fixedGutter:        me.enableFixedGutter,
             theme:              me.theme,
             mode:               mode,
-            lintWith: CodeMirror.javascriptValidator,
+            lintWith: CodeMirror.javascriptValidatorWithOptions(CONFIG.LINT_SETTINGS),
 
             onChange:           function(editor, tc){
                 me.checkChange();

@@ -32,11 +32,20 @@ Ext.define('Fiesta.view.testcases.View', {
                 cls     : 'save-testcase',
                 action  : 'save',
 
-                handler : this.onSave,
+                handler : this.save,
                 scope   : this
             },
             {
                 xtype : 'tbfill'
+            },
+            {
+                text : '<b>{ }</b>',
+                tooltip : 'Auto-format code',
+                handler : function() {
+                    var ed = this.editor.editor;
+                    this.editor.editor.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
+                },
+                scope : this
             },
             {
                 text : 'Share',
@@ -168,22 +177,29 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     runTest : function () {
-        var me = this
         var testCaseModel = this.testCaseModel;
         var harness = this.harness;
         var runButton = this.runButton;
         var oldCls = runButton.iconCls;
+        var code = this.editor.getValue();
 
-        runButton.setIconCls('icon-loading');
+        debugger;
+        return;
 
-        harness.startSingle({
-            transparentEx : true,
-            testCode      : 'StartTest(function(t){ ' + this.editor.getValue() + '})',
-            url           : testCaseModel.internalId,
-            preload       : testCaseModel.getPreload()
-        }, function() {
-            runButton.setIconCls(oldCls);
-        });
+        if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
+            runButton.setIconCls('icon-loading');
+
+            harness.startSingle({
+                transparentEx : true,
+                testCode      : 'StartTest(function(t){ ' + code + '})',
+                url           : testCaseModel.internalId,
+                preload       : testCaseModel.getPreload()
+            }, function() {
+                runButton.setIconCls(oldCls);
+            });
+        } else {
+            Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
+        }
     },
 
     shareTwitter : function () {
@@ -226,25 +242,30 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments)
     },
 
-    onSave : function () {
+    save : function () {
         var form = this.down('#testdetailsform').getForm();
-        var saveBtn = this.down('[action=save]');
+        var saveBtn = this.saveButton;
         var oldCls = saveBtn.iconCls;
 
         form.updateRecord(this.testCaseModel);
 
-        saveBtn.setIconCls('icon-loading');
+        if (this.testCaseModel.isValid()) {
+            saveBtn.disable();
+            saveBtn.setIconCls('icon-loading');
 
-        Fiesta.DataModel.updateTestCase(
-            this.testCaseModel,
+            Fiesta.DataModel.updateTestCase(
+                this.testCaseModel,
 
-            function () {
-                saveBtn.setIconCls(oldCls);
-            },
-            function () {
-                saveBtn.setIconCls(oldCls);
-            }
-        );
+                function () {
+                    saveBtn.setIconCls(oldCls);
+                    saveBtn.enable();
+                },
+                function () {
+                    saveBtn.setIconCls(oldCls);
+                    saveBtn.enable();
+                }
+            );
+        }
     }
 
 });
