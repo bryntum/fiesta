@@ -7,3 +7,8 @@
 {
     background-image: url(../img/loading.gif);
 }
+
+.mainview-body
+{
+    margin-top:-2px;
+}
