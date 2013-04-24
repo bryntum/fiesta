@@ -94,6 +94,7 @@ Ext.define('Fiesta.view.Main', {
             activeTab.onTabCreate(testCaseModel);
         }
 
+
         FIESTA.getCards().getLayout().setActiveItem(1);
 
         if(updateHistory) {

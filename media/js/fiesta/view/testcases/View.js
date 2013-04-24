@@ -143,7 +143,7 @@ Ext.define('Fiesta.view.testcases.View', {
             reload : true,
             config : function () {
                 this.page.identifier = me.testCaseModel.get('slug');
-                this.page.url = SITE_URL + "/#" + me.testCaseModel.get('slug');
+                this.page.url = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
             }
         });
     },
