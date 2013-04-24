@@ -1,8 +1,21 @@
 Ext.define('Fiesta.view.Main', {
-    extend        : 'Ext.tab.Panel',
-    alias         : 'widget.mainView',
+    extend : 'Ext.tab.Panel',
+
+    alias    : 'widget.mainView',
+    stateId  : 'tabs',
+    stateful : true,
+    bodyCls  : 'mainview-body',
+    border   : false,
+
     initComponent : function () {
+        Ext.setGlyphFontFamily('Pictos');
         Ext.apply(this, {
+            items : [
+                {
+                    xtype : 'panel',
+                    glyph : 72
+                }
+            ],
             plugins     : [
                 {
                     ptype : 'fiestatabclosemenu'
@@ -11,19 +24,15 @@ Ext.define('Fiesta.view.Main', {
                     ptype : 'tabreorder'
                 }
             ],
-            stateId     : 'tabs',
-            stateful    : true,
             getState    : this.getTabsState,
             applyState  : this.applyTabState,
             stateEvents : ['tabchange', 'remove', 'add']
         });
 
-
         this.on('remove', this.onTabRemove);
 
         Fiesta.DataModel.on('testCreated', this.onTestCaseChanged, this);
         Fiesta.DataModel.on('testUpdated', this.onTestCaseChanged, this);
-
 
         this.callParent(arguments);
     },
@@ -68,7 +77,7 @@ Ext.define('Fiesta.view.Main', {
 
         //Searching for tab with id passed in testCaseModel
         tabs.items.each(function (tab) {
-            if (tab.testCaseModel.get('id') == newTabId) {
+            if (tab.testCaseModel && tab.testCaseModel.get('id') == newTabId) {
                 tabExist = true;
                 activeTab = tab;
                 return false;
@@ -104,14 +113,14 @@ Ext.define('Fiesta.view.Main', {
 
     },
 
-    onTabRemove   : function () {
+    onTabRemove : function () {
         var tabs = this;
         if (tabs.items.items.length == 0) {
             FIESTA.getCards().getLayout().setActiveItem(0);
         }
     },
 
-    getTabsState  : function () {
+    getTabsState : function () {
         var state = {},
             tabs = this;
 

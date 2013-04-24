@@ -2,29 +2,19 @@ Ext.define("Fiesta.view.Viewport", {
     extend: "Ext.container.Viewport",
     layout: 'border',
     margins: 5,
+    border  : false,
     initComponent: function () {
         Ext.apply(this, {
             items: [
                 {
                     region  : 'north',
+                    border  : false,
                     xtype   : 'userpanel'
                 },
                 {
+                    xtype   : 'mainView',
                     region  : 'center',
-                    layout  : 'card',
-
-                    // TODO move each card to its component
-
-                    items: [
-                        {
-                            layout  : 'fit',
-                            html    : '<div style="font-size: 25px; margin: 300px auto; width: 230px;">Welcome to Fiesta!</div>'
-                        },
-                        {
-                            xtype   : 'mainView',
-                            border  : false
-                        }
-                    ]
+                    border  : false
                 },
 
                 {

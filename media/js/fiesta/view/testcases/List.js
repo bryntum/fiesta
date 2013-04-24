@@ -8,6 +8,7 @@ Ext.define('Fiesta.view.testcases.List', {
             cls        : 'testCasesList',
             viewConfig : {
                 getRowClass     : this.getCls,
+                overItemCls : 'testcase-row-over',
                 selectedItemCls : 'testcase-row-selected'
             },
             selModel   : {

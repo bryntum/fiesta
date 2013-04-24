@@ -1,3 +1,7 @@
+body
+{
+}
+
 .testCasesList {
     font-size: 14px; 
     position: relative;
@@ -5,6 +9,7 @@
 
 .star {
     background: url('/media/img/star_emp.png');
+    transition:opacity 0.5s;
 }
 
 .filledStar .star{
@@ -39,7 +44,7 @@
 */
 
 .testCasesList .colHolder {
-    width: 90%;
+    width: 99%;
     float: left;
     position: relative;
 }
@@ -47,8 +52,7 @@
 .testCasesList .nameHolder {
     margin-bottom: 0px;
     clear: both;
-    font-size: 14px;
-    margin-top: 5px;
+    font-size: 13px;
     white-space: normal;
     margin-right: 55px;
 
@@ -59,18 +63,23 @@
 
 .testCasesList .date {
     font-size: 10px; 
-    position: absolute; 
-    right: 0px; 
-    color: rgb(207, 207, 207); 
-    top: -5px;    
+    position: absolute;
+    right: 0px;
+    color: #bbb;
+    top: 0;
+}
+
+.testCasesList .x-grid-cell-inner
+{
+    padding-top:0;
 }
 
 .testCasesList .x-grid-cell-inner .star {
-    display: none;
+    opacity: 0;
 }
 
-.testCasesList .x-grid-row-over .star {
-    display: block;
+.testCasesList .testcase-row-over .star {
+    opacity: 1;
 }
 
 
@@ -98,14 +107,13 @@
     background-color: #FFF6EA !important;
 }
 
-.testCasesList .x-grid-row-over {
-    cursor: pointer; 
+.testCasesList .x-grid-row td
+{
+    cursor: pointer;
 }
 
-.testCasesList .x-grid-row-over .x-grid-td {
-    background-color: #FFF;
-    border-color: #E2EFF8;
-    cursor: pointer;
+.testCasesList .testcase-row-over .nameHolder {
+    color: #333;
 }
 
 .testCasesList .x-grid-cell-inner {
@@ -113,21 +121,20 @@
 }
 
 .testCasesList .userName{
-    font-weight: normal;
     font-size: 10px;
     text-align: left;
     color: rgb(172, 172, 172);
-    float: right;
 }
 
 .testCasesList ul {
-    margin-top: 0px;
+    margin-top: 2px;
     margin-bottom: 0px;
     padding-left: 0px;
 }
 
 .testCasesList ul > li {
     margin-right: 2px;
+    line-height: 15px;
 }
 
 .testCasesList ul > li:hover {
@@ -233,3 +240,15 @@ li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
     font-size: 10px;
 }
 
+@font-face {
+    font-family: 'Pictos';
+    src: url("http://cdn.sencha.io/ext/gpl/4.2.0/examples/build/KitchenSink/ext-theme-neptune/resources/pictos/pictos.eot");
+    src: url("http://cdn.sencha.io/ext/gpl/4.2.0/examples/build/KitchenSink/ext-theme-neptune/resources/pictos/pictos.eot?#iefix") format("embedded-opentype"), url("http://cdn.sencha.io/ext/gpl/4.2.0/examples/build/KitchenSink/ext-theme-neptune/resources/pictos/pictos.woff") format("woff"), url("http://cdn.sencha.io/ext/gpl/4.2.0/examples/build/KitchenSink/ext-theme-neptune/resources/pictos/pictos.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.x-tab-default .x-tab-glyph
+{
+    font-size:22px;
+}

@@ -14,7 +14,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
     resultPanel : null,
 
-
     initComponent : function () {
         var topBar = [
             {
@@ -76,7 +75,6 @@ Ext.define('Fiesta.view.testcases.View', {
             layout    : 'border',
             border    : false,
             closable  : true,
-            tbar      : topBar,
             items     : [
                 {
                     region : 'center',
@@ -129,7 +127,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.down('jseditor').setValue(this.testCaseModel.get('code'));
         this.down('#testdetailsform').getForm().loadRecord(this.testCaseModel);
 
-        this.down('[action=save]').setVisible(this.testCaseModel.isEditable());
+//        this.down('[action=save]').setVisible(this.testCaseModel.isEditable());
     },
 
     onTabSelect : function () {

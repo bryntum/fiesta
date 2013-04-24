@@ -8,7 +8,7 @@ Ext.define('Fiesta.view.testcases.Details', {
     collapsible   : true,
     split         : true,
     title         : 'Details & Comments',
-//    collapsed   : true,
+    collapsed   : true,
     autoScroll    : true,
     titleCollapse : true,
     testCaseModel : null,
