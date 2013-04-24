@@ -15,7 +15,9 @@ class Testcases_model extends CI_Model {
             ->where('testCases.id', $testCaseId);
 
         $testCase = $this->db->get('testCases')->row();
-        $testCase->tags = $this->getTags($testCaseId);
+        if($testCase) {
+            $testCase->tags = $this->getTags($testCaseId);
+        }
 
         return $testCase;
         
