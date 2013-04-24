@@ -4,7 +4,7 @@ Ext.define("Fiesta.model.TestCase", {
     fields      : [
         {name: 'id', type: 'int'},
         'name',
-//        'tagsList',
+        'tagsList',
         {name: 'frameworkId', type: 'int'},
         {name: 'ownerId', type: 'int'},
         'ownerName',

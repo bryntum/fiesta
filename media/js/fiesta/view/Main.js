@@ -84,6 +84,7 @@ Ext.define('Fiesta.view.Main', {
             }
         });
 
+
         // Creating new tab for testCase if no tab with the same id exists
         if (!tabExist) {
             var newTab = Ext.widget('testCasesView', {
@@ -92,7 +93,9 @@ Ext.define('Fiesta.view.Main', {
                 testCaseModel : testCaseModel
             });
 
+
             activeTab = tabs.add(newTab);
+
         }
         // Updating testCase's tab if it was found in currently opened tabs
         else {
@@ -102,7 +105,8 @@ Ext.define('Fiesta.view.Main', {
             activeTab.onTabCreate(testCaseModel);
         }
 
-        FIESTA.getCards().getLayout().setActiveItem(1);
+        //FIESTA.getCards().getLayout().setActiveItem(1);
+        console.log('tete2');
 
         if (updateHistory) {
             FIESTA.makeHistory(testCaseModel.get('slug'));
@@ -116,7 +120,7 @@ Ext.define('Fiesta.view.Main', {
     onTabRemove : function () {
         var tabs = this;
         if (tabs.items.items.length == 0) {
-            FIESTA.getCards().getLayout().setActiveItem(0);
+            // FIESTA.getCards().getLayout().setActiveItem(0);
         }
     },
 
@@ -124,13 +128,17 @@ Ext.define('Fiesta.view.Main', {
         var state = {},
             tabs = this;
 
-        state.activeTabId = tabs.getActiveTab().testCaseModel.get('id')
-        state.activeTabSlug = tabs.getActiveTab().testCaseModel.get('slug');
-        state.openedTabs = [];
+        if(tabs.getActiveTab() && tabs.getActiveTab().testCaseModel) {
+            state.activeTabId = tabs.getActiveTab().testCaseModel.get('id');
+            state.activeTabSlug = tabs.getActiveTab().testCaseModel.get('slug');
+            state.openedTabs = [];
 
-        tabs.items.each(function (tab) {
-            state.openedTabs.push(tab.testCaseModel.get('slug'));
-        });
+            tabs.items.each(function (tab) {
+                if(tab.testCaseModel) {
+                    state.openedTabs.push(tab.testCaseModel.get('slug'));
+                }
+            });
+        }
 
         console.log('getstate');
         console.log(state);
@@ -144,7 +152,7 @@ Ext.define('Fiesta.view.Main', {
         console.log('stateApply');
         console.log(state);
 
-        if (state.openedTabs.length > 0) {
+        if (state.openedTabs && state.openedTabs.length > 0) {
             Fiesta.DataModel.getTestCasesColl(
                 state.openedTabs,
                 function (modelsCollection) {

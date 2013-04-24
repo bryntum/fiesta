@@ -127,7 +127,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.down('jseditor').setValue(this.testCaseModel.get('code'));
         this.down('#testdetailsform').getForm().loadRecord(this.testCaseModel);
 
-//        this.down('[action=save]').setVisible(this.testCaseModel.isEditable());
+        this.down('[action=save]').setVisible(this.testCaseModel.isEditable());
     },
 
     onTabSelect : function () {
