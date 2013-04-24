@@ -2,6 +2,23 @@ body
 {
 }
 
+.x-panel-header-text-container-default,
+.x-tab-inner
+{
+    font-weight: normal !important;
+    font-size:14px !important;
+}
+
+.x-panel-body-default
+{
+    background:#f3f3f3;
+}
+
+.x-grid-body
+{
+    background:#fff;
+}
+
 .testCasesList {
     font-size: 14px; 
     position: relative;
