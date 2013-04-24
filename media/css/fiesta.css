@@ -7,7 +7,7 @@
     background: url('/media/img/star_emp.png');
 }
 
-.star:hover, .filledStar .star{
+.filledStar .star{
     background: url('/media/img/star_full.png');
 }
 
