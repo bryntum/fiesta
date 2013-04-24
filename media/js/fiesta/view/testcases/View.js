@@ -20,7 +20,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 text   : 'Run',
                 width  : 80,
                 cls    : 'run-testcase',
-                action : 'launch',
+                action : 'run',
 
                 handler : this.runTest,
                 scope   : this
@@ -124,6 +124,8 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.resultPanel = this.down('resultpanel')
         this.editor = this.down('jseditor');
+        this.saveButton = this.down('[action=save]');
+        this.runButton = this.down('[action=run]');
 
         this.editor.on({
             keyevent : function(sender, event) {
@@ -144,7 +146,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.editor.setValue(this.testCaseModel.get('code'));
         this.down('#testdetailsform').getForm().loadRecord(this.testCaseModel);
 
-        this.down('[action=save]').setVisible(this.testCaseModel.isEditable());
+        this.saveButton.setVisible(this.testCaseModel.isEditable());
     },
 
     onTabSelect : function () {
@@ -168,14 +170,20 @@ Ext.define('Fiesta.view.testcases.View', {
     runTest : function () {
         var me = this
         var testCaseModel = this.testCaseModel;
-        var harness = this.harness
+        var harness = this.harness;
+        var runButton = this.runButton;
+        var oldCls = runButton.iconCls;
+
+        runButton.setIconCls('icon-loading');
 
         harness.startSingle({
             transparentEx : true,
             testCode      : 'StartTest(function(t){ ' + this.editor.getValue() + '})',
             url           : testCaseModel.internalId,
             preload       : testCaseModel.getPreload()
-        })
+        }, function() {
+            runButton.setIconCls(oldCls);
+        });
     },
 
     shareTwitter : function () {
