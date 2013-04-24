@@ -25,7 +25,7 @@ Ext.define('Fiesta.view.testcases.List', {
             store     : new Fiesta.store.TestCases(),
             bbar      : {
                 xtype       : 'pagingtoolbar',
-                store       : Ext.getStore('TestCases'),
+                store       : 'TestCases',
                 displayInfo : true
             },
             listeners : {

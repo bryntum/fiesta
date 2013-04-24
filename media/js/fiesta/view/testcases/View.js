@@ -3,7 +3,7 @@ Ext.define('Fiesta.view.testcases.View', {
     alias         : 'widget.testCasesView',
     requires      : [
         'Fiesta.view.testcases.Details',
-        'Fiesta.plugins.JsEditor'
+        'Fiesta.view.testcases.Editor'
     ],
     testCaseModel : null,
 
@@ -96,7 +96,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     items : [
                         // card with sources editor
                         {
-                            xtype  : 'jseditor',
+                            xtype  : 'codeeditor',
                             region : 'center',
                         },
                         // card with

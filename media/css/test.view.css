@@ -12,3 +12,15 @@
 {
     margin-top:-2px;
 }
+
+.codeeditor-before
+{
+    padding-top:1px;
+}
+
+.codeeditor-before,
+.codeeditor-after
+{
+    padding-left:10px;
+    color:#444;
+}
