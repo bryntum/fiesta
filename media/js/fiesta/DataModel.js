@@ -128,6 +128,8 @@ Ext.define('Fiesta.DataModel', {
                         message: 'Server message:' + response.responseText
                     });
 
+                    errback && errback(response);
+
                     return false;
                 }
 
@@ -154,6 +156,8 @@ Ext.define('Fiesta.DataModel', {
                         url: this.url,
                         message: 'Server message:' + o.errorMsg
                     });
+
+                    errback && errback(response);
 
                     return false;
                 }

@@ -29,7 +29,7 @@ Ext.define("Fiesta.model.TestCase", {
 
     isValid : function() {
         var valid = this.get('name') &&
-                    this.get('code') && JSHINT(this.get('code'), CONFIG.LINTSETTINGS);
+                    this.get('code') && JSHINT(this.get('code'), CONFIG.LINT_SETTINGS);
 
         return valid;
     }
