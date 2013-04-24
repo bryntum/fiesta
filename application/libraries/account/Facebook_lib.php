@@ -22,8 +22,20 @@ class Facebook_lib {
 			die;
 		}
 
+        $this->fb = new Facebook(array(
+            'appId'  => '149595784165',
+            'secret' => '993c7cc2bf37b3ac3d9af2a6b3914906'
+        ));
+
 		// Create the Facebook object
-		$this->fb = new Facebook(array('appId' => $this->CI->config->item('facebook_app_id'), 'secret' => $this->CI->config->item('facebook_secret'), 'cookie' => TRUE,));
+//		$this->fb = new Facebook(array(
+//            'appId' => $this->CI->config->item('facebook_app_id'),
+//            'secret' => $this->CI->config->item('facebook_secret'),
+//            'cookie' => TRUE,
+//        ));
+
+        echo "<a href='".$this->fb->getLoginUrl()."'>Link</a>";
+        die();
 
 		// Check for Facebook session
 		if ($this->fb->getUser())
@@ -32,6 +44,8 @@ class Facebook_lib {
 			{
 				// Check for expired session by making a api call
 				$this->user = $this->fb->api('/me');
+                echo "123";
+
 			} catch (FacebookApiException $e)
 			{
 				error_log($e);

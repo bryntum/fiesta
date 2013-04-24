@@ -15,7 +15,6 @@ class Main extends CI_Controller {
     public function index()
     {
         maintain_ssl();
-
         if ($this->authentication->is_signed_in())
         {
 

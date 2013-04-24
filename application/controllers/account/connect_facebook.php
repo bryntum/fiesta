@@ -71,6 +71,7 @@ class Connect_facebook extends CI_Controller {
 
 		// Load facebook redirect view
 		$this->load->view("account/redirect_fb");
+
 	}
 
 }
