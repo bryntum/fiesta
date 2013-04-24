@@ -1,0 +1,59 @@
+/*=======================================================================================================================================================================================================================
+    Panel with test iframe
+*/
+
+
+.tr-container {
+    visibility     : visible !important;
+}
+
+.tr-container .x-panel-collapsed {
+    display        : block !important;
+    
+    visibility     : hidden !important;
+    
+    z-index        : -1 !important;
+}
+
+
+td.tr-td-vertical-align {
+	vertical-align     : middle;
+}
+
+/*=======================================================================================================================================================================================================================
+    Toolbar icons
+*/
+
+
+.view-source
+{
+    background : url(../images/text_align_left.png) no-repeat left center;
+}
+
+.test-source-ct .syntaxhighlighter
+{
+    overflow:hidden !important;
+}
+
+
+/* fixes row height sync in Chrome */
+.syntaxhighlighter .line {
+	height         : 1.2em !important;
+	vertical-align : middle !important;
+}
+
+
+.show-dom
+{
+    background : url(../images/monitor.png) no-repeat left center;
+}
+
+.show-simulated-actions
+{
+    background : url(../images/lightning.png) no-repeat left center;
+}
+
+.rerun
+{
+    background : url(../images/arrow_rotate_anticlockwise.png) no-repeat left center;
+}

@@ -2,11 +2,13 @@ Ext.define("Fiesta.view.Viewport", {
     extend: "Ext.container.Viewport",
     layout: 'border',
     margins: 5,
+    border  : false,
     initComponent: function () {
         Ext.apply(this, {
             items: [
                 {
                     region  : 'north',
+                    border  : false,
                     xtype   : 'userpanel'
                 },
                 {

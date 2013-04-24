@@ -1,0 +1,196 @@
+/*=======================================================================================================================================================================================================================
+    Common and unsorted
+*/
+
+.assertiongrid-initializing
+{
+    color           : #777;
+    margin          : 5px;
+    font-size       : 10px;
+    text-align      : left;
+}
+
+
+.siesta-assertion-grid .x-grid-cell-inner {
+	line-height            : 23px !important;
+	padding-bottom         : 4px !important;
+}
+
+/*=======================================================================================================================================================================================================================
+    Summary row
+*/
+
+.tr-summary-row {
+    background-color        : #d5e7f0 !important;
+    padding-left            : 10px;
+}
+
+
+.tr-summary-row .x-tree-icon,
+.tr-summary-row .x-tree-elbow-empty,
+.tr-summary-row .x-tree-elbow-end 
+{
+    display                 : none !important;
+}
+
+.tr-summary-row .x-grid-cell-inner 
+{
+    line-height             : 17px;
+    padding-left            : 6px;
+    padding-top             : 5px;
+    padding-bottom          : 5px;
+}
+
+.tr-summary-failure {
+    background-color        : #FF8186 !important;
+}
+
+.tr-summary-failure span {
+    font-weight             : bold;
+}
+
+
+/*=======================================================================================================================================================================================================================
+    Diagnostic row
+*/
+
+.tr-diagnostic-row {
+    background-color        : #d5e7f0 !important;
+}
+
+.tr-diagnostic-row .x-tree-icon
+{
+    display                 : none !important;
+}
+
+.tr-diagnostic-row span.assertion-text
+{
+    font-weight             : bold;
+}
+
+.tr-warning-row span.assertion-text {
+    color                   : red;
+}
+
+.tr-diagnostic-row td
+{
+    border-width            : 0 0 !important;
+    background-image        : none !important;
+}
+
+
+/*=======================================================================================================================================================================================================================
+    Annotation
+*/
+
+.tr-assert-row-annontation {
+	font-family        : "Courier New", monospace, serif;
+	font-size          : 1em;
+	
+	padding-top        : 10px;
+	line-height        : 13px;
+}
+
+
+/*=======================================================================================================================================================================================================================
+    Assertion row
+*/
+
+.si-hide-passes .tr-assertion-row-passed
+{
+    display         : none;
+}
+
+
+.tr-assertion-row-passed .x-tree-icon,
+.tr-subtest-row-green .x-tree-icon 
+{
+    background-image : url(../images/ok.png) !important;
+}
+
+.tr-assertion-row-failed .x-tree-icon,
+.tr-subtest-row-red .x-tree-icon
+{
+    background-image : url(../images/bug.png) !important;
+}
+
+.tr-assertion-row-failed {
+    background-color       : #ff8186;
+}
+
+.tr-assertion-row-failed.x-grid-row-over, .tr-assertion-row-failed.x-grid-row-over .x-grid-cell {
+    background-color       : #f7a2a6;
+    background-image       : none;
+}
+
+.tr-todo-row-passed .x-tree-icon {
+    background-image : url(../images/ok-todo.png) !important;
+}
+
+.tr-todo-row-failed .x-tree-icon {
+    background-image : url(../images/bug-todo.png) !important;
+}
+
+
+.tr-waiting-row .x-tree-icon {
+    background-image    : url(../images/spinner.gif) !important;
+}
+
+.tr-waiting-row .assertion-text {
+    color               : #666;
+}
+
+.tr-waiting-row-passed .x-tree-icon {
+    background-image    : url(../images/clock_check.png) !important;
+}
+
+.tr-waiting-row-passed .assertion-text {
+    color               : navy;
+}
+
+.tr-subtest-row-working .x-tree-icon {
+    background-image    : url(../images/spinner.gif) !important;
+}
+
+/*=======================================================================================================================================================================================================================
+    Exception row
+*/
+
+.tr-exception-row .x-tree-icon {
+	background-image : url(../images/flag-red.png) !important;
+}
+
+.tr-exception-row {
+    background-color        : #fc585e;
+}
+
+.tr-exception-row .x-grid-cell {
+    font-weight             : bolder;
+}
+
+.tr-exception-todo-row .x-tree-icon {
+    background-image : url(../images/flag-green.png) !important;
+}
+
+
+/*=======================================================================================================================================================================================================================
+    Sub test row (including describe/it)
+*/
+
+.tr-subtest-row-describe .x-grid-cell-inner {
+    font-weight         : bolder;
+}
+
+.tr-subtest-row-describe {
+    background-color    : rgb(154, 228, 252);
+}
+
+.siesta-assertion-grid .x-grid-cell-inner img {
+    vertical-align      : middle;
+}
+
+.siesta-assertion-grid .x-tree-icon {
+    margin-top          : -2px;
+    margin-right        : 5px;
+}
+

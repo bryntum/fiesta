@@ -4,6 +4,8 @@ Ext.define('Fiesta.view.Main', {
     alias    : 'widget.mainView',
     stateId  : 'tabs',
     stateful : true,
+    bodyCls  : 'mainview-body',
+    border   : false,
 
     initComponent : function () {
         Ext.setGlyphFontFamily('Pictos');
