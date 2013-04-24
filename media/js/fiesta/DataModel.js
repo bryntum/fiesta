@@ -372,6 +372,8 @@ Ext.define('Fiesta.DataModel', {
             record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
             newTagsArr = [];
 
+        console.log(testCaseModel.data);
+
 
         if(record) {
 
@@ -384,6 +386,7 @@ Ext.define('Fiesta.DataModel', {
             testCaseModel.data.tags = newTagsArr;
 
             record.set(testCaseModel.data);
+
         }
         else {
             Ext.getStore('TestCases').load();

@@ -80,7 +80,7 @@ Ext.define('Fiesta.view.Main', {
         if (!tabExist) {
             var newTab = Ext.widget('testCasesView', {
                 title: Ext.String.ellipsis(testCaseModel.get('name'), 15),
-                iconCls: testCaseModel.get('stared') ? 'filledStar' : '',
+                iconCls: testCaseModel.get('starred') ? 'filledStar' : '',
                 testCaseModel: testCaseModel
             });
 
@@ -90,7 +90,7 @@ Ext.define('Fiesta.view.Main', {
         else {
             activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
             activeTab.testCaseModel = testCaseModel;
-            activeTab.setIconCls(testCaseModel.get('stared') ? 'filledStar' : '');
+            activeTab.setIconCls(testCaseModel.get('starred') ? 'filledStar' : '');
             activeTab.onTabCreate(testCaseModel);
         }
 

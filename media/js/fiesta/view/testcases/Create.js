@@ -69,12 +69,7 @@ Ext.define('Fiesta.view.testcases.Create', {
                                     name: 'frameworkId',
                                     emptyText: "Framework",
                                     store: "Frameworks",
-                                    queryMode: 'local',
-                                    listeners: {
-                                        afterrender: function () {
-                                            console.log(this.store);
-                                        }
-                                    }
+                                    queryMode: 'local'
                                 }
                             ]
                         },
@@ -142,8 +137,17 @@ Ext.define('Fiesta.view.testcases.Create', {
         this.callParent(arguments);
 
         if (this.testCaseModel) {
+
             this.on('afterrender', function () {
-                this.down('form').getForm().loadRecord(this.testCaseModel);
+                var form = this.down('form').getForm(),
+                    tagsList = [];
+
+                Ext.each(this.testCaseModel.get('tags'), function (tag) {
+                    tagsList.push(tag.tag);
+                });
+
+                form.loadRecord(this.testCaseModel);
+                form.setValues({tagsList: tagsList});
             });
         }
         else {
