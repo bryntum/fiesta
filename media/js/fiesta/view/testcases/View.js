@@ -183,9 +183,6 @@ Ext.define('Fiesta.view.testcases.View', {
         var oldCls = runButton.iconCls;
         var code = this.editor.getValue();
 
-        debugger;
-        return;
-
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             runButton.setIconCls('icon-loading');
 
