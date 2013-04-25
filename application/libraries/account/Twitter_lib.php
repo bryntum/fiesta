@@ -24,6 +24,7 @@ class Twitter_lib {
 
 		// Create EpiTwitter object
 		$this->etw = new EpiTwitter($this->CI->config->item('twitter_consumer_key'), $this->CI->config->item('twitter_consumer_secret'));
+        // $this->etw->setCallback($this->getReturnUrl());
 
 		// Complain loudly if base url contains "://localhost"
 		if (strpos($this->CI->config->item('base_url'), '://localhost') !== FALSE)
@@ -32,6 +33,13 @@ class Twitter_lib {
 			die;
 		}
 	}
+
+    public function getReturnUrl () {
+
+        return 'http://'.$_SERVER['HTTP_HOST'] . '/account/connect_twitter/';
+
+
+    }
 
 	// --------------------------------------------------------------------
 

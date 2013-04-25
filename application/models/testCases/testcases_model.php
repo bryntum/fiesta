@@ -174,13 +174,13 @@ class Testcases_model extends CI_Model {
             foreach($results as $rowNum => $row) {
                 $tags = $this->getTags($row->id);
                 $results[$rowNum]->tags = $tags;
-                $tagsList = array();
-                
-                foreach($tags as $tagNum => $tagRow) {
-                    $tagsList[] = $tagRow->tag;
-                }
-                
-                $results[$rowNum]->tagsList = $tagsList; //implode(', ',$tagsList);
+//                $tagsList = array();
+//
+//                foreach($tags as $tagNum => $tagRow) {
+//                    $tagsList[] = $tagRow->tag;
+//                }
+//
+//                $results[$rowNum]->tagsList = $tagsList;
             }
         }
         
@@ -218,7 +218,7 @@ class Testcases_model extends CI_Model {
 
             $this->db->insert('user_testCases', array('user_id' => $data['owner_id'], 'testCase_id' => $testCaseId, 'starred' => 0));
             
-            return $testCaseId;
+            return $this->getById($testCaseId, $data['owner_id']);
         
     }
 
@@ -245,7 +245,7 @@ class Testcases_model extends CI_Model {
             $this->updateTestCaseTags($testCaseId,$tagsList);
         }
 
-        return $result;
+        return $this->getById($testCaseId,$data['owner_id']);
     }
 
     function updateTestCaseTags ($testCaseId, $tagsList) {

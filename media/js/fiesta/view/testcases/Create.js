@@ -141,13 +141,13 @@ Ext.define('Fiesta.view.testcases.Create', {
             this.on('afterrender', function () {
                 var form = this.down('form').getForm(),
                     tagsList = [];
-
-                Ext.each(this.testCaseModel.get('tags'), function (tag) {
-                    tagsList.push(tag.tag);
-                });
+//
+//                Ext.each(this.testCaseModel.get('tags'), function (tag) {
+//                    tagsList.push(tag.tag);
+//                });
 
                 form.loadRecord(this.testCaseModel);
-                form.setValues({tagsList: tagsList});
+//                form.setValues({tagsList: tagsList});
             });
         }
         else {
@@ -158,7 +158,8 @@ Ext.define('Fiesta.view.testcases.Create', {
 
     saveTestCase: function (button) {
         var me = this,
-            formValues = me.down('form').getForm().getValues();
+            formValues = me.down('form').getForm().getValues(),
+            tags = [];
 
         if(!formValues.private) {
             formValues.private = 0;
@@ -187,6 +188,15 @@ Ext.define('Fiesta.view.testcases.Create', {
         // returned to callback
 
         else {
+
+            // Getting passed tags and setting them to model
+
+            Ext.each(formValues.tagsList, function (tagName) {
+                tags.push({id: null, tag: tagName});
+            });
+
+            this.testCaseModel.set('tags', tags);
+
             Fiesta.DataModel.createTestCase(
                 this.testCaseModel,
                 function (record) {

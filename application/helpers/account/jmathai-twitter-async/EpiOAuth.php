@@ -230,7 +230,7 @@ class EpiOAuth {
 
 	protected function httpGet($url, $params = NULL)
 	{
-		if (count($params['request']) > 0)
+        if (count($params['request']) > 0)
 		{
 			$url .= '?';
 			foreach ($params['request'] as $k => $v)
@@ -249,6 +249,7 @@ class EpiOAuth {
 
 	protected function httpPost($url, $params = NULL, $isMultipart)
 	{
+
 		$this->addDefaultHeaders($url, $params['oauth']);
 		$ch = $this->curlInit($url);
 		curl_setopt($ch, CURLOPT_POST, 1);

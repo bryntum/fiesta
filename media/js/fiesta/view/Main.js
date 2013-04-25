@@ -106,8 +106,6 @@ Ext.define('Fiesta.view.Main', {
             activeTab.onTabCreate(testCaseModel);
         }
 
-        //FIESTA.getCards().getLayout().setActiveItem(1);
-        console.log('tete2');
 
         if (updateHistory) {
             FIESTA.makeHistory(testCaseModel.get('slug'));
@@ -119,10 +117,10 @@ Ext.define('Fiesta.view.Main', {
     },
 
     onTabRemove : function () {
-        var tabs = this;
-        if (tabs.items.items.length == 0) {
-            // FIESTA.getCards().getLayout().setActiveItem(0);
-        }
+//        var tabs = this;
+//        if (tabs.items.items.length == 0) {
+//             FIESTA.getCards().getLayout().setActiveItem(0);
+//        }
     },
 
     getTabsState : function () {
@@ -141,17 +139,11 @@ Ext.define('Fiesta.view.Main', {
             });
         }
 
-        console.log('getstate');
-        console.log(state);
-
         return state;
     },
 
     applyTabState : function (state) {
         var tabs = this;
-
-        console.log('stateApply');
-        console.log(state);
 
         if (state.openedTabs && state.openedTabs.length > 0) {
             Fiesta.DataModel.getTestCasesColl(

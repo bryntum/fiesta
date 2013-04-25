@@ -7,7 +7,7 @@ class Main extends CI_Controller {
 
         // Load the necessary stuff...
         $this->load->helper(array('language', 'url', 'form', 'account/ssl'));
-        $this->load->library(array('account/authentication'));
+        $this->load->library(array('account/authentication', 'account/facebook_lib'));
         $this->load->model(array('account/account_model'));
 
     }
@@ -17,6 +17,7 @@ class Main extends CI_Controller {
         maintain_ssl();
 
 
+
         if ($this->authentication->is_signed_in())
         {
 
@@ -24,7 +25,11 @@ class Main extends CI_Controller {
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => $this->session->userdata('account_id'),
-                'account' => $account
+                'account' => $account,
+                'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
+                    'redirect_uri'  => $this->facebook_lib->getReturnUrl()
+                ))
+
             );
             
         }
@@ -33,7 +38,11 @@ class Main extends CI_Controller {
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => 'guest',
-            );            
+                'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
+                    'redirect_uri'  => $this->facebook_lib->getReturnUrl()
+                ))
+
+            );
             
             
         }

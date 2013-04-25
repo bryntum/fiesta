@@ -153,8 +153,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
     onTabCreate : function () {
         this.editor.setValue(this.testCaseModel.get('code'));
-        this.down('#testdetailsform').getForm().loadRecord(this.testCaseModel);
-
+        this.down('detailspanel').setTestCaseModel(this.testCaseModel);
         this.saveButton.setVisible(this.testCaseModel.isEditable());
     },
 
@@ -240,10 +239,12 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     save : function () {
-        var form = this.down('#testdetailsform').getForm();
+        var form = this.down('#testdetailsform').getForm(),
+            tags = [];
         form.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.editor.getValue());
+
 
         if (this.testCaseModel.isValid()) {
             var saveBtn = this.saveButton;
@@ -251,6 +252,14 @@ Ext.define('Fiesta.view.testcases.View', {
 
             saveBtn.disable();
             saveBtn.setIconCls('icon-loading');
+
+            // Getting passed tags and setting them to model
+
+            Ext.each(form.getValues().tagsList, function (tagName) {
+                tags.push({id: null, tag: tagName});
+            });
+
+            this.testCaseModel.set('tags', tags);
 
             Fiesta.DataModel.updateTestCase(
                 this.testCaseModel,

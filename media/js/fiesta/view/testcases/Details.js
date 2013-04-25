@@ -47,7 +47,10 @@ Ext.define('Fiesta.view.testcases.Details', {
                             valueField     : "tag",
                             name           : 'tagsList',
                             queryMode      : 'local',
-                            forceSelection : false
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            forceSelection: false,
+                            minChars: 3
                         },
                         {
                             xtype          : "combo",
@@ -83,7 +86,17 @@ Ext.define('Fiesta.view.testcases.Details', {
 
 
     setTestCaseModel : function (model) {
+        var tagsList    = [],
+            detailsForm = this.down('#testdetailsform').getForm();
+
         this.testCaseModel = model;
-        this.getForm().loadRecord(model);
+
+        Ext.each(this.testCaseModel.get('tags'), function (tag) {
+            tagsList.push(tag.tag);
+        });
+
+        detailsForm.loadRecord(model);
+        detailsForm.setValues({tagsList: tagsList});
+
     }
 });

@@ -24,11 +24,17 @@ Ext.define('Fiesta.DataModel', {
 
     createTestCase: function (testCaseModel, callback, errback) {
         var me = this,
+            tagsList = [],
             params = testCaseModel.getData();
 
-        if(params.tagsList.length > 0) {
-            params.tagsList = params.tagsList.join(',');
+
+        if(params.tags.length > 0) {
+            Ext.each(params.tags, function (tag) {
+                tagsList.push(tag.tag);
+            });
         }
+
+        params.tagsList = tagsList.join(',');
 
 
         Ext.Ajax.request({
@@ -52,12 +58,7 @@ Ext.define('Fiesta.DataModel', {
                 if (true === o.success) {
 
                     // Updating passed record with id got from backend and ownerId stored in config
-                    testCaseModel.set({
-                        id      : o.id,
-                        slug: o.slug,
-                        ownerId: CONFIG.userId,
-                        ownerName: CONFIG.userName
-                    });
+                    testCaseModel.set(o.result);
 
                     this.updateTestcasesList(testCaseModel);
 
@@ -110,10 +111,17 @@ Ext.define('Fiesta.DataModel', {
 
     updateTestCase: function (testCaseModel, callback, errback) {
         var me = this,
+            tagsList = [],
             params = testCaseModel.getData();
-        if(params.tagsList.length > 0) {
-            params.tagsList = params.tagsList.join(',');
+
+
+        if(params.tags.length > 0) {
+            Ext.each(params.tags, function (tag) {
+                tagsList.push(tag.tag);
+            });
         }
+
+        params.tagsList = tagsList.join(',');
 
         Ext.Ajax.request({
             url: this.updateUrl,
@@ -135,7 +143,7 @@ Ext.define('Fiesta.DataModel', {
 
                 if (true === o.success) {
 
-                    testCaseModel.set('slug', o.slug);
+                    testCaseModel.set(o.result);
 
                     this.updateTestcasesList(testCaseModel);
 
@@ -376,18 +384,8 @@ Ext.define('Fiesta.DataModel', {
             record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
             newTagsArr = [];
 
-        console.log(testCaseModel.data);
-
 
         if(record) {
-
-            Ext.each(testCaseModel.get('tagsList'), function (tag) {
-                var newTag = tagsStore.findRecord('tag', tag);
-                newTagsArr.push({ id: newTag.get('id'), tag: newTag.get('tag')});
-            });
-
-
-            testCaseModel.data.tags = newTagsArr;
 
             record.set(testCaseModel.data);
 

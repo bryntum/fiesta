@@ -39,7 +39,7 @@ class Facebook_lib {
 			{
 				// Check for expired session by making a api call
 				$this->user = $this->fb->api('/me');
-                echo "123";
+
 
 			} catch (FacebookApiException $e)
 			{
@@ -47,6 +47,13 @@ class Facebook_lib {
 			}
 		}
 	}
+
+    public function getReturnUrl () {
+
+        return 'http://'.$_SERVER['HTTP_HOST'] . '/account/connect_facebook/';
+
+
+    }
 
 	// --------------------------------------------------------------------
 

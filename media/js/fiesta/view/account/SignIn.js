@@ -50,7 +50,7 @@ Ext.define('Fiesta.view.account.SignIn', {
                         {
                             border      : false,
                             html        : '<div><ul>'+
-                                          '<li class="third_party facebook"><a href="/account/connect_facebook" title="Sign In with Facebook"></a></li>'+
+                                          '<li class="third_party facebook"><a href="'+CONFIG.fb_url+'" title="Sign In with Facebook"></a></li>'+
                                           '<li class="third_party twitter"><a href="/account/connect_twitter" title="Sign In with Twitter"></a></li>'+
                                           '<li class="third_party google"><a href="/account/connect_google" title="Sign In with Google"></a></li>'+
                                           '<li class="third_party yahoo"><a href="/account/connect_yahoo" title="Sign In with Yahoo!"></a></li>'+

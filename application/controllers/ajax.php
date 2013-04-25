@@ -188,6 +188,9 @@ class Ajax extends CI_Controller {
         $success = false;
         $testCaseId = 0;
         $slug = '';
+        $resultRec = '';
+        $errorMsg = '';
+
         $name = $this->input->post('name');
         $frameworkId = $this->input->post('frameworkId');
         $private = $this->input->post('private');
@@ -196,18 +199,25 @@ class Ajax extends CI_Controller {
 
         if ($this->authentication->is_signed_in()) {       
             $userId = $this->session->userdata('account_id');
-           
-            $testCaseId = $this->testCases_model->create(array(
+
+            $resultRec = $this->testCases_model->create(array(
                 'name' => $name, 
                 'owner_id' => $userId, 
                 'framework_id' => $frameworkId,
                 'private' => $private,
                 'code' => $code,
                 'tagsList' => $tagsList
-            )); 
+            ));
 
-            $slug = $this->testCases_model->makeSlug($name);
-            $success = true;      
+            if($resultRec) {
+                $testCaseId = $resultRec->id;
+
+                $slug = $this->testCases_model->makeSlug($name);
+                $success = true;
+            }
+            else {
+                $errorMsg = 'Something goes wrong on DB';
+            }
         }
         else {
             
@@ -227,14 +237,14 @@ class Ajax extends CI_Controller {
            $success = true; 
         }
 
-        echo json_encode(array('id'=> $testCaseId, 'slug' => $slug, 'success' => $success));
+        echo json_encode(array('id'=> $testCaseId, 'slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
     }
     
     public function updateTestCase() {
         $success = false;
         $slug = '';
-        $errorMsg = 'Please login!';
-        
+        $resultRec = '';
+
         if ($this->authentication->is_signed_in()) {
 
             $testCaseId = $this->input->post('id');
@@ -245,22 +255,30 @@ class Ajax extends CI_Controller {
             $userId = $this->session->userdata('account_id');
             $tagsList = $this->input->post('tagsList');
 
-            $this->testCases_model->update($testCaseId, array(
+            $resultRec = $this->testCases_model->update($testCaseId, array(
                 'name' => $name, 
                 'owner_id' => $userId, 
                 'framework_id' => $frameworkId,
-                'private' => $private,
+                'private' => $private == 'true' ? 1 : 0,
                 'code' => $code,
                 'tagsList' => $tagsList
             ));  
-            
-            $success = true;                 
-            $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
-            $errorMsg = '';
-            
+
+            if($resultRec) {
+                $success = true;
+                $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
+                $errorMsg = '';
+            }
+            else {
+                $errorMsg = 'Something goes wrong on DB';
+            }
         }        
 
-        echo json_encode(array('slug' => $slug, 'errorMsg' => $errorMsg, 'success' => $success));
+        else {
+            $errorMsg = 'Please login!';
+        }
+
+        echo json_encode(array('slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
 
 
     }
