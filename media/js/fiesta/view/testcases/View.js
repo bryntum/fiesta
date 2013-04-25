@@ -3,24 +3,30 @@ Ext.define('Fiesta.view.testcases.View', {
     alias         : 'widget.testCasesView',
     requires      : [
         'Fiesta.view.testcases.Details',
-        'Fiesta.view.testcases.Editor'
+        'Fiesta.plugins.JsEditor'
     ],
-    testCaseModel : null,
+    
+    
+    testCaseModel       : null,
 
-    harness : Siesta.Harness.Browser.ExtJS,
+    harness             : Siesta.Harness.Browser.ExtJS,
 
-    currentTest      : null,
-    currentListeners : null,
+    currentTest         : null,
+    currentListeners    : null,
 
-    resultPanel : null,
+    resultPanel         : null,
+    codeEditor          : null,
+    saveButton          : null,
+    runButton           : null,
+    
 
     initComponent : function () {
         var topBar = [
             {
-                text   : 'Run',
-                width  : 80,
-                cls    : 'run-testcase',
-                action : 'run',
+                text    : 'Run',
+                width   : 80,
+                cls     : 'run-testcase',
+                action  : 'run',
 
                 handler : this.runTest,
                 scope   : this
@@ -36,20 +42,20 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this
             },
             {
-                xtype : 'tbfill'
+                xtype   : 'tbfill'
             },
             {
-                text : '<b>{ }</b>',
-                tooltip : 'Auto-format code',
-                handler : function() {
-                    var ed = this.editor.editor;
-                    this.editor.editor.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
+                text    : '<b>{ }</b>',
+                tooltip : 'Auto-indent code',
+                handler : function () {
+                    var ed = this.codeEditor.editor;
+                    ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
                 },
-                scope : this
+                scope   : this
             },
             {
-                text : 'Share',
-                menu : [
+                text    : 'Share',
+                menu    : [
                     {
                         text    : "Twitter",
                         scope   : this,
@@ -68,7 +74,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 ]
             },
             {
-                text    : this.testCaseModel.get('starred') ? 'Remove from favorites' : 'Add to favorites',
                 iconCls : this.testCaseModel.get('starred') ? 'star' : 'filledStar',
                 scope   : this,
                 action  : 'changeFavorites',
@@ -99,8 +104,30 @@ Ext.define('Fiesta.view.testcases.View', {
                     items : [
                         // card with sources editor
                         {
-                            xtype  : 'codeeditor',
-                            region : 'center'
+                            xtype  : 'container',
+                            region : 'center',
+                            layout   : { type : 'vbox', align : 'stretch' },
+                            style    : 'background:#fff',
+                            items  : [
+                                {
+                                    xtype  : 'component',
+                                    cls    : 'codeeditor-before',
+                                    html   : 'StartTest(<span style="color:#708">function</span>(t) {',
+                                    height : 22
+                                },
+                                {
+                                    xtype      : 'jseditor',
+                                    flex       : 1,
+                                    autoWidth  : true,
+                                    autoHeight : true
+                                },
+                                {
+                                    xtype  : 'component',
+                                    cls    : 'codeeditor-after',
+                                    html   : '});',
+                                    height : 20
+                                }
+                            ]
                         },
                         // card with
                         {
@@ -127,9 +154,10 @@ Ext.define('Fiesta.view.testcases.View', {
             // eof items
             listeners : {
                 afterrender : this.onTabCreate,
-                activate    : this.onTabSelect,
+                activate    : this.onTabActivate,
+                deactivate  : this.onTabDeActivate,
 
-                scope : this
+                scope       : this
             }
         });
         // eof apply
@@ -137,20 +165,20 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.callParent(arguments);
 
-        this.resultPanel = this.down('resultpanel')
-        this.editor = this.down('codeeditor');
-        this.saveButton = this.down('[action=save]');
-        this.runButton = this.down('[action=run]');
+        this.resultPanel    = this.down('resultpanel')
+        this.codeEditor     = this.down('jseditor');
+        this.saveButton     = this.down('[action=save]');
+        this.runButton      = this.down('[action=run]');
 
-        this.editor.on({
-            keyevent : function(sender, event) {
+        this.codeEditor.on({
+            keyevent : function (sender, event) {
                 var e = new Ext.EventObjectImpl(event);
 
-                if (e.ctrlKey && e.getKey() === e.ENTER) {
+                if (e.ctrlKey && e.getKey() === e.ENTER && event.type == 'keydown') {
                     this.runTest();
                 }
             },
-            scope : this
+            scope    : this
         });
 
         this.harness.on('teststart', this.onTestStart, this)
@@ -158,40 +186,45 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     onTabCreate : function () {
-        this.editor.setValue(this.testCaseModel.get('code'));
+        this.codeEditor.setValue(this.testCaseModel.get('code'));
         this.down('detailspanel').setTestCaseModel(this.testCaseModel);
         this.saveButton.setVisible(this.testCaseModel.isEditable());
     },
 
-    onTabSelect : function () {
-        var me      = this;
+    
+    onTabActivate : function () {
+        var me = this;
 
         // FIESTA.makeHistory(this.testCaseModel.get('slug'));
 
-        if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
+        this.resultPanel.alignIFrame()
     },
+    
+    onTabDeActivate : function () {
+        this.resultPanel.hideIFrame()
+    },
+    
 
     onTestStart : function (event, test) {
         if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
 
     runTest : function () {
-        var testCaseModel = this.testCaseModel;
-        var harness = this.harness;
-        var runButton = this.runButton;
-        var oldCls = runButton.iconCls;
-        var code = this.editor.getValue();
+        var testCaseModel   = this.testCaseModel;
+        var harness         = this.harness;
+        var runButton       = this.runButton;
+        var code            = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             runButton.setIconCls('icon-loading');
 
             harness.startSingle({
                 transparentEx : true,
-                testCode      : 'StartTest(function(t){ ' + code + '})',
+                testCode      : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url           : testCaseModel.internalId,
                 preload       : testCaseModel.getPreload()
-            }, function() {
-                runButton.setIconCls(oldCls);
+            }, function () {
+                runButton.setIconCls('run-testcase');
             });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
@@ -238,7 +271,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments)
     },
 
-    changeFavorite: function () {
+    changeFavorite : function () {
         FIESTA.addToFavorites(this.testCaseModel);
     },
 
@@ -247,7 +280,7 @@ Ext.define('Fiesta.view.testcases.View', {
             tags = [];
         form.updateRecord(this.testCaseModel);
 
-        this.testCaseModel.set('code', this.editor.getValue());
+        this.testCaseModel.set('code', this.codeEditor.getValue());
 
 
         if (this.testCaseModel.isValid()) {
@@ -260,7 +293,7 @@ Ext.define('Fiesta.view.testcases.View', {
             // Getting passed tags and setting them to model
 
             Ext.each(form.getValues().tagsList, function (tagName) {
-                tags.push({id: null, tag: tagName});
+                tags.push({id : null, tag : tagName});
             });
 
             this.testCaseModel.set('tags', tags);

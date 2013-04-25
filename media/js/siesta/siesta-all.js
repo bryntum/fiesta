@@ -3758,6 +3758,7 @@ Class('Scope.Provider.IFrame', {
     
     have : {
         iframe          : null,
+        cls             : null,
         
         parentEl        : null
     },
@@ -3778,6 +3779,7 @@ Class('Scope.Provider.IFrame', {
             
             var minViewportSize     = this.minViewportSize
             
+            iframe.className        = this.cls || ''
             iframe.style.width      = (minViewportSize && minViewportSize.width || 1024) + 'px'
             iframe.style.height     = (minViewportSize && minViewportSize.height || 768) + 'px'
             iframe.setAttribute('frameborder', 0)
@@ -28102,6 +28104,7 @@ Class('Siesta.Harness.Browser', {
             getScopeProviderConfigFor : function (desc) {
                 var config                      = this.SUPER(desc)
                 
+                config.cls                      = "tr-iframe"
                 config.sourceURL                = config.sourceURL || this.getDescriptorConfig(desc, 'hostPageUrl')
                 config.minViewportSize          = config.minViewportSize || {
                     width   : this.getDescriptorConfig(desc, 'viewportWidth'),

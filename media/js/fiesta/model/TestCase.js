@@ -15,7 +15,6 @@ Ext.define("Fiesta.model.TestCase", {
         {name: 'starred', type: 'bool'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
         'humanTime',
-        {name: 'hostPageUrl', type: 'string'},
         {name: 'rating', type: 'int'}
     ],
     
