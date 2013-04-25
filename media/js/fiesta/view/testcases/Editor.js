@@ -32,14 +32,19 @@ Ext.define('Fiesta.view.testcases.Editor', {
         });
 
         this.callParent(arguments);
+
         this.editor = this.down('jseditor');
+
+        this.relayEvents(this.editor, [
+            'keyevent'
+        ])
     },
 
-    getValue : function() {
+    getValue : function () {
         return this.editor.getValue.apply(this.editor, arguments);
     },
 
-    setValue : function() {
+    setValue : function () {
         return this.editor.setValue.apply(this.editor, arguments);
     }
 });

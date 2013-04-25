@@ -42,8 +42,8 @@ Ext.define('Fiesta.view.testcases.View', {
                 text : '<b>{ }</b>',
                 tooltip : 'Auto-format code',
                 handler : function() {
-                    var ed = this.editor.editor;
-                    this.editor.editor.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
+                    var ed = this.codeEditor.editor;
+                    ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
                 },
                 scope : this
             },
@@ -132,11 +132,11 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments);
 
         this.resultPanel = this.down('resultpanel')
-        this.editor = this.down('codeeditor');
+        this.codeEditor = this.down('codeeditor');
         this.saveButton = this.down('[action=save]');
         this.runButton = this.down('[action=run]');
 
-        this.editor.on({
+        this.codeEditor.on({
             keyevent : function(sender, event) {
                 var e = new Ext.EventObjectImpl(event);
 
@@ -152,7 +152,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     onTabCreate : function () {
-        this.editor.setValue(this.testCaseModel.get('code'));
+        this.codeEditor.setValue(this.testCaseModel.get('code'));
         this.down('detailspanel').setTestCaseModel(this.testCaseModel);
         this.saveButton.setVisible(this.testCaseModel.isEditable());
     },
@@ -180,7 +180,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var harness = this.harness;
         var runButton = this.runButton;
         var oldCls = runButton.iconCls;
-        var code = this.editor.getValue();
+        var code = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             runButton.setIconCls('icon-loading');
@@ -243,7 +243,7 @@ Ext.define('Fiesta.view.testcases.View', {
             tags = [];
         form.updateRecord(this.testCaseModel);
 
-        this.testCaseModel.set('code', this.editor.getValue());
+        this.testCaseModel.set('code', this.codeEditor.getValue());
 
 
         if (this.testCaseModel.isValid()) {
