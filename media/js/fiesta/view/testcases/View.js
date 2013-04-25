@@ -3,7 +3,7 @@ Ext.define('Fiesta.view.testcases.View', {
     alias         : 'widget.testCasesView',
     requires      : [
         'Fiesta.view.testcases.Details',
-        'Fiesta.view.testcases.Editor'
+        'Fiesta.plugins.JsEditor'
     ],
     testCaseModel : null,
 
@@ -39,13 +39,13 @@ Ext.define('Fiesta.view.testcases.View', {
                 xtype : 'tbfill'
             },
             {
-                text : '<b>{ }</b>',
+                text    : '<b>{ }</b>',
                 tooltip : 'Auto-format code',
-                handler : function() {
+                handler : function () {
                     var ed = this.codeEditor.editor;
                     ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
                 },
-                scope : this
+                scope   : this
             },
             {
                 text : 'Share',
@@ -99,8 +99,30 @@ Ext.define('Fiesta.view.testcases.View', {
                     items : [
                         // card with sources editor
                         {
-                            xtype  : 'codeeditor',
-                            region : 'center'
+                            xtype  : 'container',
+                            region : 'center',
+                            layout   : { type : 'vbox', align : 'stretch' },
+                            style    : 'background:#fff',
+                            items  : [
+                                {
+                                    xtype  : 'component',
+                                    cls    : 'codeeditor-before',
+                                    html   : 'StartTest(<span style="color:#708">function</span>(t) {',
+                                    height : 22
+                                },
+                                {
+                                    xtype      : 'jseditor',
+                                    flex       : 1,
+                                    autoWidth  : true,
+                                    autoHeight : true
+                                },
+                                {
+                                    xtype  : 'component',
+                                    cls    : 'codeeditor-after',
+                                    html   : '});',
+                                    height : 20
+                                }
+                            ]
                         },
                         // card with
                         {
@@ -135,19 +157,19 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments);
 
         this.resultPanel = this.down('resultpanel')
-        this.codeEditor = this.down('codeeditor');
+        this.codeEditor = this.down('jseditor');
         this.saveButton = this.down('[action=save]');
         this.runButton = this.down('[action=run]');
 
         this.codeEditor.on({
-            keyevent : function(sender, event) {
+            keyevent : function (sender, event) {
                 var e = new Ext.EventObjectImpl(event);
 
                 if (e.ctrlKey && e.getKey() === e.ENTER) {
                     this.runTest();
                 }
             },
-            scope : this
+            scope    : this
         });
 
         this.harness.on('teststart', this.onTestStart, this)
@@ -161,18 +183,18 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     onTabSelect : function () {
-        var me      = this;
+        var me = this;
 
         FIESTA.makeHistory(this.testCaseModel.get('slug'));
 
         DISQUS.reset({
             reload : true,
             config : function () {
-                this.page.identifier    = me.testCaseModel.get('slug');
-                this.page.url           = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
+                this.page.identifier = me.testCaseModel.get('slug');
+                this.page.url = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
             }
         });
-        
+
         if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
     },
 
@@ -195,7 +217,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 testCode      : 'StartTest(function(t){ ' + code + '})',
                 url           : testCaseModel.internalId,
                 preload       : testCaseModel.getPreload()
-            }, function() {
+            }, function () {
                 runButton.setIconCls(oldCls);
             });
         } else {
@@ -243,7 +265,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments)
     },
 
-    changeFavorite: function () {
+    changeFavorite : function () {
         FIESTA.addToFavorites(this.testCaseModel);
     },
 
@@ -265,7 +287,7 @@ Ext.define('Fiesta.view.testcases.View', {
             // Getting passed tags and setting them to model
 
             Ext.each(form.getValues().tagsList, function (tagName) {
-                tags.push({id: null, tag: tagName});
+                tags.push({id : null, tag : tagName});
             });
 
             this.testCaseModel.set('tags', tags);

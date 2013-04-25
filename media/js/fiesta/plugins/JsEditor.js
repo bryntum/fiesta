@@ -545,7 +545,6 @@ Ext.define('Fiesta.plugins.JsEditor', {
 });
 
 (function() {
-debugger;
     CodeMirror.extendMode("css", {
         commentStart: "/*",
         commentEnd: "*/",
