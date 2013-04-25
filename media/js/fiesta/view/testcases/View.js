@@ -1,21 +1,23 @@
 Ext.define('Fiesta.view.testcases.View', {
-    extend   : 'Ext.panel.Panel',
-    alias    : 'widget.testCasesView',
-    requires : [
+    extend      : 'Ext.panel.Panel',
+    
+    alias       : 'widget.testCasesView',
+    
+    requires    : [
         'Fiesta.view.testcases.Details',
         'Fiesta.plugins.JsEditor'
     ],
 
 
-    testCaseModel : null,
+    testCaseModel       : null,
 
-    harness : Siesta.Harness.Browser.ExtJS,
+    harness             : Siesta.Harness.Browser.ExtJS,
 
-    resultPanel  : null,
-    codeEditor   : null,
-    saveButton   : null,
-    runButton    : null,
-    detailsPanel : null,
+    resultPanel         : null,
+    codeEditor          : null,
+    saveButton          : null,
+    runButton           : null,
+    detailsPanel        : null,
 
 
     initComponent : function () {
@@ -117,14 +119,11 @@ Ext.define('Fiesta.view.testcases.View', {
                     }
                 },
                 {
-                    region : 'center',
-                    xtype  : 'container',
-                    layout : 'border',
-
-                    slot : 'cardcontainer',
+                    region  : 'center',
+                    xtype   : 'container',
+                    layout  : 'border',
 
                     items : [
-                        // card with sources editor
                         {
                             xtype  : 'container',
                             region : 'center',
@@ -151,7 +150,6 @@ Ext.define('Fiesta.view.testcases.View', {
                                 }
                             ]
                         },
-                        // card with
                         {
                             xtype        : 'resultpanel',
                             flex         : 1,
@@ -169,11 +167,11 @@ Ext.define('Fiesta.view.testcases.View', {
             ],
             // eof items
             listeners : {
-                afterrender : this.onTabCreate,
-                activate    : this.onTabActivate,
-                deactivate  : this.onTabDeActivate,
+                afterrender     : this.onTabCreate,
+                activate        : this.onTabActivate,
+                deactivate      : this.onTabDeActivate,
 
-                scope : this
+                scope           : this
             }
         });
         // eof apply
@@ -181,11 +179,11 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.callParent(arguments);
 
-        this.resultPanel = this.down('resultpanel')
-        this.detailsPanel = this.down('detailspanel')
-        this.codeEditor = this.down('jseditor');
-        this.saveButton = this.down('[action=save]');
-        this.runButton = this.down('[action=run]');
+        this.resultPanel    = this.down('resultpanel')
+        this.detailsPanel   = this.down('detailspanel')
+        this.codeEditor     = this.down('jseditor');
+        this.saveButton     = this.down('[action=save]');
+        this.runButton      = this.down('[action=run]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
@@ -233,19 +231,19 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     runTest : function () {
-        var testCaseModel = this.testCaseModel;
-        var harness = this.harness;
-        var runButton = this.runButton;
-        var code = this.codeEditor.getValue();
+        var testCaseModel       = this.testCaseModel;
+        var harness             = this.harness;
+        var runButton           = this.runButton;
+        var code                = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             runButton.setIconCls('icon-loading');
 
             harness.startSingle({
-                transparentEx : true,
-                testCode      : 'StartTest(function(t){\n\n' + code + '\n\n})',
-                url           : testCaseModel.internalId,
-                preload       : testCaseModel.getPreload()
+                transparentEx   : true,
+                testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
+                url             : testCaseModel.internalId,
+                preload         : testCaseModel.getPreload()
             }, function () {
                 runButton.setIconCls('run-testcase');
             });

@@ -134,8 +134,6 @@ Ext.application({
                 needUI              : false,
                 autoCheckGlobals    : true
             })
-            
-//            harness.setup()
         })
 
     },
