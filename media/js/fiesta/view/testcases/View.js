@@ -291,16 +291,17 @@ Ext.define('Fiesta.view.testcases.View', {
     
     save : function () {
         var form = this.down('#testdetailsform').getForm(),
+            me = this,
             tags = [];
             
         form.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.codeEditor.getValue());
 
-
         if (this.testCaseModel.isValid()) {
             var saveBtn     = this.saveButton;
             var oldCls      = saveBtn.iconCls;
+            var afterSaveFn = function() { me.afterSaveOperation(); };
 
             saveBtn.disable();
             saveBtn.setIconCls('icon-loading');
@@ -313,18 +314,19 @@ Ext.define('Fiesta.view.testcases.View', {
 
             this.testCaseModel.set('tags', tags);
 
-            Fiesta.DataModel.updateTestCase(
-                this.testCaseModel,
-
-                function () {
-                    saveBtn.setIconCls(oldCls);
-                    saveBtn.enable();
-                },
-                function () {
-                    saveBtn.setIconCls(oldCls);
-                    saveBtn.enable();
-                }
-            );
+            if (this.testCaseModel.phantom) {
+                Fiesta.DataModel.createTestCase(
+                    this.testCaseModel,
+                    afterSaveFn,
+                    afterSaveFn
+                );
+            } else {
+                Fiesta.DataModel.updateTestCase(
+                    this.testCaseModel,
+                    afterSaveFn,
+                    afterSaveFn
+                );
+            }
         } else {
             if (!this.testCaseModel.get('name')) {
                 Ext.Msg.alert('Error', 'Must set a name for the test case');
@@ -350,6 +352,12 @@ Ext.define('Fiesta.view.testcases.View', {
                 this.page.url = 'http://fiestadev.bryntum.com/'+me.testCaseModel.get('slug');
             }
         });
+    },
+
+    afterSaveOperation : function() {
+        var saveBtn     = this.saveButton;
+        saveBtn.setIconCls('icon-save');
+        saveBtn.enable();
     }
 
 });
