@@ -156,5 +156,7 @@ li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
 	left           : -10000px;
 	top            : -10000px;
 	
-	overflow       : auto;   
+	overflow       : auto;
+	
+	margin-left    : 10px;
 }
