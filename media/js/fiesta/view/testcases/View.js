@@ -68,7 +68,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 ]
             },
             {
-                text    : this.testCaseModel.get('starred') ? 'Remove from favorites' : 'Add to favorites',
                 iconCls : this.testCaseModel.get('starred') ? 'star' : 'filledStar',
                 scope   : this,
                 action  : 'changeFavorites',
