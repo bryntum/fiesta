@@ -20,8 +20,14 @@ Ext.define("Fiesta.view.Viewport", {
                 },
 
                 {
-                    region  : 'west',
-                    width   : 320,
+                    title       : 'Search',
+                    header      : false, 
+                    region      : 'west',
+                    width       : 320,
+                    
+                    collapsible : true,
+                    split       : true,
+                    
                     layout  : {
                         type    : 'vbox',
                         align   : 'stretch'
