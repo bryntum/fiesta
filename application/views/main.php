@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/media/css/test.view.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
     <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="/media/js/siesta/resources/css/AssertionGrid.css">
+    <link rel="stylesheet" href="/media/js/siesta/resources/css/ResultPanel.css">
     <link rel="stylesheet" href="/media/js/siesta/resources/css/AssertionGrid.css">
 
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
