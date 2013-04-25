@@ -1362,6 +1362,8 @@ window.CodeMirror = (function() {
   // INPUT HANDLING
 
   function slowPoll(cm) {
+      if (cm.display) return;
+
     if (cm.display.pollingFast) return;
     cm.display.poll.set(cm.options.pollInterval, function() {
       readInput(cm);
@@ -1386,6 +1388,8 @@ window.CodeMirror = (function() {
   // events that indicate IME taking place, but these are not widely
   // supported or compatible enough yet to rely on.)
   function readInput(cm) {
+    if (!cm.display) return;
+
     var input = cm.display.input, prevInput = cm.display.prevInput, doc = cm.doc, sel = doc.sel;
     if (!cm.state.focused || hasSelection(input) || isReadOnly(cm)) return false;
     var text = input.value;
@@ -2030,7 +2034,8 @@ window.CodeMirror = (function() {
       cm.display.wrapper.className = cm.display.wrapper.className.replace(" CodeMirror-focused", "");
     }
     clearInterval(cm.display.blinker);
-    setTimeout(function() {if (!cm.state.focused) cm.doc.sel.shift = false;}, 150);
+
+    setTimeout(function() { if (!cm.state) return; if (!cm.state.focused) cm.doc.sel.shift = false;}, 150);
   }
 
   var detectingSelectAll;
