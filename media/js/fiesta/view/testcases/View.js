@@ -1,30 +1,30 @@
 Ext.define('Fiesta.view.testcases.View', {
-    extend        : 'Ext.panel.Panel',
-    alias         : 'widget.testCasesView',
-    requires      : [
+    extend   : 'Ext.panel.Panel',
+    alias    : 'widget.testCasesView',
+    requires : [
         'Fiesta.view.testcases.Details',
         'Fiesta.plugins.JsEditor'
     ],
-    
-    
-    testCaseModel       : null,
 
-    harness             : Siesta.Harness.Browser.ExtJS,
 
-    resultPanel         : null,
-    codeEditor          : null,
-    saveButton          : null,
-    runButton           : null,
-    detailsPanel        : null,
-    
+    testCaseModel : null,
+
+    harness : Siesta.Harness.Browser.ExtJS,
+
+    resultPanel  : null,
+    codeEditor   : null,
+    saveButton   : null,
+    runButton    : null,
+    detailsPanel : null,
+
 
     initComponent : function () {
         var topBar = [
             {
-                text    : 'Run',
-                width   : 80,
-                cls     : 'run-testcase',
-                action  : 'run',
+                text   : 'Run',
+                width  : 80,
+                cls    : 'run-testcase',
+                action : 'run',
 
                 handler : this.runTest,
                 scope   : this
@@ -47,7 +47,7 @@ Ext.define('Fiesta.view.testcases.View', {
 //            Fiesta.DataModel.rate(record, 'down');
 //        }
             {
-                xtype   : 'tbfill'
+                xtype : 'tbfill'
             },
             {
                 text    : '<b>{ }</b>',
@@ -59,8 +59,8 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this
             },
             {
-                text    : 'Share',
-                menu    : [
+                text : 'Share',
+                menu : [
                     {
                         text    : "Twitter",
                         scope   : this,
@@ -83,6 +83,13 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this,
                 action  : 'changeFavorites',
                 handler : this.changeFavorite
+            },
+            {
+                iconCls : 'icon-expand',
+                scope   : this,
+                handler : function () {
+                    this.detailsPanel.toggleCollapse();
+                }
             }
         ];
 
@@ -100,6 +107,16 @@ Ext.define('Fiesta.view.testcases.View', {
             tbar      : topBar,
             items     : [
                 {
+                    xtype       : 'detailspanel',
+                    region      : 'north',
+                    listeners   : {
+                        expand : this.onDetailsExpand
+                    },
+                    placeholder : {
+                        height : 0
+                    }
+                },
+                {
                     region : 'center',
                     xtype  : 'container',
                     layout : 'border',
@@ -111,8 +128,8 @@ Ext.define('Fiesta.view.testcases.View', {
                         {
                             xtype  : 'container',
                             region : 'center',
-                            layout   : { type : 'vbox', align : 'stretch' },
-                            style    : 'background:#fff',
+                            layout : { type : 'vbox', align : 'stretch' },
+                            style  : 'background:#fff',
                             items  : [
                                 {
                                     xtype  : 'component',
@@ -148,12 +165,6 @@ Ext.define('Fiesta.view.testcases.View', {
                             disableSelection : true
                         }
                     ]
-                },
-                {
-                    xtype : 'detailspanel',
-                    listeners: {
-                        expand  : this.onDetailsExpand
-                    }
                 }
             ],
             // eof items
@@ -162,7 +173,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 activate    : this.onTabActivate,
                 deactivate  : this.onTabDeActivate,
 
-                scope       : this
+                scope : this
             }
         });
         // eof apply
@@ -170,11 +181,11 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.callParent(arguments);
 
-        this.resultPanel    = this.down('resultpanel')
-        this.detailsPanel   = this.down('detailspanel')
-        this.codeEditor     = this.down('jseditor');
-        this.saveButton     = this.down('[action=save]');
-        this.runButton      = this.down('[action=run]');
+        this.resultPanel = this.down('resultpanel')
+        this.detailsPanel = this.down('detailspanel')
+        this.codeEditor = this.down('jseditor');
+        this.saveButton = this.down('[action=save]');
+        this.runButton = this.down('[action=run]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
@@ -187,7 +198,7 @@ Ext.define('Fiesta.view.testcases.View', {
             scope    : this
         });
 
-        this.harness.on('teststart', this.onTestStart, this)
+        this.harness.on('teststart', this.onTestStart, this);
     },
 
 
@@ -197,7 +208,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.saveButton.setVisible(this.testCaseModel.isEditable());
     },
 
-    
+
     onTabActivate : function () {
         var me = this;
 
@@ -208,24 +219,24 @@ Ext.define('Fiesta.view.testcases.View', {
         this.resultPanel.alignIFrame()
         this.detailsPanel.alignDisqus()
     },
-    
-    
+
+
     onTabDeActivate : function () {
         this.resultPanel.hideIFrame()
         this.detailsPanel.hideDisqus()
     },
-    
+
 
     onTestStart : function (event, test) {
         if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
 
-    
+
     runTest : function () {
-        var testCaseModel   = this.testCaseModel;
-        var harness         = this.harness;
-        var runButton       = this.runButton;
-        var code            = this.codeEditor.getValue();
+        var testCaseModel = this.testCaseModel;
+        var harness = this.harness;
+        var runButton = this.runButton;
+        var code = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             runButton.setIconCls('icon-loading');
@@ -243,7 +254,14 @@ Ext.define('Fiesta.view.testcases.View', {
         }
     },
 
-    
+    afterRender : function() {
+        this.callParent(arguments);
+
+        if (this.testCaseModel.phantom) {
+            this.showDetails();
+        }
+    },
+
     shareTwitter : function () {
         var twitterUrl = 'https://twitter.com/share?' +
             'text=' + encodeURIComponent(this.title) +
@@ -253,7 +271,7 @@ Ext.define('Fiesta.view.testcases.View', {
         window.open(twitterUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');
     },
 
-    
+
     shareFb : function () {
         var fbUrl = 'http://www.facebook.com/sharer.php?s=100' +
             '&amp;p[title]=' + encodeURIComponent(this.title) +
@@ -264,7 +282,7 @@ Ext.define('Fiesta.view.testcases.View', {
         window.open(fbUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');
     },
 
-    
+
     shareGoogle : function () {
         var googleUrl = 'http://plus.google.com/share?' +
             'text=' + encodeURIComponent(this.title) +
@@ -283,25 +301,27 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments)
     },
 
-    
+
     changeFavorite : function () {
         FIESTA.addToFavorites(this.testCaseModel);
     },
 
-    
+
     save : function () {
         var form = this.down('#testdetailsform').getForm(),
             me = this,
             tags = [];
-            
+
         form.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.codeEditor.getValue());
 
         if (this.testCaseModel.isValid()) {
-            var saveBtn     = this.saveButton;
-            var oldCls      = saveBtn.iconCls;
-            var afterSaveFn = function() { me.afterSaveOperation(); };
+            var saveBtn = this.saveButton;
+            var oldCls = saveBtn.iconCls;
+            var afterSaveFn = function () {
+                me.afterSaveOperation();
+            };
 
             saveBtn.disable();
             saveBtn.setIconCls('icon-loading');
@@ -337,25 +357,29 @@ Ext.define('Fiesta.view.testcases.View', {
             }
         }
     },
-    
-    
-    onDetailsExpand: function () {
+
+
+    onDetailsExpand : function () {
         var me = this;
-        
+
 //        console.log(window.location.href);
 //        console.log(me.testCaseModel.get('slug'));
 
         DISQUS.reset({
-            reload: true,
-            config: function () {
+            reload : true,
+            config : function () {
                 this.page.identifier = me.testCaseModel.get('slug');
-                this.page.url = 'http://fiestadev.bryntum.com/'+me.testCaseModel.get('slug');
+                this.page.url = 'http://fiestadev.bryntum.com/' + me.testCaseModel.get('slug');
             }
         });
     },
 
-    afterSaveOperation : function() {
-        var saveBtn     = this.saveButton;
+    showDetails : function () {
+        this.detailsPanel.expand();
+    },
+
+    afterSaveOperation : function () {
+        var saveBtn = this.saveButton;
         saveBtn.setIconCls('icon-save');
         saveBtn.enable();
     }

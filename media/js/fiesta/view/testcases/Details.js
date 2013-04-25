@@ -1,107 +1,97 @@
 Ext.define('Fiesta.view.testcases.Details', {
-    extend          : 'Ext.Panel',
-    alias           : 'widget.detailspanel',
-    
-    region          : 'south',
-    
-    height          : 200,
-    border          : false,
-    scroll          : true,
-    collapsible     : true,
-    split           : true,
-    title           : 'Details & Comments',
-    collapsed       : true,
-    autoScroll      : true,
-    titleCollapse   : true,
-    
-    testCaseModel   : null,
-    
-    disqusContainer : null,
+    extend : 'Ext.Panel',
+    alias  : 'widget.detailspanel',
 
-    
+    height        : 100,
+    border        : false,
+    style         : 'border-bottom:1px solid #bbb',
+    scroll        : true,
+    autoScroll    : true,
+    layout        : 'fit',
+    testCaseModel : null,
+    header        : false,
+//    disqusContainer : null,
+
     initComponent : function () {
         Ext.apply(this, {
-            layout : 'border',
-            items  : [
+            items : [
                 {
-                    flex        : 3,
-                    region      : 'west',
-                    split       : true,
                     itemId      : 'testdetailsform',
                     cls         : 'testdetailsform',
                     xtype       : 'form',
                     bodyPadding : 5,
-                    defaults    : { anchor : '95%' },
+                    border      : false,
+                    defaults    : { border : false },
+                    layout      : { type : 'hbox', align : 'stretch' },
                     items       : [
                         {
-                            xtype      : 'displayfield',
-                            name       : 'ownerName',
-                            fieldLabel : 'Submitted by'
+                            xtype  : 'form',
+                            defaults : { anchor : '80%' },
+                            flex   : 1,
+                            items  : [
+                                {
+                                    xtype      : 'textfield',
+                                    cls        : 'details-text',
+                                    name       : 'name',
+                                    fieldLabel : 'Name'
+                                },
+                                {
+                                    xtype      : 'checkbox',
+                                    name       : 'private',
+                                    fieldLabel : 'Private'
+                                },
+                                {
+                                    xtype      : 'displayfield',
+                                    name       : 'ownerName',
+                                    fieldLabel : 'Submitted by'
+                                }
+                            ]
                         },
                         {
-                            xtype      : 'textfield',
-                            cls        : 'details-text',
-                            name       : 'name',
-                            fieldLabel : 'Name'
-                        },
-                        {
-                            fieldLabel     : 'Tags',
-                            xtype          : 'tagselect',
-                            cls            : 'details-tags details-combo',
-                            store          : "Tags",
-                            displayField   : "tag",
-                            valueField     : "tag",
-                            name           : 'tagsList',
-                            queryMode      : 'local',
-                            createNewOnEnter: true,
-                            createNewOnBlur: true,
-                            forceSelection: false,
-                            minChars: 3
-                        },
-                        {
-                            xtype          : "combo",
-                            fieldLabel     : 'Framework',
-                            cls            : 'details-combo',
-                            displayField   : "name",
-                            valueField     : "id",
-                            editable       : true,
-                            forceSelection : true,
-                            name           : 'frameworkId',
-                            emptyText      : "Framework",
-                            store          : "Frameworks",
-                            queryMode      : 'local'
-                        },
-                        {
-                            xtype      : 'checkbox',
-                            name       : 'private',
-                            fieldLabel : 'Private'
+                            defaults : { anchor : '80%' },
+                            xtype    : 'form',
+                            flex     : 1,
+                            items    : [
+                                {
+                                    fieldLabel       : 'Tags',
+                                    xtype            : 'tagselect',
+                                    cls              : 'details-tags details-combo',
+                                    store            : "Tags",
+                                    displayField     : "tag",
+                                    valueField       : "tag",
+                                    name             : 'tagsList',
+                                    queryMode        : 'local',
+                                    createNewOnEnter : true,
+                                    createNewOnBlur  : true,
+                                    forceSelection   : false,
+                                    minChars         : 3
+                                },
+                                {
+                                    xtype          : "combo",
+                                    fieldLabel     : 'Framework',
+                                    cls            : 'details-combo',
+                                    displayField   : "name",
+                                    valueField     : "id",
+                                    editable       : true,
+                                    forceSelection : true,
+                                    name           : 'frameworkId',
+                                    emptyText      : "Framework",
+                                    store          : "Frameworks",
+                                    queryMode      : 'local'
+                                }
+                            ]
                         }
                     ]
-                },
-                {
-                    region      : 'center',
-                    flex        : 4,
-                    slot        : 'disqus'
                 }
             ]
         });
 
         this.callParent(arguments);
-        
-        this.on({
-            afterlayout     : this.alignDisqus,
-            collapse        : this.hideDisqus,
-            hide            : this.hideDisqus,
-            
-            scope           : this
-        })
-        
-        this.disqusContainer    = this.down('[slot=disqus]')
     },
 
 
     setTestCaseModel : function (model) {
-        var tagsList    = [],
+        var tagsList = [],
             detailsForm = this.down('#testdetailsform').getForm();
 
         this.testCaseModel = model;
@@ -111,17 +101,17 @@ Ext.define('Fiesta.view.testcases.Details', {
         });
 
         detailsForm.loadRecord(model);
-        detailsForm.setValues({tagsList: tagsList});
+        detailsForm.setValues({tagsList : tagsList});
     },
-    
-    
+
+
     hideDisqus : function () {
-        Ext.get('disqus_thread').setXY([ -10000, -10000 ])
+//        Ext.get('disqus_thread').setXY([ -10000, -10000 ])
     },
-    
-    
+
+
     alignDisqus : function () {
-        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
+//        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
     }
-   
+
 });
