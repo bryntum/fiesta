@@ -3238,7 +3238,8 @@ Class('Scope.Provider', {
             init    : Joose.I.Array
         },
         
-        cleanupCallback     : null
+        cleanupCallback         : null,
+        beforeCleanupCallback   : null
     },
     
         
@@ -3856,6 +3857,8 @@ Class('Scope.Provider.IFrame', {
             // wait for 1000ms to allow time for possible `setTimeout` in the scope of iframe
             setTimeout(function () {
                 
+                if (me.beforeCleanupCallback) me.beforeCleanupCallback()
+                
                 // chaging the page, triggering `onunload` and hopefully preventing browser from caching the content of iframe
                 iframe.src              = 'javascript:false'
                 
@@ -4072,6 +4075,8 @@ Class('Scope.Provider.Window', {
         
         
         cleanup : function () {
+            if (this.beforeCleanupCallback) this.beforeCleanupCallback()
+            
             this.popupWindow.close()
             
             this.popupWindow = null
@@ -4326,6 +4331,7 @@ Class('Scope.Provider.NodeJS', {
         
         
         cleanup : function () {
+            if (this.beforeCleanupCallback) this.beforeCleanupCallback()
             if (this.cleanupCallback) this.cleanupCallback()
         }
     }
@@ -21077,9 +21083,13 @@ Class("JooseX.SimpleRequest", {
             try {
                 req.onreadystatechange = function (event) {  
                     if (async && req.readyState == 4) {  
-                        // status is set to 0 for failed cross-domain requests.. 
-                        if (req.status == 200 /*|| req.status == 0*/) callback.call(scope || this, true, req.responseText)
-                        else callback.call(scope || this, false, "File not found: " + url)
+                        // status is set to 0 for failed cross-domain requests..
+                        // but if the response text presents - we treat this as successfull request
+                        // see https://www.assembla.com/spaces/bryntum/tickets/590
+                        if (req.status == 200 || req.status == 0 && req.responseText.length > 0) 
+                            callback.call(scope || this, true, req.responseText)
+                        else 
+                            callback.call(scope || this, false, "File not found: " + url)
                     }  
                 };  
                 req.send(null)
@@ -21088,7 +21098,10 @@ Class("JooseX.SimpleRequest", {
             }
             
             if (!async)
-                if (req.status == 200 || req.status == 0) return req.responseText; else throw "File not found: " + url
+                if (req.status == 200 || req.status == 0 && req.responseText.length > 0) 
+                    return req.responseText; 
+                else 
+                    throw "File not found: " + url
             
             return null
         }
@@ -27952,7 +27965,8 @@ Class('Siesta.Harness.Browser', {
                 // it will scroll that point into view, using the `scrollLeft` property
                 // of the <body> (Chrome) or <html> (FF)
                 // this line fixes that displacement
-                document.body.scrollLeft = document.body.parentNode.scrollLeft = 0
+                document.body.scrollLeft    = document.body.parentNode.scrollLeft   = 0
+                document.body.scrollTop     = document.body.parentNode.scrollTop    = 0
             },
             
             
@@ -27966,7 +27980,20 @@ Class('Siesta.Harness.Browser', {
             createViewport       : function(config) {
                 return Ext.create("Siesta.Harness.Browser.UI.Viewport", config);
             },
-
+            
+            
+            canShowCursorForTest : function (test) {
+                // return false for test's running in popups (not iframes), since we can't show any visual accompaniment for them
+                if (!(test.scopeProvider instanceof Scope.Provider.IFrame)) return false;
+            
+                // if there is a "forced to be on top" test then we only need to compare the tests instances
+                if (this.testOfForcedIFrame) {
+                    return this.testOfForcedIFrame.isFromTheSameGeneration(test)
+                }
+                
+                return true
+            },
+            
             
             configure : function() {
                 this.SUPERARG(arguments);
@@ -28192,6 +28219,8 @@ Class('Siesta.Harness.Browser', {
                 $(iframe).removeClass('tr-iframe-hidden')
             
                 $(iframe).center()
+                
+                test.fireEvent('testframeshow')
             },
         
         
@@ -28199,6 +28228,8 @@ Class('Siesta.Harness.Browser', {
                 $.rebindWindowContext(window);
                 $(iframe).removeClass('tr-iframe-forced')
                 $(iframe).addClass('tr-iframe-hidden')
+                
+                test.fireEvent('testframehide')
             },
             
             getQueryParam : function (paramName) {
@@ -29592,6 +29623,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
     testsStore      : null,
 
     contextMenu     : null,
+    mouseVisualizer : null,
 
     verticalCenteredTpl     : new Ext.XTemplate(
         '<div class="tr-vertical-align-helper-content {cls}">{text}</div>',
@@ -29664,7 +29696,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         
         
         Ext.apply(this, {
-            plugins         : Ext.isIE ? undefined : new Siesta.Harness.Browser.UI.MouseVisualizer(this.harness),
+            mouseVisualizer : Ext.isIE ? undefined : new Siesta.Harness.Browser.UI.MouseVisualizer({ harness : this.harness }),
             slots           : true,
             
             contextMenu     : this.buildContextMenu(),
@@ -30539,26 +30571,22 @@ Ext.define('Siesta.Harness.Browser.UI.ExtViewport', {
 ;
 Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
 
-    displayClickIndicator   : true,
+    displayClickIndicator       : true,
 
-    ghostCursor             : null,
-    viewport                : null,
+    ghostCursor                 : null,
 
     onEventSimulatedListener    : null,
     onTestFinishedListener      : null,
     
     harness                     : null,
-    host                        : null,
     
     isCursorVisible             : false,
     
-    constructor : function(harness) {
-        this.harness = harness;
-        this.callParent([]);
-    },
-
-    init : function (host) { 
-        this.host = host;
+    frameOffsets                : null,
+    
+    
+    constructor : function(config) {
+        Ext.apply(this, config)
         
         if (!this.ghostCursor) {
             this.ghostCursor = Ext.getBody().createChild({
@@ -30567,8 +30595,12 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
             });
         }
         
-        this.harness.on('testframeshow', this.onTestFrameShow, this);
-        this.harness.on('testframehide', this.onTestFrameHide, this);
+        var harness     = this.harness
+        
+        if (!harness) throw "harness is required for mouse visualizer"
+        
+        harness.on('testframeshow', this.onTestFrameShow, this);
+        harness.on('testframehide', this.onTestFrameHide, this);
     },
     
     
@@ -30635,8 +30667,6 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     
     onTestFrameHide : function (event) {
-        var test    = event.source
-
         this.resetListeners()
         
         this.hideCursor()
@@ -30648,35 +30678,37 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
 
         this.resetListeners()
         
-        if (this.host.isTestRunningVisible(test)) {
+        if (this.harness.canShowCursorForTest(test)) {
             this.onEventSimulatedListener   = test.on('eventsimulated', this.onEventSimulated, this);
             this.onTestFinishedListener     = test.on('testfinalize', this.onTestFinished, this);
+            
+            this.frameOffsets               = Ext.fly(test.scopeProvider.iframe).getOffsetsTo(Ext.getBody())
         }
     },
 
     onEventSimulated : function (event, test, el, type, evt) {
         // Make sure this test is visible in DOM right now
-        if (
-            type.match(/touch|mouse|click|contextmenu/) && this.host.isTestRunningVisible(test) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)
-        ) {
-            var bd = Ext.getBody(),
-                frameOffsets = Ext.fly(test.scopeProvider.iframe).getOffsetsTo(bd),
-                x = evt.clientX + frameOffsets[0],
-                y = evt.clientY + frameOffsets[1];
+        if (type.match(/touch|mouse|click|contextmenu/) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)) {
+            var frameOffsets    = this.frameOffsets,
+                x               = evt.clientX + frameOffsets[ 0 ],
+                y               = evt.clientY + frameOffsets[ 1 ];
     
             this.updateGhostCursor(type, x, y);
              
             // Touch vs Ext
             if ((Ext.supports && Ext.supports.Transitions) || (Ext.feature && Ext.feature.has.CssTransitions)) {
 
-                 if (this.displayClickIndicator && (
-                    type === 'click'        || 
-                    type === 'dblclick'     || 
-                    type === 'touchstart'   || 
-                    type === 'touchend'     || 
-                    type === 'mousedown'    || 
-                    type === 'mouseup'      || 
-                    type === 'contextmenu')) {
+                if (this.displayClickIndicator && 
+                    (
+                        type === 'click'        || 
+                        type === 'dblclick'     || 
+                        type === 'touchstart'   || 
+                        type === 'touchend'     || 
+                        type === 'mousedown'    || 
+                        type === 'mouseup'      || 
+                        type === 'contextmenu'
+                    )
+                ) {
                     this.showClickIndicator(type, x, y);
                 }
             }
@@ -30698,7 +30730,7 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
         
         // need to a delay to make it work in FF
         setTimeout(function() {
-                clickCircle.addCls('ghost-cursor-click-indicator-big');
+            clickCircle.addCls('ghost-cursor-click-indicator-big');
         }, 5);
     },
 
@@ -31255,7 +31287,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         var iframe          = this.getIFrame();
         var domContainer    = this.slots.domContainer
     
-        if (domContainer.collapsed || !iframe) return
+        if (this.hidden || domContainer.collapsed || !iframe) return
        
         Ext.fly(iframe).removeCls('tr-iframe-hidden')
         Ext.fly(iframe).removeCls('tr-iframe-forced')
@@ -31263,39 +31295,37 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         Ext.fly(iframe).setXY(domContainer.el.getXY())
         
         if (!this.maintainViewportSize) Ext.fly(iframe).setSize(domContainer.el.getSize())
+        
+        var test        = this.test
+        
+        test && test.fireEvent('testframeshow')
     },
 
     
     onDomContainerCollapse : function() {
-        this.hideIFrame();
         this.viewDOM    = false;
         this.fireEvent('viewdomchange', this, false);
         
-        var test        = this.test
-        
-        if (test) {
-            test.fireEvent('testframehide')
-        }
+        this.hideIFrame();
     },
     
 
     onDomContainerExpand : function() {
-        this.alignIFrame();
         this.viewDOM    = true;
         this.fireEvent('viewdomchange', this, true);
         
-        var test        = this.test
-        
-        if (test) {
-            test.fireEvent('testframeshow')
-        }
+        this.alignIFrame();
     },
 
     
     hideIFrame : function () {
-        var iframe          = this.getIFrame()
+        var iframe      = this.getIFrame()
     
         iframe && Ext.fly(iframe).setLeftTop(-10000, -10000)
+        
+        var test        = this.test
+        
+        test && test.fireEvent('testframehide')
     },
 
 
@@ -31352,8 +31382,6 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         this.setCanManageDOM(!test.hasForcedIframe())
         
         this.alignIFrame();
-        
-        if (this.isFrameVisible()) test.fireEvent('testframeshow')
     },
 
     
