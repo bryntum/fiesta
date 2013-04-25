@@ -39,6 +39,13 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : this.save,
                 scope   : this
             },
+
+//        else if (target.hasCls('rate_up')) {
+//            Fiesta.DataModel.rate(record, 'up');
+//        }
+//        else if (target.hasCls('rate_down')) {
+//            Fiesta.DataModel.rate(record, 'down');
+//        }
             {
                 xtype   : 'tbfill'
             },
