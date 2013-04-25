@@ -39,7 +39,15 @@ Ext.define('Fiesta.view.account.SignIn', {
                             inputType   : 'password',
                             name        : 'sign_in_password',
                             emptyText   : "Password",
-                            allowBlank  : false
+                            allowBlank  : false,
+                            listeners : {
+                                specialkey : function(field, e) {
+                                    if (e.getKey() === e.ENTER) {
+                                        this.processSignin();
+                                    }
+                                },
+                                scope : this
+                            }
                         },
 
                         {
