@@ -8,6 +8,6 @@ cd $DIR/..
 git fetch --all
 git reset --hard origin/master
 
-CONTENT_LENGTH=""
+unset CONTENT_LENGTH
 
 build/after-push-listener.pl &
