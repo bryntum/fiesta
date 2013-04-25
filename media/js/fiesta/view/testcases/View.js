@@ -202,11 +202,11 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     runTest : function () {
-        var testCaseModel = this.testCaseModel;
-        var harness = this.harness;
-        var runButton = this.runButton;
-        var oldCls = runButton.iconCls;
-        var code = this.codeEditor.getValue();
+        var testCaseModel   = this.testCaseModel;
+        var harness         = this.harness;
+        var runButton       = this.runButton;
+        var oldCls          = runButton.iconCls;
+        var code            = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             runButton.setIconCls('icon-loading');
