@@ -10,6 +10,7 @@ Ext.define('Fiesta.view.testcases.Details', {
     layout        : 'fit',
     testCaseModel : null,
     header        : false,
+    collapsed     : true,
 //    disqusContainer : null,
 
     initComponent : function () {
