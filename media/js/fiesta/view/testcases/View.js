@@ -214,7 +214,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
             harness.startSingle({
                 transparentEx : true,
-                testCode      : 'StartTest(function(t){ ' + code + '})',
+                testCode      : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url           : testCaseModel.internalId,
                 preload       : testCaseModel.getPreload()
             }, function () {
