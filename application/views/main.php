@@ -38,7 +38,7 @@
 
 </head>
 <body>
-<div id="disqus_thread" style="height: 100%; padding: 5px;"></div>
+<div id="disqus_thread"></div>
 <script>
     var disqus_developer = 1;
     var disqus_shortname = '<?php echo $disqus_shortname?>';

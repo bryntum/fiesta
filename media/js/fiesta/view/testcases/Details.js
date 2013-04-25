@@ -1,18 +1,24 @@
 Ext.define('Fiesta.view.testcases.Details', {
-    extend        : 'Ext.Panel',
-    region        : 'south',
-    alias         : 'widget.detailspanel',
-    height        : 200,
-    border        : false,
-    scroll        : true,
-    collapsible   : true,
-    split         : true,
-    title         : 'Details & Comments',
-    collapsed   : true,
-    autoScroll    : true,
-    titleCollapse : true,
-    testCaseModel : null,
+    extend          : 'Ext.Panel',
+    alias           : 'widget.detailspanel',
+    
+    region          : 'south',
+    
+    height          : 200,
+    border          : false,
+    scroll          : true,
+    collapsible     : true,
+    split           : true,
+    title           : 'Details & Comments',
+    collapsed       : true,
+    autoScroll      : true,
+    titleCollapse   : true,
+    
+    testCaseModel   : null,
+    
+    disqusContainer : null,
 
+    
     initComponent : function () {
         Ext.apply(this, {
             layout : 'border',
@@ -73,15 +79,24 @@ Ext.define('Fiesta.view.testcases.Details', {
                     ]
                 },
                 {
-                    region    : 'center',
-                    flex      : 4,
-                    contentEl : 'disqus_thread'
+                    region      : 'center',
+                    flex        : 4,
+                    slot        : 'disqus'
                 }
             ]
-
         });
 
         this.callParent(arguments);
+        
+        this.on({
+            afterlayout     : this.alignDisqus,
+            collapse        : this.hideDisqus,
+            hide            : this.hideDisqus,
+            
+            scope           : this
+        })
+        
+        this.disqusContainer    = this.down('[slot=disqus]')
     },
 
 
@@ -97,6 +112,16 @@ Ext.define('Fiesta.view.testcases.Details', {
 
         detailsForm.loadRecord(model);
         detailsForm.setValues({tagsList: tagsList});
-
+    },
+    
+    
+    hideDisqus : function () {
+        Ext.get('disqus_thread').setXY([ -10000, -10000 ])
+    },
+    
+    
+    alignDisqus : function () {
+        Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
     }
+   
 });

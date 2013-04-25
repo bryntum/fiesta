@@ -11,9 +11,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
     harness             : Siesta.Harness.Browser.ExtJS,
 
-    currentTest         : null,
-    currentListeners    : null,
-
     resultPanel         : null,
     codeEditor          : null,
     saveButton          : null,
@@ -202,6 +199,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.resultPanel.alignIFrame()
     },
     
+    
     onTabDeActivate : function () {
         this.resultPanel.hideIFrame()
     },
@@ -211,6 +209,7 @@ Ext.define('Fiesta.view.testcases.View', {
         if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
 
+    
     runTest : function () {
         var testCaseModel   = this.testCaseModel;
         var harness         = this.harness;
@@ -233,8 +232,8 @@ Ext.define('Fiesta.view.testcases.View', {
         }
     },
 
+    
     shareTwitter : function () {
-
         var twitterUrl = 'https://twitter.com/share?' +
             'text=' + encodeURIComponent(this.title) +
             '&hashtags=' + encodeURIComponent(this.testCaseModel.get('tagsList')) +
@@ -243,8 +242,8 @@ Ext.define('Fiesta.view.testcases.View', {
         window.open(twitterUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');
     },
 
+    
     shareFb : function () {
-
         var fbUrl = 'http://www.facebook.com/sharer.php?s=100' +
             '&amp;p[title]=' + encodeURIComponent(this.title) +
             '&amp;p[summary]=' + encodeURIComponent(this.title + ' was created by ' + this.testCaseModel.get('ownerName')) +
@@ -254,8 +253,8 @@ Ext.define('Fiesta.view.testcases.View', {
         window.open(fbUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');
     },
 
+    
     shareGoogle : function () {
-
         var googleUrl = 'http://plus.google.com/share?' +
             'text=' + encodeURIComponent(this.title) +
             '&url=' + encodeURIComponent(window.location.href);
@@ -273,21 +272,24 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments)
     },
 
+    
     changeFavorite : function () {
         FIESTA.addToFavorites(this.testCaseModel);
     },
 
+    
     save : function () {
         var form = this.down('#testdetailsform').getForm(),
             tags = [];
+            
         form.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.codeEditor.getValue());
 
 
         if (this.testCaseModel.isValid()) {
-            var saveBtn = this.saveButton;
-            var oldCls = saveBtn.iconCls;
+            var saveBtn     = this.saveButton;
+            var oldCls      = saveBtn.iconCls;
 
             saveBtn.disable();
             saveBtn.setIconCls('icon-loading');
@@ -320,10 +322,13 @@ Ext.define('Fiesta.view.testcases.View', {
             }
         }
     },
+    
+    
     onDetailsExpand: function () {
         var me = this;
-        console.log(window.location.href);
-        console.log(me.testCaseModel.get('slug'));
+        
+//        console.log(window.location.href);
+//        console.log(me.testCaseModel.get('slug'));
 
         DISQUS.reset({
             reload: true,
@@ -332,7 +337,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 this.page.url = 'http://fiestadev.bryntum.com/'+me.testCaseModel.get('slug');
             }
         });
-
     }
 
 });
