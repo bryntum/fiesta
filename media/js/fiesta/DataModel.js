@@ -1,15 +1,15 @@
 Ext.define('Fiesta.DataModel', {
-    singleton: true,
+    singleton : true,
 
-    extend: 'Ext.util.Observable',
+    extend : 'Ext.util.Observable',
 
-    saveUrl: 'ajax/addTestCase/',
-    updateUrl: 'ajax/updateTestCase/',
-    getUrl: 'ajax/getTestCase/',
-    getCollectionUrl: 'ajax/getTestCasesColl/',
-    updateRatingUrl:    'ajax/updateRating/',
+    saveUrl          : 'ajax/addTestCase/',
+    updateUrl        : 'ajax/updateTestCase/',
+    getUrl           : 'ajax/getTestCase/',
+    getCollectionUrl : 'ajax/getTestCasesColl/',
+    updateRatingUrl  : 'ajax/updateRating/',
 
-    frameworkStore: null,
+    frameworkStore : null,
 
 
     /**
@@ -22,13 +22,13 @@ Ext.define('Fiesta.DataModel', {
      *
      */
 
-    createTestCase: function (testCaseModel, callback, errback) {
+    createTestCase : function (testCaseModel, callback, errback) {
         var me = this,
             tagsList = [],
             params = testCaseModel.getData();
 
 
-        if(params.tags.length > 0) {
+        if (params.tags.length > 0) {
             Ext.each(params.tags, function (tag) {
                 tagsList.push(tag.tag);
             });
@@ -38,9 +38,9 @@ Ext.define('Fiesta.DataModel', {
 
 
         Ext.Ajax.request({
-            url: this.saveUrl,
-            params: params,
-            success: function (response) {
+            url     : this.saveUrl,
+            params  : params,
+            success : function (response) {
 
                 // Trying to determin if correct JSON got from backend
                 try {
@@ -48,8 +48,8 @@ Ext.define('Fiesta.DataModel', {
                 }
                 catch (e) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + response.responseText
+                        url     : this.url,
+                        message : 'Server message:' + response.responseText
                     });
 
                     return false;
@@ -67,8 +67,8 @@ Ext.define('Fiesta.DataModel', {
                     //Processing callback and firing the event
                     if (callback && callback(testCaseModel) !== false) {
                         this.fireEvent('requestsuccess', this, {
-                            url: this.saveUrl,
-                            message: 'Successfully saved'
+                            url     : this.saveUrl,
+                            message : 'Successfully saved'
                         });
                     }
 
@@ -76,23 +76,23 @@ Ext.define('Fiesta.DataModel', {
                 }
                 else {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + o.errorMsg
+                        url     : this.url,
+                        message : 'Server message:' + o.errorMsg
                     });
 
                     return false;
                 }
             },
-            failure: function (response) {
+            failure : function (response) {
 
                 if (!errback || errback(response) !== false) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Failed to save due to server error!'
+                        url     : this.url,
+                        message : 'Failed to save due to server error!'
                     });
                 }
             },
-            scope: this
+            scope   : this
         });
 
     },
@@ -109,13 +109,13 @@ Ext.define('Fiesta.DataModel', {
      *
      */
 
-    updateTestCase: function (testCaseModel, callback, errback) {
+    updateTestCase : function (testCaseModel, callback, errback) {
         var me = this,
             tagsList = [],
             params = testCaseModel.getData();
 
 
-        if(params.tags.length > 0) {
+        if (params.tags.length > 0) {
             Ext.each(params.tags, function (tag) {
                 tagsList.push(tag.tag);
             });
@@ -124,16 +124,16 @@ Ext.define('Fiesta.DataModel', {
         params.tagsList = tagsList.join(',');
 
         Ext.Ajax.request({
-            url: this.updateUrl,
-            params: params,
-            success: function (response) {
+            url     : this.updateUrl,
+            params  : params,
+            success : function (response) {
                 try {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + response.responseText
+                        url     : this.url,
+                        message : 'Server message:' + response.responseText
                     });
 
                     errback && errback(response);
@@ -152,8 +152,8 @@ Ext.define('Fiesta.DataModel', {
                     if (callback && callback(testCaseModel) !== false) {
 
                         this.fireEvent('requestsuccess', this, {
-                            url: this.url,
-                            message: 'Successfully saved'
+                            url     : this.url,
+                            message : 'Successfully saved'
                         });
                     }
 
@@ -161,8 +161,8 @@ Ext.define('Fiesta.DataModel', {
                 }
                 else {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + o.errorMsg
+                        url     : this.url,
+                        message : 'Server message:' + o.errorMsg
                     });
 
                     errback && errback(response);
@@ -170,34 +170,34 @@ Ext.define('Fiesta.DataModel', {
                     return false;
                 }
             },
-            failure: function (response) {
+            failure : function (response) {
 
                 if (!errback || errback(response) !== false) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Failed to save due to server error!'
+                        url     : this.url,
+                        message : 'Failed to save due to server error!'
                     });
                 }
             },
-            scope: this
+            scope   : this
         });
 
     },
 
-    getTestCase: function (params, callback, errback) {
+    getTestCase : function (params, callback, errback) {
         var me = this;
 
         Ext.Ajax.request({
-            url: this.getUrl,
-            params: params,
-            success: function (response) {
+            url     : this.getUrl,
+            params  : params,
+            success : function (response) {
                 try {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + response.responseText
+                        url     : this.url,
+                        message : 'Server message:' + response.responseText
                     });
                     return false;
                 }
@@ -209,8 +209,8 @@ Ext.define('Fiesta.DataModel', {
                     if (callback && callback(testCaseModel) !== false) {
 
                         this.fireEvent('requestsuccess', this, {
-                            url: this.url,
-                            message: 'Successfully loaded!'
+                            url     : this.url,
+                            message : 'Successfully loaded!'
                         });
                     }
 
@@ -218,42 +218,42 @@ Ext.define('Fiesta.DataModel', {
                 }
                 else {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + o.errorMsg
+                        url     : this.url,
+                        message : 'Server message:' + o.errorMsg
                     });
 
                     return false;
                 }
             },
-            failure: function (response) {
+            failure : function (response) {
 
                 if (!errback || errback(response) !== false) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Failed to load testcase!'
+                        url     : this.url,
+                        message : 'Failed to load testcase!'
                     });
                 }
             },
-            scope: this
+            scope   : this
         });
     },
 
-    getTestCasesColl: function (slugs, callback, errback) {
+    getTestCasesColl : function (slugs, callback, errback) {
 
         var me = this,
-            params = { 'testCasesSlugs[]': slugs};
+            params = { 'testCasesSlugs[]' : slugs};
 
         Ext.Ajax.request({
-            url: this.getCollectionUrl,
-            params: params,
-            success: function (response) {
+            url     : this.getCollectionUrl,
+            params  : params,
+            success : function (response) {
                 try {
                     var o = Ext.decode(response.responseText);
                 }
                 catch (e) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + response.responseText
+                        url     : this.url,
+                        message : 'Server message:' + response.responseText
                     });
 
                     return false;
@@ -270,8 +270,8 @@ Ext.define('Fiesta.DataModel', {
                     if (callback && callback(collection) !== false) {
 
                         this.fireEvent('requestsuccess', this, {
-                            url: this.url,
-                            message: 'Successfully loaded!'
+                            url     : this.url,
+                            message : 'Successfully loaded!'
                         });
                     }
 
@@ -279,35 +279,35 @@ Ext.define('Fiesta.DataModel', {
                 }
                 else {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Server message:' + o.errorMsg
+                        url     : this.url,
+                        message : 'Server message:' + o.errorMsg
                     });
 
                     return false;
                 }
             },
-            failure: function (response) {
+            failure : function (response) {
 
                 if (errback && errback(response) !== false) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Failed to load testcase!'
+                        url     : this.url,
+                        message : 'Failed to load testcase!'
                     });
                 }
             },
-            scope: this
+            scope   : this
         });
     },
 
-    rate: function (record, dir) {
-        if(FIESTA.isSignedIn()) {
+    rate : function (record, dir) {
+        if (FIESTA.isSignedIn()) {
             var params = {
-                userId      : CONFIG.userId,
-                testCaseId  : record.get('id'),
-                direction   : dir
+                userId     : CONFIG.userId,
+                testCaseId : record.get('id'),
+                direction  : dir
             };
 
-            if(dir == 'up') {
+            if (dir == 'up') {
                 record.set('rating', record.get('rating') + 1);
 
             }
@@ -316,19 +316,19 @@ Ext.define('Fiesta.DataModel', {
             }
 
             Ext.Ajax.request({
-                url: this.updateRatingUrl,
-                params: params,
-                success: function (response) {
+                url     : this.updateRatingUrl,
+                params  : params,
+                success : function (response) {
                     try {
                         var o = Ext.decode(response.responseText);
                     }
                     catch (e) {
                         this.fireEvent('requestfailed', this, {
-                            url: this.url,
-                            message: 'Server message:' + response.responseText
+                            url     : this.url,
+                            message : 'Server message:' + response.responseText
                         });
 
-                        if(dir == 'up') {
+                        if (dir == 'up') {
                             record.set('rating', record.get('rating') - 1);
                         }
                         else {
@@ -344,11 +344,11 @@ Ext.define('Fiesta.DataModel', {
                     }
                     else {
                         this.fireEvent('requestfailed', this, {
-                            url: this.url,
-                            message: 'Server message:' + o.errorMsg
+                            url     : this.url,
+                            message : 'Server message:' + o.errorMsg
                         });
 
-                        if(dir == 'up') {
+                        if (dir == 'up') {
                             record.set('rating', record.get('rating') - 1);
                         }
                         else {
@@ -358,14 +358,14 @@ Ext.define('Fiesta.DataModel', {
                         return false;
                     }
                 },
-                failure: function (response) {
+                failure : function (response) {
 
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Failed to update rating!'
+                        url     : this.url,
+                        message : 'Failed to update rating!'
                     });
 
-                    if(dir == 'up') {
+                    if (dir == 'up') {
                         record.set('rating', record.get('rating') - 1);
                     }
                     else {
@@ -373,18 +373,18 @@ Ext.define('Fiesta.DataModel', {
                     }
 
                 },
-                scope: this
+                scope   : this
             });
 
         }
     },
 
-    updateTestcasesList: function (testCaseModel) {
+    updateTestcasesList : function (testCaseModel) {
         var record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
             newTagsArr = [];
 
 
-        if(record) {
+        if (record) {
 
             record.set(testCaseModel.data);
 
@@ -394,31 +394,33 @@ Ext.define('Fiesta.DataModel', {
         }
     },
 
-    addToFavorites: function (testCaseModel, callback, errback) {
+    addToFavorites : function (testCaseModel, callback, errback) {
 
         Ext.Ajax.request({
-            url: '/ajax/addToFavorites',
-            params : {id: testCaseModel.get('id')},
-            success: function (response) {
-                try {var o = Ext.decode(response.responseText);}
-                catch(e) {
+            url     : '/ajax/addToFavorites',
+            params  : {id : testCaseModel.get('id')},
+            success : function (response) {
+                try {
+                    var o = Ext.decode(response.responseText);
+                }
+                catch (e) {
 
                     if (errback && errback(response) !== false) {
                         this.fireEvent('requestfailed', this, {
-                            url: this.url,
-                            message: 'Failed due to server error'
+                            url     : this.url,
+                            message : 'Failed due to server error'
                         });
                     }
                     return false;
                 }
 
-                if(true === o.success) {
+                if (true === o.success) {
 
                     if (callback && callback(testCaseModel) !== false) {
 
                         this.fireEvent('requestsuccess', this, {
-                            url: this.url,
-                            message: 'Successfully saved'
+                            url     : this.url,
+                            message : 'Successfully saved'
                         });
                     }
 
@@ -427,26 +429,26 @@ Ext.define('Fiesta.DataModel', {
                 else {
                     if (errback && errback(response) !== false) {
                         this.fireEvent('requestfailed', this, {
-                            url: this.url,
-                            message: o.errorMsg
+                            url     : this.url,
+                            message : o.errorMsg
                         });
                     }
 
                     return false;
                 }
             },
-            failure: function (response) {
+            failure : function (response) {
 
                 if (errback && errback(response) !== false) {
                     this.fireEvent('requestfailed', this, {
-                        url: this.url,
-                        message: 'Failed due to server error...'
+                        url     : this.url,
+                        message : 'Failed due to server error...'
                     });
                 }
 
 
             },
-            scope: this
+            scope   : this
         });
     }
 

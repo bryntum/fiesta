@@ -96,7 +96,7 @@ Ext.define('Fiesta.view.Main', {
         // Creating new tab for testCase if no tab with the same id exists
         if (!tabExist) {
             var newTab = new Fiesta.view.testcases.View({
-                title           : Ext.String.ellipsis(testCaseModel.get('name'), 15),
+                title           : Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15),
                 iconCls         : testCaseModel.get('starred') ? 'filledStar' : '',
                 testCaseModel   : testCaseModel,
                 mouseVisualizer : this.mouseVisualizer

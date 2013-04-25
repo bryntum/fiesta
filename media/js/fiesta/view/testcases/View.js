@@ -327,7 +327,9 @@ Ext.define('Fiesta.view.testcases.View', {
             );
         } else {
             if (!this.testCaseModel.get('name')) {
-                Ext.Msg.alert('Error', 'Must set a name for the test case')
+                Ext.Msg.alert('Error', 'Must set a name for the test case');
+            } else if (!this.testCaseModel.get('code')) {
+                Ext.Msg.alert('Error', 'Cannot save an empty test case');
             } else {
                 Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
             }
