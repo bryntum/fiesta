@@ -68,8 +68,11 @@ Ext.define('Fiesta.view.testcases.View', {
                 ]
             },
             {
-                text    : 'Add to favorites',
-                iconCls : 'filledStar'
+                text    : this.testCaseModel.get('starred') ? 'Remove from favorites' : 'Add to favorites',
+                iconCls : this.testCaseModel.get('starred') ? 'star' : 'filledStar',
+                scope   : this,
+                action  : 'changeFavorites',
+                handler : this.changeFavorite
             }
         ];
 
@@ -97,7 +100,7 @@ Ext.define('Fiesta.view.testcases.View', {
                         // card with sources editor
                         {
                             xtype  : 'codeeditor',
-                            region : 'center',
+                            region : 'center'
                         },
                         // card with
                         {
@@ -158,17 +161,19 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     onTabSelect : function () {
-        var me = this;
+        var me      = this;
 
         FIESTA.makeHistory(this.testCaseModel.get('slug'));
 
         DISQUS.reset({
             reload : true,
             config : function () {
-                this.page.identifier = me.testCaseModel.get('slug');
-                this.page.url = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
+                this.page.identifier    = me.testCaseModel.get('slug');
+                this.page.url           = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
             }
         });
+        
+        if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
     },
 
     onTestStart : function (event, test) {
@@ -236,6 +241,10 @@ Ext.define('Fiesta.view.testcases.View', {
         this.harness.un('teststart', this.onTestStart, this)
 
         this.callParent(arguments)
+    },
+
+    changeFavorite: function () {
+        FIESTA.addToFavorites(this.testCaseModel);
     },
 
     save : function () {

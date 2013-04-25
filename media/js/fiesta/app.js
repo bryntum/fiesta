@@ -72,42 +72,30 @@ Ext.application({
             var queryRes = Ext.ComponentQuery.query('testCasesList'),
             tabs = this.getMainView();
 
+            console.log(record);
+
             record.set('starred', record.get('starred') ? 0 : 1);
+
+            if(!record.store) {
+                Fiesta.DataModel.updateTestcasesList(record);
+            }
 
             tabs.updateTab(record);
 
-            Ext.Ajax.request({
-                url: '/ajax/addToFavorites',
-                params : {id: record.get('id')},
-                success: function (response) {
-                    try {var o = Ext.decode(response.responseText);}
-                    catch(e) {
-                        Ext.Msg.alert('Error','Failed due to server error');
-                        record.set('starred', record.get('starred') ? 0 : 1);
-                        tabs.updateTab(record);
+            Fiesta.DataModel.addToFavorites(
+                record, null,
+                function () {
 
-                        return false;
-                    }
-
-                    if(true === o.success) {
-                        return true;
-                    }
-                    else {
-                        Ext.Msg.alert('Error', o.errorMsg);
-                        record.set('starred', record.get('starred') ? 0 : 1);
-                        tabs.updateTab(record);
-                        return false;
-                    }
-                },
-                failure: function (response) {
-
-                    Ext.Msg.alert('Error','Failed due to server error');
                     record.set('starred', record.get('starred') ? 0 : 1);
-                    tabs.updateTab(record);
 
-                },
-                scope: this
-            });        
+                    if(!record.store) {
+                        Fiesta.DataModel.updateTestcasesList(record);
+                    }
+
+                    tabs.updateTab(record);
+                }
+            );
+
         } else {
 
             Ext.Msg.alert('Error', 'Please sign in to be able to access this action!');

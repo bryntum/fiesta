@@ -1,0 +1,105 @@
+.testCasesList {
+    font-size: 14px;
+    position: relative;
+}
+
+.testCasesList .colHolder {
+    width: 99%;
+    float: left;
+    position: relative;
+}
+
+.testCasesList .nameHolder {
+    margin-bottom: 0px;
+    clear: both;
+    font-size: 13px;
+    white-space: normal;
+    margin-right: 55px;
+
+    line-height: 16px;
+    color: #666666;
+    display: block;
+}
+
+.testCasesList .date {
+    font-size: 10px;
+    position: absolute;
+    right: 0px;
+    color: #bbb;
+    top: 0;
+}
+
+.testCasesList .x-grid-cell-inner
+{
+    padding-top:0;
+}
+
+.testCasesList .x-grid-cell-inner .star {
+    opacity: 0;
+}
+
+.testCasesList .testcase-row-over .star {
+    opacity: 1;
+}
+
+
+.testCasesList .testNameColumn .x-column-header-trigger {
+    display: block;
+}
+
+
+.testCasesList .x-grid-row-alt .x-grid-td {
+    background-color: #FFF;
+}
+
+.testCasesList .mineTest .x-grid-td,
+.testCasesList .mineTest .x-grid-row-alt .x-grid-td,
+.testCasesList .mineTest  .x-grid-row-over .x-grid-td,
+.testCasesList .mineTest  .x-grid-row-selected .x-grid-td
+{
+    background-color: #FFF6EA !important;
+}
+
+.testCasesList .x-grid-row td
+{
+    cursor: pointer;
+}
+
+.testCasesList .testcase-row-over .nameHolder {
+    color: #333;
+}
+
+.testCasesList .x-grid-cell-inner {
+    position: relative;
+}
+
+.testCasesList .userName{
+    font-size: 10px;
+    text-align: left;
+    color: rgb(172, 172, 172);
+}
+
+.testCasesList ul {
+    margin-top: 2px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+}
+
+.testCasesList ul > li {
+    margin-right: 2px;
+    line-height: 15px;
+}
+
+.testCasesList ul > li:hover {
+    background-color: #ABC7FC;
+    cursor: pointer;
+}
+
+.testCasesList ul > li {
+
+    padding: 0px 2px !important;
+    display: block;
+    float: left;
+    font-size: 10px;
+    font-weight: normal;
+}

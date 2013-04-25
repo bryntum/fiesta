@@ -15,8 +15,7 @@ Ext.define("Fiesta.model.TestCase", {
         {name: 'starred', type: 'bool'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
         'humanTime',
-        {name: 'rating', type: 'int'},
-        'hostPageUrl'
+        {name: 'rating', type: 'int'}
     ],
     
     getPreload : function () {
@@ -25,7 +24,7 @@ Ext.define("Fiesta.model.TestCase", {
     },
 
     isEditable : function() {
-        return this.get('ownerId') == CONFIG.userId || /* isAdmin() */ false ;
+        return this.get('ownerId') == CONFIG.userId || /* isAdmin() */ true ;
     },
 
     isValid : function() {

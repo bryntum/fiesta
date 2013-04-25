@@ -1,17 +1,25 @@
 Ext.define('Fiesta.view.Main', {
-    extend : 'Ext.tab.Panel',
+    extend              : 'Ext.tab.Panel',
 
-    alias    : 'widget.mainView',
-    stateId  : 'tabs',
-    stateful : true,
-    bodyCls  : 'mainview-body',
-    border   : false,
-    plain    : true,
+    alias               : 'widget.mainView',
+    
+    
+    stateId             : 'tabs',
+    stateful            : true,
+    bodyCls             : 'mainview-body',
+    border              : false,
+    plain               : true,
+    
+    mouseVisualizer     : null,
+    
 
     initComponent : function () {
         Ext.setGlyphFontFamily('Pictos');
+        
         Ext.apply(this, {
-            items : [
+            mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer(),
+            
+            items       : [
                 {
                     xtype : 'panel',
                     glyph : 72
@@ -64,7 +72,6 @@ Ext.define('Fiesta.view.Main', {
 
     updateTab : function (testCaseModel, updateHistory) {
 
-        console.log('updateTab');
 
         if (typeof(updateHistory) == 'undefined') {
             updateHistory = false;
@@ -88,10 +95,11 @@ Ext.define('Fiesta.view.Main', {
 
         // Creating new tab for testCase if no tab with the same id exists
         if (!tabExist) {
-            var newTab = Ext.widget('testCasesView', {
-                title         : Ext.String.ellipsis(testCaseModel.get('name'), 15),
-                iconCls       : testCaseModel.get('starred') ? 'filledStar' : '',
-                testCaseModel : testCaseModel
+            var newTab = new Fiesta.view.testcases.View({
+                title           : Ext.String.ellipsis(testCaseModel.get('name'), 15),
+                iconCls         : testCaseModel.get('starred') ? 'filledStar' : '',
+                testCaseModel   : testCaseModel,
+                mouseVisualizer : this.mouseVisualizer
             });
 
 
@@ -104,6 +112,12 @@ Ext.define('Fiesta.view.Main', {
             activeTab.testCaseModel = testCaseModel;
             activeTab.setIconCls(testCaseModel.get('starred') ? 'filledStar' : '');
             activeTab.onTabCreate(testCaseModel);
+            activeTab.down('[action=changeFavorites]').setText(
+                activeTab.testCaseModel.get('starred') ? 'Remove from favorites' : 'Add to favorites'
+            );
+            activeTab.down('[action=changeFavorites]').setIconCls(
+                activeTab.testCaseModel.get('starred') ? 'star' : 'filledStar'
+            );
         }
 
 
