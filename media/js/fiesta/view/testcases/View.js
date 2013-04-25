@@ -5,22 +5,28 @@ Ext.define('Fiesta.view.testcases.View', {
         'Fiesta.view.testcases.Details',
         'Fiesta.plugins.JsEditor'
     ],
-    testCaseModel : null,
+    
+    
+    testCaseModel       : null,
 
-    harness : Siesta.Harness.Browser.ExtJS,
+    harness             : Siesta.Harness.Browser.ExtJS,
 
-    currentTest      : null,
-    currentListeners : null,
+    currentTest         : null,
+    currentListeners    : null,
 
-    resultPanel : null,
+    resultPanel         : null,
+    codeEditor          : null,
+    saveButton          : null,
+    runButton           : null,
+    
 
     initComponent : function () {
         var topBar = [
             {
-                text   : 'Run',
-                width  : 80,
-                cls    : 'run-testcase',
-                action : 'run',
+                text    : 'Run',
+                width   : 80,
+                cls     : 'run-testcase',
+                action  : 'run',
 
                 handler : this.runTest,
                 scope   : this
@@ -36,7 +42,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this
             },
             {
-                xtype : 'tbfill'
+                xtype   : 'tbfill'
             },
             {
                 text    : '<b>{ }</b>',
@@ -48,8 +54,8 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this
             },
             {
-                text : 'Share',
-                menu : [
+                text    : 'Share',
+                menu    : [
                     {
                         text    : "Twitter",
                         scope   : this,
@@ -155,10 +161,10 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.callParent(arguments);
 
-        this.resultPanel = this.down('resultpanel')
-        this.codeEditor = this.down('jseditor');
-        this.saveButton = this.down('[action=save]');
-        this.runButton = this.down('[action=run]');
+        this.resultPanel    = this.down('resultpanel')
+        this.codeEditor     = this.down('jseditor');
+        this.saveButton     = this.down('[action=save]');
+        this.runButton      = this.down('[action=run]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
@@ -181,6 +187,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.saveButton.setVisible(this.testCaseModel.isEditable());
     },
 
+    
     onTabSelect : function () {
         var me = this;
 
@@ -202,10 +209,11 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     runTest : function () {
+        console.log('runtest')
+        
         var testCaseModel   = this.testCaseModel;
         var harness         = this.harness;
         var runButton       = this.runButton;
-        var oldCls          = runButton.iconCls;
         var code            = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
@@ -217,7 +225,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 url           : testCaseModel.internalId,
                 preload       : testCaseModel.getPreload()
             }, function () {
-                runButton.setIconCls(oldCls);
+                runButton.setIconCls('run-testcase');
             });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
