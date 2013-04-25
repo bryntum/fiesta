@@ -151,9 +151,10 @@ Ext.define('Fiesta.view.testcases.View', {
             // eof items
             listeners : {
                 afterrender : this.onTabCreate,
-                activate    : this.onTabSelect,
+                activate    : this.onTabActivate,
+                deactivate  : this.onTabDeActivate,
 
-                scope : this
+                scope       : this
             }
         });
         // eof apply
@@ -188,7 +189,7 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     
-    onTabSelect : function () {
+    onTabActivate : function () {
         var me = this;
 
         FIESTA.makeHistory(this.testCaseModel.get('slug'));
@@ -202,7 +203,14 @@ Ext.define('Fiesta.view.testcases.View', {
         });
 
         if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
+        
+        this.resultPanel.alignIFrame()
     },
+    
+    onTabDeActivate : function () {
+        this.resultPanel.hideIFrame()
+    },
+    
 
     onTestStart : function (event, test) {
         if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
