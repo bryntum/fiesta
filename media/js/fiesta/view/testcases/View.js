@@ -40,7 +40,7 @@ Ext.define('Fiesta.view.testcases.View', {
             },
             {
                 text    : '<b>{ }</b>',
-                tooltip : 'Auto-format code',
+                tooltip : 'Auto-indent code',
                 handler : function () {
                     var ed = this.codeEditor.editor;
                     ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
