@@ -164,7 +164,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments);
 
         this.resultPanel    = this.down('resultpanel')
-        this.detailspanel   = this.down('detailspanel')
+        this.detailsPanel   = this.down('detailspanel')
         this.codeEditor     = this.down('jseditor');
         this.saveButton     = this.down('[action=save]');
         this.runButton      = this.down('[action=run]');
