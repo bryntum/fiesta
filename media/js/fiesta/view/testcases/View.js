@@ -161,17 +161,19 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     onTabSelect : function () {
-        var me = this;
+        var me      = this;
 
         FIESTA.makeHistory(this.testCaseModel.get('slug'));
 
         DISQUS.reset({
             reload : true,
             config : function () {
-                this.page.identifier = me.testCaseModel.get('slug');
-                this.page.url = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
+                this.page.identifier    = me.testCaseModel.get('slug');
+                this.page.url           = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
             }
         });
+        
+        if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
     },
 
     onTestStart : function (event, test) {

@@ -1,8 +1,10 @@
 Ext.define("Fiesta.view.Viewport", {
-    extend: "Ext.container.Viewport",
-    layout: 'border',
-    margins: 5,
-    border  : false,
+    extend      : "Ext.container.Viewport",
+    layout      : 'border',
+    margins     : 5,
+    border      : false,
+    
+    
     initComponent: function () {
         Ext.apply(this, {
             items: [
@@ -53,11 +55,9 @@ Ext.define("Fiesta.view.Viewport", {
                 }
             }
         });
-
         // EoF apply
 
         this.callParent();
-
     }
 
 });
