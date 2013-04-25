@@ -1,7 +1,9 @@
 Ext.define('Fiesta.view.testcases.Details', {
     extend : 'Ext.Panel',
     alias  : 'widget.detailspanel',
-
+    requires      : [
+        'Fiesta.plugins.TagSelect'
+    ],
     height        : 100,
     border        : false,
     style         : 'border-bottom:1px solid #bbb',

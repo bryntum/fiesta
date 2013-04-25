@@ -21,6 +21,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     initComponent : function () {
+
         var topBar = [
             {
                 text   : 'Run',
@@ -92,15 +93,14 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : function () {
                     this.detailsPanel.toggleCollapse();
                 }
+            },
+            {
+                text     : 'Clone',
+                scope    : this,
+                handler  : this.onCloneClick,
+                disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
             }
         ];
-
-        topBar.push({
-            text     : 'Clone',
-            disabled : true,
-            scope    : this
-        });
-
 
         Ext.apply(this, {
             layout    : 'border',
@@ -380,6 +380,21 @@ Ext.define('Fiesta.view.testcases.View', {
         var saveBtn = this.saveButton;
         saveBtn.setIconCls('icon-save');
         saveBtn.enable();
+    },
+
+    onCloneClick : function() {
+        var copy = this.testCaseModel.copy(null);
+        Ext.data.Model.id(copy);
+        copy.data.id = undefined;
+
+        copy.set({
+            name            : copy.get('name') + ' (copy)',
+            originalTestId  : this.testCaseModel.get('id'),
+            ownerId         : CONFIG.userId,
+            ownerName       : CONFIG.userName
+        });
+
+        FIESTA.getMainView().activateTabFor(copy);
     }
 
 });

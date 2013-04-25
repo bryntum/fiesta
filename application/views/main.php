@@ -29,7 +29,6 @@
     <script src="/media/js/codemirror/lib/codemirror.js"></script>
     <script src="/media/js/codemirror/mode/javascript/javascript.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
-    <script src="https://raw.github.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js"></script>
     <link rel="stylesheet" href="/media/js/codemirror/doc/docs.css">
     <link rel="stylesheet" href="/media/js/codemirror/addon/lint/lint.css">
     <script src="/media/js/codemirror/addon/lint/lint.js"></script>

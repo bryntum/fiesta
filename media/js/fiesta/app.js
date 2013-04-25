@@ -11,7 +11,6 @@ Ext.application({
         'Fiesta.view.Main',
         'Fiesta.view.testcases.View',
         'Fiesta.view.testcases.List',
-        'Fiesta.view.testcases.Create',
         'Fiesta.view.SearchForm',
         'Fiesta.view.account.SignIn'
 

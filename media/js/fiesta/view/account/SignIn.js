@@ -84,5 +84,10 @@ Ext.define('Fiesta.view.account.SignIn', {
 
     processSignin: function () {
         this.down('form').getForm().submit();
+    },
+
+    show : function() {
+        this.callParent(arguments);
+        this.down('textfield').focus(true, true);
     }
 });
