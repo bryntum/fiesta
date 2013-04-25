@@ -30586,6 +30586,8 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     
     constructor : function(config) {
+        config      = config || {}
+        
         Ext.apply(this, config)
         
         if (!this.ghostCursor) {
@@ -30595,12 +30597,24 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
             });
         }
         
-        var harness     = this.harness
+        delete this.harness
         
-        if (!harness) throw "harness is required for mouse visualizer"
+        this.setHarness(config.harness)
+    },
+    
+    
+    setHarness : function (harness) {
+        if (this.harness) {
+            this.harness.un('testframeshow', this.onTestFrameShow, this);
+            this.harness.un('testframehide', this.onTestFrameHide, this);
+        }
         
-        harness.on('testframeshow', this.onTestFrameShow, this);
-        harness.on('testframehide', this.onTestFrameHide, this);
+        this.harness    = harness
+    
+        if (harness) {
+            harness.on('testframeshow', this.onTestFrameShow, this);
+            harness.on('testframehide', this.onTestFrameHide, this);
+        }
     },
     
     

@@ -3,3 +3,6 @@ log-*.php
 
 .project
 /.idea
+
+/application/config/account/facebook.php
+/application/config/account/twitter.php
