@@ -3760,7 +3760,13 @@ Class('Scope.Provider.IFrame', {
         iframe          : null,
         cls             : null,
         
-        parentEl        : null
+        performWrap     : false,
+        wrapCls         : null,
+        wrapper         : null,
+        
+        parentEl        : null,
+        
+        cleanupDelay    : 1000
     },
     
 
@@ -3772,10 +3778,9 @@ Class('Scope.Provider.IFrame', {
         
         
         create : function (onLoadCallback) {
-            var me      = this
-            var self    = { self : this }
-            var doc     = this.parentWindow.document
-            var iframe  = this.iframe = doc.createElement('iframe')
+            var me                  = this
+            var doc                 = this.parentWindow.document
+            var iframe              = this.iframe = doc.createElement('iframe')
             
             var minViewportSize     = this.minViewportSize
             
@@ -3800,11 +3805,19 @@ Class('Scope.Provider.IFrame', {
             if (iframe.attachEvent) 
                 iframe.attachEvent('onload', callback)
             else
-                iframe.onload = callback
+                iframe.onload   = callback
             
             iframe.src = this.sourceURL || 'about:blank'
             
-            ;(this.parentEl || doc.body).appendChild(iframe)
+            if (this.performWrap) {
+                var wrapper         = this.wrapper  = this.wrapper || doc.createElement('div')
+                
+                wrapper.className   = this.wrapCls || ''
+                
+                wrapper.appendChild(iframe)
+            } 
+            
+            ;(this.parentEl || doc.body).appendChild(wrapper || iframe)
             
             var scope   = this.scope = iframe.contentWindow
             var doc     = this.getDocument()
@@ -3839,11 +3852,12 @@ Class('Scope.Provider.IFrame', {
         
         
         cleanup : function () {
+            var wrapper     = this.wrapper || this.iframe
             var iframe      = this.iframe
             var win         = this.scope
             var me          = this
             
-            iframe.style.display    = 'none'
+            wrapper.style.display    = 'none'
             
             var onUnloadChecker = function () {
                 if (!window.onunload) window.onunload = function () { return 'something' }
@@ -3855,6 +3869,7 @@ Class('Scope.Provider.IFrame', {
 
             this.iframe     = null
             this.scope      = null
+            this.wrapper    = null
 
             // wait for 1000ms to allow time for possible `setTimeout` in the scope of iframe
             setTimeout(function () {
@@ -3862,19 +3877,22 @@ Class('Scope.Provider.IFrame', {
                 if (me.beforeCleanupCallback) me.beforeCleanupCallback()
                 
                 // chaging the page, triggering `onunload` and hopefully preventing browser from caching the content of iframe
-                iframe.src              = 'javascript:false'
+                iframe.src      = 'javascript:false'
                 
                 // wait again before removing iframe from the DOM, as recommended by some online sources
                 setTimeout(function () {
-                    ;(me.parentEl || me.parentWindow.document.body).removeChild(iframe)
+                    ;(me.parentEl || me.parentWindow.document.body).removeChild(wrapper)
                     
-                    iframe  = null
-                    win     = null
+                    wrapper     = null
+                    iframe      = null
+                    win         = null
+                    
+                    me.parentEl = null
                     
                     if (me.cleanupCallback) me.cleanupCallback()
                     
-                }, 1000)
-            }, 1000)
+                }, me.cleanupDelay)
+            }, me.cleanupDelay)
         }
     }
 })
@@ -26509,7 +26527,6 @@ Class('Siesta.Test.Browser', {
            init : function () { return [ 0, 0 ]; }
         },
         
-        
         forceDOMVisible         : false
     },
 
@@ -26521,10 +26538,7 @@ Class('Siesta.Test.Browser', {
         
         
         hasForcedIframe : function () {
-            if (this.forceDOMVisible && (this.scopeProvider instanceof Scope.Provider.IFrame))
-                return this.scopeProvider.iframe
-            else
-                return null
+            return Boolean(this.forceDOMVisible && (this.scopeProvider instanceof Scope.Provider.IFrame) && this.scopeProvider.iframe)
         },
 
         
@@ -27872,8 +27886,7 @@ Class('Siesta.Harness.Browser', {
                 init    : 'dispatchEvent'
             },
             
-            // the currently "forced" (by the "forceDOMVisible" option) iframe 
-            currentlyForcedIFrame       : null,
+            // the test with currently "forced" (by the "forceDOMVisible" option) iframe 
             testOfForcedIFrame          : null,
             
             /**
@@ -27921,7 +27934,6 @@ Class('Siesta.Harness.Browser', {
                 if (this.viewport) this.viewport.onTestSuiteEnd(descriptors, contentManager)
                 
                 // remove the links to forced iframe / test in hope to ease the memory pressure
-                delete this.currentlyForcedIFrame
                 delete this.testOfForcedIFrame
             },
             
@@ -27929,14 +27941,11 @@ Class('Siesta.Harness.Browser', {
             onTestStart : function (test) {
                 if (this.viewport) this.viewport.onTestStart(test)
                 
-                var iframe
+                if (test.hasForcedIframe()) {
+                    if (this.testOfForcedIFrame) this.hideForcedIFrame(this.testOfForcedIFrame)
                 
-                if (iframe = test.hasForcedIframe()) {
-                    if (this.currentlyForcedIFrame) this.hideForcedIFrame(this.currentlyForcedIFrame)
+                    this.showForcedIFrame(test)
                 
-                    this.showForcedIFrame(iframe, test)
-                
-                    this.currentlyForcedIFrame  = iframe
                     this.testOfForcedIFrame     = test
                 }        
             },
@@ -27952,12 +27961,9 @@ Class('Siesta.Harness.Browser', {
             
             
             onTestEnd : function (test) {
-                var iframe
+                if (test.hasForcedIframe()) {
+                    this.hideForcedIFrame(test)
                 
-                if (iframe = test.hasForcedIframe()) {
-                    this.hideForcedIFrame(iframe)
-                
-                    this.currentlyForcedIFrame  = null
                     this.testOfForcedIFrame     = null
                 }
                 
@@ -28104,7 +28110,9 @@ Class('Siesta.Harness.Browser', {
             getScopeProviderConfigFor : function (desc) {
                 var config                      = this.SUPER(desc)
                 
-                config.cls                      = "tr-iframe"
+                config.cls                      = 'tr-iframe'
+                config.performWrap              = true
+                config.wrapCls                  = 'tr-iframe-wrapper'
                 config.sourceURL                = config.sourceURL || this.getDescriptorConfig(desc, 'hostPageUrl')
                 config.minViewportSize          = config.minViewportSize || {
                     width   : this.getDescriptorConfig(desc, 'viewportWidth'),
@@ -28179,7 +28187,6 @@ Class('Siesta.Harness.Browser', {
             
             
             resolveURL : function (url, scopeProvider, desc) {
-                
                 // if the `scopeProvider` is provided and it has a sourceURL - then absolutize the preloads relative to that url
                 if (scopeProvider && scopeProvider.sourceURL) url = this.absolutizeURL(url)
                 
@@ -28216,21 +28223,27 @@ Class('Siesta.Harness.Browser', {
             },
             
             
-            showForcedIFrame : function (iframe, test) {
+            showForcedIFrame : function (test) {
                 $.rebindWindowContext(window);
-                $(iframe).addClass('tr-iframe-forced')
-                $(iframe).removeClass('tr-iframe-hidden')
+                
+                var wrapper     = test.scopeProvider.wrapper
+                
+                $(wrapper).addClass('tr-iframe-forced')
+                $(wrapper).removeClass('tr-iframe-hidden')
             
-                $(iframe).center()
+                $(wrapper).center()
                 
                 test.fireEvent('testframeshow')
             },
         
         
-            hideForcedIFrame : function (iframe) {
+            hideForcedIFrame : function (test) {
                 $.rebindWindowContext(window);
-                $(iframe).removeClass('tr-iframe-forced')
-                $(iframe).addClass('tr-iframe-hidden')
+                
+                var wrapper     = test.scopeProvider.wrapper
+                
+                $(wrapper).removeClass('tr-iframe-forced')
+                $(wrapper).addClass('tr-iframe-hidden')
                 
                 test.fireEvent('testframehide')
             },
@@ -31285,14 +31298,25 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     },
 
 
+    getIFrameWrapper : function () {
+        var test = this.test;
+        
+        if (test) 
+            return this.canManageDOM && test.scopeProvider && test.scopeProvider.wrapper || null
+        else
+            return null;
+    },
+    
+    
     getIFrame : function () {
         var test = this.test;
         
         if (test) 
-            return this.canManageDOM && test.scopeProvider && test.scopeProvider.iframe
+            return this.canManageDOM && test.scopeProvider && test.scopeProvider.iframe || null
         else
             return null;
     },
+    
 
 
     afterDOMContainerLayout : function () {
@@ -31301,17 +31325,19 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
 
     alignIFrame : function () {
-        var iframe          = this.getIFrame();
+        var wrapper         = this.getIFrameWrapper();
         var domContainer    = this.slots.domContainer
     
-        if (this.hidden || domContainer.collapsed || !iframe) return
+        if (this.hidden || domContainer.collapsed || !wrapper) return
        
-        Ext.fly(iframe).removeCls('tr-iframe-hidden')
-        Ext.fly(iframe).removeCls('tr-iframe-forced')
+        Ext.fly(wrapper).removeCls('tr-iframe-hidden')
+        Ext.fly(wrapper).removeCls('tr-iframe-forced')
         
-        Ext.fly(iframe).setXY(domContainer.el.getXY())
+        Ext.fly(wrapper).setBox(domContainer.el.getBox())
         
-        if (!this.maintainViewportSize) Ext.fly(iframe).setSize(domContainer.el.getSize())
+        if (!this.maintainViewportSize) {
+            Ext.fly(this.getIFrame()).setSize(domContainer.el.getSize())
+        }
         
         var test        = this.test
         
@@ -31336,7 +31362,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
 
     
     hideIFrame : function () {
-        var iframe      = this.getIFrame()
+        var iframe      = this.getIFrameWrapper()
     
         iframe && Ext.fly(iframe).setLeftTop(-10000, -10000)
         

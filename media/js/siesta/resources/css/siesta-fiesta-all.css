@@ -95,16 +95,20 @@ td.tr-td-vertical-align {
 	vertical-align     : middle;
 }
 
-iframe.tr-iframe {
+.tr-iframe-wrapper {
     position    : absolute;
 
     left        : -10000px;
     top         : -10000px;
+    
+    overflow    : auto;
+}
 
+iframe.tr-iframe {
     background-color    : white;
 }
 
-iframe.tr-iframe-forced {
+.tr-iframe-forced {
     z-index                    : 100000;
 
     border                     : 5px solid;
@@ -114,7 +118,7 @@ iframe.tr-iframe-forced {
     border-radius              : 14px;
 }
 
-iframe.tr-iframe-hidden {
+.tr-iframe-hidden {
     left        : -10000px !important;
     top         : -10000px !important;
 }
