@@ -121,7 +121,7 @@ Ext.define('Fiesta.view.testcases.Details', {
     
     
     alignDisqus : function () {
-        Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
+        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
     }
    
 });

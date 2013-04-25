@@ -15,6 +15,7 @@ Ext.define('Fiesta.view.testcases.View', {
     codeEditor          : null,
     saveButton          : null,
     runButton           : null,
+    detailsPanel        : null,
     
 
     initComponent : function () {
@@ -163,6 +164,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.callParent(arguments);
 
         this.resultPanel    = this.down('resultpanel')
+        this.detailspanel   = this.down('detailspanel')
         this.codeEditor     = this.down('jseditor');
         this.saveButton     = this.down('[action=save]');
         this.runButton      = this.down('[action=run]');
@@ -197,11 +199,13 @@ Ext.define('Fiesta.view.testcases.View', {
         if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
 
         this.resultPanel.alignIFrame()
+        this.detailsPanel.alignDisqus()
     },
     
     
     onTabDeActivate : function () {
         this.resultPanel.hideIFrame()
+        this.detailsPanel.hideDisqus()
     },
     
 
