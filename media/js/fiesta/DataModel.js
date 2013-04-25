@@ -380,8 +380,7 @@ Ext.define('Fiesta.DataModel', {
     },
 
     updateTestcasesList: function (testCaseModel) {
-        var tagsStore = Ext.getStore('Tags'),
-            record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
+        var record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
             newTagsArr = [];
 
 
@@ -393,6 +392,62 @@ Ext.define('Fiesta.DataModel', {
         else {
             Ext.getStore('TestCases').load();
         }
+    },
+
+    addToFavorites: function (testCaseModel, callback, errback) {
+
+        Ext.Ajax.request({
+            url: '/ajax/addToFavorites',
+            params : {id: testCaseModel.get('id')},
+            success: function (response) {
+                try {var o = Ext.decode(response.responseText);}
+                catch(e) {
+
+                    if (errback && errback(response) !== false) {
+                        this.fireEvent('requestfailed', this, {
+                            url: this.url,
+                            message: 'Failed due to server error'
+                        });
+                    }
+                    return false;
+                }
+
+                if(true === o.success) {
+
+                    if (callback && callback(testCaseModel) !== false) {
+
+                        this.fireEvent('requestsuccess', this, {
+                            url: this.url,
+                            message: 'Successfully saved'
+                        });
+                    }
+
+                    return true;
+                }
+                else {
+                    if (errback && errback(response) !== false) {
+                        this.fireEvent('requestfailed', this, {
+                            url: this.url,
+                            message: o.errorMsg
+                        });
+                    }
+
+                    return false;
+                }
+            },
+            failure: function (response) {
+
+                if (errback && errback(response) !== false) {
+                    this.fireEvent('requestfailed', this, {
+                        url: this.url,
+                        message: 'Failed due to server error...'
+                    });
+                }
+
+
+            },
+            scope: this
+        });
     }
 
 

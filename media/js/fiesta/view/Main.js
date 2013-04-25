@@ -64,7 +64,6 @@ Ext.define('Fiesta.view.Main', {
 
     updateTab : function (testCaseModel, updateHistory) {
 
-        console.log('updateTab');
 
         if (typeof(updateHistory) == 'undefined') {
             updateHistory = false;
@@ -104,6 +103,12 @@ Ext.define('Fiesta.view.Main', {
             activeTab.testCaseModel = testCaseModel;
             activeTab.setIconCls(testCaseModel.get('starred') ? 'filledStar' : '');
             activeTab.onTabCreate(testCaseModel);
+            activeTab.down('[action=changeFavorites]').setText(
+                activeTab.testCaseModel.get('starred') ? 'Remove from favorites' : 'Add to favorites'
+            );
+            activeTab.down('[action=changeFavorites]').setIconCls(
+                activeTab.testCaseModel.get('starred') ? 'star' : 'filledStar'
+            );
         }
 
 
