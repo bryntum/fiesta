@@ -118,7 +118,10 @@ Ext.define('Fiesta.view.testcases.View', {
                     ]
                 },
                 {
-                    xtype : 'detailspanel'
+                    xtype : 'detailspanel',
+                    listeners: {
+                        expand  : this.onDetailsExpand
+                    }
                 }
             ],
             // eof items
@@ -163,16 +166,8 @@ Ext.define('Fiesta.view.testcases.View', {
     onTabSelect : function () {
         var me      = this;
 
-        FIESTA.makeHistory(this.testCaseModel.get('slug'));
+        // FIESTA.makeHistory(this.testCaseModel.get('slug'));
 
-        DISQUS.reset({
-            reload : true,
-            config : function () {
-                this.page.identifier    = me.testCaseModel.get('slug');
-                this.page.url           = window.location.href; //SITE_URL + "/#" + me.testCaseModel.get('slug');
-            }
-        });
-        
         if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
     },
 
@@ -289,6 +284,20 @@ Ext.define('Fiesta.view.testcases.View', {
                 Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
             }
         }
+    },
+    onDetailsExpand: function () {
+        var me = this;
+        console.log(window.location.href);
+        console.log(me.testCaseModel.get('slug'));
+
+        DISQUS.reset({
+            reload: true,
+            config: function () {
+                this.page.identifier = me.testCaseModel.get('slug');
+                this.page.url = 'http://fiestadev.bryntum.com/'+me.testCaseModel.get('slug');
+            }
+        });
+
     }
 
 });
