@@ -97,7 +97,6 @@ Ext.define('Fiesta.view.Main', {
         if (!tabExist) {
             var newTab = new Fiesta.view.testcases.View({
                 title           : Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15),
-                iconCls         : testCaseModel.get('starred') ? 'filledStar' : '',
                 testCaseModel   : testCaseModel,
                 mouseVisualizer : this.mouseVisualizer
             });
@@ -110,10 +109,9 @@ Ext.define('Fiesta.view.Main', {
         else {
             activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
             activeTab.testCaseModel = testCaseModel;
-            activeTab.setIconCls(testCaseModel.get('starred') ? 'filledStar' : '');
             activeTab.onTabCreate(testCaseModel);
             activeTab.down('[action=changeFavorites]').setIconCls(
-                activeTab.testCaseModel.get('starred') ? 'star' : 'filledStar'
+                activeTab.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star'
             );
         }
 

@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
     <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-fiesta-all.css">
+    <link rel="stylesheet" href="/media/css/icomoon14040/style.css">
 
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
     <script> 

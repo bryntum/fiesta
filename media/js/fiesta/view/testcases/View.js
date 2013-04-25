@@ -35,7 +35,6 @@ Ext.define('Fiesta.view.testcases.View', {
             {
                 text    : 'Save',
                 width   : 80,
-                iconCls : 'icon-save',
                 cls     : 'save-testcase',
                 action  : 'save',
 
@@ -62,44 +61,51 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this
             },
             {
-                text : 'Share',
-                menu : [
-                    {
-                        text    : "Twitter",
-                        scope   : this,
-                        handler : this.shareTwitter
-                    },
-                    {
-                        text    : "Facebook",
-                        scope   : this,
-                        handler : this.shareFb
-                    },
-                    {
-                        text    : "Google+",
-                        scope   : this,
-                        handler : this.shareGoogle
-                    }
-                ]
-            },
-            {
-                iconCls : this.testCaseModel.get('starred') ? 'star' : 'filledStar',
+                iconCls : this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
                 scope   : this,
                 action  : 'changeFavorites',
                 handler : this.changeFavorite
             },
+
             {
-                iconCls : 'icon-expand',
+                iconCls  : 'icon-copy',
+                tooltip  : 'Clone this test',
+                scope    : this,
+                handler  : this.onCloneClick,
+                disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
+            },
+            { xtype : 'tbseparator' },
+            {
+                tooltip : 'Share on Twitter',
+                iconCls : 'icon-twitter',
+                cls     : 'social',
+                scope   : this,
+                handler : this.shareTwitter
+            },
+            {
+                tooltip : 'Share on Facebook',
+                iconCls : 'icon-facebook-2',
+                cls     : 'social',
+                scope   : this,
+                handler : this.shareFb
+            },
+            {
+                tooltip : 'Share on Google+',
+                iconCls : 'social icon-google-plus',
+                cls     : 'social',
+                scope   : this,
+                handler : this.shareGoogle
+            },
+            { xtype : 'tbseparator' },
+            {
+                iconCls : 'icon-arrow-down-alt1',
+                action  : 'expandcollapse',
+                cls     : 'expandcollapse',
                 scope   : this,
                 handler : function () {
                     this.detailsPanel.toggleCollapse();
                 }
             },
-            {
-                text     : 'Clone',
-                scope    : this,
-                handler  : this.onCloneClick,
-                disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
-            }
         ];
 
         Ext.apply(this, {
@@ -112,7 +118,9 @@ Ext.define('Fiesta.view.testcases.View', {
                     xtype       : 'detailspanel',
                     region      : 'north',
                     listeners   : {
-                        expand : this.onDetailsExpand
+                        collapse : this.onDetailsCollapseExpand,
+                        expand : this.onDetailsExpand,
+                        scope  : this
                     },
                     placeholder : {
                         height : 0
@@ -184,6 +192,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.codeEditor     = this.down('jseditor');
         this.saveButton     = this.down('[action=save]');
         this.runButton      = this.down('[action=run]');
+        this.expandCollapseButton      = this.down('[action=expandcollapse]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
@@ -245,7 +254,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 url             : testCaseModel.internalId,
                 preload         : testCaseModel.getPreload()
             }, function () {
-                runButton.setIconCls('run-testcase');
+                runButton.setIconCls('');
             });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
@@ -316,7 +325,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
         if (this.testCaseModel.isValid()) {
             var saveBtn = this.saveButton;
-            var oldCls = saveBtn.iconCls;
             var afterSaveFn = function () {
                 me.afterSaveOperation();
             };
@@ -357,11 +365,10 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
 
-    onDetailsExpand : function () {
+    onDetailsExpand : function (pnl) {
         var me = this;
 
-//        console.log(window.location.href);
-//        console.log(me.testCaseModel.get('slug'));
+        this.onDetailsCollapseExpand();
 
         DISQUS.reset({
             reload : true,
@@ -372,13 +379,18 @@ Ext.define('Fiesta.view.testcases.View', {
         });
     },
 
+    onDetailsCollapseExpand : function() {
+        var btn = this.expandCollapseButton;
+        btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down-alt1' : 'icon-arrow-up-alt1');
+    },
+
     showDetails : function () {
         this.detailsPanel.expand();
     },
 
     afterSaveOperation : function () {
         var saveBtn = this.saveButton;
-        saveBtn.setIconCls('icon-save');
+        saveBtn.setIconCls('');
         saveBtn.enable();
     },
 
