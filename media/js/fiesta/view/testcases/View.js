@@ -170,7 +170,7 @@ Ext.define('Fiesta.view.testcases.View', {
             keyevent : function (sender, event) {
                 var e = new Ext.EventObjectImpl(event);
 
-                if (e.ctrlKey && e.getKey() === e.ENTER) {
+                if (e.ctrlKey && e.getKey() === e.ENTER && event.type == 'keydown') {
                     this.runTest();
                 }
             },
@@ -209,8 +209,6 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     runTest : function () {
-        console.log('runtest')
-        
         var testCaseModel   = this.testCaseModel;
         var harness         = this.harness;
         var runButton       = this.runButton;
