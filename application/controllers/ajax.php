@@ -196,6 +196,8 @@ class Ajax extends CI_Controller {
         $private = $this->input->post('private');
         $code = $this->input->post('code');
         $tagsList = $this->input->post('tagsList');
+        $hostPageUrl = $this->input->post('hostPageUrl');
+
 
         if ($this->authentication->is_signed_in()) {       
             $userId = $this->session->userdata('account_id');
@@ -206,7 +208,8 @@ class Ajax extends CI_Controller {
                 'framework_id' => $frameworkId,
                 'private' => $private,
                 'code' => $code,
-                'tagsList' => $tagsList
+                'tagsList' => $tagsList,
+                'hostPageUrl' => $hostPageUrl
             ));
 
             if($resultRec) {
@@ -227,9 +230,9 @@ class Ajax extends CI_Controller {
                 'framework_id' => $frameworkId,
                 'private' => $private,
                 'code' => $code,
-                'tags_list' => $tagsList
-
-           )); 
+                'tags_list' => $tagsList,
+                'hostPageUrl' => $hostPageUrl
+           ));
 
            $testCaseId = $testCaseId.'_tmp';
 
@@ -254,6 +257,8 @@ class Ajax extends CI_Controller {
             $code = $this->input->post('code');
             $userId = $this->session->userdata('account_id');
             $tagsList = $this->input->post('tagsList');
+            $hostPageUrl = $this->input->post('hostPageUrl');
+
 
             $resultRec = $this->testCases_model->update($testCaseId, array(
                 'name' => $name, 
@@ -261,8 +266,9 @@ class Ajax extends CI_Controller {
                 'framework_id' => $frameworkId,
                 'private' => $private == 'true' ? 1 : 0,
                 'code' => $code,
-                'tagsList' => $tagsList
-            ));  
+                'tagsList' => $tagsList,
+                'hostPageUrl' => $hostPageUrl
+            ));
 
             if($resultRec) {
                 $success = true;
