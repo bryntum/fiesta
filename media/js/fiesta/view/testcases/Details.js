@@ -97,6 +97,13 @@ Ext.define('Fiesta.view.testcases.Details', {
                             emptyText      : "Framework",
                             store          : "Frameworks",
                             queryMode      : 'local'
+                        },
+                        {
+                            xtype      : 'textfield',
+                            cls        : 'details-text',
+                            name       : 'hostPageUrl',
+                            fieldLabel : 'Application URL',
+                            anchor     : '80%'
                         }
                     ]
                 }

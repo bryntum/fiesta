@@ -4,7 +4,6 @@ Ext.define("Fiesta.model.TestCase", {
     fields      : [
         {name: 'id', type: 'int'},
         'name',
-//        'tagsList',
         {name: 'frameworkId', type: 'int'},
         {name: 'ownerId', type: 'int'},
         'ownerName',
@@ -12,6 +11,7 @@ Ext.define("Fiesta.model.TestCase", {
         'tags', 
         'slug',
         'private',
+        'hostPageUrl',
         {name: 'starred', type: 'bool'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
         {name: 'rating', type: 'int'},
