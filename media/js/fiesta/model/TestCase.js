@@ -14,7 +14,6 @@ Ext.define("Fiesta.model.TestCase", {
         'private',
         {name: 'starred', type: 'bool'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
-        'humanTime',
         {name: 'rating', type: 'int'}
     ],
     
@@ -33,4 +32,5 @@ Ext.define("Fiesta.model.TestCase", {
 
         return valid;
     }
+
 });
