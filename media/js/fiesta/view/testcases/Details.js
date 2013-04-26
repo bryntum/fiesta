@@ -4,7 +4,6 @@ Ext.define('Fiesta.view.testcases.Details', {
     requires      : [
         'Fiesta.plugins.TagSelect'
     ],
-    height        : 100,
     border        : false,
     style         : 'border-bottom:1px solid #bbb',
     scroll        : true,
@@ -29,14 +28,14 @@ Ext.define('Fiesta.view.testcases.Details', {
                     items       : [
                         {
                             xtype  : 'form',
-                            defaults : { anchor : '80%' },
                             flex   : 1,
                             items  : [
                                 {
                                     xtype      : 'textfield',
                                     cls        : 'details-text',
                                     name       : 'name',
-                                    fieldLabel : 'Name'
+                                    fieldLabel : 'Name',
+                                    anchor     : '80%'
                                 },
                                 {
                                     xtype      : 'checkbox',
@@ -47,7 +46,24 @@ Ext.define('Fiesta.view.testcases.Details', {
                                     xtype      : 'displayfield',
                                     name       : 'ownerName',
                                     fieldLabel : 'Submitted by'
-                                }
+                                },
+                                {
+                                    xtype   : 'button',
+                                    text    : 'Delete',
+                                    width   : 80,
+                                    cls     : 'delete-testcase',
+                                    action  : 'delete',
+
+                                    handler : function() {
+                                        var me = this;
+                                        Ext.Msg.confirm('Confirm', 'Are you sure?', function() {
+                                            Fiesta.DataModel.deleteTestCase(
+                                                me.testCaseModel
+                                            );
+                                        })
+                                    },
+                                    scope   : this
+                                },
                             ]
                         },
                         {

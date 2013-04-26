@@ -24,6 +24,16 @@ Ext.define('Fiesta.view.testcases.View', {
 
         var topBar = [
             {
+                iconCls : 'icon-arrow-down-alt1',
+                action  : 'expandcollapse',
+                cls     : 'expandcollapse',
+                scope   : this,
+                handler : function () {
+                    this.detailsPanel.toggleCollapse();
+                }
+            },
+            { xtype : 'tbseparator' },
+            {
                 text   : 'Run',
                 width  : 80,
                 cls    : 'run-testcase',
@@ -41,15 +51,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : this.save,
                 scope   : this
             },
-            {
-                text    : 'Delete',
-                width   : 80,
-                cls     : 'delete-testcase',
-                action  : 'delete',
 
-                handler : this.delete,
-                scope   : this
-            },
 //        else if (target.hasCls('rate_up')) {
 //            Fiesta.DataModel.rate(record, 'up');
 //        }
@@ -103,16 +105,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 cls     : 'social',
                 scope   : this,
                 handler : this.shareGoogle
-            },
-            { xtype : 'tbseparator' },
-            {
-                iconCls : 'icon-arrow-down-alt1',
-                action  : 'expandcollapse',
-                cls     : 'expandcollapse',
-                scope   : this,
-                handler : function () {
-                    this.detailsPanel.toggleCollapse();
-                }
             }
         ];
 
@@ -258,6 +250,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
             harness.startSingle({
                 transparentEx   : true,
+                autoCheckGlobals: false,
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
                 preload         : testCaseModel.getPreload()
@@ -370,12 +363,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
             }
         }
-    },
-
-    delete : function () {
-        Fiesta.DataModel.deleteTestCase(
-            this.testCaseModel
-        );
     },
 
     onDetailsExpand : function (pnl) {
