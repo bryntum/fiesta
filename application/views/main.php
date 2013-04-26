@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
     <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-fiesta-all.css">
+    <link rel="stylesheet" href="/media/css/icomoon14040/style.css">
 
     <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
     <script> 
@@ -29,7 +30,6 @@
     <script src="/media/js/codemirror/lib/codemirror.js"></script>
     <script src="/media/js/codemirror/mode/javascript/javascript.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
-    <script src="https://raw.github.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js"></script>
     <link rel="stylesheet" href="/media/js/codemirror/doc/docs.css">
     <link rel="stylesheet" href="/media/js/codemirror/addon/lint/lint.css">
     <script src="/media/js/codemirror/addon/lint/lint.js"></script>
@@ -38,7 +38,7 @@
 
 </head>
 <body>
-<div id="disqus_thread" style="height: 100%; padding: 5px;"></div>
+<div id="disqus_thread"></div>
 <script>
     var disqus_developer = 1;
     var disqus_shortname = '<?php echo $disqus_shortname?>';

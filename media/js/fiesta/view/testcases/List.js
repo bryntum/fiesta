@@ -29,9 +29,10 @@ Ext.define('Fiesta.view.testcases.List', {
                 displayInfo : true
             },
             listeners : {
-                itemclick   : this.onMyItemClick,
-                afterrender : this.onMyAfterRender,
-                scope       : this
+                itemclick    : this.onMyItemClick,
+                itemdblclick : this.onMyItemDoubleClick,
+                afterrender  : this.onMyAfterRender,
+                scope        : this
             }
         });
 
@@ -57,12 +58,6 @@ Ext.define('Fiesta.view.testcases.List', {
             searchForm.addTagFilter(selTag);
         }
 
-        else if (target.hasCls('rate_up')) {
-            Fiesta.DataModel.rate(record, 'up');
-        }
-        else if (target.hasCls('rate_down')) {
-            Fiesta.DataModel.rate(record, 'down');
-        }
         else if (target.hasCls('star')) {
 
             FIESTA.addToFavorites(grid.getStore().getAt(index));
@@ -73,6 +68,14 @@ Ext.define('Fiesta.view.testcases.List', {
             tabs.activateTabFor(record);
         }
     },
+
+    onMyItemDoubleClick   : function (grid, record, item, index, e) {
+        var tabs = FIESTA.getMainView();
+
+        tabs.activateTabFor(record);
+        tabs.activeTab.runTest();
+    },
+
     onMyAfterRender : function () {
         var menu = this.headerCt.getMenu();
         menu.items.get('columnItem').hide();

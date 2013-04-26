@@ -38,7 +38,7 @@ Ext.define("Fiesta.view.SearchForm", {
                             xtype   : "button",
                             text    : "Add new",
                             cls     : 'addNewBtn',
-                            handler : this.addTest,
+                            handler : this.createTest,
                             margin  : {left : 5},
                             scope   : this
                         }
@@ -129,8 +129,10 @@ Ext.define("Fiesta.view.SearchForm", {
         this.callParent(arguments);
     },
 
-    addTest : function () {
-        var addWin = new Fiesta.view.testcases.Create();
+    createTest : function () {
+        var test = new Fiesta.model.TestCase({
+        });
+        FIESTA.getMainView().activateTabFor(test);
     },
 
     clearFilters : function () {
