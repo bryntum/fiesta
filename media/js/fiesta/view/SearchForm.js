@@ -131,6 +131,8 @@ Ext.define("Fiesta.view.SearchForm", {
 
     createTest : function () {
         var test = new Fiesta.model.TestCase({
+            ownerId : CONFIG.userId,
+            ownerName : CONFIG.userName
         });
         FIESTA.getMainView().activateTabFor(test);
     },

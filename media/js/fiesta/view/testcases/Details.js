@@ -1,5 +1,5 @@
 Ext.define('Fiesta.view.testcases.Details', {
-    extend : 'Ext.Panel',
+    extend : 'Ext.FormPanel',
     alias  : 'widget.detailspanel',
     requires      : [
         'Fiesta.plugins.TagSelect'
@@ -12,93 +12,91 @@ Ext.define('Fiesta.view.testcases.Details', {
     testCaseModel : null,
     header        : false,
     collapsed     : true,
+    cls         : 'testdetailsform',
+    itemId      : 'testdetailsform',
+    bodyPadding : 5,
+    border      : false,
+    defaults    : { border : false },
+    layout      : { type : 'hbox', align : 'stretch' },
 //    disqusContainer : null,
 
     initComponent : function () {
         Ext.apply(this, {
             items : [
                 {
-                    itemId      : 'testdetailsform',
-                    cls         : 'testdetailsform',
-                    xtype       : 'form',
-                    bodyPadding : 5,
-                    border      : false,
-                    defaults    : { border : false },
-                    layout      : { type : 'hbox', align : 'stretch' },
-                    items       : [
+                    xtype  : 'form',
+                    flex   : 1,
+                    items  : [
                         {
-                            xtype  : 'form',
-                            flex   : 1,
-                            items  : [
-                                {
-                                    xtype      : 'textfield',
-                                    cls        : 'details-text',
-                                    name       : 'name',
-                                    fieldLabel : 'Name',
-                                    anchor     : '80%'
-                                },
-                                {
-                                    xtype      : 'checkbox',
-                                    name       : 'private',
-                                    fieldLabel : 'Private'
-                                },
-                                {
-                                    xtype      : 'displayfield',
-                                    name       : 'ownerName',
-                                    fieldLabel : 'Submitted by'
-                                },
-                                {
-                                    xtype   : 'button',
-                                    text    : 'Delete',
-                                    width   : 80,
-                                    cls     : 'delete-testcase',
-                                    action  : 'delete',
-
-                                    handler : function() {
-                                        var me = this;
-                                        Ext.Msg.confirm('Confirm', 'Are you sure?', function() {
-                                            Fiesta.DataModel.deleteTestCase(
-                                                me.testCaseModel
-                                            );
-                                        })
-                                    },
-                                    scope   : this
-                                },
-                            ]
+                            xtype      : 'textfield',
+                            cls        : 'details-text',
+                            name       : 'name',
+                            fieldLabel : 'Name',
+                            anchor     : '80%',
+                            allowBlank : false
                         },
                         {
-                            defaults : { anchor : '80%' },
-                            xtype    : 'form',
-                            flex     : 1,
-                            items    : [
-                                {
-                                    fieldLabel       : 'Tags',
-                                    xtype            : 'tagselect',
-                                    cls              : 'details-tags details-combo',
-                                    store            : "Tags",
-                                    displayField     : "tag",
-                                    valueField       : "tag",
-                                    name             : 'tagsList',
-                                    queryMode        : 'local',
-                                    createNewOnEnter : true,
-                                    createNewOnBlur  : true,
-                                    forceSelection   : false,
-                                    minChars         : 3
-                                },
-                                {
-                                    xtype          : "combo",
-                                    fieldLabel     : 'Framework',
-                                    cls            : 'details-combo',
-                                    displayField   : "name",
-                                    valueField     : "id",
-                                    editable       : true,
-                                    forceSelection : true,
-                                    name           : 'frameworkId',
-                                    emptyText      : "Framework",
-                                    store          : "Frameworks",
-                                    queryMode      : 'local'
-                                }
-                            ]
+                            xtype      : 'checkbox',
+                            name       : 'private',
+                            fieldLabel : 'Private'
+                        },
+                        {
+                            xtype      : 'displayfield',
+                            name       : 'ownerName',
+                            fieldLabel : 'Submitted by'
+                        },
+                        {
+                            xtype   : 'button',
+                            text    : 'Delete',
+                            width   : 80,
+                            cls     : 'delete-testcase',
+                            action  : 'delete',
+
+                            handler : function() {
+                                var me = this;
+                                Ext.Msg.confirm('Confirm', 'Are you sure?', function(btn) {
+                                    if (btn !== 'yes') return;
+
+                                    Fiesta.DataModel.deleteTestCase(
+                                        me.testCaseModel
+                                    );
+                                })
+                            },
+                            scope   : this
+                        },
+                    ]
+                },
+                {
+                    defaults : { anchor : '80%' },
+                    xtype    : 'form',
+                    flex     : 1,
+                    items    : [
+                        {
+                            fieldLabel       : 'Tags',
+                            xtype            : 'tagselect',
+                            cls              : 'details-tags details-combo',
+                            store            : "Tags",
+                            displayField     : "tag",
+                            valueField       : "tag",
+                            name             : 'tagsList',
+                            queryMode        : 'local',
+                            createNewOnEnter : true,
+                            createNewOnBlur  : true,
+                            forceSelection   : false,
+                            minChars         : 3
+                        },
+                        {
+                            xtype          : "combo",
+                            fieldLabel     : 'Framework',
+                            cls            : 'details-combo',
+                            displayField   : "name",
+                            valueField     : "id",
+                            editable       : true,
+                            forceSelection : true,
+                            name           : 'frameworkId',
+                            emptyText      : "Framework",
+                            store          : "Frameworks",
+                            queryMode      : 'local'
                         }
                     ]
                 }
@@ -111,7 +109,7 @@ Ext.define('Fiesta.view.testcases.Details', {
 
     setTestCaseModel : function (model) {
         var tagsList = [],
-            detailsForm = this.down('#testdetailsform').getForm();
+            detailsForm = this.getForm();
 
         this.testCaseModel = model;
 
@@ -120,7 +118,8 @@ Ext.define('Fiesta.view.testcases.Details', {
         });
 
         detailsForm.loadRecord(model);
-        detailsForm.setValues({tagsList : tagsList});
+        detailsForm.setValues({ tagsList : tagsList });
+        this.down('[action=delete]').setVisible(!model.phantom)
     },
 
 
