@@ -41,7 +41,15 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : this.save,
                 scope   : this
             },
+            {
+                text    : 'Delete',
+                width   : 80,
+                cls     : 'delete-testcase',
+                action  : 'delete',
 
+                handler : this.delete,
+                scope   : this
+            },
 //        else if (target.hasCls('rate_up')) {
 //            Fiesta.DataModel.rate(record, 'up');
 //        }
@@ -105,7 +113,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : function () {
                     this.detailsPanel.toggleCollapse();
                 }
-            },
+            }
         ];
 
         Ext.apply(this, {
@@ -364,6 +372,11 @@ Ext.define('Fiesta.view.testcases.View', {
         }
     },
 
+    delete : function () {
+        Fiesta.DataModel.deleteTestCase(
+            this.testCaseModel
+        );
+    },
 
     onDetailsExpand : function (pnl) {
         var me = this;
