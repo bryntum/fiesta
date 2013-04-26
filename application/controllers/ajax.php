@@ -107,18 +107,18 @@ class Ajax extends CI_Controller {
 //        }
 //        else {
             $testCases = $this->testCases_model->getByClause(array(
-                'whereClause' => $where, 
+                'whereClause' => $where,
                 'page'        => $params['page'],
                 'pageSize'    => $params['limit'],
                 'sort'        => $sort,
                 'tagsList'    => $tagsList
             ),$this->authUserID);
-            
+
             $totalRecords = $this->testCases_model->getByClause(array(
                 'whereClause' => $where,
                 'tagsList'    => $tagsList,
                 'getTotal' => true
-            ));
+            ),$this->authUserID);
 //        }
 
         echo json_encode(array('data' => $testCases, 'total' => $totalRecords, 'success' => true));

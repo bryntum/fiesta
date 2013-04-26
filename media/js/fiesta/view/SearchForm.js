@@ -137,15 +137,25 @@ Ext.define("Fiesta.view.SearchForm", {
 
     clearFilters : function () {
         var store = Ext.getStore('TestCases');
+        store.clearFilter();
+
+
+        this.getForm().getFields().each(function(field) {
+            field.suspendEvents();
+        });
 
         this.getForm().reset();
-        this.getForm().findField('showMy').suspendEvents();
 
-        this.getForm().setValues({showMy : false});
+        if (FIESTA.isSignedIn()) {
+            this.getForm().setValues({showMy : false});
+        }
 
-        this.getForm().findField('showMy').resumeEvents();
+        this.getForm().getFields().each(function(field) {
+            field.resumeEvents();
+        });
 
-        store.proxy.extraParams = {};
+
+        store.proxy.extraParams = {action: 'filter'};
         store.load();
     },
 
@@ -155,10 +165,19 @@ Ext.define("Fiesta.view.SearchForm", {
             params = searchForm[0].getForm().getValues(),
             store = Ext.getStore('TestCases');
 
-        params.action = 'filter';
-        store.proxy.extraParams = params;
+        store.clearFilter();
 
-        store.load();
+        params.action = 'filter';
+
+        if(params.showStarred == 'on') {
+            store.filter(
+                {property: "starred", value: true}
+            );
+        }
+
+        store.proxy.extraParams = params;
+        store.loadPage(1);
+
     },
 
     addTagFilter : function (tag) {

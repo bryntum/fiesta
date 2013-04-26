@@ -22,14 +22,11 @@
             }
 
             if(delta > 5 * 86400 ) {
-                return date.format('d/m/Y');
+                return Ext.Date.format(date,'d/m/Y');
             }
 
             Ext.Object.each(timeArray, function (seconds, period) {
                 var divided = delta / parseInt(seconds);
-
-                console.log(divided);
-                console.log(period);
 
                 if(divided >= 1) {
                     var rounded = Math.floor(divided);

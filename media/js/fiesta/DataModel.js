@@ -384,13 +384,13 @@ Ext.define('Fiesta.DataModel', {
             newTagsArr = [];
 
 
+
         if (record) {
-
             record.set(testCaseModel.data);
-
+            Ext.getStore('TestCases').filter();
         }
         else {
-            Ext.getStore('TestCases').load();
+            Ext.getStore('TestCases').add(testCaseModel);
         }
     },
 
