@@ -1,6 +1,6 @@
 Ext.define("Fiesta.view.SearchForm", {
     extend        : "Ext.form.Panel",
-    requires      : ['Fiesta.store.Frameworks', 'Fiesta.store.Tags'],
+    requires      : ['Fiesta.store.Frameworks', 'Fiesta.store.Tags', 'Fiesta.view.menu.TestTemplateMenu'],
     xtype         : "searchForm",
     border        : false,
     initComponent : function () {
@@ -35,12 +35,31 @@ Ext.define("Fiesta.view.SearchForm", {
                         },
                         {
                             action  : "addCase",
-                            xtype   : "button",
-                            text    : "Add new",
+                            xtype   : "splitbutton",
+                            text    : "Create new",
                             cls     : 'addNewBtn',
-                            handler : this.createTest,
-                            margin  : {left : 5},
-                            scope   : this
+                            handler : function() { this.createTest(); },
+                            margin  : '0 0 0 5',
+                            scope   : this,
+                            menu    : {
+                                xtype : 'testtemplatemenu',
+                                listeners : {
+                                    click : function(item, e) {
+                                        var url = item.url;
+
+                                        this.createTest({
+                                            name        : item.text,
+                                            hostPageUrl : url ? ('/media/frameworks/extjs-4.2.0/examples/' + item.url) : null
+                                        });
+
+                                        if (url) {
+                                            // Run test to show the page immediately
+                                            FIESTA.getMainView().activeTab.runTest();
+                                        }
+                                    },
+                                    scope : this
+                                }
+                            }
                         }
                     ]
                 },
@@ -129,18 +148,17 @@ Ext.define("Fiesta.view.SearchForm", {
         this.callParent(arguments);
     },
 
-    createTest : function () {
-        var test = new Fiesta.model.TestCase({
-            ownerId : CONFIG.userId,
-            ownerName : CONFIG.userName
-        });
+    createTest : function (config) {
+        var test = new Fiesta.model.TestCase(Ext.apply(config || {}, {
+            ownerId     : CONFIG.userId,
+            ownerName   : CONFIG.userName
+        }));
         FIESTA.getMainView().activateTabFor(test);
     },
 
     clearFilters : function () {
         var store = Ext.getStore('TestCases');
         store.clearFilter();
-
 
         this.getForm().getFields().each(function(field) {
             field.suspendEvents();

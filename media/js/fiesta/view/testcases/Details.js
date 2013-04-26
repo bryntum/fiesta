@@ -94,7 +94,6 @@ Ext.define('Fiesta.view.testcases.Details', {
                             editable       : true,
                             forceSelection : true,
                             name           : 'frameworkId',
-                            emptyText      : "Framework",
                             store          : "Frameworks",
                             queryMode      : 'local'
                         },
