@@ -105,7 +105,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : function () {
                     this.detailsPanel.toggleCollapse();
                 }
-            },
+            }
         ];
 
         Ext.apply(this, {
@@ -118,12 +118,13 @@ Ext.define('Fiesta.view.testcases.View', {
                     xtype       : 'detailspanel',
                     region      : 'north',
                     listeners   : {
-                        collapse : this.onDetailsCollapseExpand,
-                        expand : this.onDetailsExpand,
-                        scope  : this
+                        collapse    : this.onDetailsCollapseExpand,
+                        expand      : this.onDetailsExpand,
+                        
+                        scope       : this
                     },
                     placeholder : {
-                        height : 0
+                        height  : 0
                     }
                 },
                 {
@@ -302,7 +303,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     destroy : function () {
-        this.harness.deleteTestByURL(this.testCaseModel.getId())
+        this.harness.deleteTestByURL(this.testCaseModel.internalId)
         this.harness.un('teststart', this.onTestStart, this)
 
         this.callParent(arguments)
