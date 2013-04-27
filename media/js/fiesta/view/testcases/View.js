@@ -248,7 +248,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             this.down('#testdetailsform').getForm().updateRecord(testCaseModel);
-
+            var me = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
 
@@ -258,6 +258,9 @@ Ext.define('Fiesta.view.testcases.View', {
                 hostPageUrl     : pageUrl,
                 preload         : pageUrl ? null : testCaseModel.getPreload()
             }, function () {
+                // HACK: Need to reset scroll to 0,0
+                var el = me.resultPanel.getIFrameWrapper();
+                el.scrollLeft = el.scrollTop = 0;
                 runButton.setIconCls('');
             });
         } else {
