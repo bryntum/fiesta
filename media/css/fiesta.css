@@ -166,7 +166,17 @@ li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
 	padding-bottom     : 0px !important;
 }
 
+.CodeMirror-sizer {
+	margin-bottom      : -30px;
+}
+
 .CodeMirror-scroll div div:nth-child(2) {
     height          : 0px !important;
+}
+
+
+.CodeMirror-gutter {
+	padding-bottom     : 0px !important;
+	margin-bottom      : -30px !important;
 }
 */
