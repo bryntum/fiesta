@@ -42,6 +42,7 @@ Ext.define('Fiesta.view.Main', {
 
         Fiesta.DataModel.on('testCreated', this.onTestCaseChanged, this);
         Fiesta.DataModel.on('testUpdated', this.onTestCaseChanged, this);
+        Fiesta.DataModel.on('testDeleted', this.onTestCaseDeleted, this);
 
         this.callParent(arguments);
     },
@@ -56,6 +57,28 @@ Ext.define('Fiesta.view.Main', {
         else {
             FIESTA.signUp({action : 'afterCreate'});
         }
+
+    },
+
+    onTestCaseDeleted: function (event, record) {
+        var tabs = this,
+            tabExist = false,
+            newTabId = record.get('id'),
+            activeTab = {};
+
+        //Searching for tab with id passed in testCaseModel
+        tabs.items.each(function (tab) {
+            if (tab.testCaseModel && tab.testCaseModel.get('id') == newTabId) {
+                tabExist = true;
+                activeTab = tab;
+                return false;
+            }
+        });
+
+        Ext.getStore('TestCases').reload();
+
+        activeTab.close();
+
 
     },
 

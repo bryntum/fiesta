@@ -24,6 +24,16 @@ Ext.define('Fiesta.view.testcases.View', {
 
         var topBar = [
             {
+                iconCls : 'icon-arrow-down-alt1',
+                action  : 'expandcollapse',
+                cls     : 'expandcollapse',
+                scope   : this,
+                handler : function () {
+                    this.detailsPanel.toggleCollapse();
+                }
+            },
+            { xtype : 'tbseparator' },
+            {
                 text   : 'Run',
                 width  : 80,
                 cls    : 'run-testcase',
@@ -95,16 +105,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 cls     : 'social',
                 scope   : this,
                 handler : this.shareGoogle
-            },
-            { xtype : 'tbseparator' },
-            {
-                iconCls : 'icon-arrow-down-alt1',
-                action  : 'expandcollapse',
-                cls     : 'expandcollapse',
-                scope   : this,
-                handler : function () {
-                    this.detailsPanel.toggleCollapse();
-                }
             }
         ];
 
@@ -247,13 +247,18 @@ Ext.define('Fiesta.view.testcases.View', {
         var code                = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
+            this.down('#testdetailsform').getForm().updateRecord(testCaseModel);
+
+            var pageUrl = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
 
             harness.startSingle({
                 transparentEx   : true,
+                autoCheckGlobals: false,
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
-                preload         : testCaseModel.getPreload()
+                hostPageUrl     : pageUrl,
+                preload         : pageUrl ? null : testCaseModel.getPreload()
             }, function () {
                 runButton.setIconCls('');
             });
@@ -364,7 +369,6 @@ Ext.define('Fiesta.view.testcases.View', {
             }
         }
     },
-
 
     onDetailsExpand : function (pnl) {
         var me = this;

@@ -8,6 +8,7 @@ Ext.define('Fiesta.DataModel', {
     getUrl           : 'ajax/getTestCase/',
     getCollectionUrl : 'ajax/getTestCasesColl/',
     updateRatingUrl  : 'ajax/updateRating/',
+    deleteUrl        : 'ajax/deleteTestCase/',
 
     frameworkStore : null,
 
@@ -238,6 +239,65 @@ Ext.define('Fiesta.DataModel', {
         });
     },
 
+    deleteTestCase : function (testCaseModel, callback, errback) {
+        var params = testCaseModel.getData();
+
+        Ext.Ajax.request({
+            url     : this.deleteUrl,
+            params  : params,
+            success : function (response) {
+                try {
+                    var o = Ext.decode(response.responseText);
+                }
+                catch (e) {
+                    this.fireEvent('requestfailed', this, {
+                        url     : this.url,
+                        message : 'Server message:' + response.responseText
+                    });
+
+                    errback && errback(response);
+
+                    return false;
+                }
+
+                if (true === o.success) {
+
+                    this.fireEvent('testDeleted', this, testCaseModel);
+
+                    if (callback && callback(testCaseModel) !== false) {
+
+                        this.fireEvent('requestsuccess', this, {
+                            url     : this.url,
+                            message : 'Successfully deleted'
+                        });
+                    }
+
+                    return true;
+                }
+                else {
+                    this.fireEvent('requestfailed', this, {
+                        url     : this.url,
+                        message : 'Server message:' + o.errorMsg
+                    });
+
+                    errback && errback(response);
+
+                    return false;
+                }
+            },
+            failure : function (response) {
+
+                if (!errback || errback(response) !== false) {
+                    this.fireEvent('requestfailed', this, {
+                        url     : this.url,
+                        message : 'Failed to save due to server error!'
+                    });
+                }
+            },
+            scope   : this
+        });
+    },
+
     getTestCasesColl : function (slugs, callback, errback) {
 
         var me = this,
@@ -383,14 +443,12 @@ Ext.define('Fiesta.DataModel', {
         var record = Ext.getStore('TestCases').getById(testCaseModel.get('id')),
             newTagsArr = [];
 
-
         if (record) {
-
             record.set(testCaseModel.data);
-
+            Ext.getStore('TestCases').filter();
         }
         else {
-            Ext.getStore('TestCases').load();
+            Ext.getStore('TestCases').add(testCaseModel);
         }
     },
 
@@ -451,6 +509,7 @@ Ext.define('Fiesta.DataModel', {
             scope   : this
         });
     }
+
 
 
 });

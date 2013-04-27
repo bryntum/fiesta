@@ -248,6 +248,12 @@ class Testcases_model extends CI_Model {
         return $this->getById($testCaseId,$data['owner_id']);
     }
 
+    function delete ($testCaseId) {
+
+        $this->db->where('id', $testCaseId);
+        return $this->db->delete('testCases');
+    }
+
     function updateTestCaseTags ($testCaseId, $tagsList) {
         $tagIds = array();
         $diff = array();

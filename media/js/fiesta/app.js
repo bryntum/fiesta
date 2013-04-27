@@ -68,16 +68,15 @@ Ext.application({
 
     addToFavorites: function (record) {
         if(this.isSignedIn()) {
+
+
             var queryRes = Ext.ComponentQuery.query('testCasesList'),
             tabs = this.getMainView();
 
-            console.log(record);
-
             record.set('starred', record.get('starred') ? 0 : 1);
 
-            if(!record.store) {
-                Fiesta.DataModel.updateTestcasesList(record);
-            }
+            Fiesta.DataModel.updateTestcasesList(record);
+
 
             tabs.updateTab(record);
 
@@ -87,9 +86,7 @@ Ext.application({
 
                     record.set('starred', record.get('starred') ? 0 : 1);
 
-                    if(!record.store) {
-                        Fiesta.DataModel.updateTestcasesList(record);
-                    }
+                    Fiesta.DataModel.updateTestcasesList(record);
 
                     tabs.updateTab(record);
                 }

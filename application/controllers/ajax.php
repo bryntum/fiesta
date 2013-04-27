@@ -107,18 +107,18 @@ class Ajax extends CI_Controller {
 //        }
 //        else {
             $testCases = $this->testCases_model->getByClause(array(
-                'whereClause' => $where, 
+                'whereClause' => $where,
                 'page'        => $params['page'],
                 'pageSize'    => $params['limit'],
                 'sort'        => $sort,
                 'tagsList'    => $tagsList
             ),$this->authUserID);
-            
+
             $totalRecords = $this->testCases_model->getByClause(array(
                 'whereClause' => $where,
                 'tagsList'    => $tagsList,
                 'getTotal' => true
-            ));
+            ),$this->authUserID);
 //        }
 
         echo json_encode(array('data' => $testCases, 'total' => $totalRecords, 'success' => true));
@@ -189,6 +189,9 @@ class Ajax extends CI_Controller {
         $code = $this->input->post('code');
         $tagsList = $this->input->post('tagsList');
         $hostPageUrl = $this->input->post('hostPageUrl');
+        $originalTestId = $this->input->post('originalTestId');
+
+
 
 
         if ($this->authentication->is_signed_in()) {       
@@ -201,7 +204,8 @@ class Ajax extends CI_Controller {
                 'private' => $private,
                 'code' => $code,
                 'tagsList' => $tagsList,
-                'hostPageUrl' => $hostPageUrl
+                'hostPageUrl' => $hostPageUrl,
+                'originalTestId' => $originalTestId
             ));
 
             if($resultRec) {
@@ -223,7 +227,8 @@ class Ajax extends CI_Controller {
                 'private' => $private,
                 'code' => $code,
                 'tags_list' => $tagsList,
-                'hostPageUrl' => $hostPageUrl
+                'hostPageUrl' => $hostPageUrl,
+                'originalTestId' => $originalTestId
            ));
 
            $testCaseId = $testCaseId.'_tmp';
@@ -251,24 +256,30 @@ class Ajax extends CI_Controller {
             $tagsList = $this->input->post('tagsList');
             $hostPageUrl = $this->input->post('hostPageUrl');
 
+            if($this->isOwner($testCaseId)) {
 
-            $resultRec = $this->testCases_model->update($testCaseId, array(
-                'name' => $name, 
-                'owner_id' => $userId, 
-                'framework_id' => $frameworkId,
-                'private' => $private == 'true' ? 1 : 0,
-                'code' => $code,
-                'tagsList' => $tagsList,
-                'hostPageUrl' => $hostPageUrl
-            ));
 
-            if($resultRec) {
-                $success = true;
-                $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
-                $errorMsg = '';
+                $resultRec = $this->testCases_model->update($testCaseId, array(
+                    'name' => $name,
+                    'owner_id' => $userId,
+                    'framework_id' => $frameworkId,
+                    'private' => $private == 'true' ? 1 : 0,
+                    'code' => $code,
+                    'tagsList' => $tagsList,
+                    'hostPageUrl' => $hostPageUrl
+                ));
+
+                if($resultRec) {
+                    $success = true;
+                    $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
+                    $errorMsg = '';
+                }
+                else {
+                    $errorMsg = 'Something goes wrong on DB';
+                }
             }
             else {
-                $errorMsg = 'Something goes wrong on DB';
+                $errorMsg = 'You are not an owner!';
             }
         }        
 
@@ -278,6 +289,45 @@ class Ajax extends CI_Controller {
 
         echo json_encode(array('slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
 
+
+    }
+
+    public function deleteTestCase () {
+        $success = false;
+        $slug = '';
+        $resultRec = '';
+
+        if ($this->authentication->is_signed_in()) {
+
+            $testCaseId = $this->input->post('id');
+
+
+
+            if($this->isOwner($testCaseId)) {
+
+                $result = $this->testCases_model->delete($testCaseId);
+
+                if($result) {
+                    $success = true;
+                    $errorMsg = '';
+                }
+                else {
+                    $errorMsg = 'Something goes wrong on DB';
+                }
+
+            } else {
+
+                $errorMsg = 'You are not an owner!';
+
+            }
+
+        }
+
+        else {
+            $errorMsg = 'Please login!';
+        }
+
+        echo json_encode(array('errorMsg' => $errorMsg, 'success' => $success));
 
     }
     
@@ -366,6 +416,17 @@ class Ajax extends CI_Controller {
 
         echo json_encode(array('success' => $success, 'errorMsg' => $error));
 
+    }
+
+    private function isOwner ($testCaseId) {
+        $result = $this->testCases_model->getById($testCaseId, $this->session->userdata('account_id'));
+
+        if($result && $result->owner_id == $this->session->userdata('account_id')){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 
