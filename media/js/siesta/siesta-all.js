@@ -29711,6 +29711,10 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
                         itemdblclick        : this.onTestFileDoubleClick,
                         
                         'filter-group-change'   : this.saveState,
+                        resize                  : function () {
+                            // preserve min width of the assertion grid
+                            this.slots.resultPanel.ensureLayout()
+                        },
                             
                         scope                   : this
                     },
@@ -31173,6 +31177,21 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     },
     
     
+    // This method makes sure that the min width of the card panel is respected when
+    // the width of this class changes (after resizing Test TreePanel).
+    ensureLayout : function () {
+        var availableWidth          = this.getWidth();
+        var cardPanel               = this.slots.cardContainer;
+        var domContainer            = this.slots.domContainer;
+        var domContainerWidth       = domContainer.getWidth();
+        var minimumForCard          = cardPanel.minWidth + 20; // Some splitter space
+
+        if (availableWidth - domContainerWidth < minimumForCard) {
+            domContainer.setWidth(Math.max(0, availableWidth - minimumForCard));
+        }
+    },
+    
+    
     afterRender : function() {
         this.callParent(arguments);
         
@@ -31582,8 +31601,6 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
 
         Ext.apply(this, {
             
-            store       : new Ext.data.TreeStore(),
-            
             resultTpl   : new Ext.XTemplate(
                 '<span class="assertion-text">{[this.getDescription(values.result)]}</span>{[this.getAnnotation(values)]}',
                 {
@@ -31709,36 +31726,15 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     },
     
     
-//    bindStore : function (store, isInitial) {
-//        var me      = this
-//        
-//        this.callParent(arguments)
-//        
-////        if (me.store) me.mun(me.store, {
-////            scope       : me,
-////            rootchange  : me.onRootChange,
-////            clear       : me.onClear
-////        });
-//
-//        me.store    = store;
-//        
-//        if (me.getView().store != store.nodeStore) {
-//            me.getView().dataSource     = store.nodeStore
-//            me.getView().bindStore(store.nodeStore, isInitial);
-//        }
-//        
-////        me.mon(store, {
-////            scope       : me,
-////            rootchange  : me.onRootChange,
-////            clear       : me.onClear
-////        });
-
-//=======
-    bindStore : function (treeStore) {
+    bindStore : function (treeStore, isInitial, prop) {
         this.callParent(arguments)
         
-        if (treeStore && treeStore.nodeStore) this.getView().bindStore(treeStore.nodeStore)
-//>>>>>>> 4.2.0
+        this.store    = treeStore;
+        
+        if (treeStore && treeStore.nodeStore) {
+            this.getView().dataSource   = treeStore.nodeStore
+            this.getView().bindStore(treeStore.nodeStore, isInitial, prop)
+        }
     }
 })
 ;
