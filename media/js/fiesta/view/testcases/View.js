@@ -249,12 +249,10 @@ Ext.define('Fiesta.view.testcases.View', {
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             this.down('#testdetailsform').getForm().updateRecord(testCaseModel);
 
-            var pageUrl = testCaseModel.get('hostPageUrl');
+            var pageUrl         = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
 
             harness.startSingle({
-                transparentEx   : true,
-                autoCheckGlobals: false,
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
                 hostPageUrl     : pageUrl,

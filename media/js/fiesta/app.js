@@ -128,7 +128,8 @@ Ext.application({
         Ext.Object.each(this.harness, function (key, harness) {
             harness.configure({
                 needUI              : false,
-                autoCheckGlobals    : true
+                transparentEx       : true,
+                autoCheckGlobals    : false
             })
         })
 
