@@ -1,7 +1,8 @@
 Ext.define("Fiesta.view.menu.TestTemplateMenu", {
-    extend : "Ext.menu.Menu",
-    alias  : "widget.testtemplatemenu",
-    plain  : true,
+    extend             : "Ext.menu.Menu",
+    alias              : "widget.testtemplatemenu",
+    plain              : true,
+    ignoreParentClicks : true,
 
     initComponent : function () {
 
@@ -11,7 +12,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                 var data = Ext.decode(response.responseText);
                 this.buildMenuItems(data);
             },
-            scope : this
+            scope   : this
         })
 
         Ext.apply(this, {
@@ -20,13 +21,15 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                     text : 'Blank test case'
                 },
                 {
-                    itemId : 'extjs',
+                    itemId  : 'extjs',
                     iconCls : 'icon-extjs',
-                    text : 'Ext JS 4.2.0',
-                    menu : {}
+                    text    : 'Ext JS 4.2.0',
+                    menu    : {
+                        ignoreParentClicks : true,
+                    }
                 },
                 {
-                    text  : 'Sencha Touch'
+                    text : 'Sencha Touch'
                 }
             ]
         });
@@ -39,15 +42,16 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
         var items = [];
         var me = this;
 
-        Ext.Array.each(data, function(item) {
+        Ext.Array.each(data, function (item) {
             items.push({
-                text : item.title,
+                text         : item.title,
                 bubbleEvents : ['click'],
-                menu : {
-                    defaults : {
+                menu         : {
+                    ignoreParentClicks : true,
+                    defaults           : {
                         bubbleEvents : ['click']
                     },
-                    items : item.items
+                    items              : item.items
                 }
             })
         });

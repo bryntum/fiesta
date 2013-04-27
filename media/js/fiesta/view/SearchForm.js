@@ -53,6 +53,9 @@ Ext.define("Fiesta.view.SearchForm", {
                                         });
 
                                         if (url) {
+                                            // TODO remove
+                                            FIESTA.getMainView().activeTab.down('[slot=domContainer]').expand();
+
                                             // Run test to show the page immediately
                                             FIESTA.getMainView().activeTab.runTest();
                                         }
