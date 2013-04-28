@@ -46,11 +46,16 @@ Ext.define("Fiesta.view.SearchForm", {
                                 listeners : {
                                     click : function(item, e) {
                                         var url = item.url;
+                                        var testConfig = {
+                                            name        : item.text
+                                        };
 
-                                        this.createTest({
-                                            name        : item.text,
-                                            hostPageUrl : url ? ('/media/frameworks/extjs-4.2.0/examples/' + item.url) : null
-                                        });
+                                        if (item.url) {
+                                            var frameworkId = item.up('[frameworkId]').frameworkId;
+                                            testConfig.hostPageUrl = '/media/frameworks/' + frameworkId + '/examples/' + item.url;
+                                        }
+
+                                        this.createTest(testConfig);
 
                                         if (url) {
                                             // TODO remove
