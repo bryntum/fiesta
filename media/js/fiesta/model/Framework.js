@@ -18,6 +18,20 @@ Ext.define("Fiesta.model.Framework", {
         return this.get('name');
     },
 
+    getTestClass : function() {
+        var name = this.getName() || '';
+
+        if (name.match('ext')) {
+            return Siesta.Test.ExtJS;
+        }
+
+        if (name.match('touch')) {
+            return Siesta.Test.SenchaTouch;
+        }
+
+        return Siesta.Test.Browser;
+    },
+
     getPreload : function () {
         switch (this.getName()) {
             case 'ExtJS 4.1' :
