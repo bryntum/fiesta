@@ -19,8 +19,23 @@ Ext.define("Fiesta.model.TestCase", {
     ],
     
     getPreload : function () {
-        var frameworkId     = this.get('frameworkId')
-        return frameworkId ? FIESTA.getStore('Frameworks').getById(frameworkId).getPreload() : [];
+        var framework     = this.getFramework();;
+        return framework ? framework.getPreload() : [];
+    },
+
+    getFramework : function() {
+        var frameworkId = this.get('frameworkId');
+        return FIESTA.getStore('Frameworks').getById(frameworkId);
+    },
+
+    getTestClass : function() {
+        var framework     = this.getFramework();
+
+        if (framework) {
+            return framework.getTestClass();
+        }
+
+        return Siesta.Test.Browser;
     },
 
     isEditable : function() {
