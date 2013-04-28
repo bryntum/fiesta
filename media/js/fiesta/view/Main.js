@@ -78,8 +78,6 @@ Ext.define('Fiesta.view.Main', {
         Ext.getStore('TestCases').reload();
 
         activeTab.close();
-
-
     },
 
     activateTabFor : function (testCaseModel) {
