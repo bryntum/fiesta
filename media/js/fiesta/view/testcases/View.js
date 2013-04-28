@@ -247,7 +247,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var code                = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
-            this.down('#testdetailsform').getForm().updateRecord(testCaseModel);
+            this.detailsPanel.getForm().updateRecord(testCaseModel);
             var me = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
@@ -322,7 +322,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     save : function () {
-        var form = this.down('#testdetailsform').getForm(),
+        var form = this.detailsPanel.getForm(),
             me = this,
             tags = [];
 
