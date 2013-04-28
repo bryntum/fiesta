@@ -152,10 +152,12 @@ Ext.define("Fiesta.view.SearchForm", {
     },
 
     createTest : function (config) {
+        debugger;
         var test = new Fiesta.model.TestCase(Ext.apply(config || {}, {
             ownerId     : CONFIG.userId,
             ownerName   : CONFIG.userName
         }));
+
         FIESTA.getMainView().activateTabFor(test);
     },
 
