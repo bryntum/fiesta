@@ -3,6 +3,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
     alias              : "widget.testtemplatemenu",
     plain              : true,
     ignoreParentClicks : true,
+    cls                : 'test-template-menu',
 
     initComponent : function () {
 
@@ -27,7 +28,18 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
         Ext.apply(this, {
             items : [
                 {
-                    text : 'Blank test case'
+                    text    : 'Blank test case',
+                    iconCls : 'icon-libreoffice'
+                },
+                {
+                    text     : '<strong>Unit Tests with source</strong>',
+                    disabled : true,
+                    iconCls  : 'icon-file-css'
+                },
+                {
+                    text     : '<strong>Application tests</strong>',
+                    iconCls  : 'icon-file-powerpoint',
+                    disabled : true
                 },
                 {
                     text    : 'Ext JS 4.2.0',

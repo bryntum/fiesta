@@ -1,0 +1,22 @@
+.test-template-menu .x-menu-item
+{
+    height: 30px;
+    line-height: 2em;
+}
+
+.test-template-menu .x-menu-item-icon
+{
+    font-size: 1.4em;
+    color: darkslateblue;
+}
+
+.test-template-menu .x-menu-item-disabled .x-menu-item-icon
+{
+    color:#444;
+}
+
+
+.test-template-menu .x-menu-item-link
+{
+    margin-top:4px;
+}
