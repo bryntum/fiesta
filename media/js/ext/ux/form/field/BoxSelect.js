@@ -1090,7 +1090,7 @@ Ext.define('Ext.ux.form.field.BoxSelect', {
             if (me.picker && me.isExpanded) {
                 me.alignPicker();
             }
-            if (me.hasFocus) {
+            if (me.hasFocus && me.inputElCt) {
                 me.inputElCt.scrollIntoView(me.listWrapper);
             }
         }, 15);
