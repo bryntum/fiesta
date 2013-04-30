@@ -1,6 +1,41 @@
 Ext.define('Fiesta.plugins.TagSelect', {
     extend:'Ext.ux.form.field.BoxSelect',
     alias: 'widget.tagselect',
+
+    pinList        : false,
+    filterPickList : true,
+    delimiter      : ',',
+
+    initComponent: function() {
+        var me = this,
+            typeAhead = me.typeAhead;
+
+        if (typeAhead && !me.editable) {
+            Ext.Error.raise('If typeAhead is enabled the combo must be editable: true -- please change one of those settings.');
+        }
+
+        Ext.apply(me, {
+            typeAhead: false
+        });
+
+        me.callParent();
+
+        me.typeAhead = typeAhead;
+
+        me.selectionModel = new Ext.selection.Model({
+            store: me.valueStore,
+            mode: 'MULTI',
+            lastFocused: null,
+            onSelectChange: function(record, isSelected, suppressEvent, commitFn) {
+                commitFn();
+            }
+        });
+
+        if (!Ext.isEmpty(me.delimiter) && me.multiSelect) {
+            me.delimiterRegexp = new RegExp(String(me.delimiter).replace(/[$%()*+.?\[\\\]{|}]/g, "\\$&"));
+        }
+    },
+
     setValue: function(value, doSelect, skipLoad) {
 
 
@@ -73,6 +108,6 @@ Ext.define('Fiesta.plugins.TagSelect', {
         }
 
         return me.callParent([value, doSelect]);
-    },
+    }
 
 });

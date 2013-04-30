@@ -21,6 +21,8 @@ Ext.define('Fiesta.view.testcases.Details', {
 //    disqusContainer : null,
 
     initComponent : function () {
+        var tagsStore = new Fiesta.store.Tags();
+
         Ext.apply(this, {
             items : [
                 {
@@ -75,7 +77,7 @@ Ext.define('Fiesta.view.testcases.Details', {
                             fieldLabel       : 'Tags',
                             xtype            : 'tagselect',
                             cls              : 'details-tags details-combo',
-                            store            : "Tags",
+                            store            : tagsStore,
                             displayField     : "tag",
                             valueField       : "tag",
                             name             : 'tagsList',
