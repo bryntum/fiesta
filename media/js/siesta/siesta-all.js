@@ -6707,7 +6707,7 @@ Role('Siesta.Test.Function', {
             });
 
             fn                  = prototype[ prop ];
-            prototype[ prop ]   = function () { counter++; fn.apply(this, arguments); };
+            prototype[ prop ]   = function () { counter++; return fn.apply(this, arguments); };
         },
 
         /**
@@ -30806,7 +30806,16 @@ Ext.define('Siesta.Harness.Browser.UI.TestGrid', {
             viewConfig : {
                 store                   : this.store.nodeStore,
                 enableTextSelection     : true,
-                toggleOnDblClick        : false
+                toggleOnDblClick        : false,
+
+                // HACK, prevent layouts on update of a row
+                onUpdate                : function () {
+                    this.refreshSize    = Ext.emptyFn;
+                    var val             = Ext.tree.View.prototype.onUpdate.apply(this, arguments);
+                    this.refreshSize    = Ext.tree.View.prototype.refreshSize;
+
+                    return val;
+                }
             },
         
             columns     : [
@@ -31159,7 +31168,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
                     width           : '50%',
                     collapsible     : true,
                     animCollapse    : false,
-                
+                    cls             : 'siesta-domcontainer',
                     collapsed       : !this.viewDOM,
                 
                     bodyStyle       : 'text-align : center'
@@ -31494,6 +31503,11 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
             this.showSource(result.sourceLine);
         }
     }
+});
+
+// To avoid the DOM container splitter getting stuck
+Ext.dd.DragTracker.override({
+    tolerance : 0
 });;
 Ext.define('Siesta.Harness.Browser.UI.TreeColumn', {
     
