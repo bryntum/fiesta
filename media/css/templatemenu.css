@@ -1,11 +1,16 @@
 .test-template-menu .x-menu-item
 {
     height: 30px;
-    line-height: 1.2em;
+    line-height: 2em;
 }
 
 .test-template-menu .x-menu-item-icon
 {
     font-size: 1.4em;
-    line-height: 1.2em;
+}
+
+
+.test-template-menu .x-menu-item-link
+{
+    margin-top:4px;
 }
