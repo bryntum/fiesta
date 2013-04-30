@@ -1,6 +1,6 @@
 Ext.define('Fiesta.view.testcases.Details', {
-    extend : 'Ext.FormPanel',
-    alias  : 'widget.detailspanel',
+    extend        : 'Ext.FormPanel',
+    alias         : 'widget.detailspanel',
     requires      : [
         'Fiesta.plugins.TagSelect'
     ],
@@ -12,12 +12,12 @@ Ext.define('Fiesta.view.testcases.Details', {
     testCaseModel : null,
     header        : false,
     collapsed     : true,
-    cls         : 'testdetailsform',
-    itemId      : 'testdetailsform',
-    bodyPadding : 5,
-    border      : false,
-    defaults    : { border : false },
-    layout      : { type : 'hbox', align : 'stretch' },
+    cls           : 'testdetailsform',
+    itemId        : 'testdetailsform',
+    bodyPadding   : 5,
+    border        : false,
+    defaults      : { border : false },
+    layout        : { type : 'hbox', align : 'stretch' },
 //    disqusContainer : null,
 
     initComponent : function () {
@@ -26,9 +26,9 @@ Ext.define('Fiesta.view.testcases.Details', {
         Ext.apply(this, {
             items : [
                 {
-                    xtype  : 'form',
-                    flex   : 1,
-                    items  : [
+                    xtype : 'form',
+                    flex  : 1,
+                    items : [
                         {
                             xtype      : 'textfield',
                             cls        : 'details-text',
@@ -48,15 +48,15 @@ Ext.define('Fiesta.view.testcases.Details', {
                             fieldLabel : 'Submitted by'
                         },
                         {
-                            xtype   : 'button',
-                            text    : 'Delete',
-                            width   : 80,
-                            cls     : 'delete-testcase',
-                            action  : 'delete',
+                            xtype  : 'button',
+                            text   : 'Delete',
+                            width  : 80,
+                            cls    : 'delete-testcase',
+                            action : 'delete',
 
-                            handler : function() {
+                            handler : function () {
                                 var me = this;
-                                Ext.Msg.confirm('Confirm', 'Are you sure?', function(btn) {
+                                Ext.Msg.confirm('Confirm', 'Are you sure?', function (btn) {
                                     if (btn !== 'yes') return;
 
                                     Fiesta.DataModel.deleteTestCase(

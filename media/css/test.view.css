@@ -95,3 +95,50 @@
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff51a351', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
+
+.vote-container dl,
+.vote-container dt,
+.vote-container dd
+{
+    padding:0;
+    color:#666;
+    text-align: center;
+    margin:0 auto;
+}
+
+.vote-container .up,
+.vote-container .down
+{
+    width: 0;
+    height: 0;
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    cursor : pointer;
+}
+
+.vote-container .up:hover
+{
+    border-bottom-color:#444;
+}
+
+.vote-container .down:hover
+{
+    border-top-color:#444;
+}
+
+.vote-container .up
+{
+    border-bottom: 7px solid #888;
+}
+
+.vote-container .down
+{
+   border-top: 7px solid #888;
+}
+
+.vote-container .vote-count
+{
+    line-height: 17px;
+}

@@ -32,6 +32,13 @@ Ext.define('Fiesta.view.testcases.View', {
                     this.detailsPanel.toggleCollapse();
                 }
             },
+            {
+                xtype   : 'displayfield',
+                width   : 20,
+                cls     : 'vote-container',
+                value    : '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">2</dd><dd class="arrow down" title="Vote down"></dd></dl>'
+            },
+
             { xtype : 'tbseparator' },
             {
                 text   : 'Run',
@@ -51,13 +58,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 handler : this.save,
                 scope   : this
             },
-
-//        else if (target.hasCls('rate_up')) {
-//            Fiesta.DataModel.rate(record, 'up');
-//        }
-//        else if (target.hasCls('rate_down')) {
-//            Fiesta.DataModel.rate(record, 'down');
-//        }
             {
                 xtype : 'tbfill'
             },
@@ -276,6 +276,23 @@ Ext.define('Fiesta.view.testcases.View', {
 
         if (this.testCaseModel.phantom) {
             this.showDetails();
+        }
+
+        var voteCt = this.el.down('.vote-container');
+        voteCt.on({
+            click       : this.onVoteClick,
+            delegate    : '.arrow',
+            scope       : this
+        });
+    },
+
+    onVoteClick : function(e, t) {
+        var record = this.testCaseModel;
+
+        if (t.className.match('up')) {
+            Fiesta.DataModel.rate(record, 'up');
+        } else {
+            Fiesta.DataModel.rate(record, 'down');
         }
     },
 
