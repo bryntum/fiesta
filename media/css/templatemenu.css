@@ -7,6 +7,12 @@
 .test-template-menu .x-menu-item-icon
 {
     font-size: 1.4em;
+    color: darkslateblue;
+}
+
+.test-template-menu .x-menu-item-disabled .x-menu-item-icon
+{
+    color:#444;
 }
 
 

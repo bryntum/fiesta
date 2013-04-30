@@ -276,6 +276,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
         if (this.testCaseModel.phantom) {
             this.showDetails();
+            this.detailsPanel.down('[name=name]').focus(true, true);
         }
 
         var voteCt = this.el.down('.vote-container');
