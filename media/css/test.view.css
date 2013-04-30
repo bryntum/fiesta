@@ -152,6 +152,14 @@
     background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 }
 
+.siesta-domcontainer .x-panel-body:before
+{
+    content : 'RUN THE TEST TO SEE IT HERE';
+    color: #666;
+    font-size:9px;
+}
+
+
 .tr-iframe-wrapper iframe
 {
     margin-top: 1px;
