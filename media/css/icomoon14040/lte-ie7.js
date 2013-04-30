@@ -18,7 +18,12 @@ window.onload = function() {
 			'icon-facebook-2' : '&#xe009;',
 			'icon-arrow-down-alt1' : '&#xe00b;',
 			'icon-arrow-up-alt1' : '&#xe00a;',
-			'icon-home' : '&#xe00c;'
+			'icon-home' : '&#xe00c;',
+			'icon-file' : '&#xe00d;',
+			'icon-cog' : '&#xe00e;',
+			'icon-file-css' : '&#xe00f;',
+			'icon-file-powerpoint' : '&#xe010;',
+			'icon-libreoffice' : '&#xe011;'
 		},
 		els = document.getElementsByTagName('*'),
 		i, attr, html, c, el;

@@ -12,7 +12,7 @@
     padding       : 4px 5px;
     text-shadow   : 0 1px 0 #FFFFFF;
     line-height   : 1.4;
-    height        : 29px;
+    height        : 27px;
     color         : #444;
 }
 
@@ -40,3 +40,7 @@
     padding-right:0;
 }
 
+.testdetailsform .x-field-label-cell
+{
+    vertical-align: middle;
+}
