@@ -2,12 +2,13 @@ Ext.define('Fiesta.view.account.SignIn', {
     extend          : 'Ext.window.Window',
     alias           : 'widget.signin',
     width           : 400,
-    height          : 250,
+    height          : 230,
     autoShow        : true,
     title           : 'Sign In',
     layout          : 'fit',
     closeAction     : 'destroy',
     cls             : 'login-window',
+    border          : false,
 
     initComponent: function (params) {
         Ext.apply(this, {
@@ -16,14 +17,14 @@ Ext.define('Fiesta.view.account.SignIn', {
                 {
                     xtype           : 'form',
                     border          : false,
-                    bodyPadding     : 5,
+                    bodyPadding     : 10,
                     url             : '/account/sign_in',
                     standardSubmit  : true,
                     fieldDefaults   : {
-                            msgTarget   : "side"
+                        msgTarget   : "side"
                     },
                     defaults        : {
-                        anchor  : "100%"
+                        anchor  : "90%"
                     },
                     items           : [
                         {
@@ -57,13 +58,14 @@ Ext.define('Fiesta.view.account.SignIn', {
                         },
                         {
                             border      : false,
-                            html        : '<div><ul>'+
-                                          '<li class="third_party facebook"><a href="'+CONFIG.fb_url+'" title="Sign In with Facebook"></a></li>'+
-                                          '<li class="third_party twitter"><a href="/account/connect_twitter" title="Sign In with Twitter"></a></li>'+
-                                          '<li class="third_party google"><a href="/account/connect_google" title="Sign In with Google"></a></li>'+
-                                          '<li class="third_party yahoo"><a href="/account/connect_yahoo" title="Sign In with Yahoo!"></a></li>'+
-                                          '<li class="third_party openid"><a href="/account/connect_openid" title="Sign In with OpenID"></a></li>'+
-                                          '</ul></div>'
+                            xtype       : 'component',
+                            height      : 40,
+                            cls         : 'third-party-auth',
+                            html        : '<a href="'+CONFIG.fb_url+'" title="Sign In with Facebook"><img src="/resource/img/auth_icons/facebook.png"/></a></li>'+
+                                          '<a href="/account/connect_twitter" title="Sign In with Twitter"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
+                                          '<a href="/account/connect_google" title="Sign In with Google"><img src="/resource/img/auth_icons/google.png"/></a></li>'
+//                                          '<li class="third_party"><a href="/account/connect_yahoo" title="Sign In with Yahoo!"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
+//                                          '<li class="third_party"><a href="/account/connect_openid" title="Sign In with OpenID"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
                         }
                     ]
                 }

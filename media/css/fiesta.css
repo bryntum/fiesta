@@ -1,22 +1,8 @@
-body
-{
-}
-
 .x-panel-header-text-container-default,
 .x-tab-inner
 {
     font-weight: normal !important;
     font-size:14px !important;
-}
-
-.x-panel-body-default
-{
-    background:#f3f3f3;
-}
-
-.x-grid-body
-{
-    background:#fff;
 }
 
 .star {
@@ -48,41 +34,6 @@ body
 }
 
 
-li.third_party {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 64px;
-    height: 64px;
-    float: left;
-    margin-left: 5px;
-}
-
-li.third_party a {
-    display: block;
-    width: 64px;
-    height: 64px;
-    font-size: 10px;
-    text-align: center;
-    text-decoration: none;
-    color: #333;
-    text-shadow: 0px 0px 3px #fff;
-}
-
-li.google { background: url(/resource/img/auth_icons/google.png) no-repeat }
-li.microsoft { background: url(/resource/img/auth_icons/microsoft.png) no-repeat }
-li.aol { background: url(/resource/img/auth_icons/aol.png) no-repeat }
-li.yahoo { background: url(/resource/img/auth_icons/yahoo.png) no-repeat }
-li.twitter { background: url(/resource/img/auth_icons/twitter.png) no-repeat }
-li.facebook { background: url(/resource/img/auth_icons/facebook.png) no-repeat }
-li.myspace { background: url(/resource/img/auth_icons/myspace.png) no-repeat }
-li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
-
-
-.addNewBtn {
-
-
-}
 
 .addNewBtn {
     border-color: #126daf;
@@ -90,21 +41,20 @@ li.openid { background: url(/resource/img/auth_icons/openid.png) no-repeat }
 
 /* line 143, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
 .addNewBtn {
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -o-border-radius: 3px;
-    border-radius: 3px;
-    padding: 3px 3px 3px 3px;
-    border-width: 1px;
-    border-style: solid;
-    background-image: none;
-    background-color: #75AB00;
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #75AB00), color-stop(50%, #85BC05), color-stop(51%, #75AB00), color-stop(100%, #75AB00));
-    background-image: -webkit-linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
-    background-image: -moz-linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
-    background-image: -o-linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
-    background-image: linear-gradient(top, #75AB00, #85BC05 50%, #75AB00 51%, #75AB00);
+    font-size: 24px;
+    font-weight: 200;
+    color: #fff;
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+}
+
+.addNewBtn:hover{
+
+}
+
+.addNewBtn .x-btn-inner{
+    font-weight: normal !important;
 }
 
 

@@ -2,10 +2,10 @@ Ext.define('Fiesta.view.testcases.List', {
     extend   : 'Ext.grid.Panel',
     alias    : 'widget.testCasesList',
     requires : ['Fiesta.store.TestCases', 'Fiesta.view.testcases.TestCaseColumn'],
+    cls        : 'testCasesList',
 
     initComponent : function () {
         Ext.apply(this, {
-            cls        : 'testCasesList',
             viewConfig : {
                 getRowClass     : this.getCls,
                 overItemCls     : 'testcase-row-over',

@@ -3,6 +3,18 @@
     position  : relative;
 }
 
+
+.testcase-list-container .x-panel-body-default
+{
+    background:#f3f3f3;
+}
+
+.testcase-list-container .x-grid-body
+{
+    background:#fff;
+}
+
+
 .testCasesList .colHolder {
     width    : 99%;
     float    : left;
