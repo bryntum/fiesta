@@ -78,14 +78,14 @@ Ext.define('Fiesta.view.testcases.Details', {
                             xtype            : 'tagselect',
                             cls              : 'details-tags details-combo',
                             store            : tagsStore,
+                            emptyText        : "Add multiple tags",
                             displayField     : "tag",
                             valueField       : "tag",
                             name             : 'tagsList',
                             queryMode        : 'local',
                             createNewOnEnter : true,
                             createNewOnBlur  : true,
-                            forceSelection   : false,
-                            minChars         : 3
+                            forceSelection   : false
                         },
                         {
                             xtype          : "combo",

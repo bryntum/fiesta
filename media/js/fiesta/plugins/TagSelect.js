@@ -6,38 +6,48 @@ Ext.define('Fiesta.plugins.TagSelect', {
     filterPickList : true,
     delimiter      : ',',
 
-    initComponent: function() {
+
+    onKeyUp: function(e, t) {
         var me = this,
-            typeAhead = me.typeAhead;
+            rawValue = me.inputEl.dom.value;
 
-        if (typeAhead && !me.editable) {
-            Ext.Error.raise('If typeAhead is enabled the combo must be editable: true -- please change one of those settings.');
-        }
-
-        Ext.apply(me, {
-            typeAhead: false
-        });
-
-        me.callParent();
-
-        me.typeAhead = typeAhead;
-
-        me.selectionModel = new Ext.selection.Model({
-            store: me.valueStore,
-            mode: 'MULTI',
-            lastFocused: null,
-            onSelectChange: function(record, isSelected, suppressEvent, commitFn) {
-                commitFn();
+        if (me.preventKeyUpEvent) {
+            e.stopEvent();
+            if ((me.preventKeyUpEvent === true) || (e.getKey() === me.preventKeyUpEvent)) {
+                delete me.preventKeyUpEvent;
             }
-        });
-
-        if (!Ext.isEmpty(me.delimiter) && me.multiSelect) {
-            me.delimiterRegexp = new RegExp(String(me.delimiter).replace(/[$%()*+.?\[\\\]{|}]/g, "\\$&"));
+            return;
         }
+
+        if (me.multiSelect && (me.delimiterRegexp && me.delimiterRegexp.test(rawValue)) ||
+            ((me.createNewOnEnter === true) && e.getKey() == e.ENTER)) {
+            rawValue = Ext.Array.clean(rawValue.split(me.delimiterRegexp));
+//            Ext.each(rawValue, function(value, index) {
+//                rawValue[index] = value.trim();
+//            });
+
+            me.inputEl.dom.value = '';
+            me.setValue(me.valueStore.getRange().concat(rawValue));
+            me.inputEl.focus();
+        }
+        me.callParent([e,t]);
     },
 
-    setValue: function(value, doSelect, skipLoad) {
+    doRawQuery: function() {
+        var me = this,
+            rawValue = me.inputEl.dom.value;
 
+        if (me.multiSelect) {
+            rawValue = rawValue.split(me.delimiter).pop();
+        }
+
+        rawValue = rawValue.trim();
+
+        this.doQuery(rawValue, false, true);
+    },
+
+
+    setValue: function(value, doSelect, skipLoad) {
 
         var me = this,
             valueStore = me.valueStore,
