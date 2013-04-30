@@ -146,8 +146,8 @@
 
 .siesta-domcontainer .x-panel-body
 {
-    background-color: #eee;
-    background-image: linear-gradient(#fafafa 2px, transparent 2px), linear-gradient(90deg, #fafafa 2px, transparent 2px), linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+    background-color: #f5f5f5;
+    background-image: linear-gradient(#fff 2px, transparent 2px), linear-gradient(90deg, #fff 2px, transparent 2px), linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
     background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
     background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 }
@@ -157,6 +157,11 @@
     content : 'RUN THE TEST TO SEE IT HERE';
     color: #666;
     font-size:9px;
+}
+
+.tr-iframe-wrapper iframe.tr-iframe
+{
+    background-color: transparent;
 }
 
 

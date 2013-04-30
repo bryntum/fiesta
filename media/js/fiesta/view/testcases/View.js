@@ -252,6 +252,9 @@ Ext.define('Fiesta.view.testcases.View', {
             var pageUrl         = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
 
+            // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
+            this.down('[slot=domContainer]').expand();
+
             harness.startSingle({
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
@@ -263,7 +266,9 @@ Ext.define('Fiesta.view.testcases.View', {
             }, function () {
                 // HACK: Need to reset scroll to 0,0
                 var el = me.resultPanel.getIFrameWrapper();
-                el.scrollLeft = el.scrollTop = 0;
+                if (el) {
+                    el.scrollLeft = el.scrollTop = 0;
+                }
                 runButton.setIconCls('');
             });
         } else {
