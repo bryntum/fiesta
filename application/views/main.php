@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/media/css/test.details.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/test.view.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/test.list.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/loginwindow.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
     <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-fiesta-all.css">

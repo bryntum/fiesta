@@ -1,16 +1,16 @@
 Ext.define('Fiesta.view.account.SignIn', {
-    extend      : 'Ext.window.Window',
-    alias       : 'widget.signin',
+    extend          : 'Ext.window.Window',
+    alias           : 'widget.signin',
+    width           : 400,
+    height          : 250,
+    autoShow        : true,
+    title           : 'Sign In',
+    layout          : 'fit',
+    closeAction     : 'destroy',
+    cls             : 'login-window',
 
     initComponent: function (params) {
         Ext.apply(this, {
-            width           : 400,
-            height          : 250,
-            autoShow        : true,
-            modal           : true,
-            title           : 'Sign In',
-            layout          : 'fit',
-            closeAction     : 'destroy',
 
             items           : [
                 {
