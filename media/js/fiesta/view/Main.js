@@ -2,7 +2,7 @@ Ext.define('Fiesta.view.Main', {
     extend              : 'Ext.tab.Panel',
 
     alias               : 'widget.mainView',
-    
+    requires            : 'Fiesta.view.HomePanel',
     
     stateId             : 'tabs',
     stateful            : true,
@@ -14,15 +14,14 @@ Ext.define('Fiesta.view.Main', {
     
 
     initComponent : function () {
-        Ext.setGlyphFontFamily('Pictos');
-        
+
         Ext.apply(this, {
             mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer(),
             
             items       : [
                 {
-                    xtype : 'panel',
-                    glyph : 72
+                    xtype : 'homepanel',
+                    iconCls : 'icon-home'
                 }
             ],
             plugins     : [

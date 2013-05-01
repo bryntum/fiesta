@@ -20,7 +20,7 @@ Ext.define("Fiesta.model.TestCase", {
     ],
     
     getPreload : function () {
-        var framework     = this.getFramework();;
+        var framework     = this.getFramework();
         return framework ? framework.getPreload() : [];
     },
 
