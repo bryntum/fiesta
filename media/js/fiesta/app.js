@@ -47,6 +47,10 @@ Ext.application({
         window.location.replace('/account/sign_up');    
     },
 
+    signIn: function () {
+        var signinWin = new Fiesta.view.account.SignIn;
+    },
+
     getMainView: function () {
         var tabsQ = Ext.ComponentQuery.query('mainView');
         return tabsQ[0];

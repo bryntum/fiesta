@@ -359,7 +359,10 @@ Ext.define('Fiesta.DataModel', {
         });
     },
 
-    rate : function (record, dir) {
+    rate : function (params, callback, errback) {
+        var record = params.record,
+            dir    = params.dir;
+
         if (FIESTA.isSignedIn()) {
             var params = {
                 userId     : CONFIG.userId,
@@ -367,13 +370,6 @@ Ext.define('Fiesta.DataModel', {
                 direction  : dir
             };
 
-            if (dir == 'up') {
-                record.set('rating', record.get('rating') + 1);
-
-            }
-            else {
-                record.set('rating', record.get('rating') - 1);
-            }
 
             Ext.Ajax.request({
                 url     : this.updateRatingUrl,
@@ -383,59 +379,66 @@ Ext.define('Fiesta.DataModel', {
                         var o = Ext.decode(response.responseText);
                     }
                     catch (e) {
-                        this.fireEvent('requestfailed', this, {
-                            url     : this.url,
-                            message : 'Server message:' + response.responseText
-                        });
+                        if (errback && errback(response) !== false) {
 
-                        if (dir == 'up') {
-                            record.set('rating', record.get('rating') - 1);
+                            this.fireEvent('requestfailed', this, {
+                                url     : this.url,
+                                message : 'Server message:' + response.responseText
+                            });
                         }
-                        else {
-                            record.set('rating', record.get('rating') + 1);
-                        }
-
 
                         return false;
                     }
 
                     if (true === o.success) {
+
+                        if (dir == 'up') {
+                            record.set('rating', record.get('rating') + 1);
+
+                        }
+                        else {
+                            record.set('rating', record.get('rating') - 1);
+                        }
+
+                        record.set('voted', true);
+
+                        if (callback && callback(record) !== false) {
+
+                            this.fireEvent('requestsuccess', this, {
+                                url     : this.url,
+                                message : 'Successfully loaded!'
+                            });
+                        }
+
+
                         return true;
                     }
                     else {
-                        this.fireEvent('requestfailed', this, {
-                            url     : this.url,
-                            message : 'Server message:' + o.errorMsg
-                        });
+                        if (errback && errback(response) !== false) {
 
-                        if (dir == 'up') {
-                            record.set('rating', record.get('rating') - 1);
+                            this.fireEvent('requestfailed', this, {
+                                url     : this.url,
+                                message : 'Server message:' + o.errorMsg
+                            });
                         }
-                        else {
-                            record.set('rating', record.get('rating') + 1);
-                        }
-
                         return false;
                     }
                 },
                 failure : function (response) {
+                    if (errback && errback(response) !== false) {
 
-                    this.fireEvent('requestfailed', this, {
-                        url     : this.url,
-                        message : 'Failed to update rating!'
-                    });
-
-                    if (dir == 'up') {
-                        record.set('rating', record.get('rating') - 1);
+                        this.fireEvent('requestfailed', this, {
+                            url     : this.url,
+                            message : 'Failed to update rating!'
+                        });
                     }
-                    else {
-                        record.set('rating', record.get('rating') + 1);
-                    }
-
                 },
                 scope   : this
             });
 
+        }
+        else {
+            FIESTA.signIn();
         }
     },
 

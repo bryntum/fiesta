@@ -33,10 +33,17 @@ Ext.define('Fiesta.view.testcases.View', {
                 }
             },
             {
-                xtype   : 'displayfield',
-                width   : 20,
-                cls     : 'vote-container',
-                value    : '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">2</dd><dd class="arrow down" title="Vote down"></dd></dl>'
+                xtype           : 'displayfield',
+                width           : 20,
+                cls             : 'vote-container',
+                value           : this.testCaseModel.get('rating'),
+                renderer        : function (value) {
+                    var result = '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">'
+                                    +value+
+                                '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
+                    return result;
+                },
+                disabled         : this.testCaseModel.get('voted')
             },
 
             { xtype : 'tbseparator' },
@@ -285,20 +292,32 @@ Ext.define('Fiesta.view.testcases.View', {
         }
 
         var voteCt = this.el.down('.vote-container');
+
         voteCt.on({
             click       : this.onVoteClick,
             delegate    : '.arrow',
             scope       : this
         });
+
     },
 
     onVoteClick : function(e, t) {
-        var record = this.testCaseModel;
+        var record = this.testCaseModel,
+            me = this;
 
-        if (t.className.match('up')) {
-            Fiesta.DataModel.rate(record, 'up');
-        } else {
-            Fiesta.DataModel.rate(record, 'down');
+        var updateRating = function (record) {
+            var ratingField = me.getDockedItems('toolbar[dock="top"]')[0].down('displayfield[cls="vote-container"]');
+            me.testCaseModel = record;
+            ratingField.setValue(record.get('rating'));
+            ratingField.disable();
+
+        };
+        if(!record.get('voted')) {
+            if (t.className.match('up')) {
+                Fiesta.DataModel.rate({record: record, dir: 'up'}, updateRating);
+            } else {
+                Fiesta.DataModel.rate({record: record, dir: 'down'}, updateRating);
+            }
         }
     },
 

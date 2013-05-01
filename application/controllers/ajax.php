@@ -245,16 +245,17 @@ class Ajax extends CI_Controller {
         $slug = '';
         $resultRec = '';
 
+        $testCaseId = $this->input->post('id');
+        $name = $this->input->post('name');
+        $frameworkId = $this->input->post('frameworkId');
+        $private = $this->input->post('private');
+        $code = $this->input->post('code');
+        $userId = $this->session->userdata('account_id');
+        $tagsList = $this->input->post('tagsList');
+        $hostPageUrl = $this->input->post('hostPageUrl');
+
         if ($this->authentication->is_signed_in()) {
 
-            $testCaseId = $this->input->post('id');
-            $name = $this->input->post('name');
-            $frameworkId = $this->input->post('frameworkId');
-            $private = $this->input->post('private');
-            $code = $this->input->post('code');
-            $userId = $this->session->userdata('account_id');
-            $tagsList = $this->input->post('tagsList');
-            $hostPageUrl = $this->input->post('hostPageUrl');
 
             if($this->isOwner($testCaseId)) {
 
@@ -284,10 +285,28 @@ class Ajax extends CI_Controller {
         }        
 
         else {
-            $errorMsg = 'Please login!';
+
+            $testCaseId = $this->testCases_model->createTmp(array(
+                'name' => $name,
+                'session_id' => $this->session->userdata('session_id'),
+                'framework_id' => $frameworkId,
+                'private' => $private,
+                'code' => $code,
+                'tags_list' => $tagsList,
+                'hostPageUrl' => $hostPageUrl,
+                'tmpSavedOriginalId' => $testCaseId
+            ));
+
+            $errorMsg = 'Please login!<br/> If you were logged in before updating test, changess will be resoted.';
         }
 
-        echo json_encode(array('slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
+        echo json_encode(array(
+            'slug' => $slug,
+            'session_id' => $this->session->userdata('session_id'),
+            'result' => $resultRec,
+            'errorMsg' => $errorMsg,
+            'success' => $success
+        ));
 
 
     }
@@ -409,9 +428,13 @@ class Ajax extends CI_Controller {
         $params = $this->input->post(NULL,TRUE);
 
         if ($this->authentication->is_signed_in() && !empty($params['testCaseId']) && !empty($params['direction'])) {
-            $this->testCases_model->updateRating($params['testCaseId'], $params['direction']);
-            $success = true;
-            $error='';
+            if($this->testCases_model->updateRating($params['testCaseId'], $this->session->userdata('account_id'), $params['direction'])) {
+                $success = true;
+                $error='';
+            }
+            else {
+                $error='You have already rated this test!';
+            }
         }
 
         echo json_encode(array('success' => $success, 'errorMsg' => $error));

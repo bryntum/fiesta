@@ -76,6 +76,12 @@ Ext.define('Fiesta.view.account.SignIn', {
                     action  : 'signin',
                     handler : this.processSignin,
                     scope   : this
+                },
+                {
+                    text    : 'Sign Up',
+                    action  : 'signin',
+                    href    : '/account/sign_up',
+                    hrefTarget : '_self'
                 }
 
             ]

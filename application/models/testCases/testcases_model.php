@@ -10,8 +10,9 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId,$userId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
             ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
+            ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
             ->where('testCases.id', $testCaseId);
 
         $testCase = $this->db->get('testCases')->row();
@@ -27,8 +28,9 @@ class Testcases_model extends CI_Model {
     function getBySlug($slug,$userId)
     {
         
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
             ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
+            ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
             ->where('testCases.slug', $slug);
 
         $testCase = $this->db->get('testCases')->row();
@@ -133,11 +135,12 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
             ->distinct()
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = tc.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
+            ->join('testCases_votes as tv', "tv.testCase_id = tc.id AND tv.user_id = ".$userId, 'left')
             ->where($params['whereClause']);
 
         if(isset($params['tagsList']) && count($params['tagsList']) > 0) {
@@ -350,17 +353,35 @@ class Testcases_model extends CI_Model {
         $assignedTestCase = array();
 
         foreach($tpmTestCases as $tpmTestCase) {
+             if($tpmTestCase->tmpSavedOriginalId != 0) {
+                 $originalTestCase = $this->getById($tpmTestCase->tmpSavedOriginalId,$userId);
+                 if($originalTestCase->owner_id == $userId) {
+                     $this->update($tpmTestCase->tmpSavedOriginalId, array(
+                         'name' => $tpmTestCase->name,
+                         'framework_id' => $tpmTestCase->framework_id,
+                         'private' => $tpmTestCase->private,
+                         'code' => $tpmTestCase->code,
+                         'tagsList' => $tpmTestCase->tags_list,
+                         'owner_id' => $originalTestCase->owner_id
+                     ));
+                 }
+             }
+             else {
+                 $inserted_id = $this->create(array(
+                    'name' => $tpmTestCase->name,
+                    'owner_id' => $userId,
+                    'framework_id' => $tpmTestCase->framework_id,
+                    'private' => $tpmTestCase->private,
+                    'code' => $tpmTestCase->code,
+                    'tagsList' => $tpmTestCase->tags_list
+                ));
 
-             $inserted_id = $this->create(array(
-                'name' => $tpmTestCase->name,
-                'owner_id' => $userId,
-                'framework_id' => $tpmTestCase->framework_id,
-                'private' => $tpmTestCase->private,
-                'code' => $tpmTestCase->code,
-                'tagsList' => $tpmTestCase->tags_list
-            ));
+                $assignedTestCase[] = $inserted_id.'-'.$this->makeSlug($tpmTestCase->name);
+             }
 
-            $assignedTestCase[] = $inserted_id.'-'.$this->makeSlug($tpmTestCase->name);
+            $this->db->where('id', $tpmTestCase->id);
+            $this->db->delete('testCases_tmp');
+            
         }
 
         return $assignedTestCase;
@@ -375,20 +396,30 @@ class Testcases_model extends CI_Model {
             ->result();
     }
 
-    function updateRating ($id, $dir) {
-        $this->db->where('id', $id);
+    function updateRating ($id, $userId, $dir) {
 
-        if($dir == 'up') {
-            $this->db->set('rating','`rating`+1',FALSE);
+        $testCaseToUp = $this->getById($id,$userId);
+
+        if(!$testCaseToUp->voted) {
+
+            $this->db->where('id', $id);
+
+            if($dir == 'up') {
+                $this->db->set('rating','`rating`+1',FALSE);
+            }
+            else {
+                $this->db->set('rating','`rating`-1', FALSE);
+            }
+
+            $this->db->update('testCases');
+            $this->db->insert('testCases_votes', array('testCase_id' => $id, 'user_id' => $userId, 'voted' => 1));
+
+            return true;
         }
         else {
-            $this->db->set('rating','`rating`-1', FALSE);
+            return false;
         }
 
-
-        $this->db->update('testCases');
-
-        return true;
     }
 } 
 ?>

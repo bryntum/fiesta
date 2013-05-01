@@ -143,6 +143,12 @@
     line-height: 17px;
 }
 
+.x-item-disabled .up, .x-item-disabled .down, .x-item-disabled .up:hover, .x-item-disabled .down:hover
+{
+    cursor: default !important;
+    border-bottom-color:#666 !important;
+    border-top-color: #666 !important;
+}
 
 .siesta-domcontainer .x-panel-body
 {

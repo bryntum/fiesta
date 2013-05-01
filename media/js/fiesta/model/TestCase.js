@@ -13,6 +13,7 @@ Ext.define("Fiesta.model.TestCase", {
         'private',
         'hostPageUrl',
         {name: 'starred', type: 'bool'},
+        {name: 'voted', type: 'bool'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
         {name: 'rating', type: 'int'},
         {name: 'originalTestId', type: 'int'}

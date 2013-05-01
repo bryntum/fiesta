@@ -133,7 +133,7 @@ Ext.define('Fiesta.view.Main', {
         }
         // Updating testCase's tab if it was found in currently opened tabs
         else {
-            activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name'), 15));
+            activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15));
             activeTab.testCaseModel = testCaseModel;
             activeTab.onTabCreate(testCaseModel);
             activeTab.down('[action=changeFavorites]').setIconCls(
