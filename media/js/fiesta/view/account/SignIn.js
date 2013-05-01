@@ -91,6 +91,7 @@ Ext.define('Fiesta.view.account.SignIn', {
     },
 
     processSignin: function () {
+        this.el.mask('Please wait...');
         this.down('form').getForm().submit();
     },
 
