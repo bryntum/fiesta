@@ -428,12 +428,17 @@ class Ajax extends CI_Controller {
         $params = $this->input->post(NULL,TRUE);
 
         if ($this->authentication->is_signed_in() && !empty($params['testCaseId']) && !empty($params['direction'])) {
-            if($this->testCases_model->updateRating($params['testCaseId'], $this->session->userdata('account_id'), $params['direction'])) {
-                $success = true;
-                $error='';
+            if(!$this->isOwner($params['testCaseId'])) {
+                if($this->testCases_model->updateRating($params['testCaseId'], $this->session->userdata('account_id'), $params['direction'])) {
+                    $success = true;
+                    $error='';
+                }
+                else {
+                    $error='You have already rated this test!';
+                }
             }
             else {
-                $error='You have already rated this test!';
+                $error='You can\'t rate your own tests!';
             }
         }
 

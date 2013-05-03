@@ -24,6 +24,12 @@
             fb_url              : '<?php echo $fb_url?>'
         };
 
+        DATA =  {
+            totalTests          : '<?php echo $totalTests?>',
+            totalUsers          : '<?php echo $totalUsers?>',
+            onlineUsers         : '<?php echo $onlineUsers?>'
+        }
+
         var FIESTA;
         Ext.Loader.setPath('Ext.ux','/media/js/ext/ux');
     </script>

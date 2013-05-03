@@ -10,7 +10,8 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId,$userId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+            ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
             ->where('testCases.id', $testCaseId);
@@ -28,7 +29,8 @@ class Testcases_model extends CI_Model {
     function getBySlug($slug,$userId)
     {
         
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+            ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
             ->where('testCases.slug', $slug);
@@ -381,7 +383,7 @@ class Testcases_model extends CI_Model {
 
             $this->db->where('id', $tpmTestCase->id);
             $this->db->delete('testCases_tmp');
-            
+
         }
 
         return $assignedTestCase;

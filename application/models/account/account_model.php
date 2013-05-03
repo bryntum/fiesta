@@ -235,6 +235,11 @@ class Account_model extends CI_Model {
 		$this->db->update('a3m_account', array('suspendedon' => NULL), array('id' => $account_id));
 	}
 
+    function countUsers () {
+        $this->db->from('a3m_account');
+        return $this->db->count_all_results();
+    }
+
 }
 
 

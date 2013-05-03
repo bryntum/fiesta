@@ -9,6 +9,7 @@ class Main extends CI_Controller {
         $this->load->helper(array('language', 'url', 'form', 'account/ssl'));
         $this->load->library(array('account/authentication', 'account/facebook_lib'));
         $this->load->model(array('account/account_model'));
+        $this->load->model(array('testCases/testCases_model'));
 
     }
 
@@ -16,20 +17,25 @@ class Main extends CI_Controller {
     {
         maintain_ssl();
 
+        $totalTests = $this->testCases_model->getAll(array('getTotal' => true));
+        $totalUsers = $this->account_model->countUsers();
 
 
         if ($this->authentication->is_signed_in())
         {
 
             $account = $this->account_model->get_by_id($this->session->userdata('account_id'));
+
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => $this->session->userdata('account_id'),
                 'account' => $account,
                 'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
-                ))
-
+                )),
+                'totalTests' => $totalTests,
+                'onlineUsers' => 2,
+                'totalUsers' => $totalUsers
             );
             
         }
@@ -40,7 +46,10 @@ class Main extends CI_Controller {
                 'userId' => 'guest',
                 'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
-                ))
+                )),
+                'totalTests' => $totalTests,
+                'onlineUsers' => 2,
+                'totalUsers' => $totalUsers
 
             );
             
