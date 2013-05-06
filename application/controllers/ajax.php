@@ -434,7 +434,7 @@ class Ajax extends CI_Controller {
                     $error='';
                 }
                 else {
-                    $error='You have already rated this test!';
+                    $error='You can\'t vote up/down twice!';
                 }
             }
             else {

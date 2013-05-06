@@ -396,13 +396,12 @@ Ext.define('Fiesta.DataModel', {
 
                         if (dir == 'up') {
                             record.set('rating', record.get('rating') + 1);
-
+                            record.set('voted', 1);
                         }
                         else {
                             record.set('rating', record.get('rating') - 1);
+                            record.set('voted', -1);
                         }
-
-                        record.set('voted', true);
 
                         if (callback && callback(record) !== false) {
 

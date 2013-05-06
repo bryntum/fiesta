@@ -43,7 +43,7 @@ Ext.define('Fiesta.view.testcases.View', {
                                 '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
                     return result;
                 },
-                disabled         : this.testCaseModel.get('voted')
+                disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId ? true : false
             },
 
             { xtype : 'tbseparator' },
@@ -309,10 +309,20 @@ Ext.define('Fiesta.view.testcases.View', {
             var ratingField = me.getDockedItems('toolbar[dock="top"]')[0].down('displayfield[cls="vote-container"]');
             me.testCaseModel = record;
             ratingField.setValue(record.get('rating'));
-            ratingField.disable();
+
+            if(me.testCaseModel.get('voted') == 0) {
+                ratingField.disable();
+            }
 
         };
-        if(!record.get('voted')) {
+        console.log(record.get('voted'));
+        if(record.get('voted') > 0 && t.className.match('up')) {
+            Ext.Msg.alert('Error', 'You have already voted up for this test, you can only vote down!');
+        }
+        else if(record.get('voted') < 0 && t.className.match('down')) {
+            Ext.Msg.alert('Error', 'You have already voted down for this test, you can only vote up!');
+        }
+        else {
             if (t.className.match('up')) {
                 Fiesta.DataModel.rate({record: record, dir: 'up'}, updateRating);
             } else {

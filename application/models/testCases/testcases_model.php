@@ -10,7 +10,8 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId,$userId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+            ->select('IFNULL(tv.voted, 0) AS voted', false)
             ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
@@ -29,7 +30,8 @@ class Testcases_model extends CI_Model {
     function getBySlug($slug,$userId)
     {
         
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+            ->select('IFNULL(tv.voted, 0) AS voted', false)
             ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
@@ -106,7 +108,7 @@ class Testcases_model extends CI_Model {
         }
 
         if(isset($params['page']) && isset($params['pageSize'])) {
-                    
+
             $query = $this->db->limit($params['pageSize'], $offset)->get();
         }
         else {
@@ -137,7 +139,8 @@ class Testcases_model extends CI_Model {
             $offset = ($params['page'] - 1) * $params['pageSize'];
         }
         
-        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred, tv.voted IS NOT NULL as voted')
+        $this->db->select('tc.*, tc.name as name, tc.created_at as created_at, acc.username as ownerName, tc.owner_id as ownerId, tc.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+            ->select('IFNULL(tv.voted, 0) AS voted', false)
             ->distinct()
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')
@@ -401,20 +404,28 @@ class Testcases_model extends CI_Model {
     function updateRating ($id, $userId, $dir) {
 
         $testCaseToUp = $this->getById($id,$userId);
+        $voted = 0;
 
-        if(!$testCaseToUp->voted) {
+        if(($testCaseToUp->voted < 0 && $dir == 'up') || ($testCaseToUp->voted > 0 && $dir == 'down') || !$testCaseToUp->voted) {
 
             $this->db->where('id', $id);
 
             if($dir == 'up') {
                 $this->db->set('rating','`rating`+1',FALSE);
+                $voted = 1;
             }
             else {
                 $this->db->set('rating','`rating`-1', FALSE);
+                $voted = -1;
             }
 
             $this->db->update('testCases');
-            $this->db->insert('testCases_votes', array('testCase_id' => $id, 'user_id' => $userId, 'voted' => 1));
+
+            $this->db->where('testCase_id', $id);
+            $this->db->where('user_id', $userId);
+            $this->db->delete('testCases_votes');
+
+            $this->db->insert('testCases_votes', array('testCase_id' => $id, 'user_id' => $userId, 'voted' => $voted));
 
             return true;
         }
