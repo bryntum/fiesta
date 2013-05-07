@@ -19,6 +19,7 @@ class Main extends CI_Controller {
 
         $totalTests = $this->testCases_model->getAll(array('getTotal' => true));
         $totalUsers = $this->account_model->countUsers();
+        $onlineUsers = $this->account_model->getOnlineUsers($this->session->_get_time());
 
 
         if ($this->authentication->is_signed_in())
@@ -34,7 +35,7 @@ class Main extends CI_Controller {
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
                 )),
                 'totalTests' => $totalTests,
-                'onlineUsers' => 2,
+                'onlineUsers' => $onlineUsers,
                 'totalUsers' => $totalUsers
             );
             
@@ -48,7 +49,7 @@ class Main extends CI_Controller {
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
                 )),
                 'totalTests' => $totalTests,
-                'onlineUsers' => 2,
+                'onlineUsers' => $onlineUsers,
                 'totalUsers' => $totalUsers
 
             );

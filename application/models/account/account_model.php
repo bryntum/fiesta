@@ -240,6 +240,17 @@ class Account_model extends CI_Model {
         return $this->db->count_all_results();
     }
 
+    function getOnlineUsers ($now = 0) {
+
+        if($now == 0) {
+            $now = time();
+        }
+
+        $this->db->where('last_activity >', $now - 60 * 10);
+        $this->db->from('ci_session');
+        return $this->db->count_all_results();
+    }
+
 }
 
 
