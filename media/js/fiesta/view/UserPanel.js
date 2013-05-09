@@ -17,8 +17,10 @@ Ext.define('Fiesta.view.UserPanel', {
                 } : {
                     xtype : 'button',
                     text  : CONFIG.userName,
+                    cls   : 'user-button',
+                    iconCls  : 'noavatar', // TODO load somehow
                     menu  : {
-                        frame : true,
+                        plain : true,
                         items : [
                             {
                                 text       : 'Profile',
@@ -27,14 +29,14 @@ Ext.define('Fiesta.view.UserPanel', {
 
                             },
                             {
-                                text       : 'Setings',
+                                text       : 'Settings',
                                 href       : '/account/account_settings',
                                 hrefTarget : '_self'
 
                             },
                             '-',
                             {
-                                text       : 'Logout',
+                                text       : 'Log out',
                                 href       : '/account/sign_out',
                                 hrefTarget : '_self'
 

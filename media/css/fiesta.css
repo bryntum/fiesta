@@ -161,3 +161,26 @@ dl, dd, dt {
     font-size    : 2em;
     color        : #999;
 }
+
+.user-button
+{
+    background: none;
+    border:none;
+}
+
+.user-button .x-btn-arrow
+{
+    background-image:url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
+}
+
+.user-button .x-btn-inner
+{
+    color: #fff;
+    padding-right: 4px !important;
+}
+
+.noavatar
+{
+    background: url(../img/user.png) no-repeat left center;
+}
+
