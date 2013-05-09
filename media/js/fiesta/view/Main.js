@@ -105,23 +105,36 @@ Ext.define('Fiesta.view.Main', {
         var tabs = this,
             tabExist = false,
             newTabId = testCaseModel.get('id'),
+            tempTabs = 0,
+            newTestTitle = 'New test',
             activeTab = {};
 
 
         //Searching for tab with id passed in testCaseModel
-        tabs.items.each(function (tab) {
-            if (tab.testCaseModel && tab.testCaseModel.get('id') == newTabId) {
-                tabExist = true;
-                activeTab = tab;
-                return false;
-            }
-        });
-
+        if(!testCaseModel.phantom) {
+            tabs.items.each(function (tab) {
+                if (tab.testCaseModel && tab.testCaseModel.get('id') == newTabId) {
+                    tabExist = true;
+                    activeTab = tab;
+                    return false;
+                }
+            });
+        }
 
         // Creating new tab for testCase if no tab with the same id exists
         if (!tabExist) {
+            tabs.items.each(function (tab) {
+                if(tab.testCaseModel && isNaN(tab.testCaseModel.get('id'))) {
+                    tempTabs += 1;
+                }
+            });
+
+            if(tempTabs > 0) {
+                newTestTitle += ' '+tempTabs;
+            }
+
             var newTab = new Fiesta.view.testcases.View({
-                title           : Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15),
+                title           : Ext.String.ellipsis(testCaseModel.get('name') || newTestTitle, 15),
                 testCaseModel   : testCaseModel,
                 mouseVisualizer : this.mouseVisualizer
             });

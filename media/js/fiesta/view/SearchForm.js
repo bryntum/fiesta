@@ -157,22 +157,25 @@ Ext.define("Fiesta.view.SearchForm", {
         var tabs = FIESTA.getMainView(),
             tabExist = false;
 
-        tabs.items.each(function (tab) {
-            if (tab.testCaseModel && tab.testCaseModel.phantom) {
-                tabExist = true;
-                FIESTA.getMainView().setActiveTab(tab);
-                return false;
-            }
-        });
-        if(!tabExist) {
+//        tabs.items.each(function (tab) {
+//            if (tab.testCaseModel && tab.testCaseModel.phantom) {
+//                tabExist = true;
+//                FIESTA.getMainView().setActiveTab(tab);
+//                return false;
+//            }
+//        });
+//        if(!tabExist) {
             var test = new Fiesta.model.TestCase(Ext.apply(config || {}, {
                 ownerId     : CONFIG.userId,
                 ownerName   : CONFIG.userName,
-                tags        : []
+                tags        : [],
+                id          : 'tmp-'+Ext.id()
             }));
 
+            test.phantom = true;
+
             FIESTA.getMainView().activateTabFor(test);
-        }
+//        }
 
 
 
