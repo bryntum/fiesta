@@ -48,6 +48,9 @@ Ext.define("Fiesta.model.TestCase", {
                     this.get('code') && JSHINT(this.get('code'), CONFIG.LINT_SETTINGS);
 
         return valid;
-    }
+    },
 
+    getTagnames : function(separator) {
+        return Ext.Array.map(this.get('tags'), function(tag) { return tag.tag; })
+    }
 });
