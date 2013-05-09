@@ -129,11 +129,12 @@ dl, dd, dt {
 }
 
 .homepanel h2 {
-    height     : 20%;
+    background-color       : rgba(255, 255, 255, 0.5);
     color      : #666;
     font-size  : 3em;
-    margin-top : 30px;
+    padding    : 30px 0;
     text-align : center;
+    margin     : 0;
 }
 
 .homepanel .logo-ct {
@@ -143,8 +144,15 @@ dl, dd, dt {
     clear      : both;
 }
 
+
+.homepanel .x-panel-body{
+    background : url(../img/siestalogo.png) no-repeat center center;
+    background-size:contain;
+}
+
+
 .homepanel .footer {
-    background  : #ededed;
+    background-color       : rgba(200, 200, 200, 0.5);
     position    : absolute;
     bottom      : 0;
     left        : 0;
@@ -159,7 +167,7 @@ dl, dd, dt {
     border-right : 1px solid #ddd;
     text-align   : center;
     font-size    : 2em;
-    color        : #999;
+    color        : #555;
 }
 
 .user-button
