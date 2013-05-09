@@ -372,7 +372,7 @@ class Testcases_model extends CI_Model {
                  }
              }
              else {
-                 $inserted_id = $this->create(array(
+                 $insertedTest = $this->create(array(
                     'name' => $tpmTestCase->name,
                     'owner_id' => $userId,
                     'framework_id' => $tpmTestCase->framework_id,
@@ -381,7 +381,8 @@ class Testcases_model extends CI_Model {
                     'tagsList' => $tpmTestCase->tags_list
                 ));
 
-                $assignedTestCase[] = $inserted_id.'-'.$this->makeSlug($tpmTestCase->name);
+                $assignedTestCase[] = $insertedTest->id.'-'.$this->makeSlug($tpmTestCase->name);
+
              }
 
             $this->db->where('id', $tpmTestCase->id);

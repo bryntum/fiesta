@@ -226,8 +226,9 @@ Ext.define('Fiesta.view.testcases.View', {
 
     onTabActivate : function () {
         var me = this;
-
-        FIESTA.makeHistory(this.testCaseModel.get('slug'));
+        if(!this.testCaseModel.phantom) {
+            FIESTA.makeHistory(this.testCaseModel.get('slug'));
+        }
 
         if (this.mouseVisualizer) this.mouseVisualizer.setHarness(this.harness)
 
