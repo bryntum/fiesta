@@ -272,11 +272,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 hostPageUrl     : pageUrl,
                 preload         : pageUrl ? null : testCaseModel.getPreload()
             }, function () {
-                // HACK: Need to reset scroll to 0,0
-                var el = me.resultPanel.getIFrameWrapper();
-                if (el) {
-                    el.scrollLeft = el.scrollTop = 0;
-                }
                 runButton.setIconCls('');
             });
         } else {

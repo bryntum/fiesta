@@ -7594,11 +7594,13 @@ Role('Siesta.Test.More', {
             interval                    = interval || this.waitForPollInterval
             timeout                     = timeout || this.waitForTimeout
             
+            var isWaitingForTime        = this.typeOf(method) == 'Number'
+            
             // this async frame not supposed to fail, because its delayed to `timeout + 3 * interval`
             // failure supposed to be generated in the "pollFunc" and this async frame to be closed
             // however, in IE it happens that async frame may end earlier than failure from "pollFunc"
             // in such case we report same error as in "pollFunc"
-            var async       = this.beginAsync(timeout + 3 * interval, function () {
+            var async       = this.beginAsync((isWaitingForTime ? method : timeout) + 3 * interval, function () {
                 originalClearTimeout(pollTimeout)
                 
                 me.finalizeWaiting(waitAssertion, false, 'Waited too long for: ' + description, {
@@ -7618,7 +7620,7 @@ Role('Siesta.Test.More', {
                 originalClearTimeout(pollTimeout)
             }, null, { single : true })
 
-            if (this.typeOf(method) == 'Number') {
+            if (isWaitingForTime) {
                 pollTimeout = originalSetTimeout(function() {
                     isDone      = true
                     
@@ -8084,7 +8086,7 @@ Class('Siesta.Test.BDD.Expectation', {
                 descTpl             : 'Expect {got} {!not}to be {need}',
                 assertionName       : 'expect(got).toBe(need)',
                 need                : expectedValue,
-                needDesc            : this.isNot ? 'Need, not' : 'Need'
+                needDesc            : this.isNot ? 'Need not' : 'Need'
             })
         },
         
@@ -8099,10 +8101,10 @@ Class('Siesta.Test.BDD.Expectation', {
          */
         toEqual : function (expectedValue) {
             this.process(this.t.compareObjects(this.value, expectedValue, true), {
-                descTpl             : 'Expect {got} {!not}to equal to {need}',
+                descTpl             : 'Expect {got} {!not}to be equal to {need}',
                 assertionName       : 'expect(got).toEqual(need)',
                 need                : expectedValue,
-                needDesc            : this.isNot ? 'Need, not' : 'Need'
+                needDesc            : this.isNot ? 'Need not' : 'Need'
             })
         },
         
@@ -8115,7 +8117,7 @@ Class('Siesta.Test.BDD.Expectation', {
                 descTpl             : 'Expect {got} {!not}to be null',
                 assertionName       : 'expect(got).toBeNull()',
                 need                : null,
-                needDesc            : this.isNot ? 'Need, not' : 'Need'
+                needDesc            : this.isNot ? 'Need not' : 'Need'
             })
         },
         
@@ -8130,7 +8132,7 @@ Class('Siesta.Test.BDD.Expectation', {
                 descTpl             : 'Expect {got} {!not}to be NaN',
                 assertionName       : 'expect(got).toBeNaN()',
                 need                : NaN,
-                needDesc            : this.isNot ? 'Need, not' : 'Need'
+                needDesc            : this.isNot ? 'Need not' : 'Need'
             })
         },
 
@@ -8193,7 +8195,7 @@ Class('Siesta.Test.BDD.Expectation', {
                 descTpl             : 'Expect {got} {!not}to match {need}',
                 assertionName       : 'expect(got).toMatch(need)',
                 need                : regexp,
-                needDesc            : this.isNot ? 'Need, not matching' : 'Need matching'
+                needDesc            : this.isNot ? 'Need not matching' : 'Need matching'
             })
         },
         
@@ -22355,14 +22357,16 @@ Role('Siesta.Test.Simulate.Mouse', {
             var a           = this.beginAsync(),
                 document    = this.global.document,
                 me          = this,
-                lastOverEl,
+                // Remember last visited element, since a previous action may have changed the DOM
+                // which possibly should trigger a mouseout event
+                lastOverEl  = this.overEls[this.overEls.length - 1],
                 overEls     = this.overEls;
             
             precision       = precision || me.dragPrecision;
             options         = options || {};
-            
+
             var path        = this.getPathBetweenPoints(xy, xy2).concat([xy2]);
-            
+
             var supports    = Siesta.Harness.Browser.FeatureSupport().supports
 
             var queue       = new Siesta.Util.Queue({
@@ -22383,23 +22387,26 @@ Role('Siesta.Test.Simulate.Mouse', {
                         var targetEl    = document.elementFromPoint(point[0], point[1]) || document.body;
                         
                         if (targetEl !== lastOverEl) {
-                            if (supports.mouseEnterLeave) {
-                                for (var i = overEls.length - 1; i >= 0; i--) {
-                                    var el = overEls[i];
-                                    if (el !== targetEl && me.$(el).has(targetEl).length === 0) {
+                            for (var i = overEls.length - 1; i >= 0; i--) {
+                                var el = overEls[i];
+                                if (el !== targetEl && me.$(el).has(targetEl).length === 0) {
+                                    if (supports.mouseEnterLeave) {
                                         me.simulateEvent(el, "mouseleave", $.extend({ clientX: point[0], clientY: point[1], relatedTarget : targetEl}, options));
-                                        overEls.splice(i, 1);
                                     }
+                                    overEls.splice(i, 1);
                                 }
                             }
+
                             if (lastOverEl) {
                                 me.simulateEvent(lastOverEl, "mouseout", $.extend({ clientX: point[0], clientY: point[1], relatedTarget : targetEl}, options));
                             }
-                            if (supports.mouseEnterLeave && jQuery.inArray(targetEl, overEls) < 0) {
-                                me.simulateEvent(targetEl, "mouseenter", $.extend({ clientX: point[0], clientY: point[1], relatedTarget : lastOverEl}, options));
-                            
+                            if (jQuery.inArray(targetEl, overEls) < 0) {
+                                if (supports.mouseEnterLeave) {
+                                    me.simulateEvent(targetEl, "mouseenter", $.extend({ clientX: point[0], clientY: point[1], relatedTarget : lastOverEl}, options));
+                                }
                                 overEls.push(targetEl);
                             }
+
                             me.simulateEvent(targetEl, "mouseover", $.extend({ clientX: point[0], clientY: point[1], relatedTarget : lastOverEl}, options));
                             lastOverEl = targetEl;
                         }
@@ -22451,8 +22458,7 @@ Role('Siesta.Test.Simulate.Mouse', {
                 this[ method ](data.el, callback, scope, options);
             }
         },
-        
-        
+
         /**
          * This method will simulate a mouse click in the center of the specified DOM/Ext element.
          * 
@@ -22630,7 +22636,6 @@ Role('Siesta.Test.Simulate.Mouse', {
                 }
             })
             
-            queue.addStep([ el, "mouseover", options, true ])
             queue.addStep([ el, "mousedown", options, false ])
             queue.addStep([ el, "mouseup", options, true ])
             
@@ -22669,7 +22674,6 @@ Role('Siesta.Test.Simulate.Mouse', {
                 }
             })
             
-            queue.addStep([ el, "mouseover", options, true ])
             queue.addStep([ el, "mousedown", options, false ])
             queue.addStep([ el, "mouseup", options, true ])
             
@@ -22708,7 +22712,6 @@ Role('Siesta.Test.Simulate.Mouse', {
                 }
             })
             
-            queue.addStep([ el, "mouseover", options, true ])
             queue.addStep([ el, "mousedown", options, false ])
             queue.addStep([ el, "mouseup", options, true ])
             queue.addStep([ el, "click", options, true ])
@@ -25442,13 +25445,13 @@ Role('Siesta.Test.Element', {
          * While doing all these random actions it also tracks the number of exceptions thrown and reports a failure
          * if there were some. Otherwise reports a passed assertion.
          * 
-         * Use this assertion to "stree-test" your component, making sure it will work correctly in various unexpected 
+         * Use this assertion to "stress-test" your component, making sure it will work correctly in various unexpected 
          * interaction scenarious.
          * 
          * @param {Siesta.Test.ActionTarget} el The element to upon which to unleash the "monkey".
          * @param {Int} nbrInteractions The number of random interactions to perform. 
          * @param {String} [description] The description for the assertion
-         * @param {Function} callback The callback to call after the CSS selector has been found
+         * @param {Function} callback The callback to call after all actions were completed
          * @param {Object} scope The scope for the callback
          */
         monkeyTest : function(el, nbrInteractions, description, callback, scope) {
@@ -25475,8 +25478,24 @@ Role('Siesta.Test.Element', {
                         me.warn("Monkey action log:" + JSON2.stringify(actionLog))
                         // do not continue if the test has detected an exception thrown
                         queue.abort()
-                    } else
+                    } else {
+                        var async       = me.beginAsync(null, function (test) {
+                            test.fail("Monkey testing action did not complete properly - probably some exception was thrown")
+                            me.warn("Monkey action log:" + JSON.stringify(actionLog))
+                            
+                            return true
+                        });
+                        
+                        var next        = data.next
+                        
+                        data.next       = function () {
+                            me.endAsync(async)
+                            
+                            next()
+                        }
+                        
                         data.action(data)
+                    }
                 }
             });
             
@@ -25526,7 +25545,7 @@ Role('Siesta.Test.Element', {
                         });
                     break;
 
-                    default:
+                    case 3:
                         var dragTo      = [ me.randomBetween(offset.left, right), me.randomBetween(offset.top, bottom) ]
                         
                         actionLog.push({
@@ -25558,16 +25577,7 @@ Role('Siesta.Test.Element', {
             
             this.on('beforetestfinalizeearly', assertionChecker) 
 
-            var async       = me.beginAsync(null, function (test) {
-                test.fail("Monkey testing queue did not complete properly - probably some exception was thrown")
-                me.warn("Monkey action log:" + JSON.stringify(actionLog))
-                
-                return true
-            });
-            
             queue.run(function () {
-                me.endAsync(async);
-                
                 if (!checkerActivated) {
                     me.un('beforetestfinalizeearly', assertionChecker)
                     
@@ -28025,12 +28035,14 @@ Class('Siesta.Harness.Browser', {
                 
                 if (this.viewport) this.viewport.onTestEnd(test)
                 
-                // when browser is simulating the event on the element that is not visible
-                // it will scroll that point into view, using the `scrollLeft` property
-                // of the <body> (Chrome) or <html> (FF)
+                // when browser is simulating the event on the element that is not visible in the iframe
+                // it will scroll that point into view, using the `scrollLeft` property of the parent element
                 // this line fixes that displacement
-                document.body.scrollLeft    = document.body.parentNode.scrollLeft   = 0
-                document.body.scrollTop     = document.body.parentNode.scrollTop    = 0
+                var wrapper     = test.scopeProvider.wrapper
+                
+                if (wrapper) {
+                    wrapper.scrollLeft      = wrapper.scrollTop = 0
+                }
             },
             
             
@@ -28900,7 +28912,7 @@ Ext.define("Sch.data.mixin.FilterableTreeStore", {
         if (!this.loadDataInNodeStore || !this.loadDataInNodeStore(linearNodes)) nodeStore.loadRecords(linearNodes);
         
         // HACK - forcing view to refresh, the usual "refresh" event is blocked by the tree view (see `blockRefresh` property)
-        if (!skipUIRefresh) nodeStore.fireEvent('clear', nodeStore);
+        if (!skipUIRefresh) this.fireEvent('forcedrefresh', this);
         
         this.fireEvent('nodestore-datachange-end', this);
     },
@@ -29072,7 +29084,7 @@ Ext.define("Sch.data.mixin.FilterableTreeStore", {
         nodeStore.loadRecords(nodesToKeep, false);
         
         // HACK - forcing view to refresh, the usual "refresh" event is blocked by the tree view (see `blockRefresh` property)
-        nodeStore.fireEvent('clear', nodeStore);
+        this.fireEvent('forcedrefresh', this);
         
         this.isFilteredFlag = true;
         
@@ -29525,12 +29537,23 @@ Ext.define("Sch.mixin.FilterableTreeView", {
             
             this.mon(treeStore, 'filter-clear', this.onFilterCleared, this);
             this.mon(treeStore, 'filter-set', this.onFilterSet, this);
+            
+            this.mon(treeStore, 'forcedrefresh', this.onForcedRefresh, this)
         };
         
         if (this.rendered)
             doInit.call(this);
         else
             this.on('beforerender', doInit, this, { single : true });
+    },
+    
+    
+    onForcedRefresh : function () {
+        this.focusRow       = function () {}
+        
+        this.refresh()
+        
+        delete this.focusRow
     },
     
     
@@ -29585,9 +29608,211 @@ Ext.define('Siesta.Harness.Browser.UI.FilterableTreeView', {
     }
 })
 ;
+Ext.define('Siesta.Harness.Browser.UI.CanFillAssertionsStore', {
+
+    processNewResult : function (assertionStore, test, result, parentResult) {
+        var data            = {
+            id                  : result.id,
+            
+            result              : result,
+            
+            leaf                : !(result instanceof Siesta.Result.SubTest),
+            expanded            : (result instanceof Siesta.Result.SubTest) && result.test.specType != 'it'
+        };
+        
+        var alreadyInTheStore   = assertionStore.getById(result.id)
+        
+        if (alreadyInTheStore) {
+            alreadyInTheStore.triggerUIUpdate()
+        } else {
+            Ext.suspendLayouts()
+            
+            alreadyInTheStore   = (assertionStore.getById(parentResult.id) || assertionStore.getRootNode()).appendChild(data);
+            
+            Ext.resumeLayouts()
+        }
+        
+        if (result.isPassed && !result.isPassed()) alreadyInTheStore.ensureVisible()
+        
+        alreadyInTheStore.updateFolderStatus()
+    },
+    
+
+    // is bubbling and thus triggered for all tests (including sub-tests) 
+    processEveryTestEnd : function (assertionStore, test) {
+        var testResultNode  = assertionStore.getById(test.getResults().id)
+        
+        // can be missing for "root" tests
+        testResultNode && testResultNode.updateFolderStatus()
+    }
+})
+;
+Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
+    extend                  : 'Ext.Panel',
+    alias                   : 'widget.domcontainer',
+
+    test                    : null,
+    testListeners           : null,
+
+    maintainViewportSize    : true,
+
+    canManageDOM            : true,
+    
+
+    initComponent : function() {
+        Ext.apply(this, {
+            header          : false,
+            collapsible     : true,
+            animCollapse    : false
+        })
+    
+        this.callParent()
+    
+        this.on({
+            afterlayout : this.onAfterLayout,
+            expand      : this.onExpand,
+            collapse    : this.onCollapse,
+        
+            scope       : this
+        })
+    },
+    
+
+    setCanManageDOM : function (value) {
+        if (value != this.canManageDOM) {
+            this.canManageDOM = value
+        
+            if (value && !this.hidden) this.alignIFrame()
+        }
+    },
+
+
+    getIFrameWrapper : function () {
+        var test = this.test;
+        
+        if (test) 
+            return this.canManageDOM && test.scopeProvider && test.scopeProvider.wrapper || null
+        else
+            return null;
+    },
+    
+    
+    getIFrame : function () {
+        var test = this.test;
+        
+        if (test) 
+            return this.canManageDOM && test.scopeProvider && test.scopeProvider.iframe || null
+        else
+            return null;
+    },
+    
+
+    onAfterLayout : function () {
+        this.alignIFrame();
+    },
+
+
+    alignIFrame : function () {
+        var wrapper         = this.getIFrameWrapper();
+    
+        if (!this.isFrameVisible() || !wrapper) return
+       
+        Ext.fly(wrapper).removeCls('tr-iframe-hidden')
+        Ext.fly(wrapper).removeCls('tr-iframe-forced')
+        
+        var box     = this.el.getBox()
+        
+//        box.x       += 5
+//        box.y       += 0
+//        box.width   -= 5
+//        box.height  -= 0
+        
+        Ext.fly(wrapper).setBox(box)
+        
+        if (!this.maintainViewportSize) {
+            Ext.fly(this.getIFrame()).setSize(this.el.getSize())
+        }
+        
+        var test        = this.test
+        
+        test && test.fireEvent('testframeshow')
+    },
+
+    
+    onCollapse : function() {
+        this.hideIFrame();
+    },
+    
+
+    onExpand : function() {
+        this.alignIFrame();
+    },
+
+    
+    hideIFrame : function () {
+        var iframe      = this.getIFrameWrapper()
+    
+        iframe && Ext.fly(iframe).setLeftTop(-10000, -10000)
+        
+        var test        = this.test
+        
+        test && test.fireEvent('testframehide')
+    },
+
+
+    isFrameVisible : function () {
+        return !(this.hidden || this.collapsed)
+    },
+
+
+    showTest : function (test, assertionsStore) {
+        if (this.test) {
+            Joose.A.each(this.testListeners, function (listener) { listener.remove() })
+            
+            this.testListeners   = []
+            
+            this.hideIFrame()
+        }
+        
+        this.test   = test
+    
+        this.testListeners   = [
+            test.on('testfinalize', this.onTestFinalize, this)
+        ]
+        
+        // when starting the test with forcedIframe - do not allow the assertion grid to change the location of the iframe
+        // (canManageDOM is set to false)
+        this.setCanManageDOM(!test.hasForcedIframe())
+        
+        this.alignIFrame();
+    },
+
+    
+    onTestFinalize : function (event, test) {
+        this.setCanManageDOM(true)
+        
+        // this prevents harness from hiding the iframe, because "test.hasForcedIframe()" will return null
+        // we've moved the iframe to the correct position, and it can never be "forced" again anyway
+        if (this.isFrameVisible()) test.forceDOMVisible    = false
+    },
+    
+    
+    destroy : function () {
+        Joose.A.each(this.testListeners, function (listener) { listener.remove() })
+        
+        this.test   = null
+        
+        this.callParent(arguments)
+    }
+
+});;
 Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
     extend          : 'Ext.container.Viewport',
+    
+    mixins          : [
+        'Siesta.Harness.Browser.UI.CanFillAssertionsStore'
+    ],
 
 
     title           : null,
@@ -30111,32 +30336,11 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
     onTestUpdate : function (test, result, parentResult) {
         var testRecord      = this.testsStore.getNodeById(test.url)
-            
+        
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
         if (testRecord.get('test').isFromTheSameGeneration(test)) {
-            var assertionStore  = testRecord.get('assertionsStore');
-    
-            var data            = {
-                id                  : result.id,
-                
-                result              : result,
-                
-                leaf                : !(result instanceof Siesta.Result.SubTest),
-                expanded            : (result instanceof Siesta.Result.SubTest) && result.test.specType != 'it'
-            };
-            
-            var alreadyInTheStore   = assertionStore.getById(result.id)
-            
-            if (alreadyInTheStore) {
-                alreadyInTheStore.triggerUIUpdate()
-            } else {
-                alreadyInTheStore   = (assertionStore.getById(parentResult.id) || assertionStore.getRootNode()).appendChild(data);
-            }
-            
-            if (result.isPassed && !result.isPassed()) alreadyInTheStore.ensureVisible()
-            
-            alreadyInTheStore.updateFolderStatus()
+            this.processNewResult(testRecord.get('assertionsStore'), test, result, parentResult)
             
             if (this.getOption('breakOnFail') && test.getFailCount() > 0) {
                 this.performStop();
@@ -30178,10 +30382,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
         // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
         // test instance may change if user has restarted a test for example
         if (testRecord.get('test').isFromTheSameGeneration(test)) {
-            var testResultNode  = testRecord.get('assertionsStore').getById(test.getResults().id)
-            
-            // can be missing for "root" tests
-            testResultNode && testResultNode.updateFolderStatus()
+            this.processEveryTestEnd(testRecord.get('assertionsStore'), test)
         }
     },
     
@@ -30515,7 +30716,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
     
     rerunTest : function () {
-        var toRun = this.slots.resultPanel.testRecord || this.slots.filesTree.getSelectionModel().getSelection()[0];
+        var toRun = this.slots.filesTree.getSelectionModel().getSelection()[ 0 ];
         
         if (toRun) {
             this.launchTest(toRun);
@@ -31061,21 +31262,6 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     initComponent : function() {
         this.addEvents('viewdomchange');
         
-        if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
-            model   : 'Siesta.Harness.Browser.Model.Assertion',
-
-            proxy   : {
-                type        : 'memory',
-                reader      : { type: 'json' }
-            },
-
-            root    : {
-                id          : '__ROOT__',
-                expanded    : true,
-                loaded      : true
-            }
-        })
-        
         Ext.apply(this, {
             tbar : !this.showToolbar ? null : [
                 this.sourceButton = new Ext.Button({
@@ -31138,11 +31324,11 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
                     items : [
                         // grid with assertion
                         {
-                            xtype       : 'assertiongrid',
-                            slot        : 'grid',
-                            // required for Fiesta
-                            store       : this.store,
-                            listeners   : {
+                            xtype           : 'assertiongrid',
+                            slot            : 'grid',
+                            
+                            isStandalone    : this.isStandalone,
+                            listeners       : {
                                 itemdblclick    : this.onAssertionDoubleClick,
                                 scope           : this
                             }
@@ -31158,28 +31344,30 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
                     ]
                 },
                 {
-                    xtype           : 'panel',
+                    xtype           : 'domcontainer',
                     region          : 'east',
+                    
+                    split           : true,
+                
+                    bodyStyle       : 'text-align : center',
+                    
                     slot            : 'domContainer',
                     stateful        : true,             // Turn off for recursive siesta demo
+                    
                     id              : this.id + '-domContainer',
-                    split           : true,
-                    header          : false,
                     width           : '50%',
-                    collapsible     : true,
-                    animCollapse    : false,
                     cls             : 'siesta-domcontainer',
-                    collapsed       : !this.viewDOM,
                 
-                    bodyStyle       : 'text-align : center'
+                    collapsed       : !this.viewDOM
                 }
             ]
         })
     
         this.callParent()
     
-        this.on({
-            afterlayout : this.afterDOMContainerLayout,
+        this.slots.domContainer.on({
+            expand      : this.onDomContainerExpand,
+            collapse    : this.onDomContainerCollapse,
         
             scope       : this
         })
@@ -31200,17 +31388,6 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         }
     },
     
-    
-    afterRender : function() {
-        this.callParent(arguments);
-        
-        this.slots.domContainer.on({
-            expand      : this.onDomContainerExpand,
-            collapse    : this.onDomContainerCollapse,
-        
-            scope       : this
-        })
-    },
     
     showSource : function (lineNbr) {  
         var slots           = this.slots
@@ -31252,6 +31429,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         }
     },
 
+    
     hideSource : function(btn) {  
         var slots           = this.slots
         var cardContainer   = slots.cardContainer
@@ -31259,6 +31437,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         cardContainer.layout.setActiveItem(slots.grid);
         this.sourceButton && this.sourceButton.toggle(false);
     },
+    
 
     setViewDOM : function (value) {
         var domContainer    = this.slots.domContainer
@@ -31269,100 +31448,19 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
             domContainer.collapse(Ext.Component.DIRECTION_RIGHT, false)
     },
 
-    setCanManageDOM : function (value) {
-        if (value != this.canManageDOM) {
-            this.canManageDOM = value
-        
-            if (value && !this.hidden) this.alignIFrame()
-        }
-    },
-
-
-    getIFrameWrapper : function () {
-        var test = this.test;
-        
-        if (test) 
-            return this.canManageDOM && test.scopeProvider && test.scopeProvider.wrapper || null
-        else
-            return null;
-    },
-    
-    
-    getIFrame : function () {
-        var test = this.test;
-        
-        if (test) 
-            return this.canManageDOM && test.scopeProvider && test.scopeProvider.iframe || null
-        else
-            return null;
-    },
-    
-
-
-    afterDOMContainerLayout : function () {
-        this.alignIFrame();
-    },
-
-
-    alignIFrame : function () {
-        var wrapper         = this.getIFrameWrapper();
-        var domContainer    = this.slots.domContainer
-    
-        if (this.hidden || domContainer.collapsed || !wrapper) return
-       
-        Ext.fly(wrapper).removeCls('tr-iframe-hidden')
-        Ext.fly(wrapper).removeCls('tr-iframe-forced')
-        
-        var box     = domContainer.el.getBox()
-        
-        box.x       += 5
-        box.y       += 0
-        box.width   -= 5
-        box.height  -= 0
-        
-        Ext.fly(wrapper).setBox(box)
-        
-        if (!this.maintainViewportSize) {
-            Ext.fly(this.getIFrame()).setSize(domContainer.el.getSize())
-        }
-        
-        var test        = this.test
-        
-        test && test.fireEvent('testframeshow')
-    },
-
     
     onDomContainerCollapse : function() {
         this.viewDOM    = false;
         this.fireEvent('viewdomchange', this, false);
-        
-        this.hideIFrame();
     },
     
 
     onDomContainerExpand : function() {
         this.viewDOM    = true;
         this.fireEvent('viewdomchange', this, true);
-        
-        this.alignIFrame();
     },
 
     
-    hideIFrame : function () {
-        var iframe      = this.getIFrameWrapper()
-    
-        iframe && Ext.fly(iframe).setLeftTop(-10000, -10000)
-        
-        var test        = this.test
-        
-        test && test.fireEvent('testframehide')
-    },
-
-
-    isFrameVisible : function () {
-        return !(this.hidden || this.slots.domContainer.collapsed)
-    },
-
     onRerun : function() {
         this.fireEvent('rerun', this);
     },
@@ -31371,98 +31469,27 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     showTest : function (test, assertionsStore) {
         this.slots.source.__filled__ = false;
         
-        if (this.test) {
-            Joose.A.each(this.testListeners, function (listener) { listener.remove() })
-            
-            this.testListeners   = []
-            
-            this.hideIFrame()
-        }
-        
         this.filterButton && this.filterButton.toggle(false)
         this.hideSource();
         
-        this.test   = test
         this.sourceButton && this.sourceButton.enable()
     
-        this.testListeners   = [
-            test.on('testfinalize', this.onTestFinalize, this)
-        ].concat(
-            this.isStandalone ? [
-                test.on('testupdate', this.onTestUpdate, this),
-                test.on('testendbubbling', this.onEveryTestEnd, this)
-            ] : []
-        )
-
+        this.test   = test
+        
         var url         = test.url
-        var grid        = this.slots.grid
-
-        if (assertionsStore) 
-            grid.reconfigure(assertionsStore)
-        else
-            grid.store.removeAll()
 
         Ext.suspendLayouts();
+        
+        this.slots.grid.showTest(test, assertionsStore)
+        this.slots.domContainer.showTest(test, assertionsStore)
+        
         // This triggers an unnecessary layout recalc
         this.setTitle(url);
+        
         Ext.resumeLayouts();
-        
-        // when starting the test with forcedIframe - do not allow the assertion grid to change the location of the iframe
-        // (canManageDOM is set to false)
-        this.setCanManageDOM(!test.hasForcedIframe())
-        
-        this.alignIFrame();
     },
 
     
-    onTestUpdate : function (event, test, result, parentResult) {
-        var assertionStore  = this.slots.grid.store
-
-        var data            = {
-            id                  : result.id,
-            
-            result              : result,
-            
-            leaf                : !(result instanceof Siesta.Result.SubTest),
-            expanded            : (result instanceof Siesta.Result.SubTest) && result.test.specType != 'it'
-        };
-        
-        var alreadyInTheStore   = assertionStore.getById(result.id)
-        
-        if (alreadyInTheStore) {
-            alreadyInTheStore.triggerUIUpdate()
-        } else {
-            alreadyInTheStore   = (assertionStore.getById(parentResult.id) || assertionStore.getRootNode()).appendChild(data);
-        }
-        
-        if (result.isPassed && !result.isPassed()) alreadyInTheStore.ensureVisible()
-        
-        alreadyInTheStore.updateFolderStatus()
-    },
-    
-    
-    onTestFinalize : function (event, test) {
-        this.setCanManageDOM(true)
-        
-        // this prevents harness from hiding the iframe, because "test.hasForcedIframe()" will return null
-        // we've moved the iframe to the correct position, and it can never be "forced" again anyway
-        if (this.isFrameVisible()) test.forceDOMVisible    = false
-    },
-    
-    
-    // is bubbling and thus triggered for all tests (including sub-tests) 
-    onEveryTestEnd : function (event, test) {
-        // need to check that test record contains the same test instance as the test in arguments (or its sub-test)
-        // test instance may change if user has restarted a test for example
-        if (this.test.isFromTheSameGeneration(test)) {
-            var testResultNode  = this.slots.grid.store.getById(test.getResults().id)
-            
-            // can be missing for "root" tests
-            testResultNode && testResultNode.updateFolderStatus()
-        }
-    },
-    
-
     onAssertionFilterClick : function(btn) {
         var assertionsStore     = this.slots.grid.store;
 
@@ -31483,16 +31510,18 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     },
 
 
+    alignIFrame : function () {
+        this.slots.domContainer.alignIFrame()
+    },
+    
+    
+    hideIFrame : function () {
+        this.slots.domContainer.hideIFrame()
+    },
+    
+    
     clear : function () {
-        Ext.suspendLayouts()
-        
-        var grid = this.slots.grid;
-        
-        grid.store.removeAll();
-
-        grid.getView().getEl().update('<div class="assertiongrid-initializing">Initializing test...</div>');
-        
-        Ext.resumeLayouts(true)
+        this.slots.grid.clear()
     },
 
     
@@ -31592,29 +31621,55 @@ Ext.define('Siesta.Harness.Browser.UI.TreeColumn', {
 });
 ;
 Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
+    alias           : 'widget.assertiongrid',
 
-    extend      : 'Ext.tree.Panel',
+    extend          : 'Ext.tree.Panel',
     
-    cls         : 'siesta-assertion-grid hide-simulated',
-    alias       : 'widget.assertiongrid',
+    mixins          : [
+        'Siesta.Harness.Browser.UI.CanFillAssertionsStore'
+    ],
+    
+    
+    cls                 : 'siesta-assertion-grid hide-simulated',
 
     enableColumnHide    : false,
     enableColumnMove    : false,
     enableColumnResize  : false,
     sortableColumns     : false,
+    
     border              : false,
     forceFit            : true,
     minWidth            : 100,
     trackMouseOver      : false,
     autoScrollToBottom  : true,
+    
     resultTpl           : null,
+    
+    isStandalone        : false,
+    
+    test                : null,
+    testListeners       : null,
     
     
     initComponent : function() {
         var me = this;
+        
+        if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
+            model   : 'Siesta.Harness.Browser.Model.Assertion',
+
+            proxy   : {
+                type        : 'memory',
+                reader      : { type: 'json' }
+            },
+
+            root    : {
+                id          : '__ROOT__',
+                expanded    : true,
+                loaded      : true
+            }
+        })
 
         Ext.apply(this, {
-            
             resultTpl   : new Ext.XTemplate(
                 '<span class="assertion-text">{[this.getDescription(values.result)]}</span>{[this.getAnnotation(values)]}',
                 {
@@ -31690,49 +31745,90 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                 // this should be kept `false` - otherwise assertion grid goes crazy, see #477
                 deferInitialRefresh     : false,
                 
-                getRowClass             : function(record, rowIndex, rowParams, store) {
-                    var result      = record.getResult()
-                    
-                    var cls         = ''
-                    
-                    // TODO switch to "instanceof"
-                    switch (result.meta.name) {
-                        case 'Siesta.Result.Diagnostic': 
-                            return 'tr-diagnostic-row ' + (result.isWarning ? 'tr-warning-row' : '');
-                    
-                        case 'Siesta.Result.Summary': 
-                            return 'tr-summary-row ' + (result.isFailed ? ' tr-summary-failure' : '');
-                    
-                        case 'Siesta.Result.SubTest':
-                            cls     = 'tr-subtest-row tr-subtest-row-' + record.get('folderStatus')
-                            
-                            if (result.test.specType == 'describe') cls += ' tr-subtest-row-describe'
-                            if (result.test.specType == 'it') cls += ' tr-subtest-row-it'
-                        
-                            return cls;
-                        
-                        case 'Siesta.Result.Assertion':
-                            cls     += 'tr-assertion-row '
-                        
-                            if (result.isWaitFor) 
-                                cls += 'tr-waiting-row ' + (result.completed ? (result.passed ? 'tr-waiting-row-passed' : 'tr-assertion-row-failed tr-waiting-row-failed') : '')
-                            else if (result.isException) 
-                                cls += result.isTodo ? 'tr-exception-todo-row' : 'tr-exception-row'
-                            else if (result.isTodo)
-                                cls += result.passed ? 'tr-todo-row-passed' : 'tr-todo-row-failed'
-                            else
-                                cls += result.passed ? 'tr-assertion-row-passed' : 'tr-assertion-row-failed'
-                            
-                            return cls
-                        default:
-                            throw "Unknown result class"
-                    }
-                }
+                getRowClass             : this.getRowClass
             }
         });
 
         this.callParent(arguments);
-    },           
+    },
+    
+    
+    getRowClass : function (record, rowIndex, rowParams, store) {
+        var result      = record.getResult()
+        
+        var cls         = ''
+        
+        // TODO switch to "instanceof"
+        switch (result.meta.name) {
+            case 'Siesta.Result.Diagnostic': 
+                return 'tr-diagnostic-row ' + (result.isWarning ? 'tr-warning-row' : '');
+        
+            case 'Siesta.Result.Summary': 
+                return 'tr-summary-row ' + (result.isFailed ? ' tr-summary-failure' : '');
+        
+            case 'Siesta.Result.SubTest':
+                cls     = 'tr-subtest-row tr-subtest-row-' + record.get('folderStatus')
+                
+                if (result.test.specType == 'describe') cls += ' tr-subtest-row-describe'
+                if (result.test.specType == 'it') cls += ' tr-subtest-row-it'
+            
+                return cls;
+            
+            case 'Siesta.Result.Assertion':
+                cls     += 'tr-assertion-row '
+            
+                if (result.isWaitFor) 
+                    cls += 'tr-waiting-row ' + (result.completed ? (result.passed ? 'tr-waiting-row-passed' : 'tr-assertion-row-failed tr-waiting-row-failed') : '')
+                else if (result.isException) 
+                    cls += result.isTodo ? 'tr-exception-todo-row' : 'tr-exception-row'
+                else if (result.isTodo)
+                    cls += result.passed ? 'tr-todo-row-passed' : 'tr-todo-row-failed'
+                else
+                    cls += result.passed ? 'tr-assertion-row-passed' : 'tr-assertion-row-failed'
+                
+                return cls
+            default:
+                throw "Unknown result class"
+        }
+    },    
+    
+    
+    showTest : function (test, assertionsStore) {
+        if (this.test) {
+            Joose.A.each(this.testListeners, function (listener) { listener.remove() })
+            
+            this.testListeners  = []
+        }
+        
+        this.test               = test
+    
+        this.testListeners      = [].concat(
+            this.isStandalone ? [
+                test.on('testupdate', this.onTestUpdate, this),
+                test.on('testendbubbling', this.onEveryTestEnd, this)
+            ] : []
+        )
+        
+        Ext.suspendLayouts()
+
+        if (assertionsStore) 
+            this.reconfigure(assertionsStore)
+        else
+            this.store.removeAll()
+            
+        Ext.resumeLayouts()
+    },
+
+    
+    onTestUpdate : function (event, test, result, parentResult) {
+        this.processNewResult(this.store, test, result, parentResult)
+    },
+    
+    
+    // is bubbling and thus triggered for all tests (including sub-tests) 
+    onEveryTestEnd : function (event, test) {
+        this.processEveryTestEnd(this.store, test)
+    },
           
     
     resultRenderer : function (value, metaData, record, rowIndex, colIndex, store) {
@@ -31749,7 +31845,30 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
             this.getView().dataSource   = treeStore.nodeStore
             this.getView().bindStore(treeStore.nodeStore, isInitial, prop)
         }
+    },
+    
+    
+    destroy : function () {
+        Joose.A.each(this.testListeners, function (listener) { listener.remove() })
+        
+        this.testListeners  = []
+        
+        this.test           = null
+        
+        this.callParent(arguments)
+    },
+    
+    
+    clear : function () {
+        Ext.suspendLayouts()
+        
+        this.store.removeAll();
+
+        this.getView().getEl().update('<div class="assertiongrid-initializing">Initializing test...</div>');
+        
+        Ext.resumeLayouts(true)
     }
+    
 })
 ;
 };
@@ -31861,7 +31980,7 @@ Class('Siesta.Harness.Browser.ExtJS', {
             /**
              * @cfg {Object} loaderPath
              * 
-             * The path used to configure the Ext.Loader with, for dynamic loading of Ext JS classes.
+             * The path used to configure the Ext.Loader, for dynamic loading of Ext JS classes.
              *
              * This option can be also specified in the test file descriptor. 
              */
