@@ -220,7 +220,7 @@ Ext.define('Fiesta.view.testcases.View', {
     onTabCreate : function () {
         this.codeEditor.setValue(this.testCaseModel.get('code'));
         this.down('detailspanel').setTestCaseModel(this.testCaseModel);
-        this.saveButton.setVisible(this.testCaseModel.isEditable());
+        this.saveButton.setVisible(this.testCaseModel.phantom || this.testCaseModel.isEditable());
     },
 
 
