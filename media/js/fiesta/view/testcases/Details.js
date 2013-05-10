@@ -64,7 +64,7 @@ Ext.define('Fiesta.view.testcases.Details', {
                                 })
                             },
                             scope   : this
-                        },
+                        }
                     ]
                 },
                 {
