@@ -104,3 +104,10 @@
     font-size   : 10px;
     font-weight : normal;
 }
+
+.tag-learn
+{
+    background:#5bb75b;
+    border-color:lightseagreen;
+    color:#fff;
+}
