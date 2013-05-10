@@ -53,7 +53,6 @@ Ext.define('Fiesta.view.testcases.Details', {
                             width  : 80,
                             cls    : 'delete-testcase',
                             action : 'delete',
-
                             handler : function () {
                                 var me = this;
                                 Ext.Msg.confirm('Confirm', 'Are you sure?', function (btn) {
@@ -127,7 +126,7 @@ Ext.define('Fiesta.view.testcases.Details', {
 
         detailsForm.loadRecord(model);
         detailsForm.setValues({ tagsList : tagsList });
-        this.down('[action=delete]').setVisible(!model.phantom)
+        this.down('[action=delete]').setVisible(!model.phantom && this.testCaseModel.isEditable())
     },
 
 
