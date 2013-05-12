@@ -23,6 +23,10 @@ Ext.define('Fiesta.plugins.TagSelect', {
             me.inputEl.dom.value = '';
         }
 
+        if (rawValue.indexOf(',') > 0) {
+            rawValue = me.inputEl.dom.value = me.inputEl.dom.value.trim();
+        }
+
         if (me.multiSelect && (me.delimiterRegexp && me.delimiterRegexp.test(rawValue)) ||
             ((me.createNewOnEnter === true) && e.getKey() == e.ENTER)) {
             rawValue = Ext.Array.clean(rawValue.split(me.delimiterRegexp));
