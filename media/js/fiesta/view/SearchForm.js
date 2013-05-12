@@ -34,7 +34,7 @@ Ext.define("Fiesta.view.SearchForm", {
                                 }
                             },
                             {
-                                action  : "addCase",
+                                action  : "createNew",
                                 xtype   : "splitbutton",
                                 text    : "Create new",
                                 cls     : 'addNewBtn',
@@ -76,7 +76,7 @@ Ext.define("Fiesta.view.SearchForm", {
                         store          : new Fiesta.store.Tags(),
                         displayField   : "tag",
                         valueField     : "id",
-                        emptyText      : "Filter by tag (multiple choices)",
+                        emptyText      : "Filter by tag(s)",
                         name           : 'testCaseTags[]',
                         queryMode      : 'local',
                         forceSelection : true,
