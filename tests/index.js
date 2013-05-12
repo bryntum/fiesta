@@ -25,5 +25,12 @@ Harness.start(
             'create_new/open_2_tabs.t.js',
             'create_new/edit_tags.t.js'
         ]
+    },
+    {
+        group               : 'UI',
+
+        items               : [
+            'UI/ui_cleanup.t.js'
+        ]
     }
 )
