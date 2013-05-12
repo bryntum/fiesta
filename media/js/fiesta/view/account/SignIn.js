@@ -73,13 +73,13 @@ Ext.define('Fiesta.view.account.SignIn', {
             buttons  : [
                 {
                     text    : 'Sign In',
-                    action  : 'signin',
+                    action  : 'do_sign_in',
                     handler : this.processSignin,
                     scope   : this
                 },
                 {
                     text    : 'Sign Up',
-                    action  : 'signin',
+                    action  : 'sign_up',
                     href    : '/account/sign_up',
                     hrefTarget : '_self'
                 }
@@ -91,8 +91,12 @@ Ext.define('Fiesta.view.account.SignIn', {
     },
 
     processSignin: function () {
-        this.el.mask('Please wait...');
-        this.down('form').getForm().submit();
+        var form = this.down('form').getForm();
+
+        if (form.isValid()) {
+            this.el.mask('Please wait...');
+            this.down('form').getForm().submit();
+        }
     },
 
     show : function() {

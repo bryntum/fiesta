@@ -9,6 +9,7 @@ Ext.define('Fiesta.view.UserPanel', {
                 '->',
                 !FIESTA.isSignedIn() ? {
                     xtype   : 'button',
+                    action  : 'sign_in',
                     text    : 'Sign In!',
                     handler : this.openSigninWindow
                     //                        href        : '/account/sign_in/',

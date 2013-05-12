@@ -2,7 +2,7 @@ var Harness = Siesta.Harness.Browser.ExtJS
 
 Harness.configure({
     title                   : 'Fiesta suite',
-
+    testClass               : Fiesta.Test,
     autoCheckGlobals        : false,
     overrideSetTimeout      : false,
 
@@ -23,7 +23,11 @@ Harness.start(
 
         items               : [
             'create_new/open_2_tabs.t.js',
-            'create_new/edit_tags.t.js'
+            'create_new/edit_tags.t.js',
+            {
+                separateContext : true,
+                url : 'create_new/create_new_star.t.js'
+            }
         ]
     },
     {
