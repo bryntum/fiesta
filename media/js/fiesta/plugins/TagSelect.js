@@ -19,12 +19,14 @@ Ext.define('Fiesta.plugins.TagSelect', {
             return;
         }
 
+        if (rawValue === ' ') {
+            me.inputEl.dom.value = '';
+        }
+
         if (me.multiSelect && (me.delimiterRegexp && me.delimiterRegexp.test(rawValue)) ||
             ((me.createNewOnEnter === true) && e.getKey() == e.ENTER)) {
             rawValue = Ext.Array.clean(rawValue.split(me.delimiterRegexp));
-//            Ext.each(rawValue, function(value, index) {
-//                rawValue[index] = value.trim();
-//            });
+
 
             me.inputEl.dom.value = '';
             me.setValue(me.valueStore.getRange().concat(rawValue));
@@ -33,7 +35,7 @@ Ext.define('Fiesta.plugins.TagSelect', {
         me.callParent([e,t]);
     },
 
-    doRawQuery: function() {
+    doRawQuery : function() {
         var me = this,
             rawValue = me.inputEl.dom.value;
 
