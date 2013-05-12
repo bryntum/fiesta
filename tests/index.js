@@ -27,6 +27,13 @@ Harness.start(
         ]
     },
     {
+        group               : 'filtering_tests',
+
+        items               : [
+            'filtering_tests/sanity.t.js'
+        ]
+    },
+    {
         group               : 'UI',
 
         items               : [
