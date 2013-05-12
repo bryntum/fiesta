@@ -20,14 +20,13 @@ Harness.start(
     },
     {
         group               : 'Interaction tests',
+        separateContext     : true,
 
         items               : [
             'create_new/open_2_tabs.t.js',
             'create_new/edit_tags.t.js',
-            {
-                separateContext : true,
-                url : 'create_new/create_new_star.t.js'
-            }
+            'create_new/create_new_star.t.js',
+            'create_new/create_save_delete.t.js'
         ]
     },
     {
