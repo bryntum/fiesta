@@ -6,7 +6,7 @@ Ext.define('Fiesta.view.HomePanel', {
     initComponent : function () {
 
         Ext.apply(this, {
-            html : '<h2>Welcome to <b style="color:darkblue">Fiesta</b>, a crowd sourced test tool</h2>' +
+            html : '<h2>Welcome to <b style="color:darkblue">Fiesta</b><br><i style="font-size:60%">Crowd sourced testing</i></h2>' +
                 '<div class="footer">' +
                     '<dl>' +
                         '<dt style="color:navy">'+DATA.totalTests+'</dt><dd>test cases</dd>' +
