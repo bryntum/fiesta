@@ -60,11 +60,12 @@ Ext.define('Fiesta.view.testcases.List', {
 
         else if (target.hasCls('star')) {
 
-            FIESTA.addToFavorites(grid.getStore().getAt(index));
+            FIESTA.addToFavorites(grid.getStore().getAt(index),false);
 
         }
 
         else {
+            console.log('openTab');
             tabs.activateTabFor(record);
         }
     },

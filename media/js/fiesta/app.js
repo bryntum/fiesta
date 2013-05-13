@@ -70,7 +70,10 @@ Ext.application({
 
     },
 
-    addToFavorites: function (record) {
+    addToFavorites: function (record,updateTab) {
+        if(typeof(updateTab) == 'undefined') {
+            updateTab = true;
+        }
         if(this.isSignedIn()) {
 
 
@@ -81,8 +84,9 @@ Ext.application({
 
             Fiesta.DataModel.updateTestcasesList(record);
 
-
-            tabs.updateTab(record);
+            if(updateTab) {
+                tabs.updateTab(record);
+            }
 
             Fiesta.DataModel.addToFavorites(
                 record, null,
