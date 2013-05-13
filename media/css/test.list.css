@@ -52,6 +52,10 @@
     opacity : 1;
 }
 
+.testCasesList .filledStar .star {
+    opacity : 1;
+}
+
 .testCasesList .testNameColumn .x-column-header-trigger {
     display : block;
 }

@@ -5,9 +5,11 @@
     Fiesta.util.Format = {
         humanDate : function (date) {
             var now   = new Date(),
-                delta =  parseInt(Ext.Date.format(now, 'U') - Ext.Date.format(date, 'U')),
+                tzOffset = now.getTimezoneOffset()*60,
+                delta =  parseInt(Ext.Date.format(now, 'U') - Ext.Date.format(date, 'U') + tzOffset),
                 result = '';
 
+            console.log(Ext.Date.format(now, 'U')+'-'+Ext.Date.format(date, 'U')+tzOffset+'='+delta);
             timeArray = {
                 '31104000' : 'year',
                 '2592000'  : 'month',
