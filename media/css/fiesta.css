@@ -153,7 +153,7 @@ body
 
 .homepanel .x-panel-body{
     background : url(../img/siestalogo.png) no-repeat center center;
-    background-size:contain;
+    background-size:20%;
 }
 
 
