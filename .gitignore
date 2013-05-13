@@ -4,5 +4,7 @@ log-*.php
 .project
 /.idea
 
+.DS_Store
+
 /application/config/account/facebook.php
 /application/config/account/twitter.php
