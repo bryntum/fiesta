@@ -29660,6 +29660,8 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
 
     initComponent : function() {
+        this.testListeners  = []
+        
         Ext.apply(this, {
             header          : false,
             collapsible     : true,
@@ -31653,6 +31655,8 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     
     initComponent : function() {
         var me = this;
+        
+        this.testListeners  = []
         
         if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
             model   : 'Siesta.Harness.Browser.Model.Assertion',
