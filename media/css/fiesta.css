@@ -1,4 +1,4 @@
-dl, dd, dt {
+dl, dd, dt, ul, li {
     margin  : 0;
     padding : 0;
 }
@@ -132,7 +132,7 @@ dl, dd, dt {
     background-color       : rgba(44, 255, 255, 0.5);
     color      : #666;
     font-size  : 3em;
-    padding    : 20px 0 0 0;
+    padding    : 20px 0 0 0 ;
     text-align : center;
     margin     : 0;
 }

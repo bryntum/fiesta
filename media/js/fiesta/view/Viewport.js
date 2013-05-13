@@ -23,7 +23,7 @@ Ext.define("Fiesta.view.Viewport", {
                     title       : 'Search',
                     header      : false, 
                     region      : 'west',
-                    width       : 320,
+                    width       : 250,
                     cls         : 'testcase-list-container',
                     collapsible : true,
                     split       : true,
