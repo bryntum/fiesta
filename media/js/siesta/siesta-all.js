@@ -29800,6 +29800,9 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
     
     destroy : function () {
+        // just in case
+        this.hideIFrame()
+        
         Joose.A.each(this.testListeners, function (listener) { listener.remove() })
         
         this.test   = null

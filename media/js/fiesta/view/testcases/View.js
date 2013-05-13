@@ -238,8 +238,9 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     onTabDeActivate : function () {
-        this.resultPanel.hideIFrame()
-        this.detailsPanel.hideDisqus()
+        // "deactivate" event is conveniently fired in the middle of the destroying process
+        !this.resultPanel.isDestroyed && this.resultPanel.hideIFrame()
+        !this.detailsPanel.isDestroyed && this.detailsPanel.hideDisqus()
     },
 
 
