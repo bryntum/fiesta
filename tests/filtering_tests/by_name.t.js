@@ -4,28 +4,27 @@ StartTest(function(t) {
     t.chain(
         { waitFor : 'rowsVisible', args : t.cq1('testCasesList') },
 
-        { action : 'click', target : '>> tagselect'},
+        { action : 'click', target : '>> searchForm [name=testCaseName]'},
 
         { action : 'type', text : 'grid'},
-        { waitFor : 400 },
-        { action : 'type', text : '[TAB]'},
         { waitFor : 'event', args : [ store, 'load'] },
+        { waitFor : 500 },
 
         function (next) {
             var ok = true;
 
             store.each(function(r) {
-                if (!r.hasTag('grid')) {
+                if (!r.get('name').toLowerCase().match('grid')) {
                     ok = false;
-                    t.fail('Record missing grid tag: ' + r.getTagnames());
+                    t.fail('Record name not matching grid: ' + r.get('name'));
                     return false;
                 }
             })
-            t.ok(ok, 'All store records had the grid tag');
+            t.ok(ok, 'All store records are named grid');
             next();
         },
 
-        { action : 'type', text : '[BACKSPACE][BACKSPACE]'},
+        { action : 'type', text : '[BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE]'},
 
         { waitFor : 'event', args : [ store, 'load'] }
     )
