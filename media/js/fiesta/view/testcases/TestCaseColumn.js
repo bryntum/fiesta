@@ -21,7 +21,7 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
                         '</tpl>',
                     '</ul>',
                     '<div class="star"></div>',
-                '</div>',
+                '</div>'
             ]
         });
 
