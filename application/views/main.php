@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to Fiesta</title>
-    <link rel="stylesheet" type="text/css" href="/media/js/ext/resources/css/ext-all-neptune.css" />
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all-neptune.css" />
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/test.details.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/test.view.css" />
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-fiesta-all.css">
     <link rel="stylesheet" href="/media/css/icomoon14040/style.css">
 
-    <script type="text/javascript" src="/media/js/ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js"></script>
     <script> 
         CONFIG = {
             disqus_shortname    : '<?php echo $disqus_shortname?>',

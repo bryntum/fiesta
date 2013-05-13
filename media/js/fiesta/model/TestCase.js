@@ -40,7 +40,7 @@ Ext.define("Fiesta.model.TestCase", {
     },
 
     isEditable : function() {
-        return this.get('ownerId') == CONFIG.userId || /* isAdmin() */ true ;
+        return this.get('ownerId') == CONFIG.userId || /* isAdmin() */ false ;
     },
 
     isValid : function() {
@@ -48,6 +48,9 @@ Ext.define("Fiesta.model.TestCase", {
                     this.get('code') && JSHINT(this.get('code'), CONFIG.LINT_SETTINGS);
 
         return valid;
-    }
+    },
 
+    getTagnames : function(separator) {
+        return Ext.Array.map(this.get('tags'), function(tag) { return tag.tag; })
+    }
 });

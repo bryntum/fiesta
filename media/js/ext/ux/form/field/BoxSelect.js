@@ -752,7 +752,8 @@ Ext.define('Ext.ux.form.field.BoxSelect', {
      * - If the cursor is at the beginning of the input field and there are values present
      *
      *     - `CTRL-A` will highlight all the currently selected values
-     *     - `BACKSPACE` and `DELETE` will remove any currently highlighted selected values
+
+
      *     - `RIGHT` and `LEFT` will move the current highlight in the appropriate direction
      *     - `SHIFT-RIGHT` and `SHIFT-LEFT` will add to the current highlight in the appropriate direction
      *

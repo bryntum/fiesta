@@ -41,11 +41,11 @@ Lets name it "index.js" and put this code in it:
         
         preload     : [
             // version of ExtJS used by your application
-            '../ext-4.2.0/resources/css/ext-all.css',
+            '../ext-4.1.1/resources/css/ext-all.css',
             '../resources/yourproject-css-all.css',
             
             // version of ExtJS used by your application
-            '../ext-4.2.0/ext-all-debug.js',
+            '../ext-4.1.1/ext-all-debug.js',
             '../yourproject-all.js'
         ]
     });
@@ -65,11 +65,12 @@ Now lets create an "index.html" file and include a link to "index.js" in it" ` (
 	<!DOCTYPE html>
     <html>
         <head>
-            // version of ExtJS used by Siesta for its UI (not related to the ExtJS version of your application)
-            <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.1.1-gpl/resources/css/ext-all.css">
+            <!-- Siesta UI must use ExtJS 4.2.0 (you can specify any other ExtJS version in your "preload" config) -->
+            <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css">
             <link rel="stylesheet" type="text/css" href="__path_to_siesta__/resources/css/siesta-all.css">
             
-            <script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1-gpl/bootstrap.js"></script>
+            <!-- Siesta UI must use ExtJS 4.2.0 (you can specify any other ExtJS version in your "preload" config) -->
+            <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script>
             <script type="text/javascript" src="__path_to_siesta__/siesta-all.js"></script>
             
             <script type="text/javascript" src="index.js"></script>

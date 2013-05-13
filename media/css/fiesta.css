@@ -1,112 +1,101 @@
-dl,dd,dt
-{
-    margin:0;
-    padding:0;
+dl, dd, dt {
+    margin  : 0;
+    padding : 0;
 }
 
 .x-panel-header-text-container-default,
-.x-tab-inner
-{
-    font-weight: normal !important;
-    font-size:14px !important;
+.x-tab-inner {
+    font-weight : normal !important;
+    font-size   : 14px !important;
 }
 
 .star {
-    background: url('/media/img/star_emp.png');
-    transition:opacity 0.5s;
+    background : url('/media/img/star_emp.png');
+    transition : opacity 0.5s;
 }
 
-.filledStar, .filledStar .star{
-    background: url('/media/img/star_full.png');
+.filledStar, .filledStar .star {
+    background : url('/media/img/star_full.png');
 }
 
 .filledStar .star {
-    display: block !important;
+    display : block !important;
 }
 
-
-.x-grid-cell .star  {
-    float: right;
-    width: 16px;
-    height: 16px;
+.x-grid-cell .star {
+    float  : right;
+    width  : 16px;
+    height : 16px;
 }
 
 .sortDesc {
-    background-image: url("/media/img/sort_desc.png");
+    background-image : url("/media/img/sort_desc.png");
 }
 
 .sortAsc {
-    background-image: url("/media/img/sort_asc.png");
+    background-image : url("/media/img/sort_asc.png");
 }
 
-
-
 .addNewBtn {
-    border-color: #126daf;
+    border-color : #126daf;
 }
 
 /* line 143, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
 .addNewBtn {
-    font-size: 24px;
-    font-weight: 200;
-    color: #fff;
-    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
-    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+    font-size          : 24px;
+    font-weight        : 200;
+    color              : #fff;
+    -webkit-box-shadow : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 5px rgba(0, 0, 0, .25);
+    -moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 5px rgba(0, 0, 0, .25);
+    box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 5px rgba(0, 0, 0, .25);
 }
 
-.addNewBtn:hover{
-
+.addNewBtn:hover {
 }
 
-.addNewBtn .x-btn-inner{
-    font-weight: normal !important;
+.addNewBtn .x-btn-inner {
+    font-weight : normal !important;
 }
-
 
 /* line 218, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
 .x-nlg .addNewBtn {
-    background-image: url(images/btn/btn-default-small-bg.gif);
-    background-position: 0 top;
+    background-image    : url(images/btn/btn-default-small-bg.gif);
+    background-position : 0 top;
 }
 
 .rating {
-    font-size: 10px;
+    font-size : 10px;
 }
 
 .rate_down {
-    margin-right: 10px;
-    color: #FF0000;
-    font-size: 14px;
+    margin-right : 10px;
+    color        : #FF0000;
+    font-size    : 14px;
 }
 
 .rate_up {
-    margin-left: 10px;
-    color:#00FF00;
-    font-size: 14px;
+    margin-left : 10px;
+    color       : #00FF00;
+    font-size   : 14px;
 }
 
 .clrFilter {
-    float: right;
-    color: blue;
-    cursor: pointer;
-    font-size: 10px;
+    float     : right;
+    color     : blue;
+    cursor    : pointer;
+    font-size : 10px;
 }
 
-.x-tab-default .x-tab-glyph
-{
-    font-size:22px;
+.x-tab-default .x-tab-glyph {
+    font-size : 22px;
 }
-
 
 #disqus_thread {
-	position       : absolute;
-	left           : -10000px;
-	top            : -10000px;
-	
-	overflow       : auto;
-	
-	margin-left    : 10px;
+    position    : absolute;
+    left        : -10000px;
+    top         : -10000px;
+    overflow    : auto;
+    margin-left : 10px;
 }
 
 /*
@@ -129,14 +118,88 @@ dl,dd,dt
 }
 */
 
-.icon-home
-{
-    font-size: 1.4em;
-    margin-left:-1px;
-    color : #ccc;
+.icon-home {
+    font-size   : 1.4em;
+    margin-left : -1px;
+    color       : #ccc;
 }
 
-.x-tab-active .icon-home
-{
+.x-tab-active .icon-home {
     color : dodgerblue;
 }
+
+.homepanel h2 {
+    background-color       : rgba(255, 255, 255, 0.5);
+    color      : #666;
+    font-size  : 3em;
+    padding    : 30px 0;
+    text-align : center;
+    margin     : 0;
+}
+
+.homepanel .logo-ct {
+    height     : 60%;
+    overflow   : hidden;
+    text-align : center;
+    clear      : both;
+}
+
+
+.homepanel .x-panel-body{
+    background : url(../img/siestalogo.png) no-repeat center center;
+    background-size:contain;
+}
+
+
+.homepanel .footer {
+    background-color       : rgba(200, 200, 200, 0.5);
+    position    : absolute;
+    bottom      : 0;
+    left        : 0;
+    height      : 100px;
+    width       : 100%;
+}
+
+.homepanel .footer dl {
+    float        : left;
+    width        : 33%;
+    height       : 100%;
+    border-right : 2px solid #fff;
+    text-align   : center;
+    color        : #555;
+    text-shadow  : 1px 1px 1px #eee;
+    padding-top  : 14px;
+    font-size    : 1.5em;
+}
+
+.homepanel .footer dl:last-child {
+    border-right:0;
+}
+
+.homepanel .footer dt {
+    font-size: 2.3em;
+    line-height  : 1em;
+}
+
+.user-button
+{
+    background: none;
+    border:none;
+}
+
+.user-button .x-btn-arrow
+{
+    background-image:url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
+}
+
+.user-button .x-btn-inner
+{
+    color: #fff;
+    padding-right: 4px !important;
+}
+
+.noavatar
+{
+    background: url(../img/user.png) no-repeat left center;
+}
+

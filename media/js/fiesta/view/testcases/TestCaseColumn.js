@@ -15,7 +15,7 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
                     '<div class="nameHolder">{name}</div>',
                     '<ul class="x-boxselect-list">',
                         '<tpl foreach="tags">',
-                            '<li class="x-tab-default x-boxselect-item">',
+                            '<li class="x-tab-default x-boxselect-item tag-{tag}">',
                                 '{tag}',
                             '</li>',
                         '</tpl>',

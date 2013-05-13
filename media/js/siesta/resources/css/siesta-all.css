@@ -380,6 +380,11 @@ body
 
 .tr-testgrid .x-grid-cell-inner {
     height          : 20px !important;
+    line-height     : 19px !important;
+}
+
+.x-ie9 .tr-testgrid .x-tree-view {
+    z-index         : 1;
 }
 
 .x-ie .tr-testgrid .x-grid-cell-inner {
@@ -465,7 +470,7 @@ body
 
 
 .tr-filter-trigger-leaf {
-	background-image        : url("../images/trigger-leafs.gif");
+    background-image        : url("../images/trigger-leafs.gif");
 }
 
 .tr-filter-trigger-group {
@@ -480,6 +485,10 @@ body
     visibility     : visible !important;
 }
 
+.x-ie9 .tr-container {
+	z-index        : 1;
+}
+
 .tr-container .x-panel-collapsed {
     display        : block !important;
     
@@ -490,7 +499,7 @@ body
 
 
 td.tr-td-vertical-align {
-	vertical-align     : middle;
+    vertical-align     : middle;
 }
 
 .tr-iframe-wrapper {
@@ -500,6 +509,10 @@ td.tr-td-vertical-align {
     top         : -10000px;
     
     overflow    : auto;
+}
+
+.x-ie9 .tr-iframe-wrapper {
+	z-index        : 1;
 }
 
 iframe.tr-iframe {
@@ -541,8 +554,8 @@ iframe.tr-iframe {
 
 /* fixes row height sync in Chrome */
 .syntaxhighlighter .line {
-	height         : 1.2em !important;
-	vertical-align : middle !important;
+    height         : 1.2em !important;
+    vertical-align : middle !important;
 }
 
 

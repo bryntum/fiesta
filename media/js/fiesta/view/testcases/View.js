@@ -220,7 +220,7 @@ Ext.define('Fiesta.view.testcases.View', {
     onTabCreate : function () {
         this.codeEditor.setValue(this.testCaseModel.get('code'));
         this.down('detailspanel').setTestCaseModel(this.testCaseModel);
-        this.saveButton.setVisible(this.testCaseModel.isEditable());
+        this.saveButton.setVisible(this.testCaseModel.phantom || this.testCaseModel.isEditable());
     },
 
 
@@ -272,11 +272,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 hostPageUrl     : pageUrl,
                 preload         : pageUrl ? null : testCaseModel.getPreload()
             }, function () {
-                // HACK: Need to reset scroll to 0,0
-                var el = me.resultPanel.getIFrameWrapper();
-                if (el) {
-                    el.scrollLeft = el.scrollTop = 0;
-                }
                 runButton.setIconCls('');
             });
         } else {
@@ -333,9 +328,10 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     shareTwitter : function () {
+
         var twitterUrl = 'https://twitter.com/share?' +
             'text=' + encodeURIComponent(this.title) +
-            '&hashtags=' + encodeURIComponent(this.testCaseModel.get('tagsList')) +
+            '&hashtags=' + encodeURIComponent(this.testCaseModel.getTagnames(',')) +
             '&url=' + encodeURIComponent(window.location.href);
 
         window.open(twitterUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');
