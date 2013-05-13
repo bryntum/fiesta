@@ -94,7 +94,20 @@ Ext.define('Fiesta.view.testcases.Details', {
                         }
                     ]
                 },
-                {
+                this.testCaseModel.get('hostPageUrl') ? {
+                    xtype : 'form',
+                    flex  : 1,
+                    items : [
+                        {
+                            xtype      : 'textfield',
+                            cls        : 'details-text',
+                            name       : 'hostPageUrl',
+                            fieldLabel : 'Application URL',
+                            anchor     : '95%',
+                            allowBlank : false
+                        }
+                    ]
+                } : {
                     xtype : 'preloadgrid',
                     border : true,
                     height : 100

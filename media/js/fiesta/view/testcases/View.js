@@ -130,6 +130,7 @@ Ext.define('Fiesta.view.testcases.View', {
             items     : [
                 {
                     xtype       : 'detailspanel',
+                    testCaseModel : this.testCaseModel,
                     region      : 'north',
                     listeners   : {
                         collapse    : this.onDetailsCollapseExpand,
