@@ -30,7 +30,8 @@ Ext.define("Fiesta.view.SearchForm", {
                                 emptyText : "Filter by name",
                                 name      : 'testCaseName',
                                 listeners : {
-                                    change : this.processFilter
+                                    change      : this.processFilter,
+                                    scope       : this
                                 }
                             },
                             {
@@ -81,7 +82,8 @@ Ext.define("Fiesta.view.SearchForm", {
                         queryMode      : 'local',
                         forceSelection : true,
                         listeners      : {
-                            change : this.processFilter
+                            change      : this.processFilter,
+                            scope       : this
                         }
 
                     },
@@ -95,7 +97,8 @@ Ext.define("Fiesta.view.SearchForm", {
                         store        : new Fiesta.store.Frameworks(),
                         name         : 'frameworkId',
                         listeners    : {
-                            change : this.processFilter
+                            change      : this.processFilter,
+                            scope       : this
                         }
 
                     },
@@ -115,7 +118,8 @@ Ext.define("Fiesta.view.SearchForm", {
                                 value     : 1,
                                 checked   : true,
                                 listeners : {
-                                    change : this.processFilter
+                                    change      : this.processFilter,
+                                    scope       : this
                                 }
                             },
                             {
@@ -126,7 +130,8 @@ Ext.define("Fiesta.view.SearchForm", {
                                 margin    : '0 0 0 10',
                                 checked   : false,
                                 listeners : {
-                                    change : this.processFilter
+                                    change      : this.processFilter,
+                                    scope       : this
                                 }
                             }
                         ] : []).concat(
