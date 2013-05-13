@@ -135,7 +135,6 @@ body
 }
 
 .homepanel h2 {
-    background-color       : rgba(44, 255, 255, 0.5);
     color      : #666;
     font-size  : 3em;
     padding    : 20px 0 0 0 ;
@@ -158,7 +157,7 @@ body
 
 
 .homepanel .footer {
-    background-color       : rgba(200, 200, 200, 0.5);
+    background-color       : #ebebeb;
     position    : absolute;
     bottom      : 0;
     left        : 0;
