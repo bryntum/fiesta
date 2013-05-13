@@ -7575,11 +7575,13 @@ Role('Siesta.Test.More', {
                 description     = options.description || description;
                 assertionName   = options.assertionName || assertionName;
                 
-                // errback is called in case "waitFor" has failed (used in Apple integration for example)
+                // errback is called in case "waitFor" has failed
                 errback         = options.errback
             }
+            
+            var isWaitingForTime        = this.typeOf(method) == 'Number'
 
-            var description         = this.typeOf(method) == 'Number' ? (method + ' ms') : description;
+            var description             = isWaitingForTime ? (method + ' ms') : description;
             var me                      = this;
             
             callback                    = callback || function () {}
@@ -7594,8 +7596,6 @@ Role('Siesta.Test.More', {
             
             interval                    = interval || this.waitForPollInterval
             timeout                     = timeout || this.waitForTimeout
-            
-            var isWaitingForTime        = this.typeOf(method) == 'Number'
             
             // this async frame not supposed to fail, because its delayed to `timeout + 3 * interval`
             // failure supposed to be generated in the "pollFunc" and this async frame to be closed
@@ -25643,7 +25643,7 @@ Role('Siesta.Test.Element', {
         },
 
         /**
-         * Passes if the element does not have the supplied style value
+         * Passes if the element has the supplied style value
          * 
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} property The style property to check for
@@ -29661,6 +29661,8 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
 
     initComponent : function() {
+        this.testListeners  = []
+        
         Ext.apply(this, {
             header          : false,
             collapsible     : true,
@@ -29799,6 +29801,9 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
     
     destroy : function () {
+        // just in case
+        this.hideIFrame()
+        
         Joose.A.each(this.testListeners, function (listener) { listener.remove() })
         
         this.test   = null
@@ -31654,6 +31659,8 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     
     initComponent : function() {
         var me = this;
+        
+        this.testListeners  = []
         
         if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
             model   : 'Siesta.Harness.Browser.Model.Assertion',
