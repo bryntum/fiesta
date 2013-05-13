@@ -1,24 +1,9 @@
-.testCasesList {
-    font-size : 14px;
-    position  : relative;
+.testcase-list-container .x-panel-body-default {
+    background : #f3f3f3;
 }
 
-
-.testcase-list-container .x-panel-body-default
-{
-    background:#f3f3f3;
-}
-
-.testcase-list-container .x-grid-body
-{
-    background:#fff;
-}
-
-
-.testCasesList .colHolder {
-    width    : 99%;
-    float    : left;
-    position : relative;
+.testcase-list-container .x-grid-body {
+    background : #fff;
 }
 
 .testCasesList .nameHolder {
@@ -27,9 +12,14 @@
     font-size     : 13px;
     white-space   : normal;
     margin-right  : 55px;
-    line-height   : 16px;
-    color         : #666666;
+    line-height   : 15px;
+    color         : #444;
     display       : block;
+}
+
+.filledStar .nameHolder {
+    background    : url('/media/img/star_full.png') no-repeat left center;
+    padding-left  : 20px;
 }
 
 .testCasesList .date {
@@ -42,18 +32,6 @@
 
 .testCasesList .x-grid-cell-inner {
     padding-top : 0;
-}
-
-.testCasesList .x-grid-cell-inner .star {
-    opacity : 0;
-}
-
-.testCasesList .testcase-row-over .star {
-    opacity : 1;
-}
-
-.testCasesList .filledStar .star {
-    opacity : 1;
 }
 
 .testCasesList .testNameColumn .x-column-header-trigger {
@@ -80,15 +58,17 @@
 }
 
 .testCasesList .userName {
-    font-size  : 10px;
-    text-align : left;
-    float      : right;
-    margin-right: 3px;
-    color      : rgb(172, 172, 172);
+    position     : absolute;
+    right        : 0;
+    bottom       : 0;
+    font-size    : 10px;
+    text-align   : left;
+    margin-right : 3px;
+    color        : rgb(172, 172, 172);
 }
 
 .testCasesList ul {
-    margin-top    : 2px;
+    margin-top    : 4px;
     margin-bottom : 0px;
     padding-left  : 0px;
 }
@@ -111,9 +91,8 @@
     font-weight : normal;
 }
 
-.tag-learn
-{
-    background:#5bb75b;
-    border-color:limegreen;
-    color:#fff;
+.tag-learn {
+    background   : #5bb75b;
+    border-color : limegreen;
+    color        : #fff;
 }

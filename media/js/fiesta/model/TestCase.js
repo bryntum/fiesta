@@ -20,8 +20,10 @@ Ext.define("Fiesta.model.TestCase", {
     ],
     
     getPreload : function () {
-        var framework     = this.getFramework();
-        return framework ? framework.getPreload() : [];
+        return [
+            'http://cdn.sencha.io/ext-4.1.0-gpl/resources/css/ext-all.css',
+            'http://cdn.sencha.io/ext-4.1.0-gpl/ext-all-debug.js'
+        ];
     },
 
     getFramework : function() {
@@ -60,5 +62,5 @@ Ext.define("Fiesta.model.TestCase", {
 
     hasTag : function(tag) {
         return Ext.Array.contains(this.getTagNames(), tag);
-    }
+    },
 });

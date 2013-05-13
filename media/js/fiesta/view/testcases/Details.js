@@ -2,7 +2,8 @@ Ext.define('Fiesta.view.testcases.Details', {
     extend        : 'Ext.FormPanel',
     alias         : 'widget.detailspanel',
     requires      : [
-        'Fiesta.plugins.TagSelect'
+        'Fiesta.plugins.TagSelect',
+        'Fiesta.view.testcases.PreloadGrid'
     ],
     border        : false,
     style         : 'border-bottom:1px solid #bbb',
@@ -38,14 +39,40 @@ Ext.define('Fiesta.view.testcases.Details', {
                             allowBlank : false
                         },
                         {
-                            xtype      : 'checkbox',
-                            name       : 'private',
-                            fieldLabel : 'Private'
+                            fieldLabel       : 'Tags',
+                            xtype            : 'tagselect',
+                            cls              : 'details-tags details-combo',
+                            store            : tagsStore,
+                            emptyText        : "Add multiple tags",
+                            displayField     : "tag",
+                            valueField       : "tag",
+                            name             : 'tagsList',
+                            queryMode        : 'local',
+                            anchor           : '80%',
+                            createNewOnEnter : true,
+                            createNewOnBlur  : true,
+                            forceSelection   : false
                         },
                         {
-                            xtype      : 'displayfield',
-                            name       : 'ownerName',
-                            fieldLabel : 'Submitted by'
+                            xtype : 'container',
+                            layout : {
+                                type : 'hbox',
+                                align : 'stretch'
+                            },
+                            items : [
+                                {
+                                    xtype      : 'displayfield',
+                                    name       : 'ownerName',
+                                    fieldLabel : 'Submitted by'
+                                },
+                                {
+                                    xtype      : 'checkbox',
+                                    labelAlign : 'right',
+                                    name       : 'private',
+                                    width      : 80,
+                                    fieldLabel : 'Private'
+                                }
+                            ]
                         },
                         {
                             xtype  : 'button',
@@ -68,44 +95,9 @@ Ext.define('Fiesta.view.testcases.Details', {
                     ]
                 },
                 {
-                    defaults : { anchor : '80%' },
-                    xtype    : 'form',
-                    flex     : 1,
-                    items    : [
-                        {
-                            fieldLabel       : 'Tags',
-                            xtype            : 'tagselect',
-                            cls              : 'details-tags details-combo',
-                            store            : tagsStore,
-                            emptyText        : "Add multiple tags",
-                            displayField     : "tag",
-                            valueField       : "tag",
-                            name             : 'tagsList',
-                            queryMode        : 'local',
-                            createNewOnEnter : true,
-                            createNewOnBlur  : true,
-                            forceSelection   : false
-                        },
-                        {
-                            xtype          : "combo",
-                            fieldLabel     : 'Framework',
-                            cls            : 'details-combo',
-                            displayField   : "name",
-                            valueField     : "id",
-                            editable       : true,
-                            forceSelection : true,
-                            name           : 'frameworkId',
-                            store          : "Frameworks",
-                            queryMode      : 'local'
-                        },
-                        {
-                            xtype      : 'textfield',
-                            cls        : 'details-text',
-                            name       : 'hostPageUrl',
-                            fieldLabel : 'Application URL',
-                            anchor     : '80%'
-                        }
-                    ]
+                    xtype : 'preloadgrid',
+                    border : true,
+                    height : 100
                 }
             ]
         });

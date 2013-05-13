@@ -2,7 +2,7 @@ Ext.define("Fiesta.model.Framework", {
     extend     : "Ext.data.Model",
     idProperty : "id",
     fields     : [
-        { name : "id", type : 'int'},
+        { name : "id", type : 'int' },
         "name"
     ],
     proxy      : {

@@ -54,8 +54,9 @@ Ext.define("Fiesta.view.SearchForm", {
                                             };
 
                                             if (item.url) {
-                                                var frameworkId = item.up('[frameworkId]').frameworkId;
-                                                testConfig.hostPageUrl = '/media/frameworks/' + frameworkId + '/examples/' + item.url;
+                                                var frameworkName = item.up('[frameworkName]').frameworkName;
+//                                                testConfig.frameworkId = frameworkName;
+                                                testConfig.hostPageUrl = frameworkName + '/examples/' + item.url;
                                             }
 
                                             this.createTest(testConfig);
@@ -113,7 +114,7 @@ Ext.define("Fiesta.view.SearchForm", {
                         items  : (FIESTA.isSignedIn() ? [
                             {
                                 xtype     : 'checkbox',
-                                boxLabel  : 'Mine only',
+                                boxLabel  : 'My own',
                                 name      : 'showMy',
                                 value     : 1,
                                 checked   : true,
@@ -124,7 +125,7 @@ Ext.define("Fiesta.view.SearchForm", {
                             },
                             {
                                 xtype     : 'checkbox',
-                                boxLabel  : 'Starred only',
+                                boxLabel  : 'Favorites only',
                                 name      : 'showStarred',
                                 value     : 1,
                                 margin    : '0 0 0 10',

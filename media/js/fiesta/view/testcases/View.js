@@ -5,6 +5,7 @@ Ext.define('Fiesta.view.testcases.View', {
     
     requires    : [
         'Fiesta.view.testcases.Details',
+        'Fiesta.view.testcases.ResultPanel',
         'Fiesta.plugins.JsEditor'
     ],
 
@@ -124,19 +125,7 @@ Ext.define('Fiesta.view.testcases.View', {
             border    : false,
             closable  : true,
             dockedItems : [
-                topBar,
-                {
-                    xtype   : 'component',
-                    dock    : 'top',
-                    height  : 15,
-                    html    :   '<ul class="panel-picker">' +
-                        '<li class="active">JS</li>' +
-                        '<li>Results</li>' +
-                        '<li class="active">DOM</li>' +
-                        '<li>HTML</li>' +
-                        '<li>CSS</li>' +
-                                '</ul>'
-                }
+                topBar
             ],
             items     : [
                 {
@@ -166,9 +155,13 @@ Ext.define('Fiesta.view.testcases.View', {
                             items  : [
                                 {
                                     xtype  : 'component',
+                                    height : 18,
                                     cls    : 'codeeditor-before',
-                                    html   : 'StartTest(<span style="color:#708">function</span>(t) {',
-                                    height : 18
+                                    html   : '<div class="panel-picker">' +
+                                        '<button class="active">JS</button>' +
+                                        '<button>Comments</button>' +
+                                        '</div>'+
+                                        'StartTest(<span style="color:#708">function</span>(t) {'
                                 },
                                 {
                                     xtype      : 'jseditor',
@@ -189,7 +182,6 @@ Ext.define('Fiesta.view.testcases.View', {
                             flex         : 1,
                             region       : 'east',
                             split        : true,
-                            header       : false,
                             border       : false,
                             isStandalone : true,
                             showToolbar  : false,
@@ -231,9 +223,28 @@ Ext.define('Fiesta.view.testcases.View', {
             scope    : this
         });
 
+        this.resultPanel.add({
+            xtype  : 'component',
+            height : 18,
+            html   : '<div class="panel-picker">' +
+                    '<button class="dom active">DOM</button>' +
+                    '<button class="assertions">Assertions</button>' +
+                '</div>'
+        });
+
         this.harness.on('teststart', this.onTestStart, this);
     },
 
+    onDomOptionsClick : function(e, t) {
+        Ext.fly(t).toggleCls('active');
+        var cls = t.className.toLowerCase();
+
+        if (cls.match('assertions')) {
+            this.resultPanel.down('assertiongrid').setHeight(cls.match('active') ? 200 : 0);
+        } else {
+            this.resultPanel.down('assertiongrid').setHeight(cls.match('active') ? 200 : this.getHeight() - 43);
+        }
+     },
 
     onTabCreate : function () {
         this.codeEditor.setValue(this.testCaseModel.get('code'));
@@ -288,7 +299,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 // TODO solve and uncomment
 //                testClass       : testCaseModel.getTestClass(),
                 performSetup    : false,
-                hostPageUrl     : pageUrl,
+                hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreload()
             }, function () {
                 runButton.setIconCls('');
@@ -314,6 +325,11 @@ Ext.define('Fiesta.view.testcases.View', {
             scope       : this
         });
 
+        this.resultPanel.el.on({
+            click : this.onDomOptionsClick,
+            scope : this,
+            delegate : 'button'
+        });
     },
 
     onVoteClick : function(e, t) {

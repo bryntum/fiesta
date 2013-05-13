@@ -46,7 +46,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                     itemId  : 'extjs',
                     iconCls : 'icon-extjs',
                     menu    : {
-                        frameworkId        : 'extjs-4.2.0',
+                        frameworkName        : 'extjs-4.2.0',
                         ignoreParentClicks : true
                     }
                 },
@@ -55,7 +55,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                     itemId  : 'touch',
                     iconCls : 'icon-touch',
                     menu    : {
-                        frameworkId        : 'sencha-touch-2.2.0',
+                        frameworkName        : 'sencha-touch-2.2.0',
                         ignoreParentClicks : true
                     }
                 }

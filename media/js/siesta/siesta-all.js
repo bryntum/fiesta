@@ -31701,7 +31701,6 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
             columns     : [
                 {
                     xtype           : 'assertiontreecolumn',
-                    header          : 'Results',
                     flex            : 1,
                     
                     dataIndex       : 'folderStatus',
