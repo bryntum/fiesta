@@ -202,11 +202,10 @@ Ext.define("Fiesta.view.SearchForm", {
         store.load();
     },
 
+    
     processFilter : function (field) {
-
-        var searchForm = Ext.ComponentQuery.query('searchForm'),
-            params = searchForm[0].getForm().getValues(),
-            store = Ext.getStore('TestCases');
+        var params  = this.getForm().getValues(),
+            store   = Ext.getStore('TestCases');
 
         store.clearFilter();
 
@@ -214,15 +213,15 @@ Ext.define("Fiesta.view.SearchForm", {
 
         if (params.showStarred == 'on') {
             store.filter(
-                {property : "starred", value : true}
+                { property : "starred", value : true }
             );
         }
 
         store.proxy.extraParams = params;
         store.loadPage(1);
-
     },
 
+    
     addTagFilter : function (tag) {
         var curValue = this.getForm().findField('tags-filter').getValue();
         if (curValue.indexOf(tag.id) == -1) {
