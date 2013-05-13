@@ -332,7 +332,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
         var twitterUrl = 'https://twitter.com/share?' +
             'text=' + encodeURIComponent(this.title) +
-            '&hashtags=' + encodeURIComponent(this.testCaseModel.getTagnames(',')) +
+            '&hashtags=' + encodeURIComponent(this.testCaseModel.getTagNamesAsString(',')) +
             '&url=' + encodeURIComponent(window.location.href);
 
         window.open(twitterUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');

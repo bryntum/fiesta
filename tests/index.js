@@ -34,7 +34,8 @@ Harness.start(
         group               : 'filtering_tests',
 
         items               : [
-            'filtering_tests/sanity.t.js'
+            'filtering_tests/sanity.t.js',
+            'filtering_tests/by_tag.t.js'
         ]
     },
     {
