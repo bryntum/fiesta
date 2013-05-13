@@ -192,6 +192,7 @@
     margin-left:10px;
     padding: 0 3px;
     cursor : pointer;
+    border-radius: 2px;
 }
 
 .panel-picker li:hover

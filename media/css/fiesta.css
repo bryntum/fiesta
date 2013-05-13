@@ -3,6 +3,12 @@ dl, dd, dt, ul, li {
     padding : 0;
 }
 
+body
+{
+    background:#3892d3 url(../img/logosmall.png) no-repeat 6px 8px !important;
+    background-size:auto 45px !important;
+}
+
 .x-panel-header-text-container-default,
 .x-tab-inner {
     font-weight : normal !important;
