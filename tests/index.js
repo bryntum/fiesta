@@ -6,7 +6,7 @@ Harness.configure({
     autoCheckGlobals        : false,
     overrideSetTimeout      : false,
 
-    hostPageUrl   : '/'
+    hostPageUrl             : '/'
 })
 
 
