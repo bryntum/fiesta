@@ -7559,7 +7559,7 @@ Role('Siesta.Test.More', {
          * No call to checker will be performed and callback will not receive a result from it. 
          */
         waitFor : function (method, callback, scope, timeout, interval)  {
-            var description         = this.typeOf(method) == 'Number' ? (method + ' ms') : ' condition to be fullfilled';
+            var description         = ' condition to be fullfilled';
             var assertionName       = 'waitFor';
             var errback
 
@@ -7579,6 +7579,7 @@ Role('Siesta.Test.More', {
                 errback         = options.errback
             }
 
+            var description         = this.typeOf(method) == 'Number' ? (method + ' ms') : description;
             var me                      = this;
             
             callback                    = callback || function () {}
@@ -29660,8 +29661,6 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
 
     initComponent : function() {
-        this.testListeners  = []
-        
         Ext.apply(this, {
             header          : false,
             collapsible     : true,
@@ -29800,9 +29799,6 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
     
     destroy : function () {
-        // just in case
-        this.hideIFrame()
-        
         Joose.A.each(this.testListeners, function (listener) { listener.remove() })
         
         this.test   = null
@@ -31658,8 +31654,6 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     
     initComponent : function() {
         var me = this;
-        
-        this.testListeners  = []
         
         if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
             model   : 'Siesta.Harness.Browser.Model.Assertion',
