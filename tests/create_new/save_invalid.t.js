@@ -1,9 +1,14 @@
 StartTest(function(t) {
-    var tabs = t.cq1('mainView');
-    var Ext = t.Ext();
+    var Ext
 
     t.chain(
         'logInAsAdmin()',
+        function (next) {
+            // setup Ext after potential page refresh
+            Ext     = t.Ext();
+            
+            next()
+        },
         { waitFor : 'rowsVisible' },
 
         { waitFor : 'CQ', args : 'button[action=createNew]' },
