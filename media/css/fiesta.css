@@ -9,6 +9,11 @@ body
     background-size:auto 45px !important;
 }
 
+.viewport-top-toolbar
+{
+    overflow: visible;
+}
+
 .x-panel-header-text-container-default,
 .x-tab-inner {
     font-weight : normal !important;

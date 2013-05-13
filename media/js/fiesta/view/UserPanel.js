@@ -3,6 +3,7 @@ Ext.define('Fiesta.view.UserPanel', {
     alias         : 'widget.userpanel',
     style         : 'background:transparent;',
     height        : 27,
+    cls           : 'viewport-top-toolbar',
 
     initComponent : function () {
         Ext.apply(this, {
