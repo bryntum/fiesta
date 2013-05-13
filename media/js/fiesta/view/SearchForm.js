@@ -157,18 +157,11 @@ Ext.define("Fiesta.view.SearchForm", {
         this.callParent(arguments);
     },
 
+    
     createTest : function (config) {
         var tabs = FIESTA.getMainView(),
             tabExist = false;
 
-//        tabs.items.each(function (tab) {
-//            if (tab.testCaseModel && tab.testCaseModel.phantom) {
-//                tabExist = true;
-//                FIESTA.getMainView().setActiveTab(tab);
-//                return false;
-//            }
-//        });
-//        if(!tabExist) {
         var test = new Fiesta.model.TestCase(Ext.apply(config || {}, {
             ownerId   : CONFIG.userId,
             ownerName : CONFIG.userName,
@@ -179,10 +172,8 @@ Ext.define("Fiesta.view.SearchForm", {
         test.phantom = true;
 
         FIESTA.getMainView().activateTabFor(test);
-//        }
-
-
     },
+    
 
     clearFilters : function () {
         var store = Ext.getStore('TestCases');
