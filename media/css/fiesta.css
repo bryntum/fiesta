@@ -223,3 +223,13 @@ body
     background: url(../img/user.png) no-repeat left center;
 }
 
+.searchform .x-form-item, .x-form-field,
+.searchform .x-form-trigger-wrap {
+    font-size:11px;
+    border-color: silver;
+}
+
+#tags-filter ul.x-boxselect-list
+{
+    padding:2px 3px 1px 3px;
+}

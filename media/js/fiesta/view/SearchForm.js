@@ -3,6 +3,8 @@ Ext.define("Fiesta.view.SearchForm", {
     requires      : ['Fiesta.store.Frameworks', 'Fiesta.store.Tags', 'Fiesta.view.menu.TestTemplateMenu'],
     xtype         : "searchForm",
     border        : false,
+    cls           : 'searchform',
+
     initComponent : function () {
 
         Ext.apply(this, {
@@ -25,6 +27,7 @@ Ext.define("Fiesta.view.SearchForm", {
                         items  : [
                             {
                                 id        : "name-filter",
+                                cls       : 'details-text',
                                 xtype     : "textfield",
                                 flex      : true,
                                 emptyText : "Filter by name",
