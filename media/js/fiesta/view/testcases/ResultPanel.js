@@ -54,10 +54,10 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
                     hideHeaders     : true,
                     split           : true,
                     isStandalone    : this.isStandalone,
-                    listeners       : {
-                        itemdblclick    : this.onAssertionDoubleClick,
-                        scope           : this
-                    },
+//                    listeners       : {
+//                        itemdblclick    : this.onAssertionDoubleClick,
+//                        scope           : this
+//                    },
                     placeholder : {
                         height  : 0
                     }

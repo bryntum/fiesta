@@ -146,6 +146,16 @@ Ext.define('Fiesta.view.testcases.Details', {
 
     alignDisqus : function () {
 //        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
+    },
+
+    updateRecord : function() {
+        var preloadGrid = this.down('preloadgrid');
+
+        this.getForm().updateRecord();
+
+        if (preloadGrid) {
+            this.testCaseModel.set('preloads', preloadGrid.getValue());
+        }
     }
 
 });

@@ -126,7 +126,6 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                             ],
                             listeners : {
                                 click : function(menu, item) {
-                                    debugger;
                                     if (!item.menu) {
                                         this.addTemplatePreloads(item.ownerCt.itemId, item.text);
                                     }

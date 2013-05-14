@@ -287,7 +287,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var code                = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
-            this.detailsPanel.getForm().updateRecord(testCaseModel);
+            this.detailsPanel.updateRecord(testCaseModel);
             var me = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
@@ -298,8 +298,6 @@ Ext.define('Fiesta.view.testcases.View', {
             harness.startSingle({
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
-                // TODO solve and uncomment
-//                testClass       : testCaseModel.getTestClass(),
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
@@ -421,7 +419,7 @@ Ext.define('Fiesta.view.testcases.View', {
             preloadGrid = this.down('preloadgrid'),
             tags = [];
 
-        form.updateRecord(this.testCaseModel);
+        this.detailsPanel.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.codeEditor.getValue());
 
