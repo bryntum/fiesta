@@ -149,7 +149,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
 
     addTemplatePreloads : function(category, id) {
         var preloads;
-debugger;
+
         switch (category) {
             case 'Bryntum':
                 switch (id) {
@@ -196,7 +196,7 @@ debugger;
             vals.push([url]);
         });
 
-        vals.push([''],[''],[''],[''])
+        vals.push([''])
 
         this.store.loadData(vals);
     }
