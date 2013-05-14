@@ -47,7 +47,7 @@ Ext.define('Fiesta.view.testcases.View', {
                                     '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
                         return result;
                     },
-                    disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId ? true : false
+                    disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId || this.testCaseModel.phantom
                 },
 
                 { xtype : 'tbseparator' },
