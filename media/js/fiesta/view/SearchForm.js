@@ -88,21 +88,21 @@ Ext.define("Fiesta.view.SearchForm", {
                         }
 
                     },
-                    {
-                        id           : "framework-filter",
-                        xtype        : "combo",
-                        editable     : false,
-                        displayField : "name",
-                        valueField   : "id",
-                        emptyText    : "Framework",
-                        store        : new Fiesta.store.Frameworks(),
-                        name         : 'frameworkId',
-                        listeners    : {
-                            change      : this.processFilter,
-                            scope       : this
-                        }
-
-                    },
+//                    {
+//                        id           : "framework-filter",
+//                        xtype        : "combo",
+//                        editable     : false,
+//                        displayField : "name",
+//                        valueField   : "id",
+//                        emptyText    : "Framework",
+//                        store        : new Fiesta.store.Frameworks(),
+//                        name         : 'frameworkId',
+//                        listeners    : {
+//                            change      : this.processFilter,
+//                            scope       : this
+//                        }
+//
+//                    },
                     {
                         margin : '0 0 5 0',
                         xtype : 'container',
