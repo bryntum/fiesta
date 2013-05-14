@@ -78,10 +78,11 @@ Ext.define('Fiesta.view.testcases.View', {
                 scope   : this
             },
             {
-                iconCls : this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
-                scope   : this,
-                action  : 'changeFavorites',
-                handler : this.changeFavorite
+                iconCls  : this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
+                scope    : this,
+                action   : 'changeFavorites',
+                handler  : this.changeFavorite,
+                disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
             },
 
             {
@@ -369,7 +370,9 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     changeFavorite : function () {
-        FIESTA.addToFavorites(this.testCaseModel);
+        if(!this.testCaseModel.phantom) {
+            FIESTA.addToFavorites(this.testCaseModel);
+        }
     },
 
 

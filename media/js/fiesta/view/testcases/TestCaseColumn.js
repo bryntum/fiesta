@@ -12,7 +12,7 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
             tpl : [
                 '<div class="colHolder">' +
                     '<div class="date">{[Fiesta.util.Format.humanDate(values.created_at)]} <span class="userName">by {ownerName}</span></div>',
-                    '<div class="nameHolder">{name}</div>',
+                    '<div class="nameHolder">{name:ellipsis(30)}</div>',
                     '<ul class="x-boxselect-list">',
                         '<tpl foreach="tags">',
                             '<li class="x-tab-default x-boxselect-item tag-{tag}">',
