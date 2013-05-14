@@ -140,7 +140,7 @@ Ext.define("Fiesta.view.SearchForm", {
                             {
                                 xtype     : 'component',
                                 cls       : 'clrFilter',
-                                html      : 'Clear filters',
+                                html      : '<span style="white-space: nowrap">Clear filters</span>',
                                 listeners : {
                                     click : {
                                         element : 'el',
