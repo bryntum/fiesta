@@ -125,7 +125,9 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                             ],
                             listeners : {
                                 click : function(menu, item) {
-                                    this.addTemplatePreloads(item.ownerCt.itemId, item.text);
+                                    if (!item.menu) {
+                                        this.addTemplatePreloads(item.ownerCt.itemId, item.text);
+                                    }
                                 },
                                 scope : this
                             }

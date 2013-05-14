@@ -416,11 +416,16 @@ Ext.define('Fiesta.view.testcases.View', {
     save : function () {
         var form = this.detailsPanel.getForm(),
             me = this,
+            preloadGrid = this.down('preloadgrid'),
             tags = [];
 
         form.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.codeEditor.getValue());
+
+        if (preloadGrid) {
+            this.testCaseModel.set('preloads', preloadGrid.getValue());
+        }
 
         if (this.testCaseModel.isValid()) {
             var saveBtn = this.saveButton;
