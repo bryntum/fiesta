@@ -56,15 +56,7 @@ Ext.define('Fiesta.view.testcases.List', {
             });
 
             searchForm.addTagFilter(selTag);
-        }
-
-        else if (target.hasCls('star')) {
-
-            FIESTA.addToFavorites(grid.getStore().getAt(index),false);
-
-        }
-
-        else {
+        } else {
             console.log('openTab');
             tabs.activateTabFor(record);
         }
