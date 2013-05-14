@@ -92,8 +92,9 @@
     font-weight : normal;
 }
 
-.tag-learn {
-    background   : #5bb75b;
-    border-color : limegreen;
+.tag-learn,
+li[qtip=learn]{
+    background   : #5bb75b !important;
+    border-color : green;
     color        : #fff;
 }
