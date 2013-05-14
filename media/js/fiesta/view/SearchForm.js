@@ -30,7 +30,8 @@ Ext.define("Fiesta.view.SearchForm", {
                                 emptyText : "Filter by name",
                                 name      : 'testCaseName',
                                 listeners : {
-                                    change : this.processFilter
+                                    change      : this.processFilter,
+                                    scope       : this
                                 }
                             },
                             {
@@ -81,7 +82,8 @@ Ext.define("Fiesta.view.SearchForm", {
                         queryMode      : 'local',
                         forceSelection : true,
                         listeners      : {
-                            change : this.processFilter
+                            change      : this.processFilter,
+                            scope       : this
                         }
 
                     },
@@ -95,7 +97,8 @@ Ext.define("Fiesta.view.SearchForm", {
                         store        : new Fiesta.store.Frameworks(),
                         name         : 'frameworkId',
                         listeners    : {
-                            change : this.processFilter
+                            change      : this.processFilter,
+                            scope       : this
                         }
 
                     },
@@ -115,7 +118,8 @@ Ext.define("Fiesta.view.SearchForm", {
                                 value     : 1,
                                 checked   : true,
                                 listeners : {
-                                    change : this.processFilter
+                                    change      : this.processFilter,
+                                    scope       : this
                                 }
                             },
                             {
@@ -126,7 +130,8 @@ Ext.define("Fiesta.view.SearchForm", {
                                 margin    : '0 0 0 10',
                                 checked   : false,
                                 listeners : {
-                                    change : this.processFilter
+                                    change      : this.processFilter,
+                                    scope       : this
                                 }
                             }
                         ] : []).concat(
@@ -152,18 +157,11 @@ Ext.define("Fiesta.view.SearchForm", {
         this.callParent(arguments);
     },
 
+    
     createTest : function (config) {
         var tabs = FIESTA.getMainView(),
             tabExist = false;
 
-//        tabs.items.each(function (tab) {
-//            if (tab.testCaseModel && tab.testCaseModel.phantom) {
-//                tabExist = true;
-//                FIESTA.getMainView().setActiveTab(tab);
-//                return false;
-//            }
-//        });
-//        if(!tabExist) {
         var test = new Fiesta.model.TestCase(Ext.apply(config || {}, {
             ownerId   : CONFIG.userId,
             ownerName : CONFIG.userName,
@@ -174,10 +172,8 @@ Ext.define("Fiesta.view.SearchForm", {
         test.phantom = true;
 
         FIESTA.getMainView().activateTabFor(test);
-//        }
-
-
     },
+    
 
     clearFilters : function () {
         var store = Ext.getStore('TestCases');
@@ -202,11 +198,10 @@ Ext.define("Fiesta.view.SearchForm", {
         store.load();
     },
 
+    
     processFilter : function (field) {
-
-        var searchForm = Ext.ComponentQuery.query('searchForm'),
-            params = searchForm[0].getForm().getValues(),
-            store = Ext.getStore('TestCases');
+        var params  = this.getForm().getValues(),
+            store   = Ext.getStore('TestCases');
 
         store.clearFilter();
 
@@ -214,15 +209,15 @@ Ext.define("Fiesta.view.SearchForm", {
 
         if (params.showStarred == 'on') {
             store.filter(
-                {property : "starred", value : true}
+                { property : "starred", value : true }
             );
         }
 
         store.proxy.extraParams = params;
         store.loadPage(1);
-
     },
 
+    
     addTagFilter : function (tag) {
         var curValue = this.getForm().findField('tags-filter').getValue();
         if (curValue.indexOf(tag.id) == -1) {

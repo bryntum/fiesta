@@ -82,6 +82,8 @@
 .testCasesList .userName {
     font-size  : 10px;
     text-align : left;
+    float      : right;
+    margin-right: 3px;
     color      : rgb(172, 172, 172);
 }
 

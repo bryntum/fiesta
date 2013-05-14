@@ -50,7 +50,15 @@ Ext.define("Fiesta.model.TestCase", {
         return valid;
     },
 
-    getTagnames : function(separator) {
-        return Ext.Array.map(this.get('tags'), function(tag) { return tag.tag; })
+    getTagNamesAsString : function() {
+        return this.getTagNames().join(separator || ',');
+    },
+
+    getTagNames : function() {
+        return Ext.Array.map(this.get('tags'), function(tag) { return tag.tag; });
+    },
+
+    hasTag : function(tag) {
+        return Ext.Array.contains(this.getTagNames(), tag);
     }
 });

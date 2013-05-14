@@ -1,5 +1,4 @@
 StartTest(function(t) {
-    var tabs = t.cq1('mainView');
 
     t.chain(
         { waitFor : 'CQ', args : 'button[action=createNew]' },

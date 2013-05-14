@@ -22,105 +22,123 @@ Ext.define('Fiesta.view.testcases.View', {
 
     initComponent : function () {
 
-        var topBar = [
-            {
-                iconCls : 'icon-arrow-down-alt1',
-                action  : 'expandcollapse',
-                cls     : 'expandcollapse',
-                scope   : this,
-                handler : function () {
-                    this.detailsPanel.toggleCollapse();
+        var topBar = {
+            xtype : 'toolbar',
+            dock : 'top',
+            items : [
+                {
+                    iconCls : 'icon-arrow-down-alt1',
+                    action  : 'expandcollapse',
+                    cls     : 'expandcollapse',
+                    scope   : this,
+                    handler : function () {
+                        this.detailsPanel.toggleCollapse();
+                    }
+                },
+                {
+                    xtype           : 'displayfield',
+                    width           : 20,
+                    cls             : 'vote-container',
+                    value           : this.testCaseModel.get('rating'),
+                    renderer        : function (value) {
+                        var result = '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">'
+                                        +value+
+                                    '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
+                        return result;
+                    },
+                    disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId ? true : false
+                },
+
+                { xtype : 'tbseparator' },
+                {
+                    text   : 'Run',
+                    width  : 80,
+                    cls    : 'run-testcase',
+                    action : 'run',
+
+                    handler : this.runTest,
+                    scope   : this
+                },
+                {
+                    text    : 'Save',
+                    width   : 80,
+                    cls     : 'save-testcase',
+                    action  : 'save',
+
+                    handler : this.save,
+                    scope   : this
+                },
+                {
+                    xtype : 'tbfill'
+                },
+                {
+                    text    : '<b>{ }</b>',
+                    tooltip : 'Auto-indent code',
+                    handler : function () {
+                        var ed = this.codeEditor.editor;
+                        ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
+                    },
+                    scope   : this
+                },
+                {
+                    iconCls  : this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
+                    scope    : this,
+                    action   : 'changeFavorites',
+                    handler  : this.changeFavorite,
+                    disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
+                },
+
+                {
+                    iconCls  : 'icon-copy',
+                    tooltip  : 'Clone this test',
+                    scope    : this,
+                    handler  : this.onCloneClick,
+                    disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
+                },
+                { xtype : 'tbseparator' },
+                {
+                    tooltip : 'Share on Twitter',
+                    iconCls : 'icon-twitter',
+                    cls     : 'social',
+                    scope   : this,
+                    handler : this.shareTwitter
+                },
+                {
+                    tooltip : 'Share on Facebook',
+                    iconCls : 'icon-facebook-2',
+                    cls     : 'social',
+                    scope   : this,
+                    handler : this.shareFb
+                },
+                {
+                    tooltip : 'Share on Google+',
+                    iconCls : 'social icon-google-plus',
+                    cls     : 'social',
+                    scope   : this,
+                    handler : this.shareGoogle
                 }
-            },
-            {
-                xtype           : 'displayfield',
-                width           : 20,
-                cls             : 'vote-container',
-                value           : this.testCaseModel.get('rating'),
-                renderer        : function (value) {
-                    var result = '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">'
-                                    +value+
-                                '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
-                    return result;
-                },
-                disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId ? true : false
-            },
-
-            { xtype : 'tbseparator' },
-            {
-                text   : 'Run',
-                width  : 80,
-                cls    : 'run-testcase',
-                action : 'run',
-
-                handler : this.runTest,
-                scope   : this
-            },
-            {
-                text    : 'Save',
-                width   : 80,
-                cls     : 'save-testcase',
-                action  : 'save',
-
-                handler : this.save,
-                scope   : this
-            },
-            {
-                xtype : 'tbfill'
-            },
-            {
-                text    : '<b>{ }</b>',
-                tooltip : 'Auto-indent code',
-                handler : function () {
-                    var ed = this.codeEditor.editor;
-                    ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
-                },
-                scope   : this
-            },
-            {
-                iconCls  : this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
-                scope    : this,
-                action   : 'changeFavorites',
-                handler  : this.changeFavorite,
-                disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
-            },
-
-            {
-                iconCls  : 'icon-copy',
-                tooltip  : 'Clone this test',
-                scope    : this,
-                handler  : this.onCloneClick,
-                disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
-            },
-            { xtype : 'tbseparator' },
-            {
-                tooltip : 'Share on Twitter',
-                iconCls : 'icon-twitter',
-                cls     : 'social',
-                scope   : this,
-                handler : this.shareTwitter
-            },
-            {
-                tooltip : 'Share on Facebook',
-                iconCls : 'icon-facebook-2',
-                cls     : 'social',
-                scope   : this,
-                handler : this.shareFb
-            },
-            {
-                tooltip : 'Share on Google+',
-                iconCls : 'social icon-google-plus',
-                cls     : 'social',
-                scope   : this,
-                handler : this.shareGoogle
-            }
-        ];
+            ]
+        };
 
         Ext.apply(this, {
             layout    : 'border',
             border    : false,
             closable  : true,
-            tbar      : topBar,
+            dockedItems : [
+                topBar,
+                {
+                    xtype   : 'component',
+                    dock    : 'top',
+                    height  : 15,
+                    html    :   '<ul class="panel-picker">' +
+                        '<li class="active">JS</li>' +
+                        '<li>Results</li>' +
+                        '<li class="active">DOM</li>' +
+                        '<li>HTML</li>' +
+                        '<li>CSS</li>' +
+                                '</ul>'
+                }
+            ],
             items     : [
                 {
                     xtype       : 'detailspanel',
@@ -144,14 +162,14 @@ Ext.define('Fiesta.view.testcases.View', {
                         {
                             xtype  : 'container',
                             region : 'center',
+                            cls    : 'code-container',
                             layout : { type : 'vbox', align : 'stretch' },
-                            style  : 'background:#fff',
                             items  : [
                                 {
                                     xtype  : 'component',
                                     cls    : 'codeeditor-before',
                                     html   : 'StartTest(<span style="color:#708">function</span>(t) {',
-                                    height : 22
+                                    height : 18
                                 },
                                 {
                                     xtype      : 'jseditor',
@@ -163,7 +181,7 @@ Ext.define('Fiesta.view.testcases.View', {
                                     xtype  : 'component',
                                     cls    : 'codeeditor-after',
                                     html   : '});',
-                                    height : 20
+                                    height : 18
                                 }
                             ]
                         },
@@ -239,8 +257,9 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     onTabDeActivate : function () {
-        this.resultPanel.hideIFrame()
-        this.detailsPanel.hideDisqus()
+        // "deactivate" event is conveniently fired in the middle of the destroying process
+        !this.resultPanel.isDestroyed && this.resultPanel.hideIFrame()
+        !this.detailsPanel.isDestroyed && this.detailsPanel.hideDisqus()
     },
 
 
@@ -332,7 +351,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
         var twitterUrl = 'https://twitter.com/share?' +
             'text=' + encodeURIComponent(this.title) +
-            '&hashtags=' + encodeURIComponent(this.testCaseModel.getTagnames(',')) +
+            '&hashtags=' + encodeURIComponent(this.testCaseModel.getTagNamesAsString(',')) +
             '&url=' + encodeURIComponent(window.location.href);
 
         window.open(twitterUrl, 'sharer', 'toolbar=0,status=0,width=580,height=325');
@@ -373,6 +392,7 @@ Ext.define('Fiesta.view.testcases.View', {
         if(!this.testCaseModel.phantom) {
             FIESTA.addToFavorites(this.testCaseModel);
         }
+//        FIESTA.addToFavorites(this.testCaseModel);
     },
 
 

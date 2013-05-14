@@ -10,7 +10,8 @@ StartTest(function(t) {
         { waitFor : 5000 },
 
         function (next) {
-            t.selectorNotExists('.ghost-cursor', 'Should not find ghost cursor leaked after test is done')
+            t.hasStyle('.ghost-cursor', 'display', 'none', 'Should not find visible ghost cursor after test is done');
+            t.selectorNotExists('.ghost-cursor-click-indicator', 'Should not find click indicator elements leaked after test is done')
         }
     )
 });

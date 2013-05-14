@@ -2,6 +2,8 @@ Ext.define('Fiesta.view.UserPanel', {
     extend        : 'Ext.Toolbar',
     alias         : 'widget.userpanel',
     style         : 'background:transparent;',
+    height        : 27,
+    cls           : 'viewport-top-toolbar',
 
     initComponent : function () {
         Ext.apply(this, {
@@ -10,7 +12,7 @@ Ext.define('Fiesta.view.UserPanel', {
                 !FIESTA.isSignedIn() ? {
                     xtype   : 'button',
                     action  : 'sign_in',
-                    text    : 'Sign In!',
+                    text    : 'Sign In',
                     handler : this.openSigninWindow
                     //                        href        : '/account/sign_in/',
                     //                        hrefTarget  : '_self'

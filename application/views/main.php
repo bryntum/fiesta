@@ -3,6 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to Fiesta</title>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata'
+          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all-neptune.css" />
     <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
     <link rel="stylesheet" type="text/css" href="/media/css/test.details.css" />
@@ -38,7 +40,7 @@
     <script src="/media/js/codemirror/lib/codemirror.js"></script>
     <script src="/media/js/codemirror/mode/javascript/javascript.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
-    <link rel="stylesheet" href="/media/js/codemirror/doc/docs.css">
+    <!--<link rel="stylesheet" href="/media/js/codemirror/doc/docs.css">-->
     <link rel="stylesheet" href="/media/js/codemirror/addon/lint/lint.css">
     <script src="/media/js/codemirror/addon/lint/lint.js"></script>
     <script src="/media/js/codemirror/addon/lint/javascript-lint.js"></script>

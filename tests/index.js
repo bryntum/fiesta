@@ -6,7 +6,7 @@ Harness.configure({
     autoCheckGlobals        : false,
     overrideSetTimeout      : false,
 
-    hostPageUrl   : '/'
+    hostPageUrl             : '/'
 })
 
 
@@ -26,14 +26,17 @@ Harness.start(
             'create_new/open_2_tabs.t.js',
             'create_new/edit_tags.t.js',
             'create_new/create_new_star.t.js',
-            'create_new/create_save_delete.t.js'
+            'create_new/create_save_delete.t.js',
+            'create_new/save_invalid.t.js'
         ]
     },
     {
         group               : 'filtering_tests',
 
         items               : [
-            'filtering_tests/sanity.t.js'
+            'filtering_tests/sanity.t.js',
+            'filtering_tests/by_tag.t.js',
+            'filtering_tests/by_name.t.js'
         ]
     },
     {

@@ -58,7 +58,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                         frameworkId        : 'sencha-touch-2.2.0',
                         ignoreParentClicks : true
                     }
-                },
+                }
             ]
         });
 

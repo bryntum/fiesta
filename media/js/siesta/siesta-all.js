@@ -7559,7 +7559,7 @@ Role('Siesta.Test.More', {
          * No call to checker will be performed and callback will not receive a result from it. 
          */
         waitFor : function (method, callback, scope, timeout, interval)  {
-            var description         = this.typeOf(method) == 'Number' ? (method + ' ms') : ' condition to be fullfilled';
+            var description         = ' condition to be fullfilled';
             var assertionName       = 'waitFor';
             var errback
 
@@ -7575,10 +7575,13 @@ Role('Siesta.Test.More', {
                 description     = options.description || description;
                 assertionName   = options.assertionName || assertionName;
                 
-                // errback is called in case "waitFor" has failed (used in Apple integration for example)
+                // errback is called in case "waitFor" has failed
                 errback         = options.errback
             }
+            
+            var isWaitingForTime        = this.typeOf(method) == 'Number'
 
+            var description             = isWaitingForTime ? (method + ' ms') : description;
             var me                      = this;
             
             callback                    = callback || function () {}
@@ -7593,8 +7596,6 @@ Role('Siesta.Test.More', {
             
             interval                    = interval || this.waitForPollInterval
             timeout                     = timeout || this.waitForTimeout
-            
-            var isWaitingForTime        = this.typeOf(method) == 'Number'
             
             // this async frame not supposed to fail, because its delayed to `timeout + 3 * interval`
             // failure supposed to be generated in the "pollFunc" and this async frame to be closed
@@ -25642,7 +25643,7 @@ Role('Siesta.Test.Element', {
         },
 
         /**
-         * Passes if the element does not have the supplied style value
+         * Passes if the element has the supplied style value
          * 
          * @param {Siesta.Test.ActionTarget} el The element to query
          * @param {String} property The style property to check for
@@ -29800,6 +29801,9 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
     
     destroy : function () {
+        // just in case
+        this.hideIFrame()
+        
         Joose.A.each(this.testListeners, function (listener) { listener.remove() })
         
         this.test   = null
