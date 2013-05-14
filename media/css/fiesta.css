@@ -9,6 +9,16 @@ body
     background-size:auto 45px !important;
 }
 
+.beta
+{
+    position : absolute;
+    top:33px;
+    left:139px;
+    color:yellow;
+    font-size: 10px;
+    font-family: "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+}
+
 .viewport-top-toolbar
 {
     overflow: visible;

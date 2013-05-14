@@ -48,6 +48,7 @@
 
 </head>
 <body>
+<span class="beta">beta</span>
 <div id="disqus_thread"></div>
 <script>
     var disqus_developer = 1;
