@@ -321,17 +321,19 @@ Ext.define('Fiesta.view.testcases.View', {
 
         var voteCt = this.el.down('.vote-container');
 
-        voteCt.on({
-            click       : this.onVoteClick,
-            delegate    : '.arrow',
-            scope       : this
-        });
+        if (!this.down('[cls=vote-container]').isDisabled()) {
+            voteCt.on({
+                click       : this.onVoteClick,
+                delegate    : '.arrow',
+                scope       : this
+            });
 
-        this.resultPanel.el.on({
-            click : this.onDomOptionsClick,
-            scope : this,
-            delegate : 'button'
-        });
+            this.resultPanel.el.on({
+                click : this.onDomOptionsClick,
+                scope : this,
+                delegate : 'button'
+            });
+        }
     },
 
     onVoteClick : function(e, t) {
@@ -348,7 +350,7 @@ Ext.define('Fiesta.view.testcases.View', {
             }
 
         };
-        console.log(record.get('voted'));
+
         if(record.get('voted') > 0 && t.className.match('up')) {
             Ext.Msg.alert('Error', 'You have already voted up for this test, you can only vote down!');
         }
