@@ -26,7 +26,6 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                         if (match) return match[1];
                     },
                     editor    : {
-                        allowBlank      : false,
                         enableKeyEvents : true,
                         listeners       : {
                             specialkey : function (field, e) {
@@ -95,6 +94,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                     bubbleEvents : ['click'],
                                     menu   : {
                                         ignoreParentClicks : true,
+                                        bubbleEvents : ['click'],
                                         itemId : 'Sencha Touch',
                                         items : [
                                             {
@@ -111,6 +111,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                     bubbleEvents : ['click'],
                                     menu   : {
                                         ignoreParentClicks : true,
+                                        bubbleEvents : ['click'],
                                         itemId : 'Bryntum',
                                         items : [
                                             {
@@ -125,6 +126,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                             ],
                             listeners : {
                                 click : function(menu, item) {
+                                    debugger;
                                     if (!item.menu) {
                                         this.addTemplatePreloads(item.ownerCt.itemId, item.text);
                                     }
@@ -147,7 +149,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
 
     addTemplatePreloads : function(category, id) {
         var preloads;
-
+debugger;
         switch (category) {
             case 'Bryntum':
                 switch (id) {

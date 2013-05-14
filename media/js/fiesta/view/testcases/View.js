@@ -302,7 +302,7 @@ Ext.define('Fiesta.view.testcases.View', {
 //                testClass       : testCaseModel.getTestClass(),
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
-                preload         : pageUrl ? null : testCaseModel.getPreload()
+                preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
             }, function () {
                 runButton.setIconCls('');
             });

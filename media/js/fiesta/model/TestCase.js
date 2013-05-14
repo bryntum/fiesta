@@ -21,11 +21,8 @@ Ext.define("Fiesta.model.TestCase", {
 
     ],
     
-    getPreload : function () {
-        return [
-            'http://cdn.sencha.io/ext-4.1.0-gpl/resources/css/ext-all.css',
-            'http://cdn.sencha.io/ext-4.1.0-gpl/ext-all-debug.js'
-        ];
+    getPreloadsArray : function () {
+        return this.get('preloads').split(',');
     },
 
     getFramework : function() {
