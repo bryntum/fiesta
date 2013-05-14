@@ -280,3 +280,19 @@
 {
     color:orange;
 }
+
+.icon-checkmark-2,
+.icon-close
+{
+    font-size:1.2em;
+}
+
+.icon-checkmark-2
+{
+    color:lightgreen;
+}
+
+.icon-close
+{
+    color:lightcoral;
+}

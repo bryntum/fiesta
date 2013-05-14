@@ -28,7 +28,7 @@ Ext.define('Fiesta.view.testcases.View', {
             dock : 'top',
             items : [
                 {
-                    iconCls : 'icon-arrow-down-alt1',
+                    iconCls : 'icon-arrow-down',
                     action  : 'expandcollapse',
                     cls     : 'expandcollapse',
                     scope   : this,
@@ -106,7 +106,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 },
                 {
                     tooltip : 'Share on Facebook',
-                    iconCls : 'icon-facebook-2',
+                    iconCls : 'icon-facebook',
                     cls     : 'social',
                     scope   : this,
                     handler : this.shareFb
@@ -285,6 +285,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     runTest : function () {
+        var me                  = this;
         var testCaseModel       = this.testCaseModel;
         var harness             = this.harness;
         var runButton           = this.runButton;
@@ -305,9 +306,13 @@ Ext.define('Fiesta.view.testcases.View', {
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
-            }, function () {
+            }, function (descr) {
                 runButton.setIconCls('');
-                debugger;
+                var test = me.resultPanel.test;
+                var assertionGrid       = me.down('assertiongrid');
+                var cls = test.getFailCount() === 0 ? 'icon-checkmark-2' : 'icon-close';
+
+                assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span>' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed')
             });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
@@ -476,18 +481,18 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.onDetailsCollapseExpand();
 
-        DISQUS.reset({
-            reload : true,
-            config : function () {
-                this.page.identifier = me.testCaseModel.get('slug');
-                this.page.url = 'http://fiestadev.bryntum.com/' + me.testCaseModel.get('slug');
-            }
-        });
+//        DISQUS.reset({
+//            reload : true,
+//            config : function () {
+//                this.page.identifier = me.testCaseModel.get('slug');
+//                this.page.url = 'http://fiestadev.bryntum.com/' + me.testCaseModel.get('slug');
+//            }
+//        });
     },
 
     onDetailsCollapseExpand : function() {
         var btn = this.expandCollapseButton;
-        btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down-alt1' : 'icon-arrow-up-alt1');
+        btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down' : 'icon-arrow-up');
     },
 
     showDetails : function () {
