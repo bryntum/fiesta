@@ -42,11 +42,10 @@ Ext.define("Fiesta.view.Viewport", {
                         },
                         {
                             xtype       : 'testCasesList',
-                            margins     : 5,
                             region      : 'center',
                             layout      : 'fit',
                             forceFit    : true,
-                            flex        : true
+                            flex        : 1
                         }
                     ]
                 }
