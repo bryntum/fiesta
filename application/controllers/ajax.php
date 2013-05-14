@@ -190,6 +190,7 @@ class Ajax extends CI_Controller {
         $tagsList = $this->input->post('tagsList');
         $hostPageUrl = $this->input->post('hostPageUrl');
         $originalTestId = $this->input->post('originalTestId');
+        $preloads= $this->input->post('preloads');
 
 
 
@@ -205,7 +206,8 @@ class Ajax extends CI_Controller {
                 'code' => $code,
                 'tagsList' => $tagsList,
                 'hostPageUrl' => $hostPageUrl,
-                'originalTestId' => $originalTestId
+                'originalTestId' => $originalTestId,
+                'preloads' => $preloads
             ));
 
             if($resultRec) {
@@ -228,7 +230,9 @@ class Ajax extends CI_Controller {
                 'code' => $code,
                 'tags_list' => $tagsList,
                 'hostPageUrl' => $hostPageUrl,
-                'originalTestId' => $originalTestId
+                'originalTestId' => $originalTestId,
+                'preloads' => $preloads
+
            ));
 
            $testCaseId = $testCaseId.'_tmp';
@@ -253,6 +257,8 @@ class Ajax extends CI_Controller {
         $userId = $this->session->userdata('account_id');
         $tagsList = $this->input->post('tagsList');
         $hostPageUrl = $this->input->post('hostPageUrl');
+        $preloads = $this->input->post('preloads');
+
 
         if ($this->authentication->is_signed_in()) {
 
@@ -267,7 +273,9 @@ class Ajax extends CI_Controller {
                     'private' => $private == 'true' ? 1 : 0,
                     'code' => $code,
                     'tagsList' => $tagsList,
-                    'hostPageUrl' => $hostPageUrl
+                    'hostPageUrl' => $hostPageUrl,
+                    'preloads' => $preloads
+
                 ));
 
                 if($resultRec) {
@@ -294,7 +302,9 @@ class Ajax extends CI_Controller {
                 'code' => $code,
                 'tags_list' => $tagsList,
                 'hostPageUrl' => $hostPageUrl,
-                'tmpSavedOriginalId' => $testCaseId
+                'tmpSavedOriginalId' => $testCaseId,
+                'preloads' => $preloads
+
             ));
 
             $errorMsg = 'Please login!<br/> If you were logged in before updating test, changess will be resoted.';
