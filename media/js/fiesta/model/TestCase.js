@@ -16,7 +16,9 @@ Ext.define("Fiesta.model.TestCase", {
         {name: 'voted', type: 'int'},
         {name: 'created_at', type: 'date', dateFormat: 'Y-m-d H:i:s'},
         {name: 'rating', type: 'int'},
-        {name: 'originalTestId', type: 'int'}
+        {name: 'originalTestId', type: 'int'},
+        {name: 'preloads', type: 'string'}
+
     ],
     
     getPreload : function () {
