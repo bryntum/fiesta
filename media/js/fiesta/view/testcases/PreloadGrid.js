@@ -3,19 +3,17 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
     alias       : 'widget.preloadgrid',
     hideHeaders : true,
     flex        : 1,
+    cls         : 'preloadgrid',
 
     initComponent : function () {
         var editing =  new Ext.grid.plugin.CellEditing({
             clicksToEdit : 1
         });
 
-        var store = new Ext.data.Store({
-            fields : 'url',
+        var store = new Ext.data.ArrayStore({
+            fields : ['url'],
             data   : [
-                { url : '' },
-                { url : '' },
-                { url : '' },
-                { url : '' }
+                '','','',''
             ]
         });
 
@@ -23,6 +21,10 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
             columns  : [
                 {
                     dataIndex : 'url',
+                    renderer : function(v) {
+                        var match = (/\/([^/]*)$/).exec(v);
+                        if (match) return match[1];
+                    },
                     editor    : {
                         allowBlank      : false,
                         enableKeyEvents : true,
@@ -53,8 +55,9 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
 
             tbar  : {
                 xtype  : 'toolbar',
-                style  : 'background:#ddd;padding-top:0',
+                style  : 'background:transparent;padding-top:0',
                 cls    : 'templates-toolbar',
+                border : false,
                 height : 26,
                 items  : [
                     {
@@ -66,9 +69,66 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                         text   : 'Templates',
                         height : 18,
                         menu   : {
+                            ignoreParentClicks : true,
                             items : [
-                                { text : 'foo' }
-                            ]
+                                {
+                                    text : 'Ext JS',
+                                    menu   : {
+                                        ignoreParentClicks : true,
+                                        bubbleEvents : ['click'],
+                                        itemId : 'Ext JS',
+                                        items : [
+                                            {
+                                                text : '4.2.0'
+                                            },
+                                            {
+                                                text : '4.1.1a'
+                                            },
+                                            {
+                                                text : '3.4.1'
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    text : 'Sencha Touch',
+                                    bubbleEvents : ['click'],
+                                    menu   : {
+                                        ignoreParentClicks : true,
+                                        itemId : 'Sencha Touch',
+                                        items : [
+                                            {
+                                                text : '2.2'
+                                            },
+                                            {
+                                                text : '2.1'
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    text : 'Bryntum',
+                                    bubbleEvents : ['click'],
+                                    menu   : {
+                                        ignoreParentClicks : true,
+                                        itemId : 'Bryntum',
+                                        items : [
+                                            {
+                                                text : 'Ext Scheduler'
+                                            },
+                                            {
+                                                text : 'Ext Gantt'
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            listeners : {
+                                click : function(menu, item) {
+                                    this.addTemplatePreloads(item.ownerCt.itemId, item.text);
+                                },
+                                scope : this
+                            }
                         }
                     }
                 ]
@@ -77,5 +137,61 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         });
 
         this.callParent(arguments);
+    },
+
+    getValue : function() {
+        return this.store.collect('url').join(',');
+    },
+
+    addTemplatePreloads : function(category, id) {
+        var preloads;
+
+        switch (category) {
+            case 'Bryntum':
+                switch (id) {
+                    case "Ext Gantt":
+                        preloads = [
+                            'http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css',
+                            'http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js',
+                            'http://bryntum.com/examples/gantt-latest/resources/css/gnt-all.css',
+                            'http://bryntum.com/examples/gantt-latest/gnt-all-debug.js'
+                        ];
+                        break;
+                    case "Ext Scheduler":
+                        preloads = [
+                            'http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css',
+                            'http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js',
+                            'http://bryntum.com/examples/scheduler-latest/resources/css/sch-all.css',
+                            'http://bryntum.com/examples/scheduler-latest/sch-all-debug.js'
+                        ];
+                        break;
+                }
+                break;
+            case 'Ext JS':
+                preloads = [
+                    'http://cdn.sencha.io/ext-' + id + '-gpl/resources/css/ext-all.css',
+                    'http://cdn.sencha.io/ext-' + id + '-gpl/ext-all-debug.js'
+                ];
+                break;
+            case 'Sencha Touch':
+                preloads = [
+                    'http://cdn.sencha.io/touch/sencha-touch-' + id + '/resources/css/sencha-touch.css',
+                    'http://cdn.sencha.io/touch/sencha-touch-' + id + '/sencha-touch-all-debug.js'
+                ];
+                break;
+        }
+
+        this.store.loadData(Ext.Array.map(preloads, function(a) { return [a]; }));
+    },
+
+    setValue : function(preloadsAsString) {
+        this.store.removeAll();
+        var vals = [];
+
+        Ext.Array.each(preloadsAsString.split(','), function(url) {
+            vals.push(url);
+        });
+
+        this.store.loadData(vals);
     }
 });

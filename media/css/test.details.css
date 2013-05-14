@@ -44,3 +44,8 @@
 {
     vertical-align: middle;
 }
+
+.preloadgrid .x-grid-cell
+{
+    color:#888;
+}

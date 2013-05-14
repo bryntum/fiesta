@@ -29,31 +29,26 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
             items : [
                 {
                     text    : 'Blank test case',
-                    iconCls : 'icon-libreoffice'
-                },
-                {
-                    text     : '<strong>Unit Tests with source</strong>',
-                    disabled : true,
-                    iconCls  : 'icon-file-css'
+                    iconCls : 'icon-file-css'
                 },
                 {
                     text     : '<strong>Application tests</strong>',
-                    iconCls  : 'icon-file-powerpoint',
                     disabled : true
                 },
                 {
                     text    : 'Ext JS 4.2.0',
                     itemId  : 'extjs',
-                    iconCls : 'icon-extjs',
+                    iconCls  : 'icon-file-powerpoint',
                     menu    : {
                         frameworkName        : 'extjs-4.2.0',
+                        iconCls  : 'icon-file-powerpoint',
                         ignoreParentClicks : true
                     }
                 },
                 {
                     text    : 'Sencha Touch 2.2.0',
                     itemId  : 'touch',
-                    iconCls : 'icon-touch',
+                    iconCls  : 'icon-file-powerpoint',
                     menu    : {
                         frameworkName        : 'sencha-touch-2.2.0',
                         ignoreParentClicks : true
