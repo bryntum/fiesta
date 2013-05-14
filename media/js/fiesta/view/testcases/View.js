@@ -325,13 +325,13 @@ Ext.define('Fiesta.view.testcases.View', {
                 delegate    : '.arrow',
                 scope       : this
             });
-
-            this.resultPanel.el.on({
-                click : this.onDomOptionsClick,
-                scope : this,
-                delegate : 'button'
-            });
         }
+
+        this.resultPanel.el.on({
+            click : this.onDomOptionsClick,
+            scope : this,
+            delegate : 'button'
+        });
     },
 
     onVoteClick : function(e, t) {
