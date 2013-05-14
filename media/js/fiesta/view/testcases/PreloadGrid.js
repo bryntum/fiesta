@@ -156,7 +156,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                         preloads = [
                             'http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css',
                             'http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js',
-                            'http://bryntum.com/examples/gantt-latest/resources/css/gnt-all.css',
+                            'http://bryntum.com/examples/gantt-latest/resources/css/sch-gantt-all.css',
                             'http://bryntum.com/examples/gantt-latest/gnt-all-debug.js'
                         ];
                         break;

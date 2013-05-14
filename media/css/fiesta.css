@@ -233,3 +233,7 @@ body
 {
     padding:2px 3px 1px 3px;
 }
+
+.x-tab-default {
+    transition: left 0.3s;
+}

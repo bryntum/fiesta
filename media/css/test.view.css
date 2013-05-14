@@ -67,14 +67,19 @@
     opacity: 1;
 }
 
-.expandcollapse,
-.expandcollapse:hover
+
+.expandcollapse
 {
-    background: lightsteelblue !important;
-    color:#fff !important;
-    border-color:transparent;
+    color:#fff;
+    background: lightsteelblue;
     border-radius: 100%;
 }
+
+.expandcollapse:hover
+{
+    color:#0061f2;
+}
+
 
 /* Bootstrap styles, Apache 2.0 license */
 .run-testcase span
