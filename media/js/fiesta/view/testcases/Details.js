@@ -43,7 +43,7 @@ Ext.define('Fiesta.view.testcases.Details', {
                             xtype            : 'tagselect',
                             cls              : 'details-tags details-combo',
                             store            : tagsStore,
-                            emptyText        : "Add multiple tags",
+//                            emptyText        : "Add multiple tags",
                             displayField     : "tag",
                             valueField       : "tag",
                             name             : 'tagsList',
@@ -146,6 +146,16 @@ Ext.define('Fiesta.view.testcases.Details', {
 
     alignDisqus : function () {
 //        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
+    },
+
+    updateRecord : function() {
+        var preloadGrid = this.down('preloadgrid');
+
+        this.getForm().updateRecord();
+
+        if (preloadGrid) {
+            this.testCaseModel.set('preloads', preloadGrid.getValue());
+        }
     }
 
 });

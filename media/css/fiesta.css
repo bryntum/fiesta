@@ -9,6 +9,16 @@ body
     background-size:auto 45px !important;
 }
 
+.beta
+{
+    position : absolute;
+    top:33px;
+    left:139px;
+    color:yellow;
+    font-size: 10px;
+    font-family: "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+}
+
 .viewport-top-toolbar
 {
     overflow: visible;
@@ -213,3 +223,13 @@ body
     background: url(../img/user.png) no-repeat left center;
 }
 
+.searchform .x-form-item, .x-form-field,
+.searchform .x-form-trigger-wrap {
+    font-size:11px;
+    border-color: silver;
+}
+
+#tags-filter ul.x-boxselect-list
+{
+    padding:2px 3px 1px 3px;
+}

@@ -3,6 +3,8 @@ Ext.define("Fiesta.view.SearchForm", {
     requires      : ['Fiesta.store.Frameworks', 'Fiesta.store.Tags', 'Fiesta.view.menu.TestTemplateMenu'],
     xtype         : "searchForm",
     border        : false,
+    cls           : 'searchform',
+
     initComponent : function () {
 
         Ext.apply(this, {
@@ -25,6 +27,7 @@ Ext.define("Fiesta.view.SearchForm", {
                         items  : [
                             {
                                 id        : "name-filter",
+                                cls       : 'details-text',
                                 xtype     : "textfield",
                                 flex      : true,
                                 emptyText : "Filter by name",
@@ -88,21 +91,21 @@ Ext.define("Fiesta.view.SearchForm", {
                         }
 
                     },
-                    {
-                        id           : "framework-filter",
-                        xtype        : "combo",
-                        editable     : false,
-                        displayField : "name",
-                        valueField   : "id",
-                        emptyText    : "Framework",
-                        store        : new Fiesta.store.Frameworks(),
-                        name         : 'frameworkId',
-                        listeners    : {
-                            change      : this.processFilter,
-                            scope       : this
-                        }
-
-                    },
+//                    {
+//                        id           : "framework-filter",
+//                        xtype        : "combo",
+//                        editable     : false,
+//                        displayField : "name",
+//                        valueField   : "id",
+//                        emptyText    : "Framework",
+//                        store        : new Fiesta.store.Frameworks(),
+//                        name         : 'frameworkId',
+//                        listeners    : {
+//                            change      : this.processFilter,
+//                            scope       : this
+//                        }
+//
+//                    },
                     {
                         margin : '0 0 5 0',
                         xtype : 'container',
@@ -140,7 +143,7 @@ Ext.define("Fiesta.view.SearchForm", {
                             {
                                 xtype     : 'component',
                                 cls       : 'clrFilter',
-                                html      : 'Clear filters',
+                                html      : '<span style="white-space: nowrap">Clear filters</span>',
                                 listeners : {
                                     click : {
                                         element : 'el',

@@ -6,24 +6,20 @@ window.onload = function() {
 		el.innerHTML = '<span style="font-family: \'icomoon\'">' + entity + '</span>' + html;
 	}
 	var icons = {
-			'icon-copy' : '&#xe000;',
-			'icon-twitter' : '&#xe001;',
+			'icon-cloud' : '&#xe000;',
+			'icon-home' : '&#xe001;',
+			'icon-twitter' : '&#xe002;',
 			'icon-facebook' : '&#xe003;',
-			'icon-google-plus' : '&#xe002;',
-			'icon-google-plus-2' : '&#xe004;',
-			'icon-twitter-2' : '&#xe005;',
-			'icon-star' : '&#xe006;',
-			'icon-star-2' : '&#xe007;',
-			'icon-forward' : '&#xe008;',
-			'icon-facebook-2' : '&#xe009;',
-			'icon-arrow-down-alt1' : '&#xe00b;',
-			'icon-arrow-up-alt1' : '&#xe00a;',
-			'icon-home' : '&#xe00c;',
-			'icon-file' : '&#xe00d;',
-			'icon-cog' : '&#xe00e;',
-			'icon-file-css' : '&#xe00f;',
-			'icon-file-powerpoint' : '&#xe010;',
-			'icon-libreoffice' : '&#xe011;'
+			'icon-google-plus' : '&#xe004;',
+			'icon-star' : '&#xe005;',
+			'icon-star-2' : '&#xe006;',
+			'icon-copy' : '&#xe007;',
+			'icon-arrow-down' : '&#xe008;',
+			'icon-arrow-up' : '&#xe009;',
+			'icon-checkmark' : '&#xe00a;',
+			'icon-checkmark-2' : '&#xe00b;',
+			'icon-checkmark-circle' : '&#xe00c;',
+			'icon-close' : '&#xe00d;'
 		},
 		els = document.getElementsByTagName('*'),
 		i, attr, html, c, el;

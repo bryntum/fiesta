@@ -81,11 +81,11 @@ Ext.define('Fiesta.view.Main', {
 
     activateTabFor : function (testCaseModel) {
         // Too many layouts happening...
-//        Ext.suspendLayouts();
+        if (!testCaseModel.phantom) Ext.suspendLayouts();
 
         this.setActiveTab(this.updateTab(testCaseModel, true));
 
-//        Ext.resumeLayouts();
+        if (!testCaseModel.phantom) Ext.resumeLayouts();
     },
 
     /**

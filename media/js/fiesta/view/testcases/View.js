@@ -28,7 +28,7 @@ Ext.define('Fiesta.view.testcases.View', {
             dock : 'top',
             items : [
                 {
-                    iconCls : 'icon-arrow-down-alt1',
+                    iconCls : 'icon-arrow-down',
                     action  : 'expandcollapse',
                     cls     : 'expandcollapse',
                     scope   : this,
@@ -47,7 +47,7 @@ Ext.define('Fiesta.view.testcases.View', {
                                     '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
                         return result;
                     },
-                    disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId ? true : false
+                    disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId || this.testCaseModel.phantom
                 },
 
                 { xtype : 'tbseparator' },
@@ -106,7 +106,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 },
                 {
                     tooltip : 'Share on Facebook',
-                    iconCls : 'icon-facebook-2',
+                    iconCls : 'icon-facebook',
                     cls     : 'social',
                     scope   : this,
                     handler : this.shareFb
@@ -238,13 +238,17 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     onDomOptionsClick : function(e, t) {
+        // Not allowed to deselect all
+        if (t.className.match('active') && Ext.fly(t).parent().select('.active').getCount() === 1) return;
+
         Ext.fly(t).toggleCls('active');
         var cls = t.className.toLowerCase();
+        var grid = this.resultPanel.down('assertiongrid');
 
         if (cls.match('assertions')) {
-            this.resultPanel.down('assertiongrid').setHeight(cls.match('active') ? 200 : 0);
+            grid[cls.match('active') ? "expand" : "collapse"]();
         } else {
-            this.resultPanel.down('assertiongrid').setHeight(cls.match('active') ? 200 : this.getHeight() - 43);
+            grid.setHeight(cls.match('active') ? 200 : this.getHeight() - 43);
         }
      },
 
@@ -281,13 +285,14 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     runTest : function () {
+        var me                  = this;
         var testCaseModel       = this.testCaseModel;
         var harness             = this.harness;
         var runButton           = this.runButton;
         var code                = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
-            this.detailsPanel.getForm().updateRecord(testCaseModel);
+            this.detailsPanel.updateRecord(testCaseModel);
             var me = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
             runButton.setIconCls('icon-loading');
@@ -298,13 +303,16 @@ Ext.define('Fiesta.view.testcases.View', {
             harness.startSingle({
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
-                // TODO solve and uncomment
-//                testClass       : testCaseModel.getTestClass(),
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
-                preload         : pageUrl ? null : testCaseModel.getPreload()
-            }, function () {
+                preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
+            }, function (descr) {
                 runButton.setIconCls('');
+                var test = me.resultPanel.test;
+                var assertionGrid       = me.down('assertiongrid');
+                var cls = test.getFailCount() === 0 ? 'icon-checkmark-2' : 'icon-close';
+
+                assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span>' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed')
             });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
@@ -321,11 +329,13 @@ Ext.define('Fiesta.view.testcases.View', {
 
         var voteCt = this.el.down('.vote-container');
 
-        voteCt.on({
-            click       : this.onVoteClick,
-            delegate    : '.arrow',
-            scope       : this
-        });
+        if (!this.down('[cls=vote-container]').isDisabled()) {
+            voteCt.on({
+                click       : this.onVoteClick,
+                delegate    : '.arrow',
+                scope       : this
+            });
+        }
 
         this.resultPanel.el.on({
             click : this.onDomOptionsClick,
@@ -348,7 +358,7 @@ Ext.define('Fiesta.view.testcases.View', {
             }
 
         };
-        console.log(record.get('voted'));
+
         if(record.get('voted') > 0 && t.className.match('up')) {
             Ext.Msg.alert('Error', 'You have already voted up for this test, you can only vote down!');
         }
@@ -391,8 +401,6 @@ Ext.define('Fiesta.view.testcases.View', {
             'text=' + encodeURIComponent(this.title) +
             '&url=' + encodeURIComponent(window.location.href);
 
-        console.log(googleUrl);
-
         window.open(googleUrl);
     },
 
@@ -419,7 +427,7 @@ Ext.define('Fiesta.view.testcases.View', {
             preloadGrid = this.down('preloadgrid'),
             tags = [];
 
-        form.updateRecord(this.testCaseModel);
+        this.detailsPanel.updateRecord(this.testCaseModel);
 
         this.testCaseModel.set('code', this.codeEditor.getValue());
 
@@ -473,18 +481,18 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.onDetailsCollapseExpand();
 
-        DISQUS.reset({
-            reload : true,
-            config : function () {
-                this.page.identifier = me.testCaseModel.get('slug');
-                this.page.url = 'http://fiestadev.bryntum.com/' + me.testCaseModel.get('slug');
-            }
-        });
+//        DISQUS.reset({
+//            reload : true,
+//            config : function () {
+//                this.page.identifier = me.testCaseModel.get('slug');
+//                this.page.url = 'http://fiestadev.bryntum.com/' + me.testCaseModel.get('slug');
+//            }
+//        });
     },
 
     onDetailsCollapseExpand : function() {
         var btn = this.expandCollapseButton;
-        btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down-alt1' : 'icon-arrow-up-alt1');
+        btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down' : 'icon-arrow-up');
     },
 
     showDetails : function () {

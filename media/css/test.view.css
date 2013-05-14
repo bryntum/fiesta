@@ -276,3 +276,23 @@
     -moz-border-radius-bottomright: 4px;
 }
 
+.icon-star-2
+{
+    color:orange;
+}
+
+.icon-checkmark-2,
+.icon-close
+{
+    font-size:1.2em;
+}
+
+.icon-checkmark-2
+{
+    color:lightgreen;
+}
+
+.icon-close
+{
+    color:lightcoral;
+}
