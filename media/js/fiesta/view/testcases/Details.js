@@ -121,6 +121,7 @@ Ext.define('Fiesta.view.testcases.Details', {
 
     setTestCaseModel : function (model) {
         var tagsList = [],
+            preloadGrid = this.down('preloadgrid'),
             detailsForm = this.getForm();
 
         this.testCaseModel = model;
@@ -131,6 +132,9 @@ Ext.define('Fiesta.view.testcases.Details', {
 
         detailsForm.loadRecord(model);
         detailsForm.setValues({ tagsList : tagsList });
+        if (preloadGrid) {
+            preloadGrid.setValue(model.get('preloads'));
+        }
         this.down('[action=delete]').setVisible(!model.phantom && this.testCaseModel.isEditable())
     },
 

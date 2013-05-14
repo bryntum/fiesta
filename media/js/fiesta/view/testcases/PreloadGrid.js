@@ -181,7 +181,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                 break;
         }
 
-        this.store.loadData(Ext.Array.map(preloads, function(a) { return [a]; }));
+        this.store.loadData(Ext.Array.map(preloads, function(a) { return [a]; }).concat(['']));
     },
 
     setValue : function(preloadsAsString) {
@@ -191,6 +191,8 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         Ext.Array.each(preloadsAsString.split(','), function(url) {
             vals.push(url);
         });
+
+        vals.push('','','','')
 
         this.store.loadData(vals);
     }
