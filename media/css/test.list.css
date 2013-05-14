@@ -25,13 +25,13 @@
 .testCasesList .date {
     font-size : 10px;
     position  : absolute;
-    right     : 0px;
+    right     : 3px;
     color     : #bbb;
     top       : 0;
 }
 
 .testCasesList .x-grid-cell-inner {
-    padding-top : 0;
+    padding : 1px 6px 4px 6px;
 }
 
 .testCasesList .testNameColumn .x-column-header-trigger {
@@ -59,7 +59,7 @@
 
 .testCasesList .userName {
     position     : absolute;
-    right        : 0;
+    right        : 3px;
     bottom       : 0;
     font-size    : 10px;
     text-align   : left;

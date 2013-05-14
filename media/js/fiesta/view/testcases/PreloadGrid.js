@@ -18,6 +18,11 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         });
 
         Ext.apply(this, {
+            viewConfig : {
+                stripeRows : false,
+                markDirty : false,
+                trackOver : false
+            },
             columns  : [
                 {
                     dataIndex : 'url',
