@@ -238,6 +238,9 @@ Ext.define('Fiesta.view.testcases.View', {
     },
 
     onDomOptionsClick : function(e, t) {
+        // Not allowed to deselect all
+        if (t.className.match('active') && Ext.fly(t).parent().select('.active').getCount() === 1) return;
+
         Ext.fly(t).toggleCls('active');
         var cls = t.className.toLowerCase();
 
