@@ -23,7 +23,10 @@
             }
 
             if(delta > 5 * 86400 ) {
-                return Ext.Date.format(date,'d/m/Y');
+                if (date.getFullYear() === new Date().getFullYear()) {
+                    return Ext.Date.format(date,'M d');
+                }
+                return Ext.Date.format(date,'M d Y');
             }
 
             Ext.Object.each(timeArray, function (period, seconds) {
