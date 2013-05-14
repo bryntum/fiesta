@@ -9,7 +9,10 @@ Ext.define('Fiesta.plugins.TagSelect', {
 
     onKeyUp: function(e, t) {
         var me = this,
-            rawValue = me.inputEl.dom.value;
+            rawValue = me.inputEl.dom.value,
+            picker = me.picker,
+            valueField = me.valueField,
+            displayField = me.displayField;
 
         if (me.preventKeyUpEvent) {
             e.stopEvent();
@@ -27,15 +30,30 @@ Ext.define('Fiesta.plugins.TagSelect', {
             rawValue = me.inputEl.dom.value = me.inputEl.dom.value.trim();
         }
 
+
+
         if (me.multiSelect && (me.delimiterRegexp && me.delimiterRegexp.test(rawValue)) ||
             ((me.createNewOnEnter === true) && e.getKey() == e.ENTER)) {
+
             rawValue = Ext.Array.clean(rawValue.split(me.delimiterRegexp));
 
+
+            if(me.forceSelection && me.isExpanded) {
+
+                var valueIndex = picker.store.findExact(displayField, rawValue[0]);
+                if(valueIndex >= 0) {
+                    var record = picker.store.getAt(valueIndex);
+                    rawValue[0] = record.get(valueField);
+                }
+            }
 
             me.inputEl.dom.value = '';
             me.setValue(me.valueStore.getRange().concat(rawValue));
             me.inputEl.focus();
+
         }
+
+
         me.callParent([e,t]);
     },
 
@@ -68,6 +86,7 @@ Ext.define('Fiesta.plugins.TagSelect', {
             value = value.split(me.delimiter);
         }
         value = Ext.Array.from(value, true);
+
 
         for (i = 0, len = value.length; i < len; i++) {
             record = value[i];
