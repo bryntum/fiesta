@@ -6,7 +6,11 @@ Ext.define('Fiesta.plugins.TagSelect', {
     filterPickList : true,
     delimiter      : ',',
 
-
+    alignPicker: function(){
+        this.callParent();
+        var  picker = this.getPicker();
+        picker.setWidth(picker.getWidth()+this.triggerWidth);
+    },
     onKeyUp: function(e, t) {
         var me = this,
             rawValue = me.inputEl.dom.value,
