@@ -191,10 +191,10 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         var vals = [];
 
         Ext.Array.each(preloadsAsString.split(','), function(url) {
-            vals.push(url);
+            vals.push([url]);
         });
 
-        vals.push('','','','')
+        vals.push([''],[''],[''],[''])
 
         this.store.loadData(vals);
     }
