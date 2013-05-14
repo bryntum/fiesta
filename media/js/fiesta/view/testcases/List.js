@@ -57,7 +57,6 @@ Ext.define('Fiesta.view.testcases.List', {
 
             searchForm.addTagFilter(selTag);
         } else {
-            console.log('openTab');
             tabs.activateTabFor(record);
         }
     },

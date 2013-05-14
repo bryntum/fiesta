@@ -243,11 +243,12 @@ Ext.define('Fiesta.view.testcases.View', {
 
         Ext.fly(t).toggleCls('active');
         var cls = t.className.toLowerCase();
+        var grid = this.resultPanel.down('assertiongrid');
 
         if (cls.match('assertions')) {
-            this.resultPanel.down('assertiongrid').setHeight(cls.match('active') ? 200 : 0);
+            grid[cls.match('active') ? "expand" : "collapse"]();
         } else {
-            this.resultPanel.down('assertiongrid').setHeight(cls.match('active') ? 200 : this.getHeight() - 43);
+            grid.setHeight(cls.match('active') ? 200 : this.getHeight() - 43);
         }
      },
 
@@ -306,6 +307,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
             }, function () {
                 runButton.setIconCls('');
+                debugger;
             });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
@@ -393,8 +395,6 @@ Ext.define('Fiesta.view.testcases.View', {
         var googleUrl = 'http://plus.google.com/share?' +
             'text=' + encodeURIComponent(this.title) +
             '&url=' + encodeURIComponent(window.location.href);
-
-        console.log(googleUrl);
 
         window.open(googleUrl);
     },

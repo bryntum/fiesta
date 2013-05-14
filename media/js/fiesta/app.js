@@ -143,7 +143,6 @@ Ext.application({
 
     },
     onHistoryChange: function(token, initialToken) {
-        console.log('historyChanged, new token:'+token);
 
         if(typeof(initialToken) == 'undefined') {
             initialToken = false;

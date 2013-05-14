@@ -50,17 +50,16 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
                     xtype           : 'assertiongrid',
                     slot            : 'grid',
                     region          : 'south',
-                    height          : 0,
+                    collapsed       : true,
+                    title           : 'Assertions',
+                    height          : 200,
                     hideHeaders     : true,
                     split           : true,
-                    isStandalone    : this.isStandalone,
+                    isStandalone    : true
 //                    listeners       : {
 //                        itemdblclick    : this.onAssertionDoubleClick,
 //                        scope           : this
 //                    },
-                    placeholder : {
-                        height  : 0
-                    }
                 }
             ]
         })
