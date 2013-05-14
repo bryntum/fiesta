@@ -10,12 +10,12 @@
                 result = '';
 
             timeArray = {
-                '31104000' : 'year',
-                '2592000'  : 'month',
-                '86400'    : 'day',
-                '3600'     : 'hour',
-                '60'       : 'minute',
-                '1'        : 'second'
+                'year'      : '31104000',
+                'month'     :'2592000',
+                'day'       :'86400',
+                'hour'      :'3600',
+                'minute'    :'60',
+                'second'    :'1'
             };
 
             if (delta < 1) {
@@ -26,12 +26,13 @@
                 return Ext.Date.format(date,'d/m/Y');
             }
 
-            Ext.Object.each(timeArray, function (seconds, period) {
+            Ext.Object.each(timeArray, function (period, seconds) {
+
                 var divided = delta / parseInt(seconds);
 
                 if(divided >= 1) {
                     var rounded = Math.floor(divided);
-                    result = rounded+' '+period+(result > 1 ? 's' : '')+' ago';
+                    result = rounded+' '+period+(rounded > 1 ? 's' : '')+' ago';
                     return false;
                 }
             });

@@ -10,21 +10,24 @@ class Testcases_model extends CI_Model {
      */
     function getById($testCaseId,$userId)
     {
-        $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
-            ->select('IFNULL(tv.voted, 0) AS voted', false)
-            ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
-            ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
-            ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
-            ->where('testCases.id', $testCaseId);
 
-        $testCase = $this->db->get('testCases')->row();
-        if($testCase) {
-            $testCase->tags = $this->getTags($testCaseId);
+        if(!isset($testCaseId) && !empty($testCaseId)) {
+            $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
+                ->select('IFNULL(tv.voted, 0) AS voted', false)
+                ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
+                ->join('user_testCases as st', "st.testCase_id = testCases.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
+                ->join('testCases_votes as tv', "tv.testCase_id = testCases.id AND tv.user_id = ".$userId, 'left')
+                ->where('testCases.id', $testCaseId);
+
+            $testCase = $this->db->get('testCases')->row();
+            if($testCase) {
+                $testCase->tags = $this->getTags($testCaseId);
+            }
+
+            return $testCase;
         }
 
-        return $testCase;
-        
-
+        return array();
     }
     
     function getBySlug($slug,$userId)

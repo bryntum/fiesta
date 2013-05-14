@@ -349,12 +349,13 @@ Ext.define('Fiesta.DataModel', {
                 }
             },
             failure : function (response) {
-
-                if (errback && errback(response) !== false) {
-                    this.fireEvent('requestfailed', this, {
-                        url     : this.url,
-                        message : 'Failed to load testcase!'
-                    });
+                if (response.status && response.status > 0) {
+                    if (errback && errback(response) !== false) {
+                        this.fireEvent('requestfailed', this, {
+                            url     : this.url,
+                            message : 'Failed to load testcase!'
+                        });
+                    }
                 }
             },
             scope   : this
