@@ -11,7 +11,8 @@ class Testcases_model extends CI_Model {
     function getById($testCaseId,$userId)
     {
 
-        if(!isset($testCaseId) && !empty($testCaseId)) {
+
+        if(isset($testCaseId) && !empty($testCaseId)) {
             $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
                 ->select('IFNULL(tv.voted, 0) AS voted', false)
                 ->join('a3m_account as acc', 'acc.id = testCases.owner_id', 'left')
@@ -23,7 +24,6 @@ class Testcases_model extends CI_Model {
             if($testCase) {
                 $testCase->tags = $this->getTags($testCaseId);
             }
-
             return $testCase;
         }
 
