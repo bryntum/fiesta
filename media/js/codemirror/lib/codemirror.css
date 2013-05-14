@@ -70,7 +70,7 @@
 
 /* DEFAULT THEME */
 
-.cm-s-default .cm-keyword { color : #708; }
+.cm-s-default .cm-keyword { color : blue; }
 
 .cm-s-default .cm-atom { color : #219; }
 
@@ -90,7 +90,7 @@
 
 .cm-s-default .cm-comment { color : #a50; }
 
-.cm-s-default .cm-string { color : #a11; }
+.cm-s-default .cm-string { color : rgb(105,165,67); }
 
 .cm-s-default .cm-string-2 { color : #f50; }
 
