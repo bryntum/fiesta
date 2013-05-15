@@ -177,9 +177,13 @@
 
 .tr-iframe-wrapper
 {
-    text-align: center;
     padding-left:18px;
     padding-top:18px;
+}
+
+.siesta-domcontainer
+{
+    text-align: center;
 }
 
 .tr-iframe-wrapper iframe.tr-iframe
