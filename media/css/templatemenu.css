@@ -10,13 +10,19 @@
     color: darkslateblue;
 }
 
-.test-template-menu .x-menu-item-disabled .x-menu-item-icon
-{
-    color:#444;
-}
-
-
 .test-template-menu .x-menu-item-link
 {
     margin-top:4px;
+}
+
+.test-template-menu .x-menu-item-disabled
+{
+    background: #ddd;
+    border-top:1px solid #bbb;
+    border-bottom:1px solid #bbb;
+}
+
+.test-template-menu .x-menu-item-disabled .x-menu-item-link
+{
+    padding-left:5px;
 }
