@@ -169,7 +169,7 @@ Ext.application({
                             slug: token
                         },
                         function (record) {
-                            tabs.activateTabFor(record);
+                            tabs.activateTabFor(record, initialToken);
                             return false;
                         }
 

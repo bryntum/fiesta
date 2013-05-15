@@ -77,8 +77,13 @@ Ext.define('Fiesta.view.Main', {
         activeTab.close();
     },
 
-    activateTabFor : function (testCaseModel) {
-        this.setActiveTab(this.updateTab(testCaseModel, true));
+    activateTabFor : function (testCaseModel, doRun) {
+        var tab = this.updateTab(testCaseModel, true);
+        this.setActiveTab(tab);
+
+        if (doRun) {
+            tab.runTest();
+        }
     },
 
     setActiveTab : function(tab) {
