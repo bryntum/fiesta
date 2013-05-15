@@ -520,7 +520,7 @@ iframe.tr-iframe {
 }
 
 .tr-iframe-forced {
-    z-index                    : 100000;
+    z-index                    : 100000 !important;
 
     border                     : 5px solid;
     border-color               : #d5e7f0;
