@@ -13,7 +13,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         var store = new Ext.data.ArrayStore({
             fields : ['url'],
             data   : [
-                '','','',''
+                ['']
             ]
         });
 
@@ -30,7 +30,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                         var match = (/\/([^/]*)$/).exec(v);
                         if (match) {
                             return '<span class="icon-file">&nbsp;</span>' + match[1];
-                        } else {
+                        } else if (!v){
                             return '<span style="font-size:85%;color:#aaa">Add a URL (http://yourdomain.com/your-library-1.2.3.js)</span>';
                         }
                     },
@@ -40,7 +40,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                             specialkey : function (field, e) {
                                 var currentIndex = store.indexOf(editing.activeRecord);
 
-                                if ((e.getKey() === e.RETURN || e.getKey() === e.TAB) &&
+                                if ((e.getKey() === e.RETURN || (e.getKey() === e.TAB && !e.shiftKey)) &&
                                     currentIndex === store.getCount()-1 ) {
                                     var newRecord = new store.model();
                                     store.add(newRecord);
@@ -216,9 +216,11 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         this.store.removeAll();
         var vals = [];
 
-        Ext.Array.each(preloadsAsString.split(','), function(url) {
-            vals.push([url]);
-        });
+        if (preloadsAsString) {
+            Ext.Array.each(preloadsAsString.split(','), function(url) {
+                vals.push([url]);
+            });
+        }
 
         vals.push([''])
 
