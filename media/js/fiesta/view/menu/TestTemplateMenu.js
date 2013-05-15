@@ -38,7 +38,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                 {
                     text    : 'Ext JS 4.2.0',
                     itemId  : 'extjs',
-                    iconCls  : 'icon-file-powerpoint',
+                    iconCls  : 'icon-stats',
                     menu    : {
                         frameworkName        : 'extjs-4.2.0',
                         iconCls  : 'icon-file-powerpoint',
@@ -48,7 +48,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                 {
                     text    : 'Sencha Touch 2.2.0',
                     itemId  : 'touch',
-                    iconCls  : 'icon-file-powerpoint',
+                    iconCls  : 'icon-stats',
                     menu    : {
                         frameworkName        : 'sencha-touch-2.2.0',
                         ignoreParentClicks : true
