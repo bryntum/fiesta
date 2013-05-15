@@ -22,7 +22,11 @@ Ext.define("Fiesta.model.TestCase", {
     ],
     
     getPreloadsArray : function () {
-        return this.get('preloads').split(',');
+        var result      = this.get('preloads').split(',')
+        
+        if (result.length == 1 && !result[ 0 ]) result.shift()
+        
+        return result;
     },
 
     getFramework : function() {

@@ -1,6 +1,7 @@
 Ext.define('Fiesta.view.testcases.PreloadGrid', {
     extend      : 'Ext.grid.Panel',
     alias       : 'widget.preloadgrid',
+    
     hideHeaders : true,
     flex        : 1,
     cls         : 'preloadgrid',
@@ -26,11 +27,12 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
             columns  : [
                 {
                     dataIndex : 'url',
-                    renderer : function(v, meta) {
-                        var match = (/\/([^/]*)$/).exec(v);
+                    renderer : function(value, meta) {
+                        var match = (/\/([^/]*)$/).exec(value);
                         if (match) {
                             return '<span class="icon-file">&nbsp;</span>' + match[1];
-                        }
+                        } else 
+                            return value
                     },
                     editor    : {
                         enableKeyEvents : true,
@@ -149,10 +151,18 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         this.callParent(arguments);
     },
 
+    
     getValue : function() {
-        return this.store.collect('url').join(',');
+        var preloads        = []
+        
+        this.store.each(function (record) {
+            if (record.get('url')) preloads.push(record.get('url'))
+        })
+        
+        return preloads.join(',');
     },
 
+    
     addTemplatePreloads : function(category, id) {
         var preloads;
 
