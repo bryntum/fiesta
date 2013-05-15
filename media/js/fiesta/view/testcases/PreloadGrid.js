@@ -180,8 +180,12 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
     afterRender : function() {
         this.callParent(arguments);
 
-        this.el.on('click', function() {
-            debugger;
+        this.el.on('mousedown', function(e, t) {
+            var view = this.getView();
+            var node = view.findItemByChild(t);
+            var record = view.getRecord(node);
+            this.store.remove(record);
+            e.stopEvent();
         }, this, { delegate : '.remove'});
     },
 

@@ -318,7 +318,6 @@
 {
     padding: 2px;
     position: relative;
-    height: 22px;
 }
 
 .preload-cell .remove {
@@ -327,5 +326,10 @@
     top:3px;
     width:16px;
     cursor: pointer;
-    color:#999;
+    color:#aaa;
+}
+
+.preload-cell .remove:hover {
+    font-weight: bold;
+    color:#888;
 }
