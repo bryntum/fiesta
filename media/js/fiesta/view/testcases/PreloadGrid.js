@@ -1,7 +1,6 @@
 Ext.define('Fiesta.view.testcases.PreloadGrid', {
     extend      : 'Ext.grid.Panel',
     alias       : 'widget.preloadgrid',
-    
     hideHeaders : true,
     flex        : 1,
     cls         : 'preloadgrid',
@@ -27,12 +26,13 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
             columns  : [
                 {
                     dataIndex : 'url',
-                    renderer : function(value, meta) {
-                        var match = (/\/([^/]*)$/).exec(value);
+                    renderer : function(v, meta) {
+                        var match = (/\/([^/]*)$/).exec(v);
                         if (match) {
                             return '<span class="icon-file">&nbsp;</span>' + match[1];
-                        } else 
-                            return value
+                        } else {
+                            return '<span style="font-size:85%;color:#aaa">Add a URL (http://yourdomain.com/your-library-1.2.3.js)</span>';
+                        }
                     },
                     editor    : {
                         enableKeyEvents : true,
@@ -69,13 +69,21 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                 height : 26,
                 items  : [
                     {
-                        xtype : 'displayfield',
-                        value : '<strong>Files to preload</strong>'
-                    },
-                    '->',
-                    {
-                        text   : 'Templates',
-                        height : 18,
+                        xtype : 'splitbutton',
+                        text   : 'Add file URLs...',
+                        iconCls : 'icon-plus',
+                        handler : function() {
+                            var editAtPosition = 0;
+
+                            store.each(function(rec, index) {
+                                if (!rec.data.url) {
+                                    editAtPosition = index;
+                                    return false;
+                                }
+                            });
+
+                            editing.startEdit(editAtPosition, 0);
+                        },
                         menu   : {
                             ignoreParentClicks : true,
                             items : [

@@ -307,7 +307,9 @@
     color:lightcoral;
 }
 
-.file .x-grid-cell-inner
+.icon-plus
 {
-
+    color:#888;
+    font-size:1.2em;
+    padding:1px;
 }
