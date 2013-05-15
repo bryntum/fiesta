@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-cloud, .icon-home, .icon-twitter, .icon-facebook, .icon-google-plus, .icon-star, .icon-star-2, .icon-copy, .icon-arrow-down, .icon-arrow-up, .icon-checkmark, .icon-checkmark-2, .icon-checkmark-circle, .icon-close {
+.icon-file-css, .icon-file, .icon-file-2, .icon-stats, .icon-file-xml, .icon-checkmark, .icon-home, .icon-facebook, .icon-google-plus, .icon-twitter, .icon-IE, .icon-opera, .icon-safari, .icon-chrome, .icon-firefox, .icon-html5, .icon-html5-2, .icon-arrow-up, .icon-arrow-down, .icon-close, .icon-star, .icon-star-2, .icon-attachment, .icon-link, .icon-copy {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -37,45 +37,78 @@ you can use the generic selector below, but it's slower:
 	line-height: 1;
 	-webkit-font-smoothing: antialiased;
 }
-.icon-cloud:before {
-	content: "\e000";
+.icon-file-css:before {
+	content: "\e00f";
 }
-.icon-home:before {
+.icon-file:before {
 	content: "\e001";
 }
-.icon-twitter:before {
-	content: "\e002";
+.icon-file-2:before {
+	content: "\e010";
 }
-.icon-facebook:before {
-	content: "\e003";
+.icon-stats:before {
+	content: "\e011";
 }
-.icon-google-plus:before {
-	content: "\e004";
-}
-.icon-star:before {
-	content: "\e005";
-}
-.icon-star-2:before {
-	content: "\e006";
-}
-.icon-copy:before {
-	content: "\e007";
-}
-.icon-arrow-down:before {
-	content: "\e008";
-}
-.icon-arrow-up:before {
-	content: "\e009";
+.icon-file-xml:before {
+	content: "\e000";
 }
 .icon-checkmark:before {
+	content: "\e002";
+}
+.icon-home:before {
+	content: "\e003";
+}
+.icon-facebook:before {
+	content: "\e004";
+}
+.icon-google-plus:before {
+	content: "\e005";
+}
+.icon-twitter:before {
+	content: "\e006";
+}
+.icon-IE:before {
+	content: "\e007";
+}
+.icon-opera:before {
+	content: "\e008";
+}
+.icon-safari:before {
+	content: "\e009";
+}
+.icon-chrome:before {
 	content: "\e00a";
 }
-.icon-checkmark-2:before {
+.icon-firefox:before {
 	content: "\e00b";
 }
-.icon-checkmark-circle:before {
+.icon-html5:before {
 	content: "\e00c";
 }
-.icon-close:before {
+.icon-html5-2:before {
 	content: "\e00d";
+}
+.icon-arrow-up:before {
+	content: "\e00e";
+}
+.icon-arrow-down:before {
+	content: "\e012";
+}
+.icon-close:before {
+	content: "\e013";
+}
+.icon-star:before {
+	content: "\e014";
+}
+.icon-star-2:before {
+	content: "\e015";
+}
+.icon-attachment:before {
+	content: "\e016";
+}
+.icon-link:before {
+	content: "\e017";
+}
+.icon-copy:before {
+	content: "\e018";
 }
