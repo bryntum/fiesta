@@ -63,7 +63,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
 
             tbar  : {
                 xtype  : 'toolbar',
-                style  : 'background:transparent;padding-top:0',
+                style  : 'background:transparent;padding:0',
                 cls    : 'templates-toolbar',
                 border : false,
                 height : 26,
