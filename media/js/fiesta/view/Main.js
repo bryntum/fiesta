@@ -84,13 +84,14 @@ Ext.define('Fiesta.view.Main', {
     setActiveTab : function(tab) {
         tab = Ext.isNumber(tab) ? this.items.getAt(tab) : tab;
         var testCaseModel = tab.testCaseModel;
+        var suspend = testCaseModel && !testCaseModel.phantom && tab.rendered;
 
         // Too many layouts happening...
-        if (testCaseModel && !testCaseModel.phantom && tab.rendered) Ext.suspendLayouts();
+        if (suspend) Ext.suspendLayouts();
 
         this.callParent(arguments);
 
-        if (testCaseModel && !testCaseModel.phantom && tab.rendered) Ext.resumeLayouts();
+        if (suspend) Ext.resumeLayouts();
     },
 
     /**
