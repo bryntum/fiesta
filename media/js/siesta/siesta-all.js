@@ -7601,7 +7601,7 @@ Role('Siesta.Test.More', {
             // failure supposed to be generated in the "pollFunc" and this async frame to be closed
             // however, in IE it happens that async frame may end earlier than failure from "pollFunc"
             // in such case we report same error as in "pollFunc"
-            var async       = this.beginAsync((isWaitingForTime ? method : timeout) + 3 * interval, function () {
+            var async                   = this.beginAsync((isWaitingForTime ? method : timeout) + 3 * interval, function () {
                 originalClearTimeout(pollTimeout)
                 
                 me.finalizeWaiting(waitAssertion, false, 'Waited too long for: ' + description, {
@@ -7898,7 +7898,7 @@ Role('Siesta.Test.More', {
                             step.next       = nextFunc
                             step.test       = me
                             
-                            var action      = Siesta.Test.ActionRegistry.create(step)
+                            var action      = Siesta.Test.ActionRegistry().create(step)
                             
                             action.process()
                         }
@@ -10286,38 +10286,84 @@ Class('Siesta.Test', {
         
 })
 //eof Siesta.Test;
-/**
-@class Siesta.Test.Action
-
-*/
-Class('Siesta.Test.ActionRegistry', {
+Singleton('Siesta.Test.ActionRegistry', {
     
-    my : {
-    
-        has : {
-            actionClasses       : Joose.I.Object
-        },
-    
+    has : {
+        actionClasses       : Joose.I.Object,
         
-        methods : {
-            
-            registerAction : function (name, constructor) {
-                this.actionClasses[ name.toLowerCase() ] = constructor
-            },
+        targetShortcuts     : function () {
+            return [ 
+                'waitFor', 
+                'click', 
+                'rightClick', 
+                'doubleClick', 
+                'doubleTap', 
+                'drag', 
+                'longpress', 
+                'mouseDown', 
+                'mouseUp', 
+                'moveCursorTo', 
+                'swipe', 
+                'tap', 
+                'type' 
+            ]
+        }
+    },
 
+    
+    methods : {
+        
+        registerAction : function (name, constructor) {
+            this.actionClasses[ name.toLowerCase() ] = constructor
+        },
+
+        
+        getActionClass : function (name) {
+            return this.actionClasses[ name.toLowerCase() ]
+        },
+        
+        
+        create : function (obj) {
+            if (obj !== Object(obj)) throw "Action configuration should be an Object instance"
             
-            getActionClass : function (name) {
-                return this.actionClasses[ name.toLowerCase() ]
-            },
-            
-            
-            create : function (obj) {
-                if (!obj.action && !obj.waitFor && !obj.verify) throw "Need to include `action`, `verify` or `waitFor` property in the step config"
+            if (!obj.action) {
+                var lowerCasedKeys      = {}
                 
-                var actionClass = this.getActionClass((obj.waitFor && "wait") || obj.action || "verify");
-
-                return new actionClass(obj)
+                Joose.O.eachOwn(obj, function (value, key) {
+                    lowerCasedKeys[ key.toLowerCase() ] = key
+                })
+                
+                var me                  = this
+                
+                Joose.A.each(this.targetShortcuts, function (shortcut) {
+                    shortcut            = shortcut.toLowerCase()
+                    
+                    if (lowerCasedKeys.hasOwnProperty(shortcut)) {
+                        obj.action      = shortcut
+                        
+                        switch (shortcut) {
+                            case 'waitfor'  : 
+                            // do nothing 
+                            break
+                            
+                            case 'type'     :
+                                obj.text        = obj[ lowerCasedKeys[ shortcut ] ]
+                            break
+                                
+                            default         : 
+                                obj.target      = obj[ lowerCasedKeys[ shortcut ] ]
+                        }
+                        
+                        return false
+                    }
+                })
             }
+            
+            if (!obj.action) throw "Need to include `action` property or shortuct property in the step config"
+            
+            var actionClass = this.getActionClass(obj.action)
+
+            return new actionClass(obj)
         }
     }
 });
@@ -10403,7 +10449,7 @@ Class('Siesta.Test.Action.Done', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('done', Siesta.Test.Action.Done);
+Siesta.Test.ActionRegistry().registerAction('done', Siesta.Test.Action.Done);
 /**
 
 @class Siesta.Test.Action.Wait
@@ -10443,7 +10489,7 @@ Alternatively, for convenience, this action can be included in the chain using "
     
 In the latter case, this action will perform a call to the one of the `waitFor*` methods of the test instance.
 The name of the method is computed by prepending the uppercased value of `waitFor` config with the string "waitFor" 
-(unless it doesn't already starts with "waitFor").
+(unless it doesn't already start with "waitFor").
 The arguments for method call can be provided as the "args" array. Any non-array value for "args" will be converted to an array with one element.
 * **Note**, that this action will provide a `callback`, `scope`, and `timeout` arguments for `waitFor*` methods - you should not specify them. 
 
@@ -10534,7 +10580,7 @@ Class('Siesta.Test.Action.Wait', {
             }
             
             if (test.typeOf(this.args) !== "Array") {
-                this.args = [ this.args ];
+                this.args   = [ this.args ];
             }
 
             // also allow full method names
@@ -10562,8 +10608,8 @@ Class('Siesta.Test.Action.Wait', {
     }
 });
 
-Joose.A.each(['wait', 'delay'], function(name) {
-    Siesta.Test.ActionRegistry.registerAction(name, Siesta.Test.Action.Wait);
+Joose.A.each([ 'wait', 'waitFor', 'delay' ], function(name) {
+    Siesta.Test.ActionRegistry().registerAction(name, Siesta.Test.Action.Wait);
 });;
 /**
 
@@ -10659,7 +10705,7 @@ Class('Siesta.Test.Action.Eval', {
             var methodName      = match[ 1 ].replace(/^t\./, '')
             
             try {
-                var params          = JSON.parse('[' + match[ 2 ] + ']')
+                var params      = JSON.parse('[' + match[ 2 ] + ']')
             } catch (e) {
                 return {
                     error       : "Can't parse arguments: " + match[ 2 ]
@@ -21440,7 +21486,7 @@ Class('Siesta.Test.Action.Swipe', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('swipe', Siesta.Test.Action.Swipe)
+Siesta.Test.ActionRegistry().registerAction('swipe', Siesta.Test.Action.Swipe)
 ;
 /**
 
@@ -21480,7 +21526,7 @@ Class('Siesta.Test.Action.LongPress', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('longpress', Siesta.Test.Action.LongPress)
+Siesta.Test.ActionRegistry().registerAction('longpress', Siesta.Test.Action.LongPress)
 ;
 /**
 
@@ -21520,7 +21566,7 @@ Class('Siesta.Test.Action.Tap', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('tap', Siesta.Test.Action.Tap);
+Siesta.Test.ActionRegistry().registerAction('tap', Siesta.Test.Action.Tap);
 /**
 
 @class Siesta.Test.Action.DoubleTap
@@ -21560,7 +21606,7 @@ Class('Siesta.Test.Action.DoubleTap', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('doubletap', Siesta.Test.Action.DoubleTap)
+Siesta.Test.ActionRegistry().registerAction('doubletap', Siesta.Test.Action.DoubleTap)
 ;
 /**
 
@@ -21612,8 +21658,8 @@ Class('Siesta.Test.Action.MouseDown', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('mouseDown', Siesta.Test.Action.MouseDown)
-Siesta.Test.ActionRegistry.registerAction('fingerDown', Siesta.Test.Action.MouseDown)
+Siesta.Test.ActionRegistry().registerAction('mouseDown', Siesta.Test.Action.MouseDown)
+Siesta.Test.ActionRegistry().registerAction('fingerDown', Siesta.Test.Action.MouseDown)
 ;
 /**
 
@@ -21665,8 +21711,8 @@ Class('Siesta.Test.Action.MouseUp', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('mouseUp', Siesta.Test.Action.MouseUp)
-Siesta.Test.ActionRegistry.registerAction('fingerUp', Siesta.Test.Action.MouseUp)
+Siesta.Test.ActionRegistry().registerAction('mouseUp', Siesta.Test.Action.MouseUp)
+Siesta.Test.ActionRegistry().registerAction('fingerUp', Siesta.Test.Action.MouseUp)
 ;
 /**
 
@@ -21715,7 +21761,7 @@ Class('Siesta.Test.Action.Click', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('click', Siesta.Test.Action.Click);
+Siesta.Test.ActionRegistry().registerAction('click', Siesta.Test.Action.Click);
 ;
 /**
 
@@ -21765,7 +21811,7 @@ Class('Siesta.Test.Action.DoubleClick', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('doubleclick', Siesta.Test.Action.DoubleClick)
+Siesta.Test.ActionRegistry().registerAction('doubleclick', Siesta.Test.Action.DoubleClick)
 ;
 /**
 
@@ -21815,7 +21861,7 @@ Class('Siesta.Test.Action.RightClick', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('rightclick', Siesta.Test.Action.RightClick)
+Siesta.Test.ActionRegistry().registerAction('rightclick', Siesta.Test.Action.RightClick)
 ;
 /**
 
@@ -21877,7 +21923,7 @@ Class('Siesta.Test.Action.Type', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('type', Siesta.Test.Action.Type);
+Siesta.Test.ActionRegistry().registerAction('type', Siesta.Test.Action.Type);
 /**
 
 @class Siesta.Test.Action.Drag
@@ -22008,7 +22054,7 @@ Class('Siesta.Test.Action.Drag', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('drag', Siesta.Test.Action.Drag);
+Siesta.Test.ActionRegistry().registerAction('drag', Siesta.Test.Action.Drag);
 /**
 
 @class Siesta.Test.Action.MoveCursor
@@ -22103,9 +22149,9 @@ Class('Siesta.Test.Action.MoveCursor', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('moveCursor', Siesta.Test.Action.MoveCursor)
-Siesta.Test.ActionRegistry.registerAction('moveMouse', Siesta.Test.Action.MoveCursor)
-Siesta.Test.ActionRegistry.registerAction('moveFinger', Siesta.Test.Action.MoveCursor)
+Siesta.Test.ActionRegistry().registerAction('moveCursor', Siesta.Test.Action.MoveCursor)
+Siesta.Test.ActionRegistry().registerAction('moveMouse', Siesta.Test.Action.MoveCursor)
+Siesta.Test.ActionRegistry().registerAction('moveFinger', Siesta.Test.Action.MoveCursor)
 ;
 /**
 
@@ -22146,9 +22192,9 @@ Class('Siesta.Test.Action.MoveCursorTo', {
 });
 
 
-Siesta.Test.ActionRegistry.registerAction('moveCursorTo', Siesta.Test.Action.MoveCursorTo)
-Siesta.Test.ActionRegistry.registerAction('moveMouseTo', Siesta.Test.Action.MoveMouseTo)
-Siesta.Test.ActionRegistry.registerAction('moveFingerTo', Siesta.Test.Action.MoveMouseTo)
+Siesta.Test.ActionRegistry().registerAction('moveCursorTo', Siesta.Test.Action.MoveCursorTo)
+Siesta.Test.ActionRegistry().registerAction('moveMouseTo', Siesta.Test.Action.MoveMouseTo)
+Siesta.Test.ActionRegistry().registerAction('moveFingerTo', Siesta.Test.Action.MoveMouseTo)
 ;
 /**
 @class Siesta.Test.Simulate.Mouse
@@ -31701,6 +31747,7 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
             columns     : [
                 {
                     xtype           : 'assertiontreecolumn',
+                    header          : 'Results',
                     flex            : 1,
                     
                     dataIndex       : 'folderStatus',
