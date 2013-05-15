@@ -37,8 +37,6 @@ Ext.define('Fiesta.view.Main', {
             stateEvents : ['tabchange', 'remove', 'add']
         });
 
-        this.on('remove', this.onTabRemove);
-
         Fiesta.DataModel.on('testCreated', this.onTestCaseChanged, this);
         Fiesta.DataModel.on('testUpdated', this.onTestCaseChanged, this);
         Fiesta.DataModel.on('testDeleted', this.onTestCaseDeleted, this);
@@ -145,9 +143,7 @@ Ext.define('Fiesta.view.Main', {
                 mouseVisualizer : this.mouseVisualizer
             });
 
-
             activeTab = tabs.add(newTab);
-
         }
         // Updating testCase's tab if it was found in currently opened tabs
         else {
@@ -167,13 +163,6 @@ Ext.define('Fiesta.view.Main', {
         // Returning testCase tab component to the caller
         return  activeTab;
 
-    },
-
-    onTabRemove : function () {
-//        var tabs = this;
-//        if (tabs.items.items.length == 0) {
-//             FIESTA.getCards().getLayout().setActiveItem(0);
-//        }
     },
 
     getTabsState : function () {
