@@ -7713,19 +7713,22 @@ Role('Siesta.Test.More', {
         
         
         /**
-         * This method accept either variable number of arguments (steps) or the array of them. Each step should be either a function or configuration object for test actions. 
+         * This method accept either variable number of arguments (steps) or the array of them. 
+         * Each step should be either a function or configuration object for test actions. 
          * These functions / actions will be executed in order.
          * 
-         * 1) If step is a function, as the 1st argument, it will receive a callback to call when the step is completed. As the 2nd and further arguments, the step function will receive the
-         * arguments passed to the previous callback.
+         * 1) If step is a function, as the 1st argument, it will receive a callback to call when the step is completed. 
+         * As the 2nd and further arguments, the step function will receive the arguments passed to the previous callback.
          * 
          * The last step will receive a no-op callback, which can be ignored or still called.  
          * 
-         * 2) If a step is presented with action configuration object, then the callback will be called by the action class automatically. Configuration object should contain the "action" property,
-         * specifying the action class and some other config options (depending from the action class). 
+         * 2) If a step is presented with action configuration object, then the callback will be called by the action class automatically,
+         * there's no need to provide any. Configuration object should contain the "action" property, specifying the action class 
+         * and some other config options (depending from the action class). For brevity, instead of "action" property, configuration 
+         * object may contain the property corresponding to the action name itself, with the action's target. See the following examples and also
+         * refer to the documentation of the action classes. 
          * 
-         * In the latter case if configuration object will contain a "desc" property, a passing assertion with it value will be added to the test, after this step
-         * completion.
+         * If configuration object will contain a "desc" property, a passing assertion with it value will be added to the test, after this step completion.
          * 
          * 3) If step is a sub test instance, created with {@link #getSubTest} method, then step will launch it.
          * 
@@ -7762,12 +7765,26 @@ Role('Siesta.Test.More', {
             target      : buttonEl,
             desc        : "Clicked on the button"
         },
+        // or
+        {
+            click       : buttonEl,
+            desc        : "Clicked on the button"
+        },
+
         {
             action      : 'type',
             target      : fieldEl,
             text        : 'Something',
             desc        : "Typed in the field"
         },
+        // or
+        {
+            type        : 'Something',
+            target      : fieldEl,
+            desc        : "Typed in the field"
+        },
+        
+        
         function (next) {
             t.is(fieldEl.value == 'Something', 'Correct value in the field')
             
@@ -21455,6 +21472,10 @@ This action can be included in the `t.chain` call with "swipe" shortcut:
         {
             action      : 'swipe',
             target      : someDOMElement
+        },
+        // or
+        {
+            swipe       : someDOMElement
         }
     )
 
@@ -21500,6 +21521,10 @@ This action can be included in the `t.chain` call with "click" shortcut:
         {
             action      : 'longpress',
             target      : someDOMElement
+        },
+        // or
+        {
+            longpress   : someDOMElement
         }
     )
 
@@ -21540,6 +21565,10 @@ This action can be included in the `t.chain` call with "tap" shortcut:
         {
             action      : 'tap',
             target      : someDOMElement
+        },
+        // or
+        {
+            tap         : someDOMElement
         }
     )
 
@@ -21581,6 +21610,10 @@ This action can be included in the `t.chain` call with "doubletap" or "doubleTap
         {
             action      : 'doubletap',
             target      : someDOMElement
+        },
+        // or
+        {
+            doubletap   : someDOMElement
         }
     )
 
@@ -21620,6 +21653,11 @@ This action can be included in a `t.chain` call with "mouseDown" shortcut:
         {
             action      : 'mouseDown',
             target      : someDOMElement,
+            options     : { shiftKey : true } // Optionally hold shiftkey
+        },
+        // or
+        {
+            mousedown   : someDOMElement,
             options     : { shiftKey : true } // Optionally hold shiftkey
         }
     )
@@ -21674,6 +21712,11 @@ This action can be included in a `t.chain` call with "mouseUp" shortcut:
             action      : 'mouseUp',
             target      : someDOMElement,
             options     : { shiftKey : true } // Optionally hold shiftkey
+        },
+        // or
+        {
+            mouseup     : someDOMElement,
+            options     : { shiftKey : true } // Optionally hold shiftkey
         }
     )
 
@@ -21727,6 +21770,11 @@ This action can be included in the `t.chain` call with "click" shortcut:
             action      : 'click',
             target      : someDOMElement,
             options     : { shiftKey : true } // Optionally hold shiftkey
+        },
+        // or
+        {
+            click       : someDOMElement,
+            options     : { shiftKey : true } // Optionally hold shiftkey
         }
     )
 
@@ -21778,7 +21826,13 @@ This action can be included in the `t.chain` call with "doubleclick" or "doubleC
             action      : 'doubleclick',
             target      : someDOMElement,
             options     : { shiftKey : true } // Optionally hold shiftkey
+        },
+        // or
+        {
+            doubleclick : someDOMElement,
+            options     : { shiftKey : true } // Optionally hold shiftkey
         }
+        
     )
 
 
@@ -21828,6 +21882,11 @@ This action can be included in the `t.chain` call with "rightclick" or "rightCli
             action      : 'rightclick',
             target      : someDOMElement,
             options     : { shiftKey : true } // Optionally hold shiftkey
+        },
+        // or
+        {
+            rightclick  : someDOMElement,
+            options     : { shiftKey : true } // Optionally hold shiftkey
         }
     )
 
@@ -21872,14 +21931,21 @@ Siesta.Test.ActionRegistry().registerAction('rightclick', Siesta.Test.Action.Rig
 This action will {@link Siesta.Test.Browser#type type} provided {@link #text} in the provided {@link #target}. 
 Target can be a DOM element or, in case you are using the Siesta.Test.ExtJS class - an instance of Ext.Component (field component for example). 
 
-This action can be included in the `t.chain` call with "type" shortcut:
+This action can be included in the `t.chain` call with "type" shortcut. **Note**, that unlike the other actions, in the compact
+form "type" property contains the text to type, not the target of action.
 
     t.chain(
         {
             action      : 'type',
             target      : someDOMElement,
             text        : 'Some text'
-        }
+        },
+        // or 
+        {
+            // NOTE: "type" contains text to type, not the action target as in other actions
+            type        : 'Some text',
+            target      : someDOMElement
+        }        
     )
 
 
@@ -21941,6 +22007,11 @@ This action can be included in the `t.chain` call with the "drag" shortcut:
             action      : 'drag',
             target      : someDOMElementOrArray,
             by          : [ 10, 10 ]
+        },
+        // or
+        {
+            drag        : someDOMElementOrArray,
+            to          : someDOMElementOrArray
         }
     )
 
@@ -22163,8 +22234,12 @@ This action can be included in the `t.chain` call with "moveCursorTo" shortcut:
 
     t.chain(
         {
-            action      : 'moveCursorTo',
-            target      : someDOMElement
+            action          : 'moveCursorTo',
+            target          : someDOMElement
+        },
+        // or
+        {
+            moveCursorTo    : someDOMElement
         }
     )
 
@@ -30355,10 +30430,6 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
     onTestSuiteEnd : function (descriptors) {
         this.updateStatusIndicator()
-
-        setTimeout(function() {
-            Ext.select('.ghost-cursor-click-indicator').each(function(el) { el.destroy(); });
-        }, 3000);
     },
     
 
@@ -30842,6 +30913,7 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     setHarness : function (harness) {
         if (this.harness) {
+            this.harness.un('testsuiteend', this.onTestSuiteEnd, this);
             this.harness.un('testframeshow', this.onTestFrameShow, this);
             this.harness.un('testframehide', this.onTestFrameHide, this);
         }
@@ -30849,6 +30921,7 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
         this.harness    = harness
     
         if (harness) {
+            harness.on('testsuiteend', this.onTestSuiteEnd, this);
             harness.on('testframeshow', this.onTestFrameShow, this);
             harness.on('testframehide', this.onTestFrameHide, this);
         }
@@ -30884,6 +30957,18 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
             display : 'none'
         });
     },
+    
+    
+    onTestSuiteEnd : function () {
+        var indicators      = Ext.select('.ghost-cursor-click-indicator')
+        
+        // timeout to allow the click animation to complete if click happened
+        // at the end of the test
+        setTimeout(function() {
+            indicators.each(function(el) { el.destroy(); });
+        }, 3000);
+    },
+    
 
     onTestFinished : function (event, test) {
         var me = this;
