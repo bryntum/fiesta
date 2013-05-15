@@ -21,7 +21,10 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
             viewConfig : {
                 stripeRows : false,
                 markDirty : false,
-                trackOver : false
+                trackOver : false,
+                plugins: {
+                    ptype: 'gridviewdragdrop'
+                }
             },
             columns  : [
                 {
@@ -77,13 +80,21 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                         iconCls : 'icon-plus',
                         handler : function() {
                             var editAtPosition = 0;
+                            var found;
 
                             store.each(function(rec, index) {
+                                editAtPosition = index;
+
                                 if (!rec.data.url) {
-                                    editAtPosition = index;
+                                    found = true;
                                     return false;
                                 }
                             });
+
+                            if (!found) {
+                                store.add(['']);
+                                editAtPosition++;
+                            }
 
                             editing.startEdit(editAtPosition, 0);
                         },
