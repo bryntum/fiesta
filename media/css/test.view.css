@@ -178,6 +178,7 @@
 .tr-iframe-wrapper iframe.tr-iframe
 {
     background-color: transparent;
+    padding:18px;
 }
 
 
