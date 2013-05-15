@@ -27,10 +27,10 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                 {
                     dataIndex : 'url',
                     renderer : function(v, meta) {
-                        if (v) { meta.tdCls = 'file'; };
-
                         var match = (/\/([^/]*)$/).exec(v);
-                        if (match) return match[1];
+                        if (match) {
+                            return '<span class="icon-file">&nbsp;</span>' + match[1];
+                        }
                     },
                     editor    : {
                         enableKeyEvents : true,
