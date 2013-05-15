@@ -80,12 +80,19 @@ Ext.define('Fiesta.view.Main', {
     },
 
     activateTabFor : function (testCaseModel) {
-        // Too many layouts happening...
-        if (!testCaseModel.phantom) Ext.suspendLayouts();
-
         this.setActiveTab(this.updateTab(testCaseModel, true));
+    },
 
-        if (!testCaseModel.phantom) Ext.resumeLayouts();
+    setActiveTab : function(tab) {
+        tab = Ext.isNumber(tab) ? this.items.getAt(tab) : tab;
+        var testCaseModel = tab.testCaseModel;
+
+        // Too many layouts happening...
+        if (testCaseModel && !testCaseModel.phantom && tab.rendered) Ext.suspendLayouts();
+
+        this.callParent(arguments);
+
+        if (testCaseModel && !testCaseModel.phantom && tab.rendered) Ext.resumeLayouts();
     },
 
     /**
@@ -96,7 +103,6 @@ Ext.define('Fiesta.view.Main', {
      */
 
     updateTab : function (testCaseModel, updateHistory) {
-
 
         if (typeof(updateHistory) == 'undefined') {
             updateHistory = false;
