@@ -175,16 +175,16 @@
     font-size:9px;
 }
 
+.tr-iframe-wrapper
+{
+    text-align: center;
+    padding-left:18px;
+    padding-top:18px;
+}
+
 .tr-iframe-wrapper iframe.tr-iframe
 {
     background-color: transparent;
-    padding:18px;
-}
-
-
-.tr-iframe-wrapper iframe
-{
-    margin-top: 1px;
 }
 
 .panel-picker
