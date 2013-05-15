@@ -28,11 +28,14 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                     dataIndex : 'url',
                     renderer : function(v, meta) {
                         var match = (/\/([^/]*)$/).exec(v);
-                        if (match) {
-                            return '<span class="icon-file">&nbsp;</span>' + match[1];
-                        } else if (!v){
-                            return '<span style="font-size:85%;color:#aaa">Add a URL (http://yourdomain.com/your-library-1.2.3.js)</span>';
+
+                        if (!v) {
+                            return '<span style="font-size:85%;color:#aaa">http://some.domain.com/your-library-1.2.3.js</span>';
                         }
+
+                        meta.tdCls = 'preload-cell';
+
+                        return '<span class="icon-file">&nbsp;</span><span>' + (match && match[1] || v) + '</span>' + '<span class="remove">X</span>';
                     },
                     editor    : {
                         enableKeyEvents : true,
@@ -150,6 +153,21 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                 scope : this
                             }
                         }
+                    },
+                    '->',
+                    {
+                        text : 'Ext 4.2',
+                        handler : function() {
+                            this.addTemplatePreloads('Ext JS', "4.2.0");
+                        },
+                        scope : this
+                    },
+                    {
+                        text : 'Touch 2.2',
+                        handler : function() {
+                            this.addTemplatePreloads('Sencha Touch', "2.2.0");
+                        },
+                        scope : this
                     }
                 ]
             },
@@ -159,7 +177,14 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         this.callParent(arguments);
     },
 
-    
+    afterRender : function() {
+        this.callParent(arguments);
+
+        this.el.on('click', function() {
+            debugger;
+        }, this, { delegate : '.remove'});
+    },
+
     getValue : function() {
         var preloads        = []
         
@@ -170,7 +195,6 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         return preloads.join(',');
     },
 
-    
     addTemplatePreloads : function(category, id) {
         var preloads;
 

@@ -313,3 +313,19 @@
     font-size:1.2em;
     padding:1px;
 }
+
+.preload-cell .x-grid-cell-inner
+{
+    padding: 2px;
+    position: relative;
+    height: 22px;
+}
+
+.preload-cell .remove {
+    position: absolute;
+    right:3px;
+    top:3px;
+    width:16px;
+    cursor: pointer;
+    color:#999;
+}

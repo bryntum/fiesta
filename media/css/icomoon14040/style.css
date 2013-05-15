@@ -97,10 +97,10 @@ you can use the generic selector below, but it's slower:
 .icon-close:before {
 	content: "\e013";
 }
-.icon-star:before {
+.icon-star-2:before {
 	content: "\e014";
 }
-.icon-star-2:before {
+.icon-star:before {
 	content: "\e015";
 }
 .icon-attachment:before {
