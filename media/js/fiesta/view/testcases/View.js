@@ -22,6 +22,8 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     initComponent : function () {
+        
+        var testCaseModel       = this.testCaseModel
 
         var topBar = {
             xtype : 'toolbar',
@@ -40,14 +42,14 @@ Ext.define('Fiesta.view.testcases.View', {
                     xtype           : 'displayfield',
                     width           : 20,
                     cls             : 'vote-container',
-                    value           : this.testCaseModel.get('rating'),
+                    value           : testCaseModel.get('rating'),
                     renderer        : function (value) {
                         var result = '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">'
                                         +value+
                                     '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
                         return result;
                     },
-                    disabled         : this.testCaseModel.get('ownerId') == CONFIG.userId || this.testCaseModel.phantom
+                    disabled         : testCaseModel.get('ownerId') == CONFIG.userId || testCaseModel.phantom
                 },
 
                 { xtype : 'tbseparator' },
@@ -82,41 +84,53 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope   : this
                 },
                 {
-                    iconCls  : this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star-2',
-                    scope    : this,
-                    action   : 'changeFavorites',
+                    iconCls  : testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star-2',
+                    
                     handler  : this.changeFavorite,
-                    disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
+                    scope    : this,
+                    
+                    action   : 'changeFavorites',
+                    disabled : testCaseModel.phantom || !FIESTA.isSignedIn()
                 },
 
                 {
                     iconCls  : 'icon-copy',
-                    tooltip  : 'Clone this test',
-                    scope    : this,
+                    
                     handler  : this.onCloneClick,
-                    disabled : this.testCaseModel.phantom || !FIESTA.isSignedIn()
+                    scope    : this,
+                    
+                    tooltip  : 'Clone this test',
+                    disabled : testCaseModel.phantom || !FIESTA.isSignedIn()
                 },
                 { xtype : 'tbseparator' },
                 {
-                    tooltip : 'Share on Twitter',
                     iconCls : 'icon-twitter',
-                    cls     : 'social',
+                    
+                    handler : this.shareTwitter,
                     scope   : this,
-                    handler : this.shareTwitter
+                    tooltip : 'Share on Twitter',
+                    
+                    cls     : 'social'
                 },
                 {
-                    tooltip : 'Share on Facebook',
                     iconCls : 'icon-facebook',
-                    cls     : 'social',
+                    
+                    handler : this.shareFb,
                     scope   : this,
-                    handler : this.shareFb
+                    
+                    tooltip : 'Share on Facebook',
+                    
+                    cls     : 'social'
                 },
                 {
-                    tooltip : 'Share on Google+',
                     iconCls : 'social icon-google-plus',
-                    cls     : 'social',
+                    
+                    handler : this.shareGoogle,
                     scope   : this,
-                    handler : this.shareGoogle
+                    
+                    tooltip : 'Share on Google+',
+                    
+                    cls     : 'social'
                 }
             ]
         };
@@ -130,17 +144,17 @@ Ext.define('Fiesta.view.testcases.View', {
             ],
             items     : [
                 {
-                    xtype       : 'detailspanel',
-                    testCaseModel : this.testCaseModel,
-                    region      : 'north',
-                    listeners   : {
+                    xtype           : 'detailspanel',
+                    testCaseModel   : testCaseModel,
+                    region          : 'north',
+                    listeners       : {
                         collapse    : this.onDetailsCollapseExpand,
                         expand      : this.onDetailsExpand,
                         
                         scope       : this
                     },
-                    placeholder : {
-                        height  : 0
+                    placeholder     : {
+                        height      : 0
                     }
                 },
                 {
@@ -311,8 +325,10 @@ Ext.define('Fiesta.view.testcases.View', {
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             this.detailsPanel.updateRecord(testCaseModel);
-            var me = this;
+            
+            var me              = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
+            
             runButton.setIconCls('icon-loading');
 
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
@@ -326,6 +342,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
             }, function () {
                 runButton.setIconCls('');
+                
                 var test                = me.resultPanel.test;
                 var assertionGrid       = me.down('assertiongrid');
 
@@ -339,6 +356,7 @@ Ext.define('Fiesta.view.testcases.View', {
         }
     },
 
+    
     afterRender : function() {
         this.callParent(arguments);
 
@@ -364,6 +382,7 @@ Ext.define('Fiesta.view.testcases.View', {
         });
     },
 
+    
     onVoteClick : function(e, t) {
         var record = this.testCaseModel,
             me = this;

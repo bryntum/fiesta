@@ -5,12 +5,13 @@ Ext.define('Fiesta.view.testcases.Details', {
         'Fiesta.plugins.TagSelect',
         'Fiesta.view.testcases.PreloadGrid'
     ],
+    
     border        : false,
     style         : 'border-bottom:1px solid #bbb',
     scroll        : true,
     autoScroll    : true,
     layout        : 'fit',
-    testCaseModel : null,
+    
     header        : false,
     collapsed     : true,
     cls           : 'testdetailsform',
@@ -19,6 +20,9 @@ Ext.define('Fiesta.view.testcases.Details', {
     border        : false,
     defaults      : { border : false },
     layout        : { type : 'hbox', align : 'stretch' },
+    
+    testCaseModel : null,
+    
 //    disqusContainer : null,
 
     initComponent : function () {
@@ -80,16 +84,7 @@ Ext.define('Fiesta.view.testcases.Details', {
                             width  : 80,
                             cls    : 'delete-testcase',
                             action : 'delete',
-                            handler : function () {
-                                var me = this;
-                                Ext.Msg.confirm('Confirm', 'Are you sure?', function (btn) {
-                                    if (btn !== 'yes') return;
-
-                                    Fiesta.DataModel.deleteTestCase(
-                                        me.testCaseModel
-                                    );
-                                })
-                            },
+                            handler : this.onDeleteTestCase,
                             scope   : this
                         }
                     ]
@@ -117,25 +112,36 @@ Ext.define('Fiesta.view.testcases.Details', {
 
         this.callParent(arguments);
     },
+    
+    
+    onDeleteTestCase : function () {
+        var me = this;
+        
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function (btn) {
+            if (btn == 'yes') Fiesta.DataModel.deleteTestCase(me.testCaseModel);
+        })
+    },    
 
 
     setTestCaseModel : function (model) {
-        var tagsList = [],
-            preloadGrid = this.down('preloadgrid'),
-            detailsForm = this.getForm();
+        var tagsList        = [],
+            preloadGrid     = this.down('preloadgrid'),
+            detailsForm     = this.getForm();
 
-        this.testCaseModel = model;
+        this.testCaseModel  = model;
 
-        Ext.each(this.testCaseModel.get('tags'), function (tag) {
+        Ext.each(model.get('tags'), function (tag) {
             tagsList.push(tag.tag);
         });
 
         detailsForm.loadRecord(model);
         detailsForm.setValues({ tagsList : tagsList });
+        
         if (preloadGrid) {
             preloadGrid.setValue(model.get('preloads'));
         }
-        this.down('[action=delete]').setVisible(!model.phantom && this.testCaseModel.isEditable())
+        
+        this.down('[action=delete]').setVisible(!model.phantom && model.isEditable())
     },
 
 
@@ -148,6 +154,7 @@ Ext.define('Fiesta.view.testcases.Details', {
 //        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
     },
 
+    
     updateRecord : function() {
         var preloadGrid = this.down('preloadgrid');
 
