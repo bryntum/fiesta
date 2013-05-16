@@ -95,6 +95,6 @@
 .tag-learn,
 li[qtip=learn]{
     background   : #5bb75b !important;
-    border-color : green;
+    border-color : rgb(84, 164, 84);
     color        : #fff;
 }

@@ -175,16 +175,20 @@
     font-size:9px;
 }
 
+.tr-iframe-wrapper
+{
+    padding-left:18px;
+    padding-top:18px;
+}
+
+.siesta-domcontainer
+{
+    text-align: center;
+}
+
 .tr-iframe-wrapper iframe.tr-iframe
 {
     background-color: transparent;
-    padding:18px;
-}
-
-
-.tr-iframe-wrapper iframe
-{
-    margin-top: 1px;
 }
 
 .panel-picker
@@ -287,13 +291,13 @@
     color:orange;
 }
 
-.icon-checkmark-2,
+.icon-checkmark,
 .icon-close
 {
     font-size:1.2em;
 }
 
-.icon-checkmark-2
+.icon-checkmark
 {
     color:lightgreen;
 }
@@ -303,7 +307,29 @@
     color:lightcoral;
 }
 
-.file .x-grid-cell-inner
+.icon-plus
 {
+    color:#888;
+    font-size:1.2em;
+    padding:1px;
+}
 
+.preload-cell .x-grid-cell-inner
+{
+    padding: 2px;
+    position: relative;
+}
+
+.preload-cell .remove {
+    position: absolute;
+    right:3px;
+    top:3px;
+    width:16px;
+    cursor: pointer;
+    color:#aaa;
+}
+
+.preload-cell .remove:hover {
+    font-weight: bold;
+    color:#888;
 }

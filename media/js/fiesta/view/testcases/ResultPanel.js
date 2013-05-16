@@ -34,13 +34,8 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
                     xtype           : 'domcontainer',
                     region          : 'center',
 
-                    bodyStyle       : 'text-align : center',
-
                     slot            : 'domContainer',
-                    stateful        : true,             // Turn off for recursive siesta demo
-
-                    id              : this.id + '-domContainer',
-                    width           : '50%',
+                    stateful        : true,
                     cls             : 'siesta-domcontainer',
                     placeholder : {
                         height  : 0

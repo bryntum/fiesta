@@ -1,7 +1,6 @@
 Ext.define('Fiesta.view.testcases.PreloadGrid', {
     extend      : 'Ext.grid.Panel',
     alias       : 'widget.preloadgrid',
-    
     hideHeaders : true,
     flex        : 1,
     cls         : 'preloadgrid',
@@ -14,7 +13,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         var store = new Ext.data.ArrayStore({
             fields : ['url'],
             data   : [
-                '','','',''
+                ['']
             ]
         });
 
@@ -22,17 +21,24 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
             viewConfig : {
                 stripeRows : false,
                 markDirty : false,
-                trackOver : false
+                trackOver : false,
+                plugins: {
+                    ptype: 'gridviewdragdrop'
+                }
             },
             columns  : [
                 {
                     dataIndex : 'url',
-                    renderer : function(value, meta) {
-                        var match = (/\/([^/]*)$/).exec(value);
-                        if (match) {
-                            return '<span class="icon-file">&nbsp;</span>' + match[1];
-                        } else 
-                            return value
+                    renderer : function(v, meta) {
+                        var match = (/\/([^/]*)$/).exec(v);
+
+                        if (!v) {
+                            return '<span style="font-size:85%;color:#aaa">http://some.domain.com/your-library-1.2.3.js</span>';
+                        }
+
+                        meta.tdCls = 'preload-cell';
+
+                        return '<span class="icon-file">&nbsp;</span><span>' + (match && match[1] || v) + '</span>' + '<span class="remove">X</span>';
                     },
                     editor    : {
                         enableKeyEvents : true,
@@ -40,7 +46,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                             specialkey : function (field, e) {
                                 var currentIndex = store.indexOf(editing.activeRecord);
 
-                                if ((e.getKey() === e.RETURN || e.getKey() === e.TAB) &&
+                                if ((e.getKey() === e.RETURN || (e.getKey() === e.TAB && !e.shiftKey)) &&
                                     currentIndex === store.getCount()-1 ) {
                                     var newRecord = new store.model();
                                     store.add(newRecord);
@@ -63,19 +69,35 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
 
             tbar  : {
                 xtype  : 'toolbar',
-                style  : 'background:transparent;padding-top:0',
+                style  : 'background:transparent;padding:0',
                 cls    : 'templates-toolbar',
                 border : false,
                 height : 26,
                 items  : [
                     {
-                        xtype : 'displayfield',
-                        value : '<strong>Files to preload</strong>'
-                    },
-                    '->',
-                    {
-                        text   : 'Templates',
-                        height : 18,
+                        xtype : 'splitbutton',
+                        text   : 'Add file URLs...',
+                        iconCls : 'icon-plus',
+                        handler : function() {
+                            var editAtPosition = 0;
+                            var found;
+
+                            store.each(function(rec, index) {
+                                editAtPosition = index;
+
+                                if (!rec.data.url) {
+                                    found = true;
+                                    return false;
+                                }
+                            });
+
+                            if (!found) {
+                                store.add(['']);
+                                editAtPosition++;
+                            }
+
+                            editing.startEdit(editAtPosition, 0);
+                        },
                         menu   : {
                             ignoreParentClicks : true,
                             items : [
@@ -142,6 +164,21 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                 scope : this
                             }
                         }
+                    },
+                    '->',
+                    {
+                        text : 'Ext 4.2',
+                        handler : function() {
+                            this.addTemplatePreloads('Ext JS', "4.2.0");
+                        },
+                        scope : this
+                    },
+                    {
+                        text : 'Touch 2.2',
+                        handler : function() {
+                            this.addTemplatePreloads('Sencha Touch', "2.2.0");
+                        },
+                        scope : this
                     }
                 ]
             },
@@ -151,7 +188,18 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         this.callParent(arguments);
     },
 
-    
+    afterRender : function() {
+        this.callParent(arguments);
+
+        this.el.on('mousedown', function(e, t) {
+            var view = this.getView();
+            var node = view.findItemByChild(t);
+            var record = view.getRecord(node);
+            this.store.remove(record);
+            e.stopEvent();
+        }, this, { delegate : '.remove'});
+    },
+
     getValue : function() {
         var preloads        = []
         
@@ -162,7 +210,6 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         return preloads.join(',');
     },
 
-    
     addTemplatePreloads : function(category, id) {
         var preloads;
 
@@ -208,9 +255,11 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         this.store.removeAll();
         var vals = [];
 
-        Ext.Array.each(preloadsAsString.split(','), function(url) {
-            vals.push([url]);
-        });
+        if (preloadsAsString) {
+            Ext.Array.each(preloadsAsString.split(','), function(url) {
+                vals.push([url]);
+            });
+        }
 
         vals.push([''])
 

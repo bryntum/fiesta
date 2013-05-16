@@ -30,7 +30,13 @@ window.onload = function() {
 			'icon-star-2' : '&#xe015;',
 			'icon-attachment' : '&#xe016;',
 			'icon-link' : '&#xe017;',
-			'icon-copy' : '&#xe018;'
+			'icon-copy' : '&#xe018;',
+			'icon-plus' : '&#xe019;',
+			'icon-minus' : '&#xe01a;',
+			'icon-play' : '&#xe01b;',
+			'icon-play-2' : '&#xe01c;',
+			'icon-pause' : '&#xe01d;',
+			'icon-stop' : '&#xe01e;'
 		},
 		els = document.getElementsByTagName('*'),
 		i, attr, html, c, el;

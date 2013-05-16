@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-file-css, .icon-file, .icon-file-2, .icon-stats, .icon-file-xml, .icon-checkmark, .icon-home, .icon-facebook, .icon-google-plus, .icon-twitter, .icon-IE, .icon-opera, .icon-safari, .icon-chrome, .icon-firefox, .icon-html5, .icon-html5-2, .icon-arrow-up, .icon-arrow-down, .icon-close, .icon-star, .icon-star-2, .icon-attachment, .icon-link, .icon-copy {
+.icon-file-css, .icon-file, .icon-file-2, .icon-stats, .icon-file-xml, .icon-checkmark, .icon-home, .icon-facebook, .icon-google-plus, .icon-twitter, .icon-IE, .icon-opera, .icon-safari, .icon-chrome, .icon-firefox, .icon-html5, .icon-html5-2, .icon-arrow-up, .icon-arrow-down, .icon-close, .icon-star, .icon-star-2, .icon-attachment, .icon-link, .icon-copy, .icon-plus, .icon-minus, .icon-play, .icon-play-2, .icon-pause, .icon-stop {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -97,10 +97,10 @@ you can use the generic selector below, but it's slower:
 .icon-close:before {
 	content: "\e013";
 }
-.icon-star:before {
+.icon-star-2:before {
 	content: "\e014";
 }
-.icon-star-2:before {
+.icon-star:before {
 	content: "\e015";
 }
 .icon-attachment:before {
@@ -111,4 +111,22 @@ you can use the generic selector below, but it's slower:
 }
 .icon-copy:before {
 	content: "\e018";
+}
+.icon-plus:before {
+	content: "\e019";
+}
+.icon-minus:before {
+	content: "\e01a";
+}
+.icon-play:before {
+	content: "\e01b";
+}
+.icon-play-2:before {
+	content: "\e01c";
+}
+.icon-pause:before {
+	content: "\e01d";
+}
+.icon-stop:before {
+	content: "\e01e";
 }
