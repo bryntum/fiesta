@@ -67,12 +67,21 @@ Ext.define("Fiesta.model.TestCase", {
     hasTag : function(tag) {
         return Ext.Array.contains(this.getTagNames(), tag);
     },
-
+    
+    
     getFrameworkRoot : function() {
-        var pl = this.get('preloads');
+        var preloads    = this.get('preloads');
 
-        var match = pl.match(/ /);
+        var match       = preloads.match(/(http:\/\/cdn\.sencha\.io\/ext[^/]*)/);
+        
+        // found extjs library in preloads
+        if (match) return match[ 1 ]
 
+        match           = preloads.match(/(http:\/\/cdn\.sencha\.io\/touch\/sencha-touch[^/]*)/);
+        
+        // found sencha touch library in preloads
+        if (match) return match[ 1 ]
+        
         return '';
     }
 });

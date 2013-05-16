@@ -318,18 +318,18 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     runTest : function () {
-        var me                  = this;
         var testCaseModel       = this.testCaseModel;
-        var harness             = this.harness;
         var runButton           = this.runButton;
         var code                = this.codeEditor.getValue();
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             this.detailsPanel.updateRecord(testCaseModel);
             
+            var harness         = this.harness;
+            
             var me              = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
-            var root            = '';
+            var root            = testCaseModel.getFrameworkRoot();
 
             runButton.setIconCls('icon-loading');
 
@@ -343,7 +343,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
 
-                loaderPath  : {
+                loaderPath      : {
                     'Ext'       : root + '/src/',
                     'Ext.ux'    : root + '/examples/ux'
                 }
