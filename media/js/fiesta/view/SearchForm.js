@@ -120,7 +120,6 @@ Ext.define("Fiesta.view.SearchForm", {
                                 boxLabel  : 'My own',
                                 name      : 'showMy',
                                 value     : 1,
-                                checked   : true,
                                 listeners : {
                                     change      : this.processFilter,
                                     scope       : this
