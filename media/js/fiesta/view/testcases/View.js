@@ -254,18 +254,25 @@ Ext.define('Fiesta.view.testcases.View', {
 
      
     onTabCreate : function () {
-        this.codeEditor.setValue(this.testCaseModel.get('code'));
-        this.down('detailspanel').setTestCaseModel(this.testCaseModel);
-        this.saveButton.setVisible(this.testCaseModel.phantom || this.testCaseModel.isEditable());
+        var testCaseModel       = this.testCaseModel
+        
+        this.codeEditor.setValue(testCaseModel.get('code'));
+        
+        this.down('detailspanel').setTestCaseModel(testCaseModel);
+        
+        this.saveButton.setVisible(testCaseModel.phantom || testCaseModel.isEditable());
     },
     
     
     updateTestCaseModel : function (testCaseModel) {
         this.setTitle(Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15));
+        
         this.testCaseModel = testCaseModel;
+        
         this.onTabCreate(testCaseModel);
+        
         this.down('[action=changeFavorites]').setIconCls(
-            this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star'
+            testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star'
         );
     },
 
