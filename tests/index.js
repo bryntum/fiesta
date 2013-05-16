@@ -3,8 +3,37 @@ var Harness = Siesta.Harness.Browser.ExtJS
 Harness.configure({
     title                   : 'Fiesta suite',
     testClass               : Fiesta.Test,
-    autoCheckGlobals        : false,
-    overrideSetTimeout      : false,
+    
+    autoCheckGlobals        : true,
+    expectedGlobals         : [
+        'CodeMirror',
+        'FIESTA',
+        'DATA',
+        'Fiesta',
+        'JSHINT',
+        'CONFIG',
+        'Joose',
+        'Class',
+        'Role',
+        'Module',
+        'Singleton',
+        'Scope',
+        'JooseX',
+        'Data',
+        'Siesta',
+        '$',
+        'jQuery',
+        /jQuery\d+/,
+        'rootjQuery',
+        'XRegExp',
+        'SyntaxHighlighter',
+        'Sch',
+        
+        // leakage from BoxSelect 
+        'height'
+    ],
+    
+    runCore                 : 'sequential',
 
     hostPageUrl             : '/'
 })

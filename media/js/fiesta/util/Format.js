@@ -9,7 +9,7 @@
                 delta =  parseInt(Ext.Date.format(now, 'U') - Ext.Date.format(date, 'U') + tzOffset),
                 result = '';
 
-            timeArray = {
+            var timeArray = {
                 'year'      : '31104000',
                 'month'     :'2592000',
                 'day'       :'86400',
