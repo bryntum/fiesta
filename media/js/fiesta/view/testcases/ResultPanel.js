@@ -67,6 +67,7 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
         
         this.on({
             beforecollapse  : this.onBeforeCollapse,
+            beforeexpand    : this.onBeforeExpand,
             expand          : this.onExpand,
             
             scope           : this
@@ -75,12 +76,24 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
     
     
     onBeforeCollapse : function() {
+        // collapse the dom container early
         this.slots.domContainer.onCollapse();
     },
     
 
+    onBeforeExpand : function() {
+        // before expand - prevent dom container from aligning iframe after layout
+        // since it will be done in "expand" handler
+        this.slots.domContainer.suspendAfterLayoutAlign = true
+    },
+    
+    
     onExpand : function() {
+        // call "onExpand" listener and align the iframe
         this.slots.domContainer.onExpand();
+        
+        // allow iframe align after layout
+        this.slots.domContainer.suspendAfterLayoutAlign = false
     },
     
 

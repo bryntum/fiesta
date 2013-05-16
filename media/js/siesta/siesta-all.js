@@ -29780,6 +29780,8 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
 
     canManageDOM            : true,
     
+    suspendAfterLayoutAlign : false,
+    
 
     initComponent : function() {
         this.testListeners  = []
@@ -29832,7 +29834,7 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     
 
     onAfterLayout : function () {
-        this.alignIFrame();
+        if (!this.suspendAfterLayoutAlign) this.alignIFrame();
     },
 
 

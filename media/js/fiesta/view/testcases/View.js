@@ -194,15 +194,12 @@ Ext.define('Fiesta.view.testcases.View', {
                             ]
                         },
                         {
-                            xtype        : 'fiestaresultpanel',
-                            flex         : 1,
-                            region       : 'east',
-                            split        : true,
-                            border       : false,
-                            isStandalone : true,
-                            showToolbar  : false,
-
-                            disableSelection : true
+                            xtype           : 'fiestaresultpanel',
+                            flex            : 1,
+                            region          : 'east',
+                            split           : true,
+                            border          : false,
+                            floatable       : false
                         }
                     ]
                 }
