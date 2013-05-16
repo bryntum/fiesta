@@ -24,7 +24,8 @@ Ext.application({
         "loopfunc"  : true,
         "laxbreak"  : true,
         "debug"     : true,
-        "laxcomma"  : true
+        "laxcomma"  : true,
+        smarttabs   : true
     },
 
     harness         : {
