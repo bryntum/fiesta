@@ -33,7 +33,7 @@ StartTest(function(t) {
                 next()
             },
             
-            { type : 'G', target : field },
+            { type : 'Z', target : field },
             function (next) {
                 t.is(document.activeElement, field.el.down('.x-boxselect-input-field', true))
                 

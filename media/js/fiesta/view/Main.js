@@ -16,7 +16,7 @@ Ext.define('Fiesta.view.Main', {
     initComponent : function () {
 
         Ext.apply(this, {
-            mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer(),
+            mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer({ wrapperOffset : [ 18, 18 ] }),
             
             items       : [
                 {

@@ -13,6 +13,7 @@ Ext.define('Fiesta.view.testcases.View', {
     testCaseModel       : null,
 
     harness             : Siesta.Harness.Browser.ExtJS,
+    mouseVisualizer     : null,
 
     resultPanel         : null,
     codeEditor          : null,
@@ -369,6 +370,9 @@ Ext.define('Fiesta.view.testcases.View', {
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? CONFIG.frameworkRoot + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
+                
+                speedRun        : false,
+
                 loaderPath      : {
                     'Ext'       : root + '/src/',
                     'Ext.ux'    : root + '/examples/ux'

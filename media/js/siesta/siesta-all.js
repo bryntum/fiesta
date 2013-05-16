@@ -28189,7 +28189,9 @@ Class('Siesta.Harness.Browser', {
                     return this.testOfForcedIFrame.isFromTheSameGeneration(test)
                 }
                 
-                return true
+                // finally we can only show cursor for tests with iframe wrapper
+                // (since mouse visualizer puts the cursor in it)
+                return Boolean(test.scopeProvider.wrapper)
             },
             
             
@@ -30881,31 +30883,24 @@ Ext.define('Siesta.Harness.Browser.UI.ExtViewport', {
 ;
 Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
 
-    displayClickIndicator       : true,
-
-    ghostCursor                 : null,
+    cursorEl                    : null,
 
     onEventSimulatedListener    : null,
     onTestFinishedListener      : null,
     
     harness                     : null,
     
-    isCursorVisible             : false,
+    currentContainer            : null,
     
-    frameOffsets                : null,
+    hideTimer                   : null,
+    
+    wrapperOffset               : [ 0, 0 ],
     
     
-    constructor : function(config) {
+    constructor : function (config) {
         config      = config || {}
         
         Ext.apply(this, config)
-        
-        if (!this.ghostCursor) {
-            this.ghostCursor = Ext.getBody().createChild({
-                tag : 'div',
-                cls : 'ghost-cursor'
-            });
-        }
         
         delete this.harness
         
@@ -30913,9 +30908,20 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     },
     
     
+    getCursorEl : function () {
+        if (this.cursorEl) return this.cursorEl
+        
+        if (!this.currentContainer) throw "Need container for cursor"
+        
+        return this.cursorEl = Ext.fly(this.currentContainer).createChild({
+            tag     : 'div',
+            cls     : 'ghost-cursor'
+        })
+    },
+    
+    
     setHarness : function (harness) {
         if (this.harness) {
-            this.harness.un('testsuiteend', this.onTestSuiteEnd, this);
             this.harness.un('testframeshow', this.onTestFrameShow, this);
             this.harness.un('testframehide', this.onTestFrameHide, this);
         }
@@ -30923,73 +30929,11 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
         this.harness    = harness
     
         if (harness) {
-            harness.on('testsuiteend', this.onTestSuiteEnd, this);
             harness.on('testframeshow', this.onTestFrameShow, this);
             harness.on('testframehide', this.onTestFrameHide, this);
         }
     },
-    
-    
-    showCursor : function () {
-        if (this.isCursorVisible) return
-        
-        this.isCursorVisible = true
-        
-        var ghostCursor     = this.ghostCursor
-        
-        // Cancel any ongoing fadeOut operation
-        if (ghostCursor.stopAnimation) {
-            ghostCursor.stopAnimation();
-            ghostCursor.setOpacity(1);
-        }
-        
-        ghostCursor.show();
-        ghostCursor.setStyle({
-            display : 'block'
-        });
-    },
-    
-    
-    hideCursor : function () {
-        if (!this.isCursorVisible) return
-        
-        this.isCursorVisible = false
-        
-        this.ghostCursor.setStyle({
-            display : 'none'
-        });
-    },
-    
-    
-    onTestSuiteEnd : function () {
-        var indicators      = Ext.select('.ghost-cursor-click-indicator')
-        
-        // timeout to allow the click animation to complete if click happened
-        // at the end of the test
-        setTimeout(function() {
-            indicators.each(function(el) { el.destroy(); });
-        }, 3000);
-    },
-    
 
-    onTestFinished : function (event, test) {
-        var me = this;
-        clearTimeout(me.hideTimer);
-        
-        var ghostCursor = me.ghostCursor
-
-        me.hideTimer = setTimeout(function() {
-            // ExtJS branch
-            if (ghostCursor.fadeOut) {
-                ghostCursor.fadeOut({ duration : 2000, callback : function () {
-                    me.hideCursor()
-                } });
-            } else {
-                // ST branch
-                me.hideCursor()
-            }
-        }, 2000);
-    },
     
     resetListeners : function () {
         if (this.onEventSimulatedListener)  {
@@ -31004,48 +30948,92 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     },
     
     
-    onTestFrameHide : function (event) {
-        this.resetListeners()
-        
-        this.hideCursor()
-    },
-    
-
     onTestFrameShow : function (event) {
-        var test    = event.source
-
         this.resetListeners()
+        this.hideCursor()
+        
+        var test                            = event.source
         
         if (this.harness.canShowCursorForTest(test)) {
+            clearTimeout(this.hideTimer)
+            this.hideTimer                  = null
+            
+            this.currentContainer           = test.scopeProvider.wrapper
+            
             this.onEventSimulatedListener   = test.on('eventsimulated', this.onEventSimulated, this);
             this.onTestFinishedListener     = test.on('testfinalize', this.onTestFinished, this);
-            
-            this.frameOffsets               = Ext.fly(test.scopeProvider.iframe).getOffsetsTo(Ext.getBody())
         }
     },
 
-    onEventSimulated : function (event, test, el, type, evt) {
-        // Make sure this test is visible in DOM right now
-        if (type.match(/touch|mouse|click|contextmenu/) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)) {
-            var frameOffsets    = this.frameOffsets,
-                x               = evt.clientX + frameOffsets[ 0 ],
-                y               = evt.clientY + frameOffsets[ 1 ];
     
+    onTestFrameHide : function (event) {
+        this.resetListeners()
+        this.hideCursor()
+    },
+    
+    
+    hideCursor : function () {
+        if (this.currentContainer) {
+            try {
+                Ext.fly(this.cursorEl).remove()
+            } catch (e) {
+                // catch potential exceptions for example
+                // if iframe of test has been already removed
+            }
+            
+            try {
+                Ext.select('.ghost-cursor-click-indicator', false, this.currentContainer).remove()
+            } catch (e) {
+                // catch potential exceptions for example
+                // if iframe of test has been already removed
+            }
+        }
+        
+        this.cursorEl               = null
+        this.currentContainer       = null
+    },
+    
+
+    onTestFinished : function (event, test) {
+        var me          = this;
+        var cursorEl    = me.cursorEl
+        
+        if (cursorEl) 
+            me.hideTimer = setTimeout(function() {
+                // ExtJS branch
+                if (cursorEl.fadeOut) {
+                    cursorEl.fadeOut({ duration : 2000, callback : function () {
+                        me.hideCursor()
+                    } });
+                } else {
+                    // ST branch
+                    me.hideCursor()
+                }
+            }, 2000);
+    },
+
+    
+    onEventSimulated : function (event, test, el, type, evt) {
+        if (type.match(/touch|mouse|click|contextmenu/) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)) {
+//            // this should never happen..
+//            if (!this.currentContainer) return
+            
+            var x               = evt.clientX + this.wrapperOffset[ 0 ],
+                y               = evt.clientY + this.wrapperOffset[ 1 ];
+                
             this.updateGhostCursor(type, x, y);
              
             // Touch vs Ext
             if ((Ext.supports && Ext.supports.Transitions) || (Ext.feature && Ext.feature.has.CssTransitions)) {
 
-                if (this.displayClickIndicator && 
-                    (
-                        type === 'click'        || 
-                        type === 'dblclick'     || 
-                        type === 'touchstart'   || 
-                        type === 'touchend'     || 
-                        type === 'mousedown'    || 
-                        type === 'mouseup'      || 
-                        type === 'contextmenu'
-                    )
+                if ( 
+                    type === 'click'        || 
+                    type === 'dblclick'     || 
+                    type === 'touchstart'   || 
+                    type === 'touchend'     || 
+                    type === 'mousedown'    || 
+                    type === 'mouseup'      || 
+                    type === 'contextmenu'
                 ) {
                     this.showClickIndicator(type, x, y);
                 }
@@ -31053,17 +31041,12 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
         }
     },
 
-    /*
-    * This method shows a fading circle at the position of click/dblclick/mousedown/contextmenu
-    * @param {String} type The name of the event
-    * @param {Number} x The x coordinate of the event
-    * @param {Number} y The y coordinate of the event
-    */
+    // This method shows a fading circle at the position of click/dblclick/mousedown/contextmenu
     showClickIndicator : function(type, x, y) {
-        var clickCircle = Ext.getBody().createChild({
-            tag : 'div',
-            cls : 'ghost-cursor-click-indicator ' ,
-            style : 'left:' + x + 'px;top:' + y + 'px'
+        var clickCircle = Ext.fly(this.currentContainer).createChild({
+            tag     : 'div',
+            cls     : 'ghost-cursor-click-indicator ' ,
+            style   : 'left:' + x + 'px;top:' + y + 'px'
         });
         
         // need to a delay to make it work in FF
@@ -31072,44 +31055,33 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
         }, 5);
     },
 
-    /*
-    * This method updates the ghost cursor position and appearance
-    * @param {String} type The name of the event
-    * @param {Number} x The x coordinate of the event
-    * @param {Number} y The y coordinate of the event
-    */
+    
+    // This method updates the ghost cursor position and appearance
     updateGhostCursor: function (type, x, y) {
-        if (!this.isCursorVisible) this.showCursor()
+        var cursorEl        = this.getCursorEl()
         
-//        this.ghostCursor.setXY([x-5, y]);        // -5 to get index finger aligned correctly
-        
-        this.ghostCursor.setStyle({
+        cursorEl.setStyle({
             '-webkit-transform' : 'translate3d(' + (x - 5) + 'px, ' + y + 'px, 0px)',
             '-moz-transform'    : 'translate3d(' + (x - 5) + 'px, ' + y + 'px, 0px)',
             '-o-transform'      : 'translate3d(' + (x - 5) + 'px, ' + y + 'px, 0px)',
             'transform'         : 'translate3d(' + (x - 5) + 'px, ' + y + 'px, 0px)'
         })
         
-        if (this.hideTimer) {
-            clearTimeout(this.hideTimer);
-            this.hideTimer = null;
-        }
-   
         switch(type) {
             case 'touchstart':
             case 'mousedown':
-                this.ghostCursor.addCls('ghost-cursor-press');
+                cursorEl.addCls('ghost-cursor-press');
             break;
 
             case 'dblclick':
-                this.ghostCursor.addCls('ghost-cursor-press');
-                Ext.Function.defer(this.ghostCursor.removeCls, 40, this.ghostCursor, ['ghost-cursor-press']);
+                cursorEl.addCls('ghost-cursor-press');
+                Ext.Function.defer(cursorEl.removeCls, 40, cursorEl, ['ghost-cursor-press']);
             break;
 
             case 'touchend':
             case 'mouseup':
             case 'click':
-                this.ghostCursor.removeCls('ghost-cursor-press');
+                cursorEl.removeCls('ghost-cursor-press');
             break;
         
             case 'contextmenu' :
