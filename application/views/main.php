@@ -23,7 +23,8 @@
             disqus_shortname    : '<?php echo $disqus_shortname?>',
             userId              : '<?php echo $userId?>',
             userName            : '<?php echo isset($account) ? $account->username : 'Guest';?>',
-            fb_url              : '<?php echo $fb_url?>'
+            fb_url              : '<?php echo $fb_url?>',
+            frameworkRoot       : '/media/frameworks/'
         };
 
         DATA =  {

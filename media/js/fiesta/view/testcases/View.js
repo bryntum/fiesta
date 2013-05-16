@@ -340,7 +340,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
                 url             : testCaseModel.internalId,
                 performSetup    : false,
-                hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
+                hostPageUrl     : pageUrl ? CONFIG.frameworkRoot + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
 
                 loaderPath      : {
