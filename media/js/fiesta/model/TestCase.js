@@ -69,6 +69,24 @@ Ext.define("Fiesta.model.TestCase", {
     },
     
     
+    getFrameworkBasedOnPreloads : function () {
+        var preloads    = this.get('preloads');
+
+        var match       = preloads.match(/(http:\/\/cdn\.sencha\.io\/ext[^/]*)/);
+        
+        // found extjs library in preloads
+        if (match) return 'extjs'
+
+        match           = preloads.match(/(http:\/\/cdn\.sencha\.io\/touch\/sencha-touch[^/]*)/);
+        
+        // found sencha touch library in preloads
+        if (match) return 'senchatouch'
+        
+        // extjs by default
+        return 'extjs'
+    },
+    
+    
     getFrameworkRoot : function() {
         var preloads    = this.get('preloads');
 

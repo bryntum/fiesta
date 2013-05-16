@@ -315,6 +315,21 @@ Ext.define('Fiesta.view.testcases.View', {
     onTestStart : function (event, test) {
         if (test.url == this.testCaseModel.internalId) this.resultPanel.showTest(test)
     },
+    
+    
+    setHarness : function (newHarness) {
+        var currentHarness  = this.harness
+        
+        if (currentHarness != newHarness) {
+            if (currentHarness) currentHarness.un('teststart', this.onTestStart, this);
+            
+            this.harness    = newHarness
+            
+            newHarness.on('teststart', this.onTestStart, this);
+            
+            if (this.mouseVisualizer) this.mouseVisualizer.setHarness(newHarness)
+        }
+    },
 
 
     runTest : function () {
@@ -324,6 +339,16 @@ Ext.define('Fiesta.view.testcases.View', {
 
         if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
             this.detailsPanel.updateRecord(testCaseModel);
+            
+            switch (testCaseModel.getFrameworkBasedOnPreloads()) {
+                case 'extjs'        : 
+                    this.setHarness(Siesta.Harness.Browser.ExtJS)
+                break
+                
+                case 'senchatouch'  : 
+                    this.setHarness(Siesta.Harness.Browser.SenchaTouch)
+                break
+            }
             
             var harness         = this.harness;
             
