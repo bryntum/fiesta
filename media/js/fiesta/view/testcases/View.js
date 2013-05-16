@@ -56,7 +56,8 @@ Ext.define('Fiesta.view.testcases.View', {
                 { xtype : 'tbseparator' },
                 {
                     text   : 'Run',
-                    width  : 80,
+                    width  : 70,
+                    iconCls : 'icon-play-2',
                     cls    : 'run-testcase',
                     action : 'run',
 
@@ -65,7 +66,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 },
                 {
                     text    : 'Save',
-                    width   : 80,
+                    width   : 70,
                     cls     : 'save-testcase',
                     action  : 'save',
 
@@ -225,6 +226,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.saveButton             = this.down('[action=save]');
         this.runButton              = this.down('[action=run]');
         this.expandCollapseButton   = this.down('[action=expandcollapse]');
+        this.domctWrap              = this.down('[slot=domct]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
@@ -235,15 +237,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 }
             },
             scope    : this
-        });
-
-        this.resultPanel.add({
-            xtype  : 'component',
-            height : 18,
-            html   : '<div class="panel-picker">' +
-                    '<button class="dom active">DOM</button>' +
-                    '<button class="assertions">Assertions</button>' +
-                '</div>'
         });
 
         this.harness.on('teststart', this.onTestStart, this);
@@ -353,7 +346,8 @@ Ext.define('Fiesta.view.testcases.View', {
             var me              = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
             var root            = testCaseModel.getFrameworkRoot();
-            
+            var isMobileTest    = testCaseModel.getFrameworkBasedOnPreloads() === 'senchatouch';
+
             // HACK to allow self-testing of fiesta 
             if (pageUrl == '../../') pageUrl    += "?d=" + new Date().getTime()
 
@@ -362,8 +356,9 @@ Ext.define('Fiesta.view.testcases.View', {
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
             var domContainer = this.down('[slot=domContainer]');
             domContainer.expand();
-
-            domContainer.maintainViewportSize = testCaseModel.getFrameworkBasedOnPreloads() !== 'senchatouch';
+            this.domctWrap[isMobileTest ? 'addCls' : 'removeCls']('mobile-dom');
+            // Size the iframe according to available space
+            domContainer.maintainViewportSize = !isMobileTest;
 
             harness.startSingle({
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
@@ -379,7 +374,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     'Ext.ux'    : root + '/examples/ux'
                 }
             }, function () {
-                runButton.setIconCls('');
+                runButton.setIconCls('icon-play-2');
                 
                 var test                = me.resultPanel.test;
                 var assertionGrid       = me.down('assertiongrid');

@@ -1,6 +1,7 @@
 Ext.define('Fiesta.view.testcases.ResultPanel', {
-    extend                  : 'Ext.Panel',
+    extend                  : 'Ext.Container',
     alias                   : 'widget.fiestaresultpanel',
+    cls                     : 'resultpanel',
 
     slots                   : true,
 
@@ -9,8 +10,6 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
 
     viewDOM                 : false,
 
-    style                   : 'background:transparent',
-    bodyStyle               : 'background:transparent',
     minWidth                : 100,
     layout                  : 'border',
 
@@ -28,15 +27,19 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
         Ext.apply(this, {
             items       : [
                 {
-                    xtype           : 'domcontainer',
-                    region          : 'center',
-
-                    slot            : 'domContainer',
-                    stateful        : true,
-                    cls             : 'siesta-domcontainer',
-                    placeholder : {
-                        height  : 0
-                    }
+                    xtype   : 'container',
+                    region  : 'center',
+                    cls     : 'domct',
+                    slot    : 'domct',
+                    layout  : 'fit',
+                    border  : false,
+                    items : [{
+                        xtype           : 'domcontainer',
+                        border          : false,
+                        slot            : 'domContainer',
+                        stateful        : true,
+                        cls             : 'siesta-domcontainer'
+                    }]
                 },
                 {
                     xtype           : 'assertiongrid',
@@ -86,7 +89,18 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
         // since it will be done in "expand" handler
         this.slots.domContainer.suspendAfterLayoutAlign = true
     },
-    
+
+    afterRender : function() {
+        this.callParent(arguments);
+
+        this.el.createChild({
+            cls : "panel-picker",
+            children : [
+                { tag : 'button', cls : 'dom active', html : 'DOM' },
+                { tag : 'button', cls : 'assertions', html : 'Assertions' }
+            ]
+        })
+    },
     
     onExpand : function() {
         // call "onExpand" listener and align the iframe

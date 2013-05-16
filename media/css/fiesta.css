@@ -237,3 +237,8 @@ body
 .x-tab-default {
     transition: left 0.3s;
 }
+
+.x-splitter
+{
+    background: #3892d3;
+}
