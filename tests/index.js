@@ -45,5 +45,25 @@ Harness.start(
         items               : [
             'UI/ui_cleanup.t.js'
         ]
+    },
+    {
+        group               : 'Unit tests',
+        
+        hostPageUrl         : null,
+        preload             : [
+            '/media/js/ext/resources/css/ext-all.css',
+            '/media/js/ext/ext-all-debug.js',
+            '/media/js/ext/ux/form/field/BoxSelect.css'
+        ],
+        
+        loaderPath          : {
+            'Fiesta'        : '../media/js/fiesta',
+            'Ext'           : '../media/js/ext/src',
+            'Ext.ux'        : '../media/js/ext/ux'
+        },
+
+        items               : [
+            'unit/tags_field_focus.t.js'
+        ]
     }
 )
