@@ -11,6 +11,34 @@ Ext.define('Fiesta.plugins.TagSelect', {
         var  picker = this.getPicker();
         picker.setWidth(picker.getWidth()+this.triggerWidth);
     },
+    
+    
+    afterRender : function () {
+        this.callParent(arguments);
+        
+        this.inputEl.on({
+            focus       : this.onInputElFocus,
+            blur        : this.onInputElBlur,
+            
+            scope       : this
+        })
+    },
+    
+    
+    onInputElFocus : function () {
+        var picker          = this.getPicker()
+        
+        picker.focusNode    = function () {}
+    },
+    
+    
+    onInputElBlur : function () {
+        var picker          = this.getPicker()
+        
+        delete picker.focusNode
+    },
+    
+    
     onKeyUp: function(e, t) {
         var me = this,
             rawValue = me.inputEl.dom.value,

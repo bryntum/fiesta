@@ -36,8 +36,14 @@ StartTest(function(t) {
             { type : 'G', target : field },
             function (next) {
                 t.is(document.activeElement, field.el.down('.x-boxselect-input-field', true))
-            }
+                
+                next()
+            },
             
+            { type : '[BACKSPACE]', target : field },
+            function (next) {
+                t.is(document.activeElement, field.el.down('.x-boxselect-input-field', true))
+            }
         )        
     })
 });
