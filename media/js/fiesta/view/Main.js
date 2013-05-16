@@ -105,27 +105,24 @@ Ext.define('Fiesta.view.Main', {
      * @param {Ext.data.Model} testCaseModel Tab record to operate with
      * @return {Ext.Component} Tab component for passed testCaseModel
      */
-
     updateTab : function (testCaseModel, updateHistory) {
-
-        if (typeof(updateHistory) == 'undefined') {
+        if (typeof updateHistory == 'undefined') {
             updateHistory = false;
         }
 
-        var tabs = this,
-            tabExist = false,
-            newTabId = testCaseModel.get('id'),
-            tempTabs = 0,
-            newTestTitle = 'New test',
-            activeTab = {};
-
+        var tabs            = this,
+            tabExist        = false,
+            newTabId        = testCaseModel.get('id'),
+            tempTabs        = 0,
+            newTestTitle    = 'New test',
+            activeTab       = {};
 
         //Searching for tab with id passed in testCaseModel
         if(!testCaseModel.phantom) {
             tabs.items.each(function (tab) {
                 if (tab.testCaseModel && tab.testCaseModel.get('id') == newTabId) {
-                    tabExist = true;
-                    activeTab = tab;
+                    tabExist    = true;
+                    activeTab   = tab;
                     return false;
                 }
             });
@@ -135,12 +132,12 @@ Ext.define('Fiesta.view.Main', {
         if (!tabExist) {
             tabs.items.each(function (tab) {
                 if(tab.testCaseModel && isNaN(tab.testCaseModel.get('id'))) {
-                    tempTabs += 1;
+                    tempTabs    += 1;
                 }
             });
 
             if(tempTabs > 0) {
-                newTestTitle += ' '+tempTabs;
+                newTestTitle    += ' '+tempTabs;
             }
 
             var newTab = new Fiesta.view.testcases.View({
@@ -149,16 +146,11 @@ Ext.define('Fiesta.view.Main', {
                 mouseVisualizer : this.mouseVisualizer
             });
 
-            activeTab = tabs.add(newTab);
+            activeTab           = tabs.add(newTab);
         }
         // Updating testCase's tab if it was found in currently opened tabs
         else {
-            activeTab.setTitle(Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15));
-            activeTab.testCaseModel = testCaseModel;
-            activeTab.onTabCreate(testCaseModel);
-            activeTab.down('[action=changeFavorites]').setIconCls(
-                activeTab.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star'
-            );
+            activeTab.updateTestCaseModel(testCaseModel)
         }
 
 
@@ -168,8 +160,8 @@ Ext.define('Fiesta.view.Main', {
 
         // Returning testCase tab component to the caller
         return  activeTab;
-
     },
+    
 
     getTabsState : function () {
         var state = {},

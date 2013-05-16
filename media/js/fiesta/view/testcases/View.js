@@ -242,8 +242,8 @@ Ext.define('Fiesta.view.testcases.View', {
         if (t.className.match('active') && Ext.fly(t).parent().select('.active').getCount() === 1) return;
 
         Ext.fly(t).toggleCls('active');
-        var cls = t.className.toLowerCase();
-        var grid = this.resultPanel.down('assertiongrid');
+        var cls         = t.className.toLowerCase();
+        var grid        = this.resultPanel.down('assertiongrid');
 
         if (cls.match('assertions')) {
             grid[cls.match('active') ? "expand" : "collapse"]();
@@ -252,10 +252,21 @@ Ext.define('Fiesta.view.testcases.View', {
         }
      },
 
+     
     onTabCreate : function () {
         this.codeEditor.setValue(this.testCaseModel.get('code'));
         this.down('detailspanel').setTestCaseModel(this.testCaseModel);
         this.saveButton.setVisible(this.testCaseModel.phantom || this.testCaseModel.isEditable());
+    },
+    
+    
+    updateTestCaseModel : function (testCaseModel) {
+        this.setTitle(Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15));
+        this.testCaseModel = testCaseModel;
+        this.onTabCreate(testCaseModel);
+        this.down('[action=changeFavorites]').setIconCls(
+            this.testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star'
+        );
     },
 
 
@@ -306,13 +317,13 @@ Ext.define('Fiesta.view.testcases.View', {
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
-            }, function (descr) {
+            }, function () {
                 runButton.setIconCls('');
-                var test = me.resultPanel.test;
+                var test                = me.resultPanel.test;
                 var assertionGrid       = me.down('assertiongrid');
 
                 if (assertionGrid) {
-                    var cls = test.getFailCount() === 0 ? 'icon-checkmark-2' : 'icon-close';
+                    var cls             = test.getFailCount() === 0 ? 'icon-checkmark-2' : 'icon-close';
                     assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span><span style="position:relative;top:-2px">' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed</span>')
                 }
             });
@@ -340,9 +351,9 @@ Ext.define('Fiesta.view.testcases.View', {
         }
 
         this.resultPanel.el.on({
-            click : this.onDomOptionsClick,
-            scope : this,
-            delegate : 'button'
+            click           : this.onDomOptionsClick,
+            scope           : this,
+            delegate        : 'button'
         });
     },
 
@@ -419,7 +430,6 @@ Ext.define('Fiesta.view.testcases.View', {
         if(!this.testCaseModel.phantom) {
             FIESTA.addToFavorites(this.testCaseModel);
         }
-//        FIESTA.addToFavorites(this.testCaseModel);
     },
 
 
