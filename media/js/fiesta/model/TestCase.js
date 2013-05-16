@@ -1,6 +1,7 @@
 Ext.define("Fiesta.model.TestCase", {
     extend      : "Ext.data.Model",
     idProperty  : "id",
+
     fields      : [
         {name: 'id', type: 'int'},
         'name',
@@ -66,4 +67,12 @@ Ext.define("Fiesta.model.TestCase", {
     hasTag : function(tag) {
         return Ext.Array.contains(this.getTagNames(), tag);
     },
+
+    getFrameworkRoot : function() {
+        var pl = this.get('preloads');
+
+        var match = pl.match(/ /);
+
+        return '';
+    }
 });

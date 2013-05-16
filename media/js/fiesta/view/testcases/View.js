@@ -328,7 +328,8 @@ Ext.define('Fiesta.view.testcases.View', {
             
             var me              = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
-            
+            var root            = '';
+
             runButton.setIconCls('icon-loading');
 
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
@@ -339,7 +340,12 @@ Ext.define('Fiesta.view.testcases.View', {
                 url             : testCaseModel.internalId,
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? '/media/frameworks/' + pageUrl : null,
-                preload         : pageUrl ? null : testCaseModel.getPreloadsArray()
+                preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
+
+                loaderPath  : {
+                    'Ext'       : root + '/src/',
+                    'Ext.ux'    : root + '/examples/ux'
+                }
             }, function () {
                 runButton.setIconCls('');
                 
