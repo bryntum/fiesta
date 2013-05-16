@@ -85,7 +85,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope   : this
                 },
                 {
-                    iconCls  : testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star-2',
+                    iconCls  : testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
                     
                     handler  : this.changeFavorite,
                     scope    : this,
