@@ -6,7 +6,7 @@ StartTest(function(t) {
 
         { action : 'click', target : '>> tagselect'},
 
-        { action : 'type', text : 'foo,'},
+        { action : 'type', text : 'store,'},
 
         { waitFor : 200 },
 
@@ -15,7 +15,7 @@ StartTest(function(t) {
             var tags = tagField.getValue();
 
             t.is(tags.length, 1, 'Found 1 tag');
-            t.is(tags[0], 1, 'Found foo');
+            t.is(tags[0], 25, 'Found store');
         }
     )
 });

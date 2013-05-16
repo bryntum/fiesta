@@ -61,6 +61,8 @@ Harness.start(
     },
     {
         group               : 'filtering_tests',
+        
+        speedRun            : false,    
 
         items               : [
             'filtering_tests/sanity.t.js',

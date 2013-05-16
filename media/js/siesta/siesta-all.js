@@ -30890,6 +30890,7 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     harness                     : null,
     
+    currentTest                 : null,
     currentContainer            : null,
     
     hideTimer                   : null,
@@ -30949,10 +30950,15 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     
     onTestFrameShow : function (event) {
+        var test                            = event.source
+        
+        // do not react on re-positions of the same running test 
+        if (test == this.currentTest) return
+        
+        this.currentTest    = test
+        
         this.resetListeners()
         this.hideCursor()
-        
-        var test                            = event.source
         
         if (this.harness.canShowCursorForTest(test)) {
             clearTimeout(this.hideTimer)
@@ -30969,6 +30975,8 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     onTestFrameHide : function (event) {
         this.resetListeners()
         this.hideCursor()
+        
+        this.currentTest    = null
     },
     
     
@@ -30998,6 +31006,8 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
         var me          = this;
         var cursorEl    = me.cursorEl
         
+        this.resetListeners()
+        
         if (cursorEl) 
             me.hideTimer = setTimeout(function() {
                 // ExtJS branch
@@ -31015,7 +31025,7 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     onEventSimulated : function (event, test, el, type, evt) {
         if (type.match(/touch|mouse|click|contextmenu/) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)) {
-//            // this should never happen..
+//            // this may happen if "onTestFinished" 
 //            if (!this.currentContainer) return
             
             var x               = evt.clientX + this.wrapperOffset[ 0 ],
