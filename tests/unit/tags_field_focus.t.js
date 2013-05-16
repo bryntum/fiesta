@@ -1,4 +1,6 @@
-StartTest(function(t) {
+StartTest({
+    speedRun        : false
+}, function(t) {
     
     t.requireOk('Fiesta.plugins.TagSelect', function () {
         
@@ -52,6 +54,10 @@ StartTest(function(t) {
             function (next) {
                 t.is(document.activeElement, field.el.down('.x-boxselect-input-field', true))
                 
+                t.ok(field.getRawValue(), "Field is not empty")
+                
+                t.isDeeply(field.getValue(), [ "Grid" ])
+                
                 next()
             },
             
@@ -74,6 +80,7 @@ StartTest(function(t) {
             
             // now checking field is not cleared after typing tag + comma
             { type : 'Grid,', target : field2 },
+            
             function (next) {
                 t.ok(field2.getRawValue(), "Field is not empty")
                 
