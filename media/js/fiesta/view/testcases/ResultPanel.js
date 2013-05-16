@@ -1,16 +1,13 @@
 Ext.define('Fiesta.view.testcases.ResultPanel', {
-    extend          : 'Ext.Panel',
-    alias           : 'widget.resultpanel',
+    extend                  : 'Ext.Panel',
+    alias                   : 'widget.fiestaresultpanel',
 
     slots                   : true,
 
     test                    : null,
     testListeners           : null,
 
-    maintainViewportSize    : true,
-
     viewDOM                 : false,
-    canManageDOM            : true,
 
     style                   : 'background:transparent',
     bodyStyle               : 'background:transparent',
@@ -24,7 +21,7 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
             compiled : true
         }
     ),
-
+    
     initComponent : function() {
         this.addEvents('viewdomchange');
 
@@ -61,48 +58,66 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
 
         this.callParent(arguments);
 
-        this.slots.domContainer.on({
-            expand      : this.onDomContainerExpand,
-            collapse    : this.onDomContainerCollapse,
-
-            scope       : this
+//        this.slots.domContainer.on({
+//            expand      : this.onDomContainerExpand,
+//            collapse    : this.onDomContainerCollapse,
+//
+//            scope       : this
+//        })
+        
+        this.on({
+            beforecollapse  : this.onBeforeCollapse,
+            expand          : this.onExpand,
+            
+            scope           : this
         })
     },
-
-
-    // This method makes sure that the min width of the card panel is respected when
-    // the width of this class changes (after resizing Test TreePanel).
-    ensureLayout : function () {
-        var availableWidth          = this.getWidth();
-        var cardPanel               = this.slots.cardContainer;
-        var domContainer            = this.slots.domContainer;
-        var domContainerWidth       = domContainer.getWidth();
-        var minimumForCard          = cardPanel.minWidth + 20; // Some splitter space
-
-        if (availableWidth - domContainerWidth < minimumForCard) {
-            domContainer.setWidth(Math.max(0, availableWidth - minimumForCard));
-        }
+    
+    
+    onBeforeCollapse : function() {
+        this.slots.domContainer.onCollapse();
     },
+    
 
-    setViewDOM : function (value) {
-        var domContainer    = this.slots.domContainer
-
-        if (value)
-            domContainer.expand(false)
-        else
-            domContainer.collapse(Ext.Component.DIRECTION_RIGHT, false)
+    onExpand : function() {
+        this.slots.domContainer.onExpand();
     },
-
-    onDomContainerCollapse : function() {
-        this.viewDOM    = false;
-        this.fireEvent('viewdomchange', this, false);
-    },
+    
 
 
-    onDomContainerExpand : function() {
-        this.viewDOM    = true;
-        this.fireEvent('viewdomchange', this, true);
-    },
+//    // This method makes sure that the min width of the card panel is respected when
+//    // the width of this class changes (after resizing Test TreePanel).
+//    ensureLayout : function () {
+//        var availableWidth          = this.getWidth();
+//        var cardPanel               = this.slots.cardContainer;
+//        var domContainer            = this.slots.domContainer;
+//        var domContainerWidth       = domContainer.getWidth();
+//        var minimumForCard          = cardPanel.minWidth + 20; // Some splitter space
+//
+//        if (availableWidth - domContainerWidth < minimumForCard) {
+//            domContainer.setWidth(Math.max(0, availableWidth - minimumForCard));
+//        }
+//    },
+//
+//    setViewDOM : function (value) {
+//        var domContainer    = this.slots.domContainer
+//
+//        if (value)
+//            domContainer.expand(false)
+//        else
+//            domContainer.collapse(Ext.Component.DIRECTION_RIGHT, false)
+//    },
+
+//    onDomContainerCollapse : function() {
+//        this.viewDOM    = false;
+//        this.fireEvent('viewdomchange', this, false);
+//    },
+//
+//
+//    onDomContainerExpand : function() {
+//        this.viewDOM    = true;
+//        this.fireEvent('viewdomchange', this, true);
+//    },
 
 
     showTest : function (test, assertionsStore) {

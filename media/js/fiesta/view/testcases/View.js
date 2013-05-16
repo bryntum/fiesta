@@ -194,7 +194,7 @@ Ext.define('Fiesta.view.testcases.View', {
                             ]
                         },
                         {
-                            xtype        : 'resultpanel',
+                            xtype        : 'fiestaresultpanel',
                             flex         : 1,
                             region       : 'east',
                             split        : true,
@@ -221,12 +221,12 @@ Ext.define('Fiesta.view.testcases.View', {
 
         this.callParent(arguments);
 
-        this.resultPanel    = this.down('resultpanel')
-        this.detailsPanel   = this.down('detailspanel')
-        this.codeEditor     = this.down('jseditor');
-        this.saveButton     = this.down('[action=save]');
-        this.runButton      = this.down('[action=run]');
-        this.expandCollapseButton      = this.down('[action=expandcollapse]');
+        this.resultPanel            = this.down('fiestaresultpanel')
+        this.detailsPanel           = this.down('detailspanel')
+        this.codeEditor             = this.down('jseditor');
+        this.saveButton             = this.down('[action=save]');
+        this.runButton              = this.down('[action=run]');
+        this.expandCollapseButton   = this.down('[action=expandcollapse]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
