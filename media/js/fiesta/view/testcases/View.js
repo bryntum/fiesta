@@ -359,7 +359,9 @@ Ext.define('Fiesta.view.testcases.View', {
             runButton.setIconCls('icon-loading');
 
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
-            this.down('[slot=domContainer]').expand();
+            var domContainer = this.down('[slot=domContainer]');
+            domContainer.expand();
+            domContainer.maintainViewportSize = testCaseModel.getFrameworkBasedOnPreloads() !== 'senchatouch';
 
             harness.startSingle({
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
@@ -367,7 +369,6 @@ Ext.define('Fiesta.view.testcases.View', {
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? CONFIG.frameworkRoot + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
-
                 loaderPath      : {
                     'Ext'       : root + '/src/',
                     'Ext.ux'    : root + '/examples/ux'
