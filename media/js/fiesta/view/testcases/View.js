@@ -355,6 +355,9 @@ Ext.define('Fiesta.view.testcases.View', {
             var me              = this;
             var pageUrl         = testCaseModel.get('hostPageUrl');
             var root            = testCaseModel.getFrameworkRoot();
+            
+            // HACK to allow self-testing of fiesta 
+            if (pageUrl == '../../') pageUrl    += "?d=" + new Date().getTime()
 
             runButton.setIconCls('icon-loading');
 
