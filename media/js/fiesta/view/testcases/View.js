@@ -362,6 +362,7 @@ Ext.define('Fiesta.view.testcases.View', {
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
             var domContainer = this.down('[slot=domContainer]');
             domContainer.expand();
+
             domContainer.maintainViewportSize = testCaseModel.getFrameworkBasedOnPreloads() !== 'senchatouch';
 
             harness.startSingle({

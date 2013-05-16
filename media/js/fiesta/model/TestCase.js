@@ -70,14 +70,14 @@ Ext.define("Fiesta.model.TestCase", {
     
     
     getFrameworkBasedOnPreloads : function () {
-        var preloads    = this.get('preloads');
+        var preloads    = this.get('preloads') || this.get('hostPageUrl');
 
         var match       = preloads.match(/(http:\/\/cdn\.sencha\.io\/ext[^/]*)/);
         
         // found extjs library in preloads
         if (match) return 'extjs'
 
-        match           = preloads.match(/(http:\/\/cdn\.sencha\.io\/touch\/sencha-touch[^/]*)/);
+        match           = preloads.match(/(sencha-touch[^/]*)/);
         
         // found sencha touch library in preloads
         if (match) return 'senchatouch'
