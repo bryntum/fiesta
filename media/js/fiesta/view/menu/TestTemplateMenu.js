@@ -28,30 +28,32 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
         Ext.apply(this, {
             items : [
                 {
-                    text    : 'Blank test case',
-                    iconCls : 'icon-file-css'
+                    text        : 'Blank test case',
+                    iconCls     : 'icon-file-css'
                 },
                 {
-                    text     : '<strong>Application tests</strong>',
-                    disabled : true
+                    text        : '<strong>Application tests</strong>',
+                    disabled    : true
                 },
                 {
-                    text    : 'Ext JS 4.2.0',
-                    itemId  : 'extjs',
-                    iconCls  : 'icon-stats',
-                    menu    : {
-                        frameworkName        : 'extjs-4.2.0',
-                        iconCls  : 'icon-file-powerpoint',
-                        ignoreParentClicks : true
+                    text        : 'Ext JS 4.2.0',
+                    itemId      : 'extjs',
+                    iconCls     : 'icon-stats',
+                    menu        : {
+                        // need this option to suppress the weird menu header that appears only for this menu
+                        header              : false,
+                        frameworkName       : 'extjs-4.2.0',
+                        iconCls             : 'icon-file-powerpoint',
+                        ignoreParentClicks  : true
                     }
                 },
                 {
-                    text    : 'Sencha Touch 2.2.0',
-                    itemId  : 'touch',
-                    iconCls  : 'icon-stats',
-                    menu    : {
-                        frameworkName        : 'sencha-touch-2.2.0',
-                        ignoreParentClicks : true
+                    text        : 'Sencha Touch 2.2.0',
+                    itemId      : 'touch',
+                    iconCls     : 'icon-stats',
+                    menu        : {
+                        frameworkName       : 'sencha-touch-2.2.0',
+                        ignoreParentClicks  : true
                     }
                 }
             ]
@@ -61,9 +63,9 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
     },
 
     buildMenuItems : function (menuId, data) {
-        var containingMenu = this.down(menuId).menu;
-        var items = [];
-        var me = this;
+        var containingMenu  = this.down(menuId).menu;
+        var items           = [];
+        var me              = this;
 
         Ext.Array.each(data, function (item) {
             items.push({
