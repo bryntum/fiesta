@@ -251,6 +251,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.harness.on('teststart', this.onTestStart, this);
     },
 
+    
     onDomOptionsClick : function(e, t) {
         // Not allowed to deselect all
         if (t.className.match('active') && Ext.fly(t).parent().select('.active').getCount() === 1) return;
@@ -264,7 +265,7 @@ Ext.define('Fiesta.view.testcases.View', {
         } else {
             grid.setHeight(cls.match('active') ? 200 : this.getHeight() - 43);
         }
-     },
+    },
 
      
     onTabCreate : function () {
@@ -394,20 +395,21 @@ Ext.define('Fiesta.view.testcases.View', {
             me = this;
 
         var updateRating = function (record) {
-            var ratingField = me.getDockedItems('toolbar[dock="top"]')[0].down('displayfield[cls="vote-container"]');
-            me.testCaseModel = record;
+            var ratingField     = me.getDockedItems('toolbar[dock="top"]')[0].down('displayfield[cls="vote-container"]');
+            
+            me.testCaseModel    = record;
             ratingField.setValue(record.get('rating'));
 
-            if(me.testCaseModel.get('voted') == 0) {
+            if (me.testCaseModel.get('voted') == 0) {
                 ratingField.disable();
             }
 
         };
 
-        if(record.get('voted') > 0 && t.className.match('up')) {
+        if (record.get('voted') > 0 && t.className.match('up')) {
             Ext.Msg.alert('Error', 'You have already voted up for this test, you can only vote down!');
         }
-        else if(record.get('voted') < 0 && t.className.match('down')) {
+        else if (record.get('voted') < 0 && t.className.match('down')) {
             Ext.Msg.alert('Error', 'You have already voted down for this test, you can only vote up!');
         }
         else {
@@ -418,6 +420,7 @@ Ext.define('Fiesta.view.testcases.View', {
             }
         }
     },
+    
 
     shareTwitter : function () {
 
@@ -466,27 +469,30 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     save : function () {
-        var form = this.detailsPanel.getForm(),
-            me = this,
-            preloadGrid = this.down('preloadgrid'),
-            tags = [];
+        var form            = this.detailsPanel.getForm(),
+            me              = this,
+            preloadGrid     = this.down('preloadgrid'),
+            tags            = [];
+            
+        var testCaseModel   = this.testCaseModel
 
-        this.detailsPanel.updateRecord(this.testCaseModel);
+        this.detailsPanel.updateRecord(testCaseModel);
 
-        this.testCaseModel.set('code', this.codeEditor.getValue());
+        testCaseModel.set('code', this.codeEditor.getValue());
 
         if (preloadGrid) {
-            this.testCaseModel.set('preloads', preloadGrid.getValue());
+            testCaseModel.set('preloads', preloadGrid.getValue());
         }
 
-        if (this.testCaseModel.isValid()) {
-            var saveBtn = this.saveButton;
+        if (testCaseModel.isValid()) {
+            var saveButton  = this.saveButton;
+            
             var afterSaveFn = function () {
                 me.afterSaveOperation();
             };
 
-            saveBtn.disable();
-            saveBtn.setIconCls('icon-loading');
+            saveButton.disable();
+            saveButton.setIconCls('icon-loading');
 
             // Getting passed tags and setting them to model
 
@@ -494,25 +500,25 @@ Ext.define('Fiesta.view.testcases.View', {
                 tags.push({id : null, tag : tagName});
             });
 
-            this.testCaseModel.set('tags', tags);
+            testCaseModel.set('tags', tags);
 
-            if (this.testCaseModel.phantom) {
+            if (testCaseModel.phantom) {
                 Fiesta.DataModel.createTestCase(
-                    this.testCaseModel,
+                    testCaseModel,
                     afterSaveFn,
                     afterSaveFn
                 );
             } else {
                 Fiesta.DataModel.updateTestCase(
-                    this.testCaseModel,
+                    testCaseModel,
                     afterSaveFn,
                     afterSaveFn
                 );
             }
         } else {
-            if (!this.testCaseModel.get('name')) {
+            if (!testCaseModel.get('name')) {
                 Ext.Msg.alert('Error', 'Must set a name for the test case');
-            } else if (!this.testCaseModel.get('code')) {
+            } else if (!testCaseModel.get('code')) {
                 Ext.Msg.alert('Error', 'Cannot save an empty test case');
             } else {
                 Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
@@ -520,6 +526,7 @@ Ext.define('Fiesta.view.testcases.View', {
         }
     },
 
+    
     onDetailsExpand : function (pnl) {
         var me = this;
 
@@ -534,21 +541,25 @@ Ext.define('Fiesta.view.testcases.View', {
 //        });
     },
 
+    
     onDetailsCollapseExpand : function() {
         var btn = this.expandCollapseButton;
         btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down' : 'icon-arrow-up');
     },
 
+    
     showDetails : function () {
         this.detailsPanel.expand();
     },
 
+    
     afterSaveOperation : function () {
         var saveBtn = this.saveButton;
         saveBtn.setIconCls('');
         saveBtn.enable();
     },
 
+    
     onCloneClick : function() {
         var copy = this.testCaseModel.copy(null);
         Ext.data.Model.id(copy);
@@ -563,5 +574,4 @@ Ext.define('Fiesta.view.testcases.View', {
 
         FIESTA.getMainView().activateTabFor(copy);
     }
-
 });
