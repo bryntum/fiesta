@@ -362,7 +362,8 @@ Ext.define('Fiesta.view.testcases.View', {
 
             harness.startSingle({
                 testCode        : 'StartTest(function(t){\n\n' + code + '\n\n})',
-                url             : testCaseModel.internalId,
+                // "url" is assumed to be a string
+                url             : testCaseModel.internalId + '',
                 performSetup    : false,
                 hostPageUrl     : pageUrl ? CONFIG.frameworkRoot + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
