@@ -381,7 +381,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
                 if (assertionGrid) {
                     var passed = test.getFailCount() === 0;
-                    var cls    = passed ? 'icon-checkmark-2' : 'icon-close';
+                    var cls    = passed ? 'icon-checkmark' : 'icon-close';
                     assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span><span style="position:relative;top:-2px">' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed</span>')
 
                     if (!passed && assertionGrid.placeholder.isVisible()) {
