@@ -30,6 +30,7 @@ Ext.define("Fiesta.view.SearchForm", {
                                 cls       : 'details-text',
                                 xtype     : "textfield",
                                 flex      : true,
+                                height    : 26,
                                 emptyText : "Filter by name",
                                 name      : 'testCaseName',
                                 listeners : {
@@ -233,3 +234,5 @@ Ext.define("Fiesta.view.SearchForm", {
         }
     }
 });
+
+Ext.supports.Placeholder = false;

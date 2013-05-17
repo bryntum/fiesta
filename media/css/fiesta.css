@@ -19,6 +19,11 @@ body
     font-family: "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
 }
 
+.x-boxselect input
+{
+    padding-left:3px;
+}
+
 .viewport-top-toolbar
 {
     overflow: visible;
@@ -225,9 +230,16 @@ body
 
 .searchform .x-form-item, .x-form-field,
 .searchform .x-form-trigger-wrap {
-    font-size:11px;
     border-color: silver;
+    background: #fff;
 }
+
+
+.searchform .x-form-empty-field, textarea.x-form-empty-field {
+    font: 12px helvetica,arial,verdana,sans-serif !important;
+    color:#999;
+}
+
 
 #tags-filter ul.x-boxselect-list
 {
