@@ -151,7 +151,7 @@ div.run-testcase .x-btn-inner {
     background: transparent;
 }
 
-
+/*
 .domct.mobile-dom
 {
     text-align : center;
@@ -165,6 +165,7 @@ div.run-testcase .x-btn-inner {
     margin:0 auto !important;
     background: #fff;
 }
+*/
 
 .tr-iframe-wrapper iframe.tr-iframe {
     background-color : transparent;
