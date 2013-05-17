@@ -28149,11 +28149,9 @@ Class('Siesta.Harness.Browser', {
             
             
             onTestEnd : function (test) {
-                if (test.hasForcedIframe()) {
-                    this.hideForcedIFrame(test)
+                if (test.hasForcedIframe())             this.hideForcedIFrame(test)
                 
-                    this.testOfForcedIFrame     = null
-                }
+                if (test == this.testOfForcedIFrame)    this.testOfForcedIFrame = null
                 
                 if (this.viewport) this.viewport.onTestEnd(test)
                 
@@ -31025,8 +31023,8 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     
     onEventSimulated : function (event, test, el, type, evt) {
         if (type.match(/touch|mouse|click|contextmenu/) && Ext.isNumber(evt.clientX) && Ext.isNumber(evt.clientY)) {
-//            // this may happen if "onTestFinished" 
-//            if (!this.currentContainer) return
+            // this should never happen, but still happens sometimes
+            if (!this.currentContainer) return
             
             var x               = evt.clientX + this.wrapperOffset[ 0 ],
                 y               = evt.clientY + this.wrapperOffset[ 1 ];
