@@ -102,7 +102,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope    : this,
                     
                     tooltip  : 'Clone this test',
-                    disabled : testCaseModel.phantom || !FIESTA.isSignedIn()
+                    disabled : testCaseModel.phantom
                 },
                 { xtype : 'tbseparator' },
                 {
