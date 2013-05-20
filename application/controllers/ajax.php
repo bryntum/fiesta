@@ -221,24 +221,31 @@ class Ajax extends CI_Controller {
             }
         }
         else {
-            
-           $testCaseId = $this->testCases_model->createTmp(array(
-                'name' => $name, 
-                'session_id' => $this->session->userdata('session_id'), 
-                'framework_id' => $frameworkId,
-                'private' => $private,
-                'code' => $code,
-                'tags_list' => $tagsList,
-                'hostPageUrl' => $hostPageUrl,
-                'originalTestId' => $originalTestId,
-                'preloads' => $preloads
 
-           ));
+
+           $testCaseId = $this->testCases_model->createTmp(
+               array(
+                   'name' => $name,
+                   'session_id' => $this->session->userdata('session_id'),
+                   'framework_id' => $frameworkId,
+                   'private' => $private,
+                   'code' => $code,
+                   'tags_list' => $tagsList,
+                   'hostPageUrl' => $hostPageUrl,
+                   'originalTestId' => $originalTestId,
+                   'preloads' => $preloads
+
+               )
+           );
 
            $testCaseId = $testCaseId.'_tmp';
-
            $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($name);
-           $success = true; 
+
+           $resultRec = array(
+                'id' => $testCaseId
+           );
+
+           $success = true;
         }
 
         echo json_encode(array('id'=> $testCaseId, 'slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
