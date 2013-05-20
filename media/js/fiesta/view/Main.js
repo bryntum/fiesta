@@ -117,6 +117,11 @@ Ext.define('Fiesta.view.Main', {
             newTestTitle    = 'New test',
             activeTab       = {};
 
+
+        if(isNaN(testCaseModel.get('id'))) {
+            updateHistory = false;
+        }
+
         //Searching for tab with id passed in testCaseModel
         if(!testCaseModel.phantom) {
             tabs.items.each(function (tab) {

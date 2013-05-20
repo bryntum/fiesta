@@ -3,7 +3,7 @@ Ext.define("Fiesta.model.TestCase", {
     idProperty  : "id",
 
     fields      : [
-        {name: 'id', type: 'int'},
+        {name: 'id', type: 'string'},
         'name',
         {name: 'frameworkId', type: 'int'},
         {name: 'ownerId', type: 'int'},
