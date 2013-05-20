@@ -369,6 +369,8 @@ class Testcases_model extends CI_Model {
                          'framework_id' => $tpmTestCase->framework_id,
                          'private' => $tpmTestCase->private,
                          'code' => $tpmTestCase->code,
+                         'hostPageUrl' => $tpmTestCase->hostPageUrl,
+                         'preloads' => $tpmTestCase->preloads,
                          'tagsList' => $tpmTestCase->tags_list,
                          'owner_id' => $originalTestCase->owner_id
                      ));
@@ -381,7 +383,10 @@ class Testcases_model extends CI_Model {
                     'framework_id' => $tpmTestCase->framework_id,
                     'private' => $tpmTestCase->private,
                     'code' => $tpmTestCase->code,
-                    'tagsList' => $tpmTestCase->tags_list
+                    'tagsList' => $tpmTestCase->tags_list,
+                    'hostPageUrl' => $tpmTestCase->hostPageUrl,
+                    'preloads' => $tpmTestCase->preloads
+
                 ));
 
                 $assignedTestCase[] = $insertedTest->id.'-'.$this->makeSlug($tpmTestCase->name);
