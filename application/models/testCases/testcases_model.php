@@ -371,6 +371,7 @@ class Testcases_model extends CI_Model {
                          'code' => $tpmTestCase->code,
                          'hostPageUrl' => $tpmTestCase->hostPageUrl,
                          'preloads' => $tpmTestCase->preloads,
+                         'originalTestId' => $tpmTestCase->originalTestId,
                          'tagsList' => $tpmTestCase->tags_list,
                          'owner_id' => $originalTestCase->owner_id
                      ));
@@ -384,6 +385,7 @@ class Testcases_model extends CI_Model {
                     'private' => $tpmTestCase->private,
                     'code' => $tpmTestCase->code,
                     'tagsList' => $tpmTestCase->tags_list,
+                    'originalTestId' => $tpmTestCase->originalTestId,
                     'hostPageUrl' => $tpmTestCase->hostPageUrl,
                     'preloads' => $tpmTestCase->preloads
 
