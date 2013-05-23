@@ -231,9 +231,12 @@ body
 .searchform .x-form-item, .x-form-field,
 .searchform .x-form-trigger-wrap {
     border-color: silver;
-    background: #fff;
 }
 
+.x-form-trigger-wrap
+{
+    background: #fff;
+}
 
 .searchform .x-form-empty-field, textarea.x-form-empty-field {
     font: 12px helvetica,arial,verdana,sans-serif !important;

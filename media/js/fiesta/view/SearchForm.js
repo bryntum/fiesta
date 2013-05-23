@@ -33,6 +33,7 @@ Ext.define("Fiesta.view.SearchForm", {
                                 height    : 26,
                                 emptyText : "Filter by name",
                                 name      : 'testCaseName',
+                                tabIndex  : 1,
                                 listeners : {
                                     change      : this.processFilter,
                                     scope       : this
@@ -85,6 +86,7 @@ Ext.define("Fiesta.view.SearchForm", {
                         emptyText      : "Filter by tag(s)",
                         name           : 'testCaseTags[]',
                         queryMode      : 'local',
+                        tabIndex       : 2,
                         forceSelection : true,
                         listeners      : {
                             change      : this.processFilter,

@@ -31,7 +31,7 @@
 }
 
 .testCasesList .x-grid-cell-inner {
-    padding : 1px 6px 4px 6px;
+    padding : 1px 6px 2px 6px;
 }
 
 .testCasesList .testNameColumn .x-column-header-trigger {
@@ -68,11 +68,11 @@
 }
 
 .testCasesList ul {
-    margin-top    : 4px;
+    margin-top    : 6px;
     margin-bottom : 0px;
     padding-left  : 0px;
     min-height    : 12px;
-    color       : #5a7b82;
+    color         : blueviolet;
 }
 
 .testCasesList ul > li {
