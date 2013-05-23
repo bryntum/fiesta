@@ -153,10 +153,21 @@ class Testcases_model extends CI_Model {
 
         if(isset($params['tagsList']) && count($params['tagsList']) > 0) {
             $tagsList = implode(',', $params['tagsList']);
+//            $tagsList = implode(' AND tt.tag_id = ', $params['tagsList']);
 
             if(!empty($tagsList)) {
+                $this->db->select('COUNT(tc.id) as tagsCnt');
                 $this->db->join('testCases_tags as tt', "tt.testCase_id = tc.id AND tt.tag_id IN (".$tagsList.")", 'left')
                     ->where('tt.tag_id IS NOT NULL');
+//                $this->db->join('testCases_tags as tt', "tt.testCase_id = tc.id", 'left');
+//
+//                // ;
+//                foreach ($params['tagsList'] as $tagId) {
+//                    $this->db->where('tt.tag_id',$tagId);
+//                }
+//                $this->db->where('tt.tag_id IS NOT NULL');
+                $this->db->group_by('tc.id');
+                $this->db->having('tagsCnt = '.count($params['tagsList']));
             }
         }
 
@@ -167,8 +178,9 @@ class Testcases_model extends CI_Model {
         }                
         
         if(isset($params['getTotal']) && $params['getTotal']) {
-            return $this->db->count_all_results();
-        }        
+            $this->db->get()->result();
+            return $this->db->affected_rows();
+        }
 
         if(isset($params['pageSize']) && isset($params['page'])) {
             $query = $this->db->limit($params['pageSize'], $offset)->get();
