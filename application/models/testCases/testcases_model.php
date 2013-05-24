@@ -372,6 +372,9 @@ class Testcases_model extends CI_Model {
         $tpmTestCases = $this->getTmpTestBySID ($sessionId);
         $assignedTestCase = array();
 
+        print_r($tpmTestCases);
+
+
         foreach($tpmTestCases as $tpmTestCase) {
              if($tpmTestCase->tmpSavedOriginalId != 0) {
                  $originalTestCase = $this->getById($tpmTestCase->tmpSavedOriginalId,$userId);

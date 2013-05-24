@@ -20,6 +20,7 @@ Ext.define('Fiesta.view.testcases.View', {
     saveButton          : null,
     runButton           : null,
     detailsPanel        : null,
+    changed             : false,
 
 
     initComponent : function () {
@@ -261,6 +262,10 @@ Ext.define('Fiesta.view.testcases.View', {
      
     onTabCreate : function () {
         var testCaseModel       = this.testCaseModel
+
+        if(testCaseModel.phantom) {
+            this.changed = true;
+        }
         
         this.codeEditor.setValue(testCaseModel.get('code'));
         

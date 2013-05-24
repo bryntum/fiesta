@@ -48,8 +48,18 @@ Ext.application({
         window.location.replace('/account/sign_up');    
     },
 
-    signIn: function () {
-        var signinWin = new Fiesta.view.account.SignIn;
+    signIn: function (newPage) {
+
+        if(typeof(newPage) == 'undefined') {
+            newPage = false;
+        }
+
+        if(newPage) {
+            window.location.replace('/account/sign_in');
+        }
+        else {
+            var signinWin = new Fiesta.view.account.SignIn;
+        }
     },
 
     getMainView: function () {

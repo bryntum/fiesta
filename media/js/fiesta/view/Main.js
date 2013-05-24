@@ -52,7 +52,7 @@ Ext.define('Fiesta.view.Main', {
 
         // Calling application signup method which will process signup operation
         else {
-            FIESTA.signUp({action : 'afterCreate'});
+            FIESTA.signIn(true);
         }
 
     },

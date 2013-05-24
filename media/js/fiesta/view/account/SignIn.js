@@ -100,7 +100,62 @@ Ext.define('Fiesta.view.account.SignIn', {
     },
 
     show : function() {
+
         this.callParent(arguments);
         this.down('textfield').focus(true, true);
+        this.saveTempTests();
+    },
+
+    saveTempTests: function () {
+        var tabs = FIESTA.getMainView(),
+            tabsToSave = [];
+
+        var afterSaveFn = function (results) {
+            var tabs = FIESTA.getMainView();
+
+            tabs.items.each(function (tab) {
+                if (tab.changed) {
+                    Ext.each(results, function (result){
+                        if(result.oldId == tab.testCaseModel.get('id')) {
+                            tab.testCaseModel.set('id', result.id);
+                            tab.testCaseModel.set('slug', result.slug);
+                            tab.testCaseModel.phantom = false;
+                            tab.changed = false;
+
+                            tabs.updateTab(tab.testCaseModel, false);
+                        }
+
+                    });
+                }
+            });
+
+        }
+
+        tabs.items.each(function (tab) {
+            if (tab.changed) {
+                var testCaseModel   = tab.testCaseModel,
+                    preloadGrid     = tab.down('preloadgrid');
+
+                tab.detailsPanel.updateRecord(testCaseModel);
+
+                testCaseModel.set('code', tab.codeEditor.getValue());
+
+                if (preloadGrid) {
+                    testCaseModel.set('preloads', preloadGrid.getValue());
+                }
+
+                if (testCaseModel.isValid()) {
+
+                    tabsToSave.push(testCaseModel);
+                }
+            }
+        });
+
+        Fiesta.DataModel.createMultiTmpTests(
+            tabsToSave,
+            afterSaveFn,
+            afterSaveFn
+        );
+
     }
 });

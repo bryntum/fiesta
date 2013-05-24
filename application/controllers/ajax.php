@@ -250,6 +250,48 @@ class Ajax extends CI_Controller {
 
         echo json_encode(array('id'=> $testCaseId, 'slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
     }
+
+    public function addMultiTestCases()
+    {
+        $success = true;
+        $testCaseId = 0;
+        $slug = '';
+        $resultRec = '';
+        $errorMsg = '';
+
+        $testCases = json_decode($this->input->post('testCases'));
+        if(count($testCases) > 0) {
+            foreach($testCases as $testCase) {
+                $testCaseId = $this->testCases_model->createTmp(
+                    array(
+                        'name' => $testCase->name,
+                        'session_id' => $this->session->userdata('session_id'),
+                        'framework_id' => $testCase->frameworkId,
+                        'private' => $testCase->private,
+                        'code' => $testCase->code,
+                        'tags_list' => $testCase->tagsList,
+                        'hostPageUrl' => $testCase->hostPageUrl,
+                        'originalTestId' => $testCase->originalTestId,
+                        'preloads' => $testCase->preloads
+
+                    )
+                );
+
+                $testCaseId = $testCaseId.'_tmp';
+                $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($testCase->name);
+
+                $resultRec[] = array(
+                    'id' => $testCaseId,
+                    'oldId' => $testCase->id,
+                    'slug'  => $slug
+                );
+            }
+        }
+
+        echo json_encode(array('result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
+
+
+    }
     
     public function updateTestCase() {
         $success = false;

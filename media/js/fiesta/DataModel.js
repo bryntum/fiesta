@@ -4,6 +4,7 @@ Ext.define('Fiesta.DataModel', {
     extend : 'Ext.util.Observable',
 
     saveUrl          : 'ajax/addTestCase/',
+    saveMultiUrl     : 'ajax/addMultiTestCases/',
     updateUrl        : 'ajax/updateTestCase/',
     getUrl           : 'ajax/getTestCase/',
     getCollectionUrl : 'ajax/getTestCasesColl/',
@@ -67,6 +68,82 @@ Ext.define('Fiesta.DataModel', {
 
                     //Processing callback and firing the event
                     if (callback && callback(testCaseModel) !== false) {
+                        this.fireEvent('requestsuccess', this, {
+                            url     : this.saveUrl,
+                            message : 'Successfully saved'
+                        });
+                    }
+
+                    return true;
+                }
+                else {
+                    this.fireEvent('requestfailed', this, {
+                        url     : this.url,
+                        message : 'Server message:' + o.errorMsg
+                    });
+
+                    return false;
+                }
+            },
+            failure : function (response) {
+
+                if (!errback || errback(response) !== false) {
+                    this.fireEvent('requestfailed', this, {
+                        url     : this.url,
+                        message : 'Failed to save due to server error!'
+                    });
+                }
+            },
+            scope   : this
+        });
+
+    },
+
+    createMultiTmpTests : function (testCases, callback, errback) {
+        var me = this,
+            requestParams = [];
+
+        Ext.each(testCases, function (testCaseModel) {
+            var tagsList = [],
+                params = testCaseModel.getData();
+
+            if (params.tags.length > 0) {
+                Ext.each(params.tags, function (tag) {
+                    tagsList.push(tag.tag);
+                });
+            }
+
+            params.tagsList = tagsList.join(',');
+
+            requestParams.push(params);
+
+
+        });
+
+
+        Ext.Ajax.request({
+            url     : this.saveMultiUrl,
+            params  : {testCases: Ext.JSON.encode(requestParams)},
+            success : function (response) {
+
+                // Trying to determin if correct JSON got from backend
+                try {
+                    var o = Ext.decode(response.responseText);
+                }
+                catch (e) {
+                    this.fireEvent('requestfailed', this, {
+                        url     : this.url,
+                        message : 'Server message:' + response.responseText
+                    });
+
+                    return false;
+                }
+
+                if (true === o.success) {
+
+
+                    //Processing callback and firing the event
+                    if (callback && callback(o.result) !== false) {
                         this.fireEvent('requestsuccess', this, {
                             url     : this.saveUrl,
                             message : 'Successfully saved'
