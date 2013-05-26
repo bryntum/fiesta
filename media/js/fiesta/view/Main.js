@@ -72,7 +72,8 @@ Ext.define('Fiesta.view.Main', {
             }
         });
 
-        Ext.getStore('TestCases').reload();
+        var testCaseStore = Ext.getStore('TestCases');
+        testCaseStore.remove(record);
 
         activeTab.close();
     },
