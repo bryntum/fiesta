@@ -771,6 +771,11 @@ Ext.define('Ext.ux.form.field.BoxSelect', {
             return;
         }
 
+        // Don't tab to new field, just select current value
+        if (key == e.TAB && rawValue) {
+            stopEvent = true;
+        }
+
         if (me.isExpanded && (key == e.A && e.ctrlKey)) {
             // CTRL-A when picker is expanded - add all items in current picker store page to current value
             me.select(me.getStore().getRange());

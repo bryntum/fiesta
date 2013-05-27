@@ -6,7 +6,6 @@ Ext.define("Fiesta.view.SearchForm", {
     cls           : 'searchform',
 
     initComponent : function () {
-        var tagsStore = new Fiesta.store.Tags();
 
         Ext.apply(this, {
                 stateId       : 'searchForm',
@@ -82,7 +81,7 @@ Ext.define("Fiesta.view.SearchForm", {
                     {
                         id             : "tags-filter",
                         xtype          : "tagselect",
-                        store          : tagsStore,
+                        store          : new Fiesta.store.Tags(),
                         displayField   : "tag",
                         valueField     : "id",
                         emptyText      : "Filter by tag(s)",
@@ -162,7 +161,6 @@ Ext.define("Fiesta.view.SearchForm", {
             }
         );
 
-        tagsStore.load();
         this.callParent(arguments);
     },
 
