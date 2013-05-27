@@ -396,7 +396,8 @@ Ext.define('Fiesta.view.testcases.View', {
                     assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span><span style="position:relative;top:-2px">' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed</span>')
 
                     if (!passed && assertionGrid.placeholder.isVisible()) {
-                        assertionGrid.placeholder.el.highlight('#ff4500', { duration : 1500 })
+                        assertionGrid.placeholder.el.highlight('#ff4500', { duration : 1500 });
+                        assertionGrid.expand(true);
                     }
                 }
             });
