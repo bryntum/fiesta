@@ -54,6 +54,14 @@ Ext.define("Fiesta.model.TestCase", {
         var valid = this.get('name') &&
                     this.get('code') && JSHINT(this.get('code'), CONFIG.LINT_SETTINGS);
 
+        // HACK, a bug in JSHINT prevents us from detecting garbage code like
+        // alert "hello";
+        try {
+            new Function(this.get('code'));
+        } catch(e){
+            valid = false;
+        }
+
         return valid;
     },
 

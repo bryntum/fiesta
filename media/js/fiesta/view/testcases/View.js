@@ -329,8 +329,17 @@ Ext.define('Fiesta.view.testcases.View', {
         var testCaseModel       = this.testCaseModel;
         var runButton           = this.runButton;
         var code                = this.codeEditor.getValue();
+        var failed;
 
-        if (JSHINT(code, CONFIG.LINT_SETTINGS)) {
+        // HACK, a bug in JSHINT prevents us from detecting garbage code like
+        // alert "hello";
+        try {
+            new Function(code);
+        } catch(e){
+            failed = true;
+        }
+
+        if (!failed && JSHINT(code, CONFIG.LINT_SETTINGS)) {
             this.detailsPanel.updateRecord(testCaseModel);
             
             switch (testCaseModel.getFrameworkBasedOnPreloads()) {
