@@ -132,3 +132,9 @@ input.openid {
     color: #333;
     white-space: nowrap;
 }
+
+
+li.third_party a
+{
+    text-indent: -10000px;
+}
