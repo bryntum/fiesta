@@ -432,17 +432,17 @@ class Testcases_model extends CI_Model {
         $testCaseToUp = $this->getById($id,$userId);
         $voted = 0;
 
-        if(($testCaseToUp->voted < 0 && $dir == 'up') || ($testCaseToUp->voted > 0 && $dir == 'down') || !$testCaseToUp->voted) {
+        if(($testCaseToUp->voted < 0 && $dir == 'up') || ($testCaseToUp->voted > 0 && $dir == 'down') || !$testCaseToUp->voted || $testCaseToUp->voted == 0) {
 
             $this->db->where('id', $id);
 
             if($dir == 'up') {
                 $this->db->set('rating','`rating`+1',FALSE);
-                $voted = 1;
+                $voted = $testCaseToUp->voted  + 1;
             }
             else {
                 $this->db->set('rating','`rating`-1', FALSE);
-                $voted = -1;
+                $voted = $testCaseToUp->voted  - 1;
             }
 
             $this->db->update('testCases');
