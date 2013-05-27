@@ -3,22 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to Fiesta</title>
-    <link href='http://fonts.googleapis.com/css?family=Inconsolata'
-          rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata'rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all-neptune.css" />
-    <link rel="stylesheet" type="text/css" href="/media/js/ext/ux/form/field/BoxSelect.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/test.details.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/test.view.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/test.list.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/loginwindow.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/templatemenu.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/fiesta.css" />
-    <link rel="stylesheet" href="/media/js/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-fiesta-all.css">
-    <link rel="stylesheet" href="/media/css/icomoon14040/style.css">
+    <link rel="stylesheet" href="/media/css/fiesta-all.css">
 
-    <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js"></script>
-    <script> 
+    <script>
         CONFIG = {
             disqus_shortname    : '<?php echo $disqus_shortname?>',
             userId              : '<?php echo $userId?>',
@@ -34,19 +23,8 @@
         }
 
         var FIESTA;
-        Ext.Loader.setPath('Ext.ux','/media/js/ext/ux');
     </script>
-    <script type="text/javascript" src="/media/js/siesta/siesta-all.js"></script>
-    <script type="text/javascript" src="/media/js/fiesta/app.js"></script>
-    <script src="/media/js/codemirror/lib/codemirror.js"></script>
-    <script src="/media/js/codemirror/mode/javascript/javascript.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
-    <!--<link rel="stylesheet" href="/media/js/codemirror/doc/docs.css">-->
-    <link rel="stylesheet" href="/media/js/codemirror/addon/lint/lint.css">
-    <script src="/media/js/codemirror/addon/lint/lint.js"></script>
-    <script src="/media/js/codemirror/addon/lint/javascript-lint.js"></script>
-    <script src="/media/js/codemirror/addon/lint/json-lint.js"></script>
-
+    <script type="text/javascript" src="/media/js/fiesta/fiesta-all.js"></script>
 </head>
 <body>
 <span class="beta">beta</span>

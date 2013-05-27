@@ -22,7 +22,7 @@ Ext.define('Fiesta.view.testcases.View', {
     runButton           : null,
     detailsPanel        : null,
     changed             : false,
-
+    bodyStyle           : 'border-top:1px solid #bbb !important;',
 
     initComponent : function () {
         
@@ -137,7 +137,6 @@ Ext.define('Fiesta.view.testcases.View', {
 
         Ext.apply(this, {
             layout    : 'border',
-            border    : false,
             closable  : true,
             dockedItems : [
                 topBar

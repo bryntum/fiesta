@@ -19,6 +19,7 @@ Ext.define("Fiesta.view.SearchForm", {
                 items         : [
                     {
                         margin : "0 0 5 0",
+                        xtype : 'container',
                         border : 0,
                         layout : {
                             type  : "hbox",

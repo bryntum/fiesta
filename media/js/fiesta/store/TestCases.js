@@ -4,7 +4,7 @@ Ext.define("Fiesta.store.TestCases", {
     autoLoad   : true,
     storeId    : 'TestCases',
     remoteSort : true,
-    pageSize   : 20,
+    pageSize   : 200,
     proxy      : {
         type   : "ajax",
         url    : "/ajax/getTestCases",

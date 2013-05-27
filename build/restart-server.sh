@@ -10,4 +10,6 @@ git reset --hard origin/master
 
 unset CONTENT_LENGTH
 
+build/update.sh
+
 build/after-push-listener.pl &

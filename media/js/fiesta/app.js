@@ -2,6 +2,8 @@ Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
     expires     :   new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
 }));
 
+Ext.Loader.setPath('Ext.ux','/media/js/ext/ux');
+
 Ext.application({
     name                    : 'Fiesta',
     autoCreateViewport      : true,

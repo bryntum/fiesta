@@ -1,0 +1,48 @@
+{
+    "projectName"   : "Fiesta",
+    "licenseText"   : "",
+    
+    "packages"          : [
+        {
+            "name"      : "Fiesta-JS",
+
+            "target"    : "media/js/fiesta/fiesta-all-debug.js",
+            
+            "files"     : [
+                { "path"  : "media/frameworks/extjs-4.2.0/ext-all.js" },
+                { "path"  : "media/frameworks/extjs-4.2.0/ext-theme-neptune.js" },
+                { "path"  : "media/js/siesta/siesta-all.js" },
+                { "path"  : "media/js/codemirror/lib/codemirror.js" },
+                { "path"  : "media/js/codemirror/mode/javascript/javascript.js" },
+                { "path"  : "media/js/codemirror/jshint.js" },
+                { "path"  : "media/js/fiesta/app.js" },
+                { "path"  : "media/js/codemirror/addon/lint/lint.js" },
+                { "path"  : "media/js/codemirror/addon/lint/javascript-lint.js" },
+                { "path"  : "media/js/codemirror/addon/lint/json-lint.js" }
+            ]
+        },
+        {
+            "name"      : "Fiesta Styles",
+            "target"    : "media/css/fiesta-all.css",
+            "files"     : [
+                { "path"  : "media/js/ext/ux/form/field/BoxSelect.css" },
+                { "path"  : "media/css/test.details.css" },
+                { "path"  : "media/css/test.view.css" },
+                { "path"  : "media/css/test.list.css" },
+                { "path"  : "media/css/loginwindow.css" },
+                { "path"  : "media/css/templatemenu.css" },
+                { "path"  : "media/css/fiesta.css" },
+                { "path"  : "media/js/codemirror/lib/codemirror.css" },
+                { "path"  : "media/js/codemirror/addon/lint/lint.css" },
+                { "path"  : "media/js/siesta/resources/css/siesta-fiesta-all.css" },
+                { "path"  : "media/css/icomoon14040/style.css" }
+
+]
+        }
+    ],
+    
+    
+    "resources"     : [
+    ]
+}
+
