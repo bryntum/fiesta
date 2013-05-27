@@ -23582,7 +23582,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
             }
 
             if (keyCode === KeyCodes.ENTER && !supports.enterOnAnchorTriggersClick) {
-                me.simulateEvent(el, 'click');
+                me.simulateEvent(el, 'click', null, true);
             }
             me.simulateEvent(el, 'keyup', $.extend({ charCode : 0, keyCode : keyCode }, options), true);
         },

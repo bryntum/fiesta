@@ -34,7 +34,6 @@
                 { "path"  : "media/css/fiesta.css" },
                 { "path"  : "media/js/codemirror/lib/codemirror.css" },
                 { "path"  : "media/js/codemirror/addon/lint/lint.css" },
-                { "path"  : "media/js/siesta/resources/css/siesta-fiesta-all.css" },
                 { "path"  : "media/css/icomoon14040/style.css" }
 
 ]

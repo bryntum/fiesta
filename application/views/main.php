@@ -5,6 +5,7 @@
 	<title>Welcome to Fiesta</title>
     <link href='http://fonts.googleapis.com/css?family=Inconsolata'rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all-neptune.css" />
+    <link rel="stylesheet" href="/media/js/siesta/resources/css/siesta-fiesta-all.css">
     <link rel="stylesheet" href="/media/css/fiesta-all.css">
 
     <script>

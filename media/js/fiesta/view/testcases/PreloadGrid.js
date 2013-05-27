@@ -168,6 +168,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                     '->',
                     {
                         text : 'Ext 4.2',
+                        itemId: 'quickbutton-ext',
                         handler : function() {
                             this.addTemplatePreloads('Ext JS', "4.2.0");
                         },
@@ -175,6 +176,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                     },
                     {
                         text : 'Touch 2.2',
+                        itemId: 'quickbutton-touch',
                         handler : function() {
                             this.addTemplatePreloads('Sencha Touch', "2.2.0");
                         },
