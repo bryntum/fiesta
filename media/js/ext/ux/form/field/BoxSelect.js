@@ -1389,7 +1389,8 @@ Ext.define('Ext.ux.form.field.BoxSelect', {
                 }
                 return val;
             }, this).join(this.delimiter),
-            isEqual = me.isEqual(newValue, lastValue);
+
+            isEqual = (!newValue && !lastValue) || me.isEqual(newValue, lastValue);
 
             if (!isEqual || ((newValue.length > 0 && valueStore.getCount() < newValue.length))) {
                 valueStore.suspendEvents();
