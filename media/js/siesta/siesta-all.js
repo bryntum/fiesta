@@ -2286,7 +2286,7 @@ Joose.Managed.Attribute = new Joose.Managed.Class('Joose.Managed.Attribute', {
             
             this.publicName = name.replace(/^_+/, '')
             
-            this.slot = this.isPrivate ? '$$' + name : name
+            this.slot = this.isPrivate ? '$' + name : name
             
             this.setterName = this.setterName || this.getSetterName()
             this.getterName = this.getterName || this.getGetterName()
@@ -3335,7 +3335,7 @@ Role('Scope.Provider.Role.WithDOM', {
         attachToOnError : function () {
             
             // returns the value of the attribute
-            return function (window, scopeId, handler) {
+            return function (window, scopeId, handler, preventDefault) {
                 
                 var prevHandler         = window.onerror
                 if (prevHandler && prevHandler.__SP_MANAGED__) return
@@ -3353,7 +3353,7 @@ Role('Scope.Provider.Role.WithDOM', {
                     handler.__CALLING__ = false
                     
                     // in FF/IE need to return `true` to prevent default action
-                    return window.WebKitPoint ? false : true 
+                    if (preventDefault !== false) return window.WebKitPoint ? false : true 
                 }
                 
                 window.onerror.__SP_MANAGED__ = true
@@ -3394,7 +3394,7 @@ Role('Scope.Provider.Role.WithDOM', {
         },
         
         
-        addOnErrorHandler : function (handler) {
+        addOnErrorHandler : function (handler, preventDefault) {
             handler.__SP_MANAGED__  = true
             
             if (this.cachedOnError && this.cachedOnError != handler) throw "Can only install one on error handler" 
@@ -3404,7 +3404,7 @@ Role('Scope.Provider.Role.WithDOM', {
             
             this.parentWindow.Scope.Provider.__ONERROR__[ scopeId ] = handler
             
-            var attachToOnError = ';(' + this.attachToOnError.toString() + ')(window, ' + scopeId + ', (window.opener || window.parent).Scope.Provider.__ONERROR__[ ' + scopeId + ' ]);'
+            var attachToOnError = ';(' + this.attachToOnError.toString() + ')(window, ' + scopeId + ', (window.opener || window.parent).Scope.Provider.__ONERROR__[ ' + scopeId + ' ], ' + preventDefault + ');'
             
             if (this.isAlreadySetUp()) 
                 this.runCode(attachToOnError)
@@ -4658,7 +4658,7 @@ Class('JooseX.Observable.Channel', {
         removeListener : function (listenerToRemove) {
             var eventListeners      = this.listeners[ listenerToRemove.eventName ]
             
-            Joose.A.each(eventListeners, function (listener, index) {
+            eventListeners && Joose.A.each(eventListeners, function (listener, index) {
                 
                 if (listener == listenerToRemove) {
                     
@@ -4673,7 +4673,7 @@ Class('JooseX.Observable.Channel', {
         removeListenerByHandler : function (eventName, func, scope) {
             var eventListeners      = this.listeners[ eventName ]
             
-            Joose.A.each(eventListeners, function (listener, index) {
+            eventListeners && Joose.A.each(eventListeners, function (listener, index) {
                 
                 if (listener.func == func && listener.scope == scope) {
                     
@@ -10955,7 +10955,42 @@ Class('Siesta.Harness', {
     })
             
          * This option can be also specified in the test file descriptor. **Note**, that if test descriptor has non-empty {@link Siesta.Harness.Browser#hostPageUrl hostPageUrl}
-         * option, then *it will not inherit* the `preload` option from parent descriptors or harness.  
+         * option, then *it will not inherit* the `preload` option from parent descriptors or harness, **unless** it has the `preload` config set to string `inherit`. 
+         * If both `hostPageUrl` and `preload` are set on the harness level, `preload` value still will be inherited. For example:
+         *
+    Harness.configure({
+        hostPageUrl     : 'general-page.html',
+        preload         : [ 'my-file.js' ],
+        ...
+    })
+    
+    Harness.start(
+        // this test will inherit both `hostPageUrl` and `preload`
+        'test1.js',
+        {
+            // no preloads inherited
+            hostPageUrl     : 'host-page.html',
+            url             : 'test2.js'
+        }, 
+        {
+            // inherit `preload` value from the upper level - [ 'my-file.js' ]
+            hostPageUrl     : 'host-page.html',
+            preload         : 'inherit',
+            url             : 'test3.js'
+        }, 
+        {
+            group           : 'Some group',
+            hostPageUrl     : 'host-page2.html',
+            preload         : 'inherit',
+            
+            items           : [
+                // inherit `hostPageUrl` value from the group
+                // inherit `preload` value from the upper level - [ 'my-file.js' ]
+                url             : 'test3.js'
+            ]
+        }
+    )
+    
          */
         preload                 : Joose.I.Array,
         
@@ -11364,11 +11399,19 @@ Class('Siesta.Harness', {
             var args    = Array.prototype.concat.apply([], arguments)
             
             this.setup(function () {
-                me.descriptors    = Joose.A.map(args, function (desc, index) { 
-                    return me.normalizeDescriptor(desc, me, index)
-                })
+                me.normalizeDescriptors(args)
                 
                 me.launch(me.descriptors)
+            })
+        },
+        
+        
+        // good to have this as a seprate method for testing
+        normalizeDescriptors : function (descArray) {
+            var me      = this
+            
+            me.descriptors    = Joose.A.map(descArray, function (desc, index) { 
+                return me.normalizeDescriptor(desc, me, index)
             })
         },
 
@@ -11462,8 +11505,8 @@ Class('Siesta.Harness', {
             return flatten
         },
         
-
-        getDescriptorConfig : function (descriptor, configName, doNotLookAtRoot) {
+        
+        lookUpValueInDescriptorTree : function (descriptor, configName, doNotLookAtRoot) {
             var testConfig  = descriptor.testConfig
             
             if (testConfig && testConfig.hasOwnProperty(configName))    return testConfig[ configName ]
@@ -11478,10 +11521,15 @@ Class('Siesta.Harness', {
                     else
                         return this[ configName ]
                 
-                return this.getDescriptorConfig(parent, configName, doNotLookAtRoot)
+                return this.lookUpValueInDescriptorTree(parent, configName, doNotLookAtRoot)
             }
             
             return undefined
+        },
+        
+
+        getDescriptorConfig : function (descriptor, configName, doNotLookAtRoot) {
+            return this.lookUpValueInDescriptorTree(descriptor, configName, doNotLookAtRoot)
         },
         
         
@@ -23540,8 +23588,9 @@ Role('Siesta.Test.Simulate.Keyboard', {
         },
 
         isTextInput : function(node) {
-            var name = node.nodeName.toLowerCase(),
-                type = node.type && node.type.toLowerCase();
+            // somehow "node.nodeName" is empty sometimes in IE10
+            var name    = node.nodeName && node.nodeName.toLowerCase(),
+                type    = node.type && node.type.toLowerCase();
 
             return name === 'textarea' ||
                    (name === 'input' && (type === 'password'    ||
@@ -28286,14 +28335,33 @@ Class('Siesta.Harness.Browser', {
             },
             
             
-            getDescriptorPreset : function (desc) {
-                if (this.getDescriptorConfig(desc, 'hostPageUrl') && desc.preload != 'inherit') 
-                    return this.emptyPreset
-                else {
-                    if (desc.preload == 'inherit') delete desc.preload
+            getDescriptorConfig : function (descriptor, configName, doNotLookAtRoot) {
+                // if its any other config use regular parent implementation
+                if (configName != 'preload') return this.SUPERARG(arguments)
+                
+                var testConfig          = descriptor.testConfig
+                
+                if (testConfig && testConfig.hasOwnProperty('preload')) 
+                    if (testConfig.preload != 'inherit')
+                        return testConfig.preload
+                        
+                var hasHostPageUrl      = Boolean(this.getDescriptorConfig(descriptor, 'hostPageUrl', true))
+                var needToInherit       = Boolean(this.lookUpValueInDescriptorTree(descriptor, 'preload') == 'inherit')
+                
+                if (hasHostPageUrl && !needToInherit) return []
+                        
+                do {
+                    if (descriptor.hasOwnProperty('preload'))
+                        if (descriptor.preload != 'inherit') return descriptor.preload
                     
-                    return this.SUPERARG(arguments)
-                }
+                    descriptor          = descriptor.parent
+                    
+                } while (descriptor && descriptor != this)
+                    
+                if (doNotLookAtRoot) 
+                    return undefined
+                else
+                    return this.preload
             },
             
             
@@ -28395,7 +28463,7 @@ Class('Siesta.Harness.Browser', {
             
             absolutizeURL : function (url, baseUrl) {
                 // if the url is already absolute - just return it (perhaps with some normalization - 2nd case)
-                if (/^http/.test(url))  return url
+                if (/^(https?|file):\/\//.test(url))  return url
                 if (/^\//.test(url))    return this.baseProtocol + '//' + this.baseHost + url
                 
                 baseUrl             = baseUrl || this.baseUrl
@@ -29772,6 +29840,7 @@ Ext.define('Siesta.Harness.Browser.UI.CanFillAssertionsStore', {
 Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     extend                  : 'Ext.Panel',
     alias                   : 'widget.domcontainer',
+    cls                     : 'siesta-domcontainer',
 
     test                    : null,
     testListeners           : null,
@@ -31814,7 +31883,6 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
             columns     : [
                 {
                     xtype           : 'assertiontreecolumn',
-                    header          : 'Results',
                     flex            : 1,
                     
                     dataIndex       : 'folderStatus',
