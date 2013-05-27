@@ -36,7 +36,8 @@ window.onload = function() {
 			'icon-play' : '&#xe01b;',
 			'icon-play-2' : '&#xe01c;',
 			'icon-pause' : '&#xe01d;',
-			'icon-stop' : '&#xe01e;'
+			'icon-stop' : '&#xe01e;',
+			'icon-forward' : '&#xe01f;'
 		},
 		els = document.getElementsByTagName('*'),
 		i, attr, html, c, el;

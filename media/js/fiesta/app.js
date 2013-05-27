@@ -1,3 +1,7 @@
+Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
+    expires     :   new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
+}));
+
 Ext.application({
     name                    : 'Fiesta',
     autoCreateViewport      : true,
@@ -126,10 +130,6 @@ Ext.application({
         });
 
         Ext.util.History.init();
-        Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
-            expires     :   new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
-        }));
-
 
         Ext.util.History.on('change', this.onHistoryChange);
 

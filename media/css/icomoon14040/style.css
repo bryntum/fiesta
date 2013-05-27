@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-file-css, .icon-file, .icon-file-2, .icon-stats, .icon-file-xml, .icon-checkmark, .icon-home, .icon-facebook, .icon-google-plus, .icon-twitter, .icon-IE, .icon-opera, .icon-safari, .icon-chrome, .icon-firefox, .icon-html5, .icon-html5-2, .icon-arrow-up, .icon-arrow-down, .icon-close, .icon-star, .icon-star-2, .icon-attachment, .icon-link, .icon-copy, .icon-plus, .icon-minus, .icon-play, .icon-play-2, .icon-pause, .icon-stop {
+.icon-file-css, .icon-file, .icon-file-2, .icon-stats, .icon-file-xml, .icon-checkmark, .icon-home, .icon-facebook, .icon-google-plus, .icon-twitter, .icon-IE, .icon-opera, .icon-safari, .icon-chrome, .icon-firefox, .icon-html5, .icon-html5-2, .icon-arrow-up, .icon-arrow-down, .icon-close, .icon-star, .icon-star-2, .icon-attachment, .icon-link, .icon-copy, .icon-plus, .icon-minus, .icon-play, .icon-play-2, .icon-pause, .icon-stop, .icon-forward {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -97,10 +97,10 @@ you can use the generic selector below, but it's slower:
 .icon-close:before {
 	content: "\e013";
 }
-.icon-star-2:before {
+.icon-star:before {
 	content: "\e014";
 }
-.icon-star:before {
+.icon-star-2:before {
 	content: "\e015";
 }
 .icon-attachment:before {
@@ -129,4 +129,7 @@ you can use the generic selector below, but it's slower:
 }
 .icon-stop:before {
 	content: "\e01e";
+}
+.icon-forward:before {
+	content: "\e01f";
 }

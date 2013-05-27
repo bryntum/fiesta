@@ -6,6 +6,7 @@ Ext.define('Fiesta.view.testcases.View', {
     requires    : [
         'Fiesta.view.testcases.Details',
         'Fiesta.view.testcases.ResultPanel',
+        'Fiesta.view.testcases.RunButton',
         'Fiesta.plugins.JsEditor'
     ],
 
@@ -30,6 +31,7 @@ Ext.define('Fiesta.view.testcases.View', {
         var topBar = {
             xtype : 'toolbar',
             dock : 'top',
+            cls  : 'testcase-toolbar',
             items : [
                 {
                     iconCls : 'icon-arrow-down',
@@ -56,12 +58,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
                 { xtype : 'tbseparator' },
                 {
-                    text   : 'Run',
-                    width  : 70,
-                    iconCls : 'icon-play-2',
-                    cls    : 'run-testcase',
-                    action : 'run',
-
+                    xtype   : 'runbutton',
                     handler : this.runTest,
                     scope   : this
                 },
@@ -356,7 +353,7 @@ Ext.define('Fiesta.view.testcases.View', {
             // HACK to allow self-testing of fiesta 
             if (pageUrl == '../../') pageUrl    += "?d=" + new Date().getTime()
 
-            runButton.setIconCls('icon-loading');
+            runButton.setRunningState(true);
 
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
             var domContainer = this.down('[slot=domContainer]');
@@ -373,15 +370,15 @@ Ext.define('Fiesta.view.testcases.View', {
                 hostPageUrl     : pageUrl ? CONFIG.frameworkRoot + pageUrl : null,
                 preload         : pageUrl ? null : testCaseModel.getPreloadsArray(),
                 
-                speedRun        : false,
+                speedRun        : runButton.mode === 'fast',
 
                 loaderPath      : {
                     'Ext'       : root + '/src/',
                     'Ext.ux'    : root + '/examples/ux'
                 }
             }, function () {
-                runButton.setIconCls('icon-play-2');
-                
+                runButton.setRunningState(false);
+
                 var test                = me.resultPanel.test;
                 var assertionGrid       = me.down('assertiongrid');
 
