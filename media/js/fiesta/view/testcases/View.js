@@ -48,9 +48,24 @@ Ext.define('Fiesta.view.testcases.View', {
                     cls             : 'vote-container',
                     value           : testCaseModel.get('rating'),
                     renderer        : function (value) {
-                        var result = '<dl><dt class="arrow up" title="Vote up"></dt><dd class="vote-count">'
+
+                        var voted = this.up('testCasesView').testCaseModel.get('voted');
+                            votedUpCls = '',
+                            votedDownCls = '';
+
+                        if(voted == 1) {
+                            votedUpCls = 'voted';
+                        };
+
+                        if(voted == -1) {
+                            votedDownCls = 'voted';
+                        };
+
+
+
+                        var result = '<dl><dt class="arrow up '+votedUpCls+'" title="Vote up"></dt><dd class="vote-count">'
                                         +value+
-                                    '</dd><dd class="arrow down" title="Vote down"></dd></dl>';
+                                    '</dd><dd class="arrow down '+votedDownCls+'" title="Vote down"></dd></dl>';
                         return result;
                     },
                     disabled         : testCaseModel.get('ownerId') == CONFIG.userId || testCaseModel.phantom

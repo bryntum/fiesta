@@ -128,6 +128,15 @@ div.run-testcase .x-btn-inner {
     line-height : 17px;
 }
 
+
+.vote-container .up.voted {
+    border-bottom : 7px solid #EDAB37;
+}
+
+.vote-container .down.voted {
+    border-top : 7px solid #EDAB37;
+}
+
 .x-item-disabled .up, .x-item-disabled .down, .x-item-disabled .up:hover, .x-item-disabled .down:hover {
     cursor              : default !important;
     border-bottom-color : #666 !important;

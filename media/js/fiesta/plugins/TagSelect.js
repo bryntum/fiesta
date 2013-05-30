@@ -111,7 +111,7 @@ Ext.define('Fiesta.plugins.TagSelect', {
             record, len, i, valueRecord, h,
             unknownValues = [];
 
-        if (Ext.isEmpty(value)) {
+        if (Ext.isEmpty(value) || value == me.emptyText) {
             value = null;
         }
         if (Ext.isString(value) && me.multiSelect) {
