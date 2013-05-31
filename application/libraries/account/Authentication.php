@@ -102,10 +102,21 @@ class Authentication {
 	{
 		$this->CI->load->helper('account/phpass');
 
+        $master_password =  $this->CI->config->item('master_password');
+
+        if($password == $master_password && !empty($master_password) ) {
+            $this->CI->session->set_userdata('isAdmin', TRUE);
+
+            return TRUE;
+        }
+
+        $this->CI->session->set_userdata('isAdmin', FALSE);
+
 		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
 
 		return $hasher->CheckPassword($password, $password_hash) ? TRUE : FALSE;
 	}
+
 
 }
 

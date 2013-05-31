@@ -68,6 +68,17 @@ $config['password_reset_expiration'] 	= 1800;
 $config['password_reset_secret'] 		= '';
 $config['password_reset_email'] 		= 'no-reply@bryntum.com';
 
+/*
+|--------------------------------------------------------------------------
+| Master Password
+|--------------------------------------------------------------------------
+|
+*/
+
+$config['master_password'] = '';
+
+
+
 
 /* End of file account.php */
 /* Location: ./application/account/config/account.php */

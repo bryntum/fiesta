@@ -58,7 +58,7 @@ class Ajax extends CI_Controller {
             if(!empty($params['testCaseTags'])) {
                 $tagsList = $params['testCaseTags'];
             }
-            if(count($whereArray) == 0) {
+            if(count($whereArray) == 0 && !$this->isAdmin()) {
                 if ($this->authentication->is_signed_in()) {
                     $where = '((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
                 } else {
@@ -68,22 +68,26 @@ class Ajax extends CI_Controller {
             else {
                 $where = implode(' AND ',$whereArray);
 
-                if ($this->authentication->is_signed_in()) {
-                    $where .= ' AND ((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
-                } else {
-                    $where .= ' AND private = 0';
+                if(!$this->isAdmin()) {
+                    if ($this->authentication->is_signed_in()) {
+                        $where .= ' AND ((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
+                    } else {
+                        $where .= ' AND private = 0';
+                    }
                 }
             }
 
 
         }
         else {
-            if ($this->authentication->is_signed_in()) {
-                $where = 'owner_id ='.$this->authUserID;
-            }
-            else {
-                $where = 'private = 0';
-            }
+//            if ($this->authentication->is_signed_in()) {
+//                $where = 'owner_id ='.$this->authUserID;
+//            }
+//            else {
+                if(!$this->isAdmin()) {
+                    $where = 'private = 0';
+                }
+//            }
         }
 
 
@@ -106,6 +110,8 @@ class Ajax extends CI_Controller {
 //
 //        }
 //        else {
+
+
             $testCases = $this->testCases_model->getByClause(array(
                 'whereClause' => $where,
                 'page'        => $params['page'],
@@ -312,20 +318,21 @@ class Ajax extends CI_Controller {
         if ($this->authentication->is_signed_in()) {
 
 
-            if($this->isOwner($testCaseId)) {
+            if($this->isOwner($testCaseId) || $this->isAdmin()) {
 
-
-                $resultRec = $this->testCases_model->update($testCaseId, array(
+                $updateParams = array(
                     'name' => $name,
-                    'owner_id' => $userId,
                     'framework_id' => $frameworkId,
                     'private' => $private == 'true' ? 1 : 0,
                     'code' => $code,
                     'tagsList' => $tagsList,
                     'hostPageUrl' => $hostPageUrl,
-                    'preloads' => $preloads
+                    'preloads' => $preloads,
+                    'owner_id' => $userId
 
-                ));
+                );
+
+                $resultRec = $this->testCases_model->update($testCaseId, $updateParams, $this->isAdmin());
 
                 if($resultRec) {
                     $success = true;
@@ -381,7 +388,7 @@ class Ajax extends CI_Controller {
 
 
 
-            if($this->isOwner($testCaseId)) {
+            if($this->isOwner($testCaseId) ||  $this->isAdmin()) {
 
                 $result = $this->testCases_model->delete($testCaseId);
 
@@ -514,6 +521,10 @@ class Ajax extends CI_Controller {
         else {
             return false;
         }
+    }
+
+    private function isAdmin() {
+        return $this->session->userdata('isAdmin');
     }
 }
 

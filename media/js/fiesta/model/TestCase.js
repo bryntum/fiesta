@@ -47,7 +47,7 @@ Ext.define("Fiesta.model.TestCase", {
     },
 
     isEditable : function() {
-        return this.get('ownerId') == CONFIG.userId || /* isAdmin() */ false ;
+        return this.get('ownerId') == CONFIG.userId || CONFIG.isAdmin;
     },
 
     isValid : function() {

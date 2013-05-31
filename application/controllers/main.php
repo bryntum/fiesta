@@ -34,6 +34,7 @@ class Main extends CI_Controller {
                 'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
                 )),
+                'isAdmin'   => (boolean) $this->session->userdata('isAdmin'),
                 'totalTests' => $totalTests,
                 'onlineUsers' => $onlineUsers,
                 'totalUsers' => $totalUsers
@@ -50,8 +51,8 @@ class Main extends CI_Controller {
                 )),
                 'totalTests' => $totalTests,
                 'onlineUsers' => $onlineUsers,
-                'totalUsers' => $totalUsers
-
+                'totalUsers' => $totalUsers,
+                'isAdmin'  => false
             );
             
             

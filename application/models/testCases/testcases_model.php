@@ -11,6 +11,13 @@ class Testcases_model extends CI_Model {
     function getById($testCaseId,$userId)
     {
 
+//        if(!isset($userId) || empty($userId)) {
+//            $this->db->select('testCases.owner_id as ownerId')
+//                ->where('testCases.id', $testCaseId);
+//            $res = $this->db->get('testCases')->row();
+//
+//            $userId = $res->ownerId;
+//        }
 
         if(isset($testCaseId) && !empty($testCaseId)) {
             $this->db->select('testCases.*, testCases.owner_id as ownerId, acc.username as ownerName, testCases.framework_id as frameworkId, st.starred IS NOT NULL as starred')
@@ -148,8 +155,11 @@ class Testcases_model extends CI_Model {
             ->from('testCases as tc')
             ->join('a3m_account as acc', 'acc.id = tc.owner_id', 'left')
             ->join('user_testCases as st', "st.testCase_id = tc.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
-            ->join('testCases_votes as tv', "tv.testCase_id = tc.id AND tv.user_id = ".$userId, 'left')
-            ->where($params['whereClause']);
+            ->join('testCases_votes as tv', "tv.testCase_id = tc.id AND tv.user_id = ".$userId, 'left');
+
+        if(!empty($params['whereClause'])) {
+            $this->db->where($params['whereClause']);
+        }
 
         if(isset($params['tagsList']) && count($params['tagsList']) > 0) {
             $tagsList = implode(',', $params['tagsList']);
@@ -255,11 +265,17 @@ class Testcases_model extends CI_Model {
         
     }
     
-    function update ($testCaseId, $data) {
+    function update ($testCaseId, $data, $isAdmin = false) {
         $data['slug'] = $testCaseId.'-'.$this->makeSlug($data['name']);
+        $curUser = $data['owner_id'];
+
+        if($isAdmin) {
+            unset($data['owner_id']);
+        }
 
         $tagsList = $data['tagsList'];
         unset($data['tagsList']);
+
 
         $this->db->where('id', $testCaseId);
         $result = $this->db->update('testCases', $data);
@@ -268,7 +284,7 @@ class Testcases_model extends CI_Model {
             $this->updateTestCaseTags($testCaseId,$tagsList);
         }
 
-        return $this->getById($testCaseId,$data['owner_id']);
+        return $this->getById($testCaseId,$curUser);
     }
 
     function delete ($testCaseId) {
