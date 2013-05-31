@@ -14,6 +14,7 @@
             userId              : '<?php echo $userId?>',
             userName            : '<?php echo isset($account) ? $account->username : 'Guest';?>',
             fb_url              : '<?php echo $fb_url?>',
+            isAdmin             : <?php echo $isAdmin ? 'true' : 'false';?>,
             frameworkRoot       : '/media/frameworks/'
         };
 
