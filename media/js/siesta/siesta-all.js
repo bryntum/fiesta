@@ -30147,26 +30147,13 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
             cleanUp();
 
             me.boxIndicator = wrap.createChild({
-                style : {
-                    position                : 'absolute',
-                    'pointer-events'        : 'none',
-                    'z-index'               : 100001,
-                    border                  : '2px solid red;',
-                    'transition-property'   : 'left, top, width, height',
-                    'transition-duration'   : '0.3s'
-                }
+                cls : 'cmp-inspector-box'
             });
 
             var label = me.boxIndicator.createChild({
-                tag : 'span',
-                style : {
-                    display         : 'inline-block',
-                    'margin-top'    : '-10px',
-                    'font-size'     : '10px',
-                    padding         : '2px',
-                    background      : 'rgb(32, 169, 220)',
-                    color           : '#fff'
-                }
+                tag     : 'a',
+                cls     : 'cmp-inspector-label',
+                target  : '_blank'
             })
 
             _Ext.getBody().on('mousemove', this.onMouseMove, this, { buffer : 30 });
@@ -30226,13 +30213,47 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
                 boxStyle.width = ((el.getWidth() || (parseInt(el.dom.style.width.substring(0, el.dom.style.width.length-2), 10)))+2) + 'px';
                 boxStyle.height = ((el.getHeight() || (parseInt(el.dom.style.height.substring(0, el.dom.style.height.length-2), 10)))+2) + 'px';
 
-                me.boxIndicator.child('span').update(xtype);
+                var link = me.boxIndicator.child('.cmp-inspector-label');
+                var linkHref = '';
+                link.update(xtype);
+
+                if(Ext.ClassManager) {
+                    var clsName = this.findExtAncestorClassName(cmp);
+
+                    if (clsName) {
+                        var docsPath = 'http://docs.sencha.com/{0}/#!/api/{1}';
+                        var framework;
+
+                        if (Ext.versions.touch) {
+                            framework = 'touch';
+                        } else {
+                            framework = 'extjs';
+                        }
+                        linkHref = Ext.String.format(docsPath, framework, clsName);
+                        link.dom.title = 'View documentation for ' + clsName;
+                    }
+                }
+
+                link.dom.href = linkHref;
 
                 return;
             } else {
                 t = t.parentNode;
             }
         }
+    },
+
+    findExtAncestorClassName : function(cmp) {
+        while (cmp) {
+            var name = Ext.ClassManager.getName(cmp);
+            if (name.match(/^Ext./)) {
+                return name;
+            }
+
+            cmp = cmp.superclass;
+        }
+
+        return '';
     }
 });;
 Ext.define('Siesta.Harness.Browser.UI.Viewport', {

@@ -61,7 +61,29 @@
     z-index : -1;
     display : none;
 }
-/*=======================================================================================================================================================================================================================
+.cmp-inspector-box {
+    position            : absolute;
+    pointer-events      : none;
+    z-index             : 100001;
+    border              : 2px solid red;
+    transition-property : left, top, width, height;
+    transition-duration : 0.3s;
+}
+
+.cmp-inspector-label {
+    display        : inline-block;
+    margin-top     : -10px;
+    font-size      : 10px;
+    padding        : 2px;
+    pointer-events : auto;
+    background     : rgb(32, 169, 220);
+    color          : #fff;
+    text-decoration: none;
+}
+
+.cmp-inspector-label:hover {
+    text-decoration: underline;
+}/*=======================================================================================================================================================================================================================
     Panel with test iframe
 */
 
