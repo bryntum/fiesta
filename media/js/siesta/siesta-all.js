@@ -11537,10 +11537,12 @@ Class('Siesta.Harness', {
             var preload                 = this.getDescriptorConfig(desc, 'preload', true)
             var alsoPreload             = this.getDescriptorConfig(desc, 'alsoPreload', true)
             
-            if (preload || alsoPreload)
-                return new Siesta.Content.Preset({
-                    preload     : this.processPreloadArray((preload || this.preload).concat(alsoPreload || []))
-                })
+            if (preload || alsoPreload) {
+                var totalPreload        = (preload || this.preload).concat(alsoPreload || [])
+                
+                // filter out empty array as preloads - return `emptyPreset` for them
+                return totalPreload.length ? new Siesta.Content.Preset({ preload : this.processPreloadArray(totalPreload) }) : this.emptyPreset
+            }
                 
             return this.mainPreset
         },
@@ -11823,7 +11825,7 @@ Class('Siesta.Harness', {
             }
             
             // trying to setup the `onerror` handler as early as possible - to detect each and every exception from the test
-            if (!transparentEx) scopeProvider.addOnErrorHandler(onErrorHandler)
+            scopeProvider.addOnErrorHandler(onErrorHandler, !transparentEx)
             
 //            scopeProvider.addPreload({
 //                type        : 'js', 
@@ -11899,7 +11901,7 @@ Class('Siesta.Harness', {
             var testClass       = me.getDescriptorConfig(desc, 'testClass')
         
             // after the scope setup, the `onerror` handler might be cleared - installing it again
-            if (!this.getDescriptorConfig(desc, 'transparentEx')) scopeProvider.addOnErrorHandler(options.onErrorHandler)
+            scopeProvider.addOnErrorHandler(options.onErrorHandler, !this.getDescriptorConfig(desc, 'transparentEx'))
             
             var testConfig      = me.getNewTestConfiguration(desc, scopeProvider, options.contentManager, options.urlOptions, options.runFunc, options.startTestAnchor)
             
@@ -21210,7 +21212,6 @@ delegate = function (event) {
         }
     };
 })(window);
-
 jQuery.fn.center = function () {
     this.css("position","absolute");
     this.css("top", Math.max(0, (($(window).height() - this.outerHeight()) / 2) + 
@@ -21218,8 +21219,18 @@ jQuery.fn.center = function () {
     this.css("left", Math.max(0, (($(window).width() - this.outerWidth()) / 2) + 
                                                 $(window).scrollLeft()) + "px");
     return this;
-}
-;
+};
+/*
+ * jQuery scrollintoview() plugin and :scrollable selector filter
+ *
+ * Version 1.8 (14 Jul 2011)
+ * Requires jQuery 1.4 or newer
+ *
+ * Copyright (c) 2011 Robert Koritnik
+ * Licensed under the terms of the MIT license
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+(function(f){var c={vertical:{x:false,y:true},horizontal:{x:true,y:false},both:{x:true,y:true},x:{x:true,y:false},y:{x:false,y:true}};var b={duration:"fast",direction:"both"};var e=/^(?:html)$/i;var g=function(k,j){j=j||(document.defaultView&&document.defaultView.getComputedStyle?document.defaultView.getComputedStyle(k,null):k.currentStyle);var i=document.defaultView&&document.defaultView.getComputedStyle?true:false;var h={top:(parseFloat(i?j.borderTopWidth:f.css(k,"borderTopWidth"))||0),left:(parseFloat(i?j.borderLeftWidth:f.css(k,"borderLeftWidth"))||0),bottom:(parseFloat(i?j.borderBottomWidth:f.css(k,"borderBottomWidth"))||0),right:(parseFloat(i?j.borderRightWidth:f.css(k,"borderRightWidth"))||0)};return{top:h.top,left:h.left,bottom:h.bottom,right:h.right,vertical:h.top+h.bottom,horizontal:h.left+h.right}};var d=function(h){var j=f(window);var i=e.test(h[0].nodeName);return{border:i?{top:0,left:0,bottom:0,right:0}:g(h[0]),scroll:{top:(i?j:h).scrollTop(),left:(i?j:h).scrollLeft()},scrollbar:{right:i?0:h.innerWidth()-h[0].clientWidth,bottom:i?0:h.innerHeight()-h[0].clientHeight},rect:(function(){var k=h[0].getBoundingClientRect();return{top:i?0:k.top,left:i?0:k.left,bottom:i?h[0].clientHeight:k.bottom,right:i?h[0].clientWidth:k.right}})()}};f.fn.extend({scrollintoview:function(j){j=f.extend({},b,j);j.direction=c[typeof(j.direction)==="string"&&j.direction.toLowerCase()]||c.both;var n="";if(j.direction.x===true){n="horizontal"}if(j.direction.y===true){n=n?"both":"vertical"}var l=this.eq(0);var i=l.closest(":scrollable("+n+")");if(i.length>0){i=i.eq(0);var m={e:d(l),s:d(i)};var h={top:m.e.rect.top-(m.s.rect.top+m.s.border.top),bottom:m.s.rect.bottom-m.s.border.bottom-m.s.scrollbar.bottom-m.e.rect.bottom,left:m.e.rect.left-(m.s.rect.left+m.s.border.left),right:m.s.rect.right-m.s.border.right-m.s.scrollbar.right-m.e.rect.right};var k={};if(j.direction.y===true){if(h.top<0){k.scrollTop=m.s.scroll.top+h.top}else{if(h.top>0&&h.bottom<0){k.scrollTop=m.s.scroll.top+Math.min(h.top,-h.bottom)}}}if(j.direction.x===true){if(h.left<0){k.scrollLeft=m.s.scroll.left+h.left}else{if(h.left>0&&h.right<0){k.scrollLeft=m.s.scroll.left+Math.min(h.left,-h.right)}}}if(!f.isEmptyObject(k)){if(e.test(i[0].nodeName)){i=f("html,body")}i.animate(k,j.duration).eq(0).queue(function(o){f.isFunction(j.complete)&&j.complete.call(i[0]);o()})}else{f.isFunction(j.complete)&&j.complete.call(i[0])}}return this}});var a={auto:true,scroll:true,visible:false,hidden:false};f.extend(f.expr[":"],{scrollable:function(k,i,n,h){var m=c[typeof(n[3])==="string"&&n[3].toLowerCase()]||c.both;var l=(document.defaultView&&document.defaultView.getComputedStyle?document.defaultView.getComputedStyle(k,null):k.currentStyle);var o={x:a[l.overflowX.toLowerCase()]||false,y:a[l.overflowY.toLowerCase()]||false,isRoot:e.test(k.nodeName)};if(!o.x&&!o.y&&!o.isRoot){return false}var j={height:{scroll:k.scrollHeight,client:k.clientHeight},width:{scroll:k.scrollWidth,client:k.clientWidth},scrollableX:function(){return(o.x||o.isRoot)&&this.width.scroll>this.width.client},scrollableY:function(){return(o.y||o.isRoot)&&this.height.scroll>this.height.client}};return m.y&&j.scrollableY()||m.x&&j.scrollableX()}})})(jQuery);;
 if (typeof JooseX != "undefined" && !JooseX.SimpleRequest) {;
 Class("JooseX.SimpleRequest", {
 
@@ -22367,7 +22378,9 @@ Role('Siesta.Test.Simulate.Mouse', {
                                      (low value = slow dragging, high value = fast dragging)
         */
         dragPrecision           : $.browser.msie ? 10 : 5,
-        
+
+        autoScrollElementsIntoView : false,
+
         overEls : {
            init : function () { return []; }
         }
@@ -22439,8 +22452,23 @@ Role('Siesta.Test.Simulate.Mouse', {
 
             // Mouse over is used in some certain edge cases which interfer with this tracking
             if (type !== 'mouseover' && type !== 'mouseout') {
-                this.currentPosition[ 0 ]   = options.clientX
-                this.currentPosition[ 1 ]   = options.clientY
+                var elWindow = el.ownerDocument.defaultView || el.ownerDocument.parentWindow;
+                var cursorX = options.clientX;
+                var cursorY = options.clientY;
+
+                // Potentially we're interacting with an element inside a nested frame, which means the coordinates are local to that frame
+                if (elWindow !== this.global) {
+                    var offsetsToTop = this.$(elWindow.frameElement).offset();
+                    var localX = cursorX - offsetsToTop.left,
+                        localY = cursorY - offsetsToTop.top;
+
+                    var offsets = $(elWindow.frameElement).offset();
+                    cursorX += offsets.left;
+                    cursorY += offsets.top;
+                }
+
+                this.currentPosition[ 0 ]   = cursorX;
+                this.currentPosition[ 1 ]   = cursorY;
             }
 
             return event;
@@ -22469,7 +22497,7 @@ Role('Siesta.Test.Simulate.Mouse', {
 //            options.clientX = options.clientX != null ? options.clientX : data.xy[0];
 //            options.clientY = options.clientY != null ? options.clientY : data.xy[1];
 
-            this.moveMouse(this.currentPosition, context.xy, callback, scope);
+            this.moveMouse(this.currentPosition, context.globalXY, callback, scope);
         },
 
         /**
@@ -22535,7 +22563,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             precision       = precision || me.dragPrecision;
             options         = options || {};
 
-            var path        = this.getPathBetweenPoints(xy, xy2).concat([xy2]);
+            var path        = this.getPathBetweenPoints(xy, xy2);
 
             var supports    = Siesta.Harness.Browser.FeatureSupport().supports
 
@@ -22553,9 +22581,17 @@ Role('Siesta.Test.Simulate.Mouse', {
                         toIndex = data.targetIndex;
 
                     for (var j = fromIndex; j <= toIndex; j++) {
-                        var point       = path[j];
-                        var targetEl    = document.elementFromPoint(point[0], point[1]) || document.body;
-                        
+                        var point       = path[j].slice();
+                        var targetEl    = me.elementFromPoint(point[0], point[1]);
+
+                        if (targetEl.ownerDocument !== document) {
+                            var win = targetEl.ownerDocument.defaultView || targetEl.ownerDocument.parentWindow;
+                            var offsetsToTopWindow = me.$(win.frameElement).offset();
+
+                            point[0] = point[0] - offsetsToTopWindow.left,
+                            point[1] = point[1] - offsetsToTopWindow.top;
+                        }
+
                         if (targetEl !== lastOverEl) {
                             for (var i = overEls.length - 1; i >= 0; i--) {
                                 var el = overEls[i];
@@ -22589,7 +22625,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             for (var i = 0, l = path.length; i < l; i += precision) {
                 queue.addStep({
                     sourceIndex       : i,
-                    targetIndex       : Math.min(i + precision, path.length - 1)
+                    targetIndex       : Math.min(i + precision - 1, path.length - 1)
                 });
             }
 
@@ -22610,6 +22646,15 @@ Role('Siesta.Test.Simulate.Mouse', {
 
             options = options || {};
 
+            if (!this.valueIsArray(el) && this.autoScrollElementsIntoView) {
+                var normalized = this.normalizeElement(el);
+
+                // If element isn't visible, try to bring it into view
+                if (!this.elementIsTop(normalized, true)) {
+                    $(normalized).scrollintoview({ duration : 0 });
+                }
+            }
+
             var data        = this.getNormalizedTopElementInfo(el, false, method);
 
             if (!data) {
@@ -22618,12 +22663,12 @@ Role('Siesta.Test.Simulate.Mouse', {
                 return;
             }
 
-            options.clientX = options.clientX != null ? options.clientX : data.xy[0];
-            options.clientY = options.clientY != null ? options.clientY : data.xy[1];
+            options.clientX = options.clientX != null ? options.clientX : data.localXY[0];
+            options.clientY = options.clientY != null ? options.clientY : data.localXY[1];
 
             // the asynchronous case
             if (this.moveCursorBetweenPoints && callback) {
-                this.syncCursor(data.xy, this[ method ], [ data.el, callback, scope, options ]);
+                this.syncCursor(data.globalXY, this[ method ], [ data.el, callback, scope, options ]);
             } else {
                 this[ method ](data.el, callback, scope, options);
             }
@@ -22724,8 +22769,8 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             options         = options || {}
 
-            options.clientX = options.clientX != null ? options.clientX : info.xy[0];
-            options.clientY = options.clientY != null ? options.clientY : info.xy[1];
+            options.clientX = options.clientX != null ? options.clientX : info.localXY[0];
+            options.clientY = options.clientY != null ? options.clientY : info.localXY[1];
             
             el              = el || info.el;
 
@@ -22744,8 +22789,8 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             options         = options || {}
 
-            options.clientX = options.clientX != null ? options.clientX : info.xy[0];
-            options.clientY = options.clientY != null ? options.clientY : info.xy[1];
+            options.clientX = options.clientX != null ? options.clientX : info.localXY[0];
+            options.clientY = options.clientY != null ? options.clientY : info.localXY[1];
             
             el              = el || info.el;
 
@@ -22764,8 +22809,8 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             options         = options || {}
 
-            options.clientX = options.clientX != null ? options.clientX : info.xy[0];
-            options.clientY = options.clientY != null ? options.clientY : info.xy[1];
+            options.clientX = options.clientX != null ? options.clientX : info.localXY[0];
+            options.clientY = options.clientY != null ? options.clientY : info.localXY[1];
 
             this.simulateEvent(el, 'mouseover', options);
         },
@@ -22782,8 +22827,8 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             options         = options || {}
 
-            options.clientX = options.clientX != null ? options.clientX : info.xy[0];
-            options.clientY = options.clientY != null ? options.clientY : info.xy[1];
+            options.clientX = options.clientX != null ? options.clientX : info.localXY[0];
+            options.clientY = options.clientY != null ? options.clientY : info.localXY[1];
 
             this.simulateEvent(el, 'mouseout', options);
         },
@@ -22976,10 +23021,10 @@ Role('Siesta.Test.Simulate.Mouse', {
                 return;
             }
 
-            var args = [sourceContext.xy, targetContext.xy, callback, scope, options, dragOnly];
+            var args = [sourceContext.globalXY, targetContext.globalXY, callback, scope, options, dragOnly];
             
             if (this.moveCursorBetweenPoints && callback) {
-                this.syncCursor(sourceContext.xy, this.simulateDrag, args);
+                this.syncCursor(sourceContext.globalXY, this.simulateDrag, args);
             } else {
                 this.simulateDrag.apply(this, args)
             }
@@ -23010,7 +23055,7 @@ Role('Siesta.Test.Simulate.Mouse', {
                 return;
             }
 
-            var sourceXY    = sourceContext.xy;
+            var sourceXY    = sourceContext.globalXY;
             var targetXY    = [ sourceXY[0] + delta[0], sourceXY[1] + delta[1] ];
             
             var args        = [ sourceXY, targetXY, callback, scope, options, dragOnly ];
@@ -23028,11 +23073,13 @@ Role('Siesta.Test.Simulate.Mouse', {
                 document = global.document,
                 source,
                 target;
-            
+
+            // For drag operations (we we should always use the top level document.elementFromPoint
+
             options = options || {};
 
-            source = document.elementFromPoint(sourceXY[0], sourceXY[1]) || document.body;
-            target = document.elementFromPoint(targetXY[0], targetXY[1]) || document.body;
+            source = document.elementFromPoint(sourceXY[0], sourceXY[1]);
+            target = document.elementFromPoint(targetXY[0], targetXY[1]);
             
             var me          = this;
             
@@ -23055,7 +23102,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             queue.addStep({
                 processor : function () {
                     // Fetch source el again since the mouseover might trigger another element to go visible.
-                    source = document.elementFromPoint(sourceXY[0], sourceXY[1]) || document.body;
+                    source = document.elementFromPoint(sourceXY[0], sourceXY[1]);
                     me.simulateEvent(source, "mouseover", $.extend({ clientX: sourceXY[0], clientY: sourceXY[1]}, options));
                 }
             });
@@ -23078,7 +23125,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             queue.addStep({
                 processor : function () {
-                    el = document.elementFromPoint(targetXY[0], targetXY[1]) || document.body;
+                    el = document.elementFromPoint(targetXY[0], targetXY[1]);
                     me.simulateEvent(el, 'mouseover', $.extend({ clientX: targetXY[0], clientY: targetXY[1] }, options)); 
                 }
             });
@@ -23581,7 +23628,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
                 }
             }
 
-            if (keyCode === KeyCodes.ENTER && !supports.enterOnAnchorTriggersClick) {
+            if (!isTextInput && keyCode === KeyCodes.ENTER && !supports.enterOnAnchorTriggersClick) {
                 me.simulateEvent(el, 'click', null, true);
             }
             me.simulateEvent(el, 'keyup', $.extend({ charCode : 0, keyCode : keyCode }, options), true);
@@ -24446,6 +24493,11 @@ Role('Siesta.Test.ExtJS.Observable', {
     methods : {
         
         addListenerToObservable : function (observable, event, listener) {
+            // The way events are fired is slightly different for Ext vs raw DOM tests
+            if (observable.nodeName && observable.tagName) {
+                observable = this.Ext().get(observable);
+            }
+
             if (observable.on && observable.un)
                 observable.on(event, listener)
             else
@@ -24454,6 +24506,11 @@ Role('Siesta.Test.ExtJS.Observable', {
         
         
         removeListenerFromObservable : function (observable, event, listener) {
+            // The way events are fired is slightly different for Ext vs raw DOM tests
+            if (observable.nodeName && observable.tagName) {
+                observable = this.Ext().get(observable);
+            }
+
             if (observable.on && observable.un)
                 observable.un(event, listener)
             else
@@ -24916,7 +24973,7 @@ Role('Siesta.Test.ExtJS.Component', {
                         allVisible = true;
 
                     if (result.length > 0) {
-                        Ext.Array.each(result, function (c) {
+                        Joose.A.each(result, function (c) {
                             if (!c.rendered || !me.isElementVisible(c)) {
                                 allVisible = false;
                                 return false;
@@ -24964,7 +25021,7 @@ Role('Siesta.Test.ExtJS.Component', {
                         allHidden = true;
 
                     if (result.length > 0) {
-                        Ext.Array.each(result, function (c) {
+                        Joose.A.each(result, function (c) {
                             if (c.rendered && c.isVisible()) {
                                 allHidden = false;
                                 return false;
@@ -25512,17 +25569,32 @@ Role('Siesta.Test.Element', {
     methods : {
         
         /**
-         * Utility method which returns the center if a passed element.
+         * Utility method which returns the center if a passed element. The coordinates are by default relative to the
+         * containing document of the element. To get coordinates relative to the test iframe, pass 'local' as false.
          * @param {Siesta.Test.ActionTarget} el The element to find the center of.
+         * @param {Boolean} local 'true' means coordinates are relative to the containing document. 'false' to make sure the coordinates are global to the test window.
          * @return {Object} The object with `x` and `y` properties
          */
-        findCenter : function (target) {
+        findCenter : function (target, local) {
             var normalizedEl    = this.normalizeElement(target);
             
             var el              = this.$(normalizedEl),
                 offset          = el.offset(),
-                doc             = this.$(normalizedEl.ownerDocument);
-                
+                elDoc           = normalizedEl.ownerDocument,
+                doc             = this.$(elDoc);
+
+            if (local === false) {
+                var elWindow = elDoc.defaultView || elDoc.parentWindow;
+
+                // Potentially we're interacting with an element inside a nested frame, which means the coordinates are local to that frame
+                if (elWindow !== this.global) {
+                    var offsetsToTop = this.$(elWindow.frameElement).offset();
+                    var innerOffsets = $(elWindow.frameElement).offset();
+                    offset.left += innerOffsets.left;
+                    offset.top += innerOffsets.top;
+                }
+            }
+
             return [
                 offset.left + el.outerWidth()  / 2 - doc.scrollLeft(),
                 offset.top  + el.outerHeight() / 2 - doc.scrollTop()
@@ -25885,7 +25957,7 @@ Role('Siesta.Test.Element', {
             
             this.waitFor({
                 method          : function() { 
-                    var el = doc.elementFromPoint(xy[0], xy[1]); 
+                    var el = doc.elementFromPoint(xy[0], xy[1]);
                     if (el && this.$(el).is(selector)) return el; 
                 }, 
                 callback        : callback,
@@ -26164,11 +26236,12 @@ Role('Siesta.Test.Element', {
          * @param {Boolean} allowChildren true to also include child nodes. False to strictly check for the passed element.
          * @return {Boolean} true if the element is the top element.
          */
-        elementIsTop : function(el, allowChildren, strict) {
+        elementIsTop : function(el, allowChildren) {
             el = this.normalizeElement(el);
-            
-            var center  = this.findCenter(el),
-                foundEl = this.global.document.elementFromPoint(center[0], center[1]);
+
+            var elDoc = el.ownerDocument,
+                center  = this.findCenter(el),
+                foundEl = elDoc.elementFromPoint(center[0], center[1]);
             
             return foundEl && (foundEl === el || (allowChildren && this.$(foundEl).closest(el).length > 0));
         },
@@ -26808,7 +26881,7 @@ Class('Siesta.Test.Browser', {
             if (this.valueIsArray(el)) {
                 var document    = this.global.document
                 
-                el = document.elementFromPoint(el[0], el[1]) || document.body;
+                el = this.elementFromPoint(el[0], el[1]);
             }
             
             return el;
@@ -26873,7 +26946,11 @@ Class('Siesta.Test.Browser', {
                 stops.push([x0, y0]);
             }
 
-            stops.push(to);
+            var last = stops[stops.length-1];
+
+            if (last[0] !== to[0] || last[1] !== to[1]) {
+                stops.push(to);
+            }
             return stops;
         },
 
@@ -26889,21 +26966,38 @@ Class('Siesta.Test.Browser', {
         
         
         /**
-         * This method will return the top-most DOM element at the specified coordinates from the test page.
+         * This method will return the top-most DOM element at the specified coordinates from the test page. If
+         * the resulting element is an iframe it'll query the iframe for its element from the local point inside it.
          * 
          * @param {Number} x The X coordinate
          * @param {Number} y The Y coordinate
          * @return {HTMLElement} The top-most element at the specified position on the test page
          */
         elementFromPoint : function (x, y) {
-            return this.global.document.elementFromPoint(x, y)
+            var document    = this.global.document;
+            var el = document.elementFromPoint(x, y) || document.body;
+
+            // If it's not an IFRAME, all is safe
+            if (el.nodeName.toUpperCase() !== 'IFRAME') return el;
+
+            var elWindow = el.contentWindow;
+            var offsetsToTop = this.$(el).offset();
+            var localX = x - offsetsToTop.left,
+                localY = y - offsetsToTop.top;
+
+            var resolvedEl = elWindow.document.elementFromPoint(localX, localY) || elWindow.document.body;
+
+            // Chrome reports 'HTML' in nested document.elementFromPoint calls which makes no sense
+            if (resolvedEl.nodeName.toUpperCase() === 'HTML') resolvedEl = elWindow.document.body;
+
+            return resolvedEl;
         },
 
         getElementAtCursor : function() {
             var xy          = this.currentPosition,
                 document    = this.global.document;
             
-            return document.elementFromPoint(xy[0], xy[1]) || document.body;
+            return this.elementFromPoint(xy[0], xy[1]);
         },
 
         /**
@@ -27013,7 +27107,7 @@ Class('Siesta.Test.Browser', {
          * In both forms, `during` is assumed to be undefined and `description` is optional.
          * 
          * @param {Object} options An obect with the following properties:
-         * @param {Ext.util.Observable/Ext.Element} options.observable The observable instance that will fire events
+         * @param {Ext.util.Observable/Ext.Element/HTMLElement} options.observable The observable instance that will fire events
          * @param {Object} options.events The object, properties of which corresponds to event names and values - to expected 
          * number of this event triggering. If value of some property is a number then exact that number of events is expected. If value
          * of some property is a string starting with one of the comparison operators like "\<", "\<=" etc and followed by the number
@@ -27130,9 +27224,17 @@ Class('Siesta.Test.Browser', {
                 this.on('beforetestfinalizeearly', stopRecording)
             }
         },
-        
-        
-        // deprecated
+
+
+        /**
+         * This assertion passes if the observable fires the specified event exactly (n) times during the test execution.
+         * Please note that
+         *
+         * @param {Ext.util.Observable/Ext.Element/HTMLElement} observable The observable instance
+         * @param {String} event The name of event
+         * @param {Number} n The expected number of events to be fired
+         * @param {String} desc The description of the assertion.
+         */
         willFireNTimes: function (observable, event, n, desc, isGreaterEqual) {
             this.firesOk(observable, event, isGreaterEqual ? '>=' + n : n, desc)
         },
@@ -27212,14 +27314,14 @@ Class('Siesta.Test.Browser', {
         // returns an object containing the element plus coordinates
         getNormalizedTopElementInfo : function (actionTarget, skipWarning, actionName) {
             var doc         = this.global.document;
-            var xy, el;
+            var localXY, globalXY, el;
 
             actionTarget = actionTarget || this.currentPosition;
 
             // First lets get a normal DOM element to work with
             if (this.valueIsArray(actionTarget)) {
                 // If the actionTarget is an array, we just resolve the element at that position and that's it
-                xy = actionTarget;
+                localXY = globalXY = actionTarget;
                 el = doc.elementFromPoint(actionTarget[0], actionTarget[1]);
             } else {
                 el = this.normalizeElement(actionTarget);
@@ -27228,19 +27330,20 @@ Class('Siesta.Test.Browser', {
             // IE returns null for elementFromPoint in some cases
             el = el || doc.body;
 
-            // If this element is not visible, something is wrong
-            if (!skipWarning && !this.isElementVisible(el)) {
+            // 1. If this element is not visible, something is wrong
+            // 2. If element is visible but not reachable (scrolled out of view) this is also an invalid scenario (this check is skipped for IE)
+            //    TODO needs further investigation, conflicting with starting a drag operation on an element that isn't visible until the cursor is above it
+            if (!skipWarning && (!this.isElementVisible(el) /* || (!$.browser.msie && !this.elementIsTop(el, true))*/ )) {
                 this.fail('findTopDomElement: ' + (actionName ? "Target element of action [" + actionName + "]" : "Target element of some action") +
-                        " is not visible: " + (el.id ? '#' + el.id : el)
+                        " is not visible or not reachable: " + (el.id ? '#' + el.id : el)
                 );
-
-                return; // No point going further
             }
 
             if (!this.valueIsArray(actionTarget)) {
                 doc         = el.ownerDocument;
-                xy          = this.findCenter(el);
-                el          = doc.elementFromPoint(xy[0], xy[1]);
+                localXY     = this.findCenter(el, true);
+                globalXY    = this.findCenter(el, false),
+                el          = doc.elementFromPoint(localXY[0], localXY[1]);
 
                 if (!el) {
                     this.fail('findTopDomElement: Could not find any element at [' + xy + ']');
@@ -27250,7 +27353,8 @@ Class('Siesta.Test.Browser', {
 
             return {
                 el          : el,
-                xy          : xy
+                localXY     : localXY,
+                globalXY    : globalXY
             }
         }
     }
@@ -27500,8 +27604,8 @@ Class('Siesta.Test.SenchaTouch', {
                 }
             })
             
-            queue.addStep([ context.xy, "mousedown", {}, false ])
-            queue.addStep([ context.xy, "mouseup", {}, true ])
+            queue.addStep([ context.localXY, "mousedown", {}, false ])
+            queue.addStep([ context.localXY, "mouseup", {}, true ])
 
             var async   = me.beginAsync();
             
@@ -27529,7 +27633,7 @@ Class('Siesta.Test.SenchaTouch', {
                 return;
             }
 
-            target = context.xy;
+            target = context.localXY;
 
             var queue       = new Siesta.Util.Queue({
                 deferer         : this.originalSetTimeout,
@@ -27576,7 +27680,7 @@ Class('Siesta.Test.SenchaTouch', {
                 this.processCallbackFromTest(callback, null, scope || this);
                 return;
             }
-            target = context.xy;
+            target = context.localXY;
 
             var amount = Ext.event.recognizer.LongPress.prototype.config.minDuration + 50;
 
@@ -27685,7 +27789,7 @@ Class('Siesta.Test.SenchaTouch', {
                 return;
             }
 
-            this.moveCursorTo(context.xy, callback, scope);
+            this.moveCursorTo(context.globalXY, callback, scope);
         },
 
         /**
@@ -29850,11 +29954,15 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     canManageDOM            : true,
     
     suspendAfterLayoutAlign : false,
-    
 
     initComponent : function() {
         this.testListeners  = []
-        
+
+        this.addEvents(
+            'startinspection',
+            'stopinspection'
+        )
+
         Ext.apply(this, {
             header          : false,
             collapsible     : true,
@@ -30001,8 +30109,130 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
         this.test   = null
         
         this.callParent(arguments)
-    }
+    },
 
+    // Inspection related code
+    inspectionListener      : null,
+
+    toggleInspectionMode : function(on) {
+        if (!this.test) return;
+
+        var wrap = Ext.get(this.test.scopeProvider.wrapper);
+        var frame = this.test.scopeProvider.iframe;
+        var _Ext = frame.contentWindow.Ext;
+        var me = this;
+
+        if (!_Ext) return;
+
+        function cleanUp() {
+            var frames = _Ext.getBody().select('iframe');
+            Ext.destroy(me.boxIndicator);
+            wrap.un('mouseleave', cleanUp);
+
+            me.fireEvent('stopinspection', me);
+            me.boxIndicator = null;
+
+            _Ext.getBody().un('mousemove', this.onMouseMove, this, { buffer : 30 });
+
+            for (var i = 0; i < frames.getCount(); i++) {
+                var innerExt = frames.item(i).dom.contentWindow.Ext;
+                innerExt && innerExt.getBody().un('mousemove', this.onMouseMove, this, { buffer : 30 });
+            }
+        }
+
+        if (on) {
+            var innerFrame = _Ext.getBody().down('iframe');
+            var frames = _Ext.getBody().select('iframe');
+            cleanUp();
+
+            me.boxIndicator = wrap.createChild({
+                style : {
+                    position                : 'absolute',
+                    'pointer-events'        : 'none',
+                    'z-index'               : 100001,
+                    border                  : '2px solid red;',
+                    'transition-property'   : 'left, top, width, height',
+                    'transition-duration'   : '0.3s'
+                }
+            });
+
+            var label = me.boxIndicator.createChild({
+                tag : 'span',
+                style : {
+                    display         : 'inline-block',
+                    'margin-top'    : '-10px',
+                    'font-size'     : '10px',
+                    padding         : '2px',
+                    background      : 'rgb(32, 169, 220)',
+                    color           : '#fff'
+                }
+            })
+
+            _Ext.getBody().on('mousemove', this.onMouseMove, this, { buffer : 30 });
+
+            for (var i = 0; i < frames.getCount(); i++) {
+                var innerExt = frames.item(i).dom.contentWindow.Ext;
+                innerExt && innerExt.getBody().on('mousemove', this.onMouseMove, this, { buffer : 30 });
+            }
+
+            wrap.on('click', cleanUp);
+            wrap.on('mouseleave', cleanUp);
+            this.fireEvent('startinspection', this)
+        } else {
+            cleanUp();
+        }
+    },
+
+    onMouseMove : function(e, t) {
+        if (e.synthetic || !this.boxIndicator) return;
+
+        var test = this.test;
+        var Ext = test.global.Ext;
+        var testDoc = test.global.document;
+        var me = this;
+        var offsets = [0,0];
+
+        // Handle potentially having another Ext copy loaded in another frame
+        if (t.ownerDocument !== testDoc) {
+            var xy = e.getXY();
+            var innerFrame = (t.ownerDocument.parentWindow || t.ownerDocument.defaultView).frameElement;
+
+            offsets = Ext.fly(innerFrame).getXY();
+            offsets[0] -= t.ownerDocument.body.scrollLeft;
+            offsets[1] -= t.ownerDocument.body.scrollTop;
+            Ext = innerFrame.contentWindow.Ext;
+        }
+
+        while (t && t.nodeName !== 'BODY') {
+            var cmp = Ext.getCmp(t.id);
+
+            if (cmp) {             // Ext JS 3+4                Sencha touch
+                var xtype = (cmp.getXType && cmp.getXType()) || cmp.xtype;
+                var el = cmp.el || cmp.element;
+                var boxStyle = me.boxIndicator.dom.style;
+
+                if (!xtype) {
+                    var cls = cmp;
+                    for (var i = 0; i < 10 && !xtype; i++) {
+                        cls = cmp.superclass;
+                        xtype = cls.xtype;
+                    }
+                }
+
+                // Regular getWidth/getHeight doesn't work if another iframe is on the page
+                boxStyle.left = (el.getX()-1 + offsets[0]) + 'px';
+                boxStyle.top = (el.getY()-1 + offsets[1]) + 'px';
+                boxStyle.width = ((el.getWidth() || (parseInt(el.dom.style.width.substring(0, el.dom.style.width.length-2), 10)))+2) + 'px';
+                boxStyle.height = ((el.getHeight() || (parseInt(el.dom.style.height.substring(0, el.dom.style.height.length-2), 10)))+2) + 'px';
+
+                me.boxIndicator.child('span').update(xtype);
+
+                return;
+            } else {
+                t = t.parentNode;
+            }
+        }
+    }
 });;
 Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
@@ -30049,7 +30279,7 @@ Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
 
     initComponent : function () {
-        Ext.state.Manager.setProvider(new Ext.state.CookieProvider())
+        Ext.state.Manager.setProvider(Ext.supports.LocalStorage ? new Ext.state.LocalStorageProvider() : new Ext.state.CookieProvider())
 
         this.selection      = {}
     
@@ -30961,10 +31191,7 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
     currentContainer            : null,
     
     hideTimer                   : null,
-    
-    wrapperOffset               : [ 0, 0 ],
-    
-    
+
     constructor : function (config) {
         config      = config || {}
         
@@ -31095,8 +31322,8 @@ Ext.define('Siesta.Harness.Browser.UI.MouseVisualizer', {
             // this should never happen, but still happens sometimes
             if (!this.currentContainer) return
             
-            var x               = evt.clientX + this.wrapperOffset[ 0 ],
-                y               = evt.clientY + this.wrapperOffset[ 1 ];
+            var x               = test.currentPosition[0],
+                y               = test.currentPosition[1];
                 
             this.updateGhostCursor(type, x, y);
              
@@ -31445,6 +31672,7 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
     
     sourceButton            : null,
     filterButton            : null,
+    inspectionButton        : null,
 
 
     initComponent : function() {
@@ -31492,6 +31720,13 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
                     enableToggle    : true,
                     scope           : this,
                     handler         : this.onAssertionFilterClick
+                }),
+                '->',
+                this.inspectionButton = new Ext.Button({
+                    iconCls : 'icon-magnify',
+                    handler : this.toggleInspectionMode,
+                    enableToggle : true,
+                    scope   : this
                 })
             ],
 
@@ -31554,10 +31789,17 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         this.callParent()
     
         this.slots.domContainer.on({
-            expand      : this.onDomContainerExpand,
-            collapse    : this.onDomContainerCollapse,
-        
-            scope       : this
+            expand          : this.onDomContainerExpand,
+            collapse        : this.onDomContainerCollapse,
+
+            startinspection : function() {
+                this.inspectionButton.toggle(true);
+            },
+            stopinspection : function() {
+                this.inspectionButton.toggle(false);
+            },
+
+            scope           : this
         })
     },
     
@@ -31719,6 +31961,10 @@ Ext.define('Siesta.Harness.Browser.UI.ResultPanel', {
         if ((result instanceof Siesta.Result.Assertion) && !result.isPassed(true)) { 
             this.showSource(result.sourceLine);
         }
+    },
+
+    toggleInspectionMode : function(btn) {
+        this.slots.domContainer.toggleInspectionMode(btn.pressed);
     }
 });
 

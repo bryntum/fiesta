@@ -157,6 +157,11 @@ iframe.tr-iframe {
 .rerun
 {
     background : url(../images/arrow_rotate_anticlockwise.png) no-repeat left center;
+}
+
+.icon-magnify
+{
+    background : url(../images/magnifier.png) no-repeat left center;
 }/*=======================================================================================================================================================================================================================
     Common and unsorted
 */
