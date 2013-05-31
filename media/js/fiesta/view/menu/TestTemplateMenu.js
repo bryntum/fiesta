@@ -8,7 +8,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
     initComponent : function () {
 
         Ext.Ajax.request({
-            url     : '/media/frameworks/extjs-4.2.0/examples/examples.json',
+            url     : '/media/frameworks/extjs-' + CONFIG.latestExtVersion + '/examples/examples.json',
             success : function (response) {
                 var data = Ext.decode(response.responseText);
                 this.buildMenuItems('#extjs', data);
@@ -17,7 +17,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
         });
 
         Ext.Ajax.request({
-            url     : '/media/frameworks/sencha-touch-2.2.0/examples/examples.json',
+            url     : '/media/frameworks/sencha-touch-' + CONFIG.latestTouchVersion + '/examples/examples.json',
             success : function (response) {
                 var data = Ext.decode(response.responseText);
                 this.buildMenuItems('#touch', data);
@@ -36,23 +36,23 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                     disabled    : true
                 },
                 {
-                    text        : 'Ext JS 4.2.0',
+                    text        : 'Ext JS ' + CONFIG.latestExtVersion,
                     itemId      : 'extjs',
                     iconCls     : 'icon-stats',
                     menu        : {
                         // need this option to suppress the weird menu header that appears only for this menu
                         header              : false,
-                        frameworkName       : 'extjs-4.2.0',
+                        frameworkName       : 'extjs-' + CONFIG.latestExtVersion,
                         iconCls             : 'icon-file-powerpoint',
                         ignoreParentClicks  : true
                     }
                 },
                 {
-                    text        : 'Sencha Touch 2.2.0',
+                    text        : 'Sencha Touch ' + CONFIG.latestTouchVersion,
                     itemId      : 'touch',
                     iconCls     : 'icon-stats',
                     menu        : {
-                        frameworkName       : 'sencha-touch-2.2.0',
+                        frameworkName       : 'sencha-touch-' + CONFIG.latestTouchVersion,
                         ignoreParentClicks  : true
                     }
                 }

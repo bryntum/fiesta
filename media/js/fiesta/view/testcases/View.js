@@ -89,8 +89,19 @@ Ext.define('Fiesta.view.testcases.View', {
                 {
                     xtype : 'tbfill'
                 },
+                this.inspectionButton = new Ext.Button({
+                    tooltip         : 'Component inspector',
+                    cls             : 'testview-tool',
+                    iconCls         : 'icon-search',
+                    handler         : function(btn) {
+                        this.domContainer.toggleInspectionMode(btn.pressed);
+                    },
+                    enableToggle    : true,
+                    scope           : this
+                }),
                 {
                     text    : '<b>{ }</b>',
+                    cls     : 'testview-tool',
                     tooltip : 'Auto-indent code',
                     handler : function () {
                         var ed = this.codeEditor.editor;
@@ -100,7 +111,8 @@ Ext.define('Fiesta.view.testcases.View', {
                 },
                 {
                     iconCls  : testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
-                    
+                    cls     : 'testview-tool',
+
                     handler  : this.changeFavorite,
                     scope    : this,
                     
@@ -110,7 +122,8 @@ Ext.define('Fiesta.view.testcases.View', {
 
                 {
                     iconCls  : 'icon-copy',
-                    
+                    cls             : 'testview-tool',
+
                     handler  : this.onCloneClick,
                     scope    : this,
                     
@@ -239,6 +252,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.runButton              = this.down('[action=run]');
         this.expandCollapseButton   = this.down('[action=expandcollapse]');
         this.domctWrap              = this.down('[slot=domct]');
+        this.domContainer           = this.down('[slot=domContainer]');
 
         this.codeEditor.on({
             keyevent : function (sender, event) {
@@ -252,6 +266,17 @@ Ext.define('Fiesta.view.testcases.View', {
         });
 
         this.harness.on('teststart', this.onTestStart, this);
+
+        this.domContainer.on({
+            startinspection : function() {
+                this.inspectionButton.toggle(true);
+            },
+            stopinspection : function() {
+                this.inspectionButton.toggle(false);
+            },
+
+            scope           : this
+        })
     },
 
     
@@ -379,7 +404,7 @@ Ext.define('Fiesta.view.testcases.View', {
             runButton.setRunningState(true);
 
             // TODO should check some flag on the test (isUITest) before doing this since it may be irrelevant
-            var domContainer = this.down('[slot=domContainer]');
+            var domContainer = this.domContainer;
             domContainer.expand();
             this.domctWrap[isMobileTest ? 'addCls' : 'removeCls']('mobile-dom');
             // Size the iframe according to available space

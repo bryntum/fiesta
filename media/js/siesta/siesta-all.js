@@ -30133,6 +30133,7 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
             me.boxIndicator = null;
 
             _Ext.getBody().un('mousemove', this.onMouseMove, this, { buffer : 30 });
+            _Ext.getBody().un('click', cleanUp);
 
             for (var i = 0; i < frames.getCount(); i++) {
                 var innerExt = frames.item(i).dom.contentWindow.Ext;
@@ -30175,7 +30176,7 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
                 innerExt && innerExt.getBody().on('mousemove', this.onMouseMove, this, { buffer : 30 });
             }
 
-            wrap.on('click', cleanUp);
+            _Ext.getBody().on('click', cleanUp);
             wrap.on('mouseleave', cleanUp);
             this.fireEvent('startinspection', this)
         } else {

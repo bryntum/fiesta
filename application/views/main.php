@@ -14,8 +14,10 @@
             userId              : '<?php echo $userId?>',
             userName            : '<?php echo isset($account) ? $account->username : 'Guest';?>',
             fb_url              : '<?php echo $fb_url?>',
-            isAdmin             : <?php echo $isAdmin ? 'true' : 'false';?>,
-            frameworkRoot       : '/media/frameworks/'
+            frameworkRoot       : '/media/frameworks/',
+            latestExtVersion    : '4.2.1',
+            latestTouchVersion  : '2.2.0',
+            isAdmin             : <?php echo $isAdmin ? 'true' : 'false';?>
         };
 
         DATA =  {
@@ -26,7 +28,7 @@
 
         var FIESTA;
     </script>
-    <script type="text/javascript" src="/media/js/fiesta/fiesta-all.js"></script>
+    <script type="text/javascript" src="/media/js/fiesta/fiesta-all-debug.js"></script>
 </head>
 <body>
 <span class="beta">beta</span>
