@@ -109,7 +109,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                         itemId : 'Ext JS',
                                         items : [
                                             {
-                                                text : '4.2.0'
+                                                text : CONFIG.latestExtVersion
                                             },
                                             {
                                                 text : '4.1.1a'
@@ -129,7 +129,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                         itemId : 'Sencha Touch',
                                         items : [
                                             {
-                                                text : '2.2'
+                                                text : CONFIG.latestTouchVersion
                                             },
                                             {
                                                 text : '2.1'
@@ -167,18 +167,18 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                     },
                     '->',
                     {
-                        text : 'Ext 4.2',
+                        text : 'Ext ' + CONFIG.latestExtVersion,
                         itemId: 'quickbutton-ext',
                         handler : function() {
-                            this.addTemplatePreloads('Ext JS', "4.2.0");
+                            this.addTemplatePreloads('Ext JS', CONFIG.latestExtVersion);
                         },
                         scope : this
                     },
                     {
-                        text : 'Touch 2.2',
+                        text : 'Touch ' + CONFIG.latestTouchVersion,
                         itemId: 'quickbutton-touch',
                         handler : function() {
-                            this.addTemplatePreloads('Sencha Touch', "2.2.0");
+                            this.addTemplatePreloads('Sencha Touch', CONFIG.latestTouchVersion);
                         },
                         scope : this
                     }
@@ -193,12 +193,11 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
     afterRender : function() {
         this.callParent(arguments);
 
-        this.el.on('mousedown', function(e, t) {
+        this.el.on('mouseup', function(e, t) {
             var view = this.getView();
             var node = view.findItemByChild(t);
             var record = view.getRecord(node);
             this.store.remove(record);
-            e.stopEvent();
         }, this, { delegate : '.remove'});
     },
 
@@ -220,16 +219,16 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                 switch (id) {
                     case "Ext Gantt":
                         preloads = [
-                            'http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css',
-                            'http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js',
+                            'http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all.css',
+                            'http://cdn.sencha.io/ext/gpl/4.2.0/ext-all-debug.js',
                             'http://bryntum.com/examples/gantt-latest/resources/css/sch-gantt-all.css',
                             'http://bryntum.com/examples/gantt-latest/gnt-all-debug.js'
                         ];
                         break;
                     case "Ext Scheduler":
                         preloads = [
-                            'http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css',
-                            'http://cdn.sencha.io/ext-4.2.0-gpl/ext-all-debug.js',
+                            'http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all.css',
+                            'http://cdn.sencha.io/ext/gpl/4.2.0/ext-all-debug.js',
                             'http://bryntum.com/examples/scheduler-latest/resources/css/sch-all.css',
                             'http://bryntum.com/examples/scheduler-latest/sch-all-debug.js'
                         ];
@@ -238,8 +237,8 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                 break;
             case 'Ext JS':
                 preloads = [
-                    'http://cdn.sencha.io/ext-' + id + '-gpl/resources/css/ext-all.css',
-                    'http://cdn.sencha.io/ext-' + id + '-gpl/ext-all-debug.js'
+                    'http://cdn.sencha.io/ext/gpl/' + id + '/resources/css/ext-all.css',
+                    'http://cdn.sencha.io/ext/gpl/' + id + '/ext-all-debug.js'
                 ];
                 break;
             case 'Sencha Touch':

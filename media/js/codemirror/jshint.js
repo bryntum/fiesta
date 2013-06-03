@@ -2422,6 +2422,7 @@ loop:   for (;;) {
 
 
     function reachable(s) {
+        return;
         var i = 0, t;
         if (nexttoken.id !== ';' || noreach) {
             return;

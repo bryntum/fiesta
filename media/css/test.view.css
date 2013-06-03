@@ -326,3 +326,14 @@ div.run-testcase .x-btn-inner {
 .testcase-toolbar .x-btn-default-toolbar-small .x-btn-split-right {
     background-image: url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
 }
+
+
+.x-btn-pressed .icon-search
+{
+    color: rgb(66, 129, 235);
+}
+
+.testview-tool
+{
+    color: #666;
+}
