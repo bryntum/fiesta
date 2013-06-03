@@ -56,7 +56,12 @@ class Authentication {
 
 		$this->CI->load->model('account/account_model');
 
-		$this->CI->account_model->update_last_signed_in_datetime($account_id);
+        $accountData = $this->CI->account_model->get_by_id($account_id);
+
+        $this->CI->session->set_userdata('isAdmin', $accountData->is_admin);
+
+
+        $this->CI->account_model->update_last_signed_in_datetime($account_id);
 
 		// Redirect signed in user with session redirect
 		if ($redirect = $this->CI->session->userdata('sign_in_redirect'))
@@ -109,8 +114,9 @@ class Authentication {
 
             return TRUE;
         }
-
-        $this->CI->session->set_userdata('isAdmin', FALSE);
+        else if(!$this->CI->session->userdata('isAdmin')) {
+            $this->CI->session->set_userdata('isAdmin', FALSE);
+        }
 
 		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
 
