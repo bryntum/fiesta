@@ -115,7 +115,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                                 text : '4.1.1a'
                                             },
                                             {
-                                                text : '3.4.1'
+                                                text : '3.4.0'
                                             }
                                         ]
                                     }
