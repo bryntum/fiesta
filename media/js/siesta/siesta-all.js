@@ -22428,7 +22428,8 @@ Role('Siesta.Test.Simulate.Mouse', {
                 });
             }
 
-            var doc = el.ownerDocument
+            // Guessing contest, for which browser is this fallback needed?
+            var doc = el.ownerDocument || this.global.document;
 
             // use W3C standard when available and allowed by "simulateEventsWith" option
             if (doc.createEvent && this.getSimulateEventsWith() == 'dispatchEvent') {
@@ -23419,7 +23420,8 @@ Role('Siesta.Test.Simulate.Keyboard', {
                 keyCode: 0, charCode: 0
             }, options);
 
-            var doc = el.ownerDocument
+            // Guessing contest, for which browser is this fallback needed?
+            var doc = el.ownerDocument || this.global.document;
 
             // use W3C standard when available and allowed by "simulateEventsWith" option
             if (doc.createEvent && this.getSimulateEventsWith() == 'dispatchEvent') {
@@ -23890,8 +23892,9 @@ Role('Siesta.Test.ExtJSCore', {
                 
                 return
             }
-            
-            if (this.loaderPath) {
+
+            // To allow setting this without crash for Ext JS versions < 4
+            if (this.loaderPath && Ext.Loader && Ext.Loader.setPath) {
                 Ext.Loader.setPath(this.loaderPath);
             }
 
@@ -26975,27 +26978,27 @@ Class('Siesta.Test.Browser', {
          */
         elementFromPoint : function (x, y) {
             var document    = this.global.document;
-            var el = document.elementFromPoint(x, y) || document.body;
+            var el          = document.elementFromPoint(x, y) || document.body;
 
             // If it's not an IFRAME, all is safe
             if (el.nodeName.toUpperCase() !== 'IFRAME') return el;
 
-            var elWindow = el.contentWindow;
-            var offsetsToTop = this.$(el).offset();
-            var localX = x - offsetsToTop.left,
-                localY = y - offsetsToTop.top;
+            var iframeDoc       = el.contentWindow.document;
+            var offsetsToTop    = this.$(el).offset();
+            
+            var localX          = x - offsetsToTop.left,
+                localY          = y - offsetsToTop.top;
 
-            var resolvedEl = elWindow.document.elementFromPoint(localX, localY) || elWindow.document.body;
+            var resolvedEl      = iframeDoc.elementFromPoint(localX, localY) || iframeDoc.body;
 
             // Chrome reports 'HTML' in nested document.elementFromPoint calls which makes no sense
-            if (resolvedEl.nodeName.toUpperCase() === 'HTML') resolvedEl = elWindow.document.body;
+            if (resolvedEl.nodeName.toUpperCase() === 'HTML') resolvedEl = iframeDoc.body;
 
             return resolvedEl;
         },
 
         getElementAtCursor : function() {
-            var xy          = this.currentPosition,
-                document    = this.global.document;
+            var xy          = this.currentPosition;
             
             return this.elementFromPoint(xy[0], xy[1]);
         },
@@ -28384,7 +28387,7 @@ Class('Siesta.Harness.Browser', {
                             harness         : me
                         });
                         
-                        // if we here, then we were requested to show the UI for automated launch
+                        // if we are here, then we were requested to show the UI for automated launch
                         // auto-launch the test suite in this case
                         if (me.isAutomated) SUPER.apply(me, args) 
                     };
@@ -31474,18 +31477,18 @@ Ext.define('Siesta.Harness.Browser.UI.TestGrid', {
             ],
             tools : [
                 {
-                    type : 'down',
-                    tooltip        : 'Expand all',
-                    tooltipType : 'title',
-                    scope : this,                                    
-                    handler     : this.onExpandAll
+                    type            : 'down',
+                    tooltip         : 'Expand all',
+                    tooltipType     : 'title',
+                    scope           : this,                                    
+                    handler         : this.onExpandAll
                 },
                 {
-                    type : 'up',
-                    tooltipType : 'title',
-                    tooltip : 'Collapse all',
-                    scope : this,                                    
-                    handler     : this.onCollapseAll
+                    type            : 'up',
+                    tooltipType     : 'title',
+                    tooltip         : 'Collapse all',
+                    scope           : this,                                    
+                    handler         : this.onCollapseAll
                 }
             ],
             
@@ -31537,6 +31540,12 @@ Ext.define('Siesta.Harness.Browser.UI.TestGrid', {
             
             if (me.filterGroups)    trigger.triggerEl.item(1).addCls('tr-filter-trigger-group')
             if (me.filter)          trigger.setValue(me.filter)
+            
+            // fixes wrong widths of the columns
+            // TODO remove after upgrade of UI to 4.2.1 or later
+            if (!me.filter) setTimeout(function () {
+                me.doLayout()
+            }, 10)
             
             // cancel refresh if there's a filter - in this case an additional refresh will be triggered by 
             // the filtering which will be already not canceled since this is 1 time listener
@@ -32664,11 +32673,13 @@ Class('Siesta.Harness.Browser.SenchaTouch', {
                 var config = this.SUPERARG(arguments)
 
                 var hostPageUrl = this.getDescriptorConfig(desc, 'hostPageUrl');
+                
                 if (!desc.hasOwnProperty('performSetup') && hostPageUrl) {
                     config.performSetup = false;
                 } else {
                     config.performSetup = this.getDescriptorConfig(desc, 'performSetup')
                 }
+                
                 config.loaderPath       = this.getDescriptorConfig(desc, 'loaderPath')
 
                 return config
