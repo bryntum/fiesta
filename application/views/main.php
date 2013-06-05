@@ -13,6 +13,7 @@
             disqus_shortname    : '<?php echo $disqus_shortname?>',
             userId              : '<?php echo $userId?>',
             userName            : '<?php echo isset($account) ? $account->username : 'Guest';?>',
+            gravatarUrl         : '<?php echo isset($gravatarUrl) ? $gravatarUrl : ''?>',
             fb_url              : '<?php echo $fb_url?>',
             frameworkRoot       : '/media/frameworks/',
             latestExtVersion    : '4.2.1',

@@ -27,10 +27,14 @@ class Main extends CI_Controller {
 
             $account = $this->account_model->get_by_id($this->session->userdata('account_id'));
 
+            $gravatarUrl = $this->getGravatarUrl($account->email,16);
+
+
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => $this->session->userdata('account_id'),
                 'account' => $account,
+                'gravatarUrl' => $gravatarUrl,
                 'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
                 )),
@@ -43,9 +47,11 @@ class Main extends CI_Controller {
         }
         
         else {
+
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => 'guest',
+                'gravatarUrl' => '',
                 'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
                 )),
@@ -76,6 +82,15 @@ class Main extends CI_Controller {
         return $this->account_model->get_by_id($this->session->userdata('account_id'));        
 
     }
+
+    private function getGravatarUrl ($email,$size) {
+        $url = 	'http://www.gravatar.com/avatar.php?gravatar_id='.md5($email)
+            .'&s='.$size
+            .'&d=mm';
+
+        return $url;
+    }
+
 }
 
 /* End of file main.php */

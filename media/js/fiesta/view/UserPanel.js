@@ -21,7 +21,7 @@ Ext.define('Fiesta.view.UserPanel', {
                     xtype : 'button',
                     text  : CONFIG.userName,
                     cls   : 'user-button',
-                    iconCls  : 'noavatar', // TODO load somehow
+                    icon  : CONFIG.gravatarUrl,
                     menu  : {
                         plain : true,
                         items : [
