@@ -424,28 +424,32 @@ Ext.define('Fiesta.view.testcases.View', {
                     'Ext'       : root + '/src/',
                     'Ext.ux'    : root + '/examples/ux'
                 }
-            }, function () {
-                runButton.setRunningState(false);
-
-                var test                = me.resultPanel.test;
-                var assertionGrid       = me.down('assertiongrid');
-
-                if (test && assertionGrid) {
-                    var passed = test.getFailCount() === 0;
-                    var cls    = passed ? 'icon-checkmark' : 'icon-close';
-                    assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span><span style="position:relative;top:-2px">' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed</span>')
-
-                    if (!passed && assertionGrid.placeholder.isVisible()) {
-                        assertionGrid.placeholder.el.highlight('#ff4500', { duration : 1500 });
-                        assertionGrid.expand(true);
-                    }
-                }
-            });
+            }, function() { me.onTestComplete() });
         } else {
             Ext.Msg.alert('Error', 'Please correct the syntax errors and try again.')
         }
     },
 
+    onTestComplete : function () {
+        var testCaseModel       = this.testCaseModel;
+        var runButton           = this.runButton;
+        var me                  = this;
+        var test                = me.resultPanel.test;
+        var assertionGrid       = me.down('assertiongrid');
+
+        runButton.setRunningState(false);
+
+        if (test && assertionGrid) {
+            var passed = test.getFailCount() === 0;
+            var cls    = passed ? 'icon-checkmark' : 'icon-close';
+            assertionGrid.setTitle('<span class="' + cls + '">&nbsp;</span><span style="position:relative;top:-2px">' + test.getPassCount() + ' passed. ' + test.getFailCount() + ' failed</span>')
+
+            if (!passed && assertionGrid.placeholder.isVisible()) {
+                assertionGrid.placeholder.el.highlight('#ff4500', { duration : 1500 });
+                assertionGrid.expand(true);
+            }
+        }
+    },
     
     afterRender : function() {
         this.callParent(arguments);
