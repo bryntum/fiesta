@@ -9,10 +9,15 @@
     <link rel="stylesheet" href="/media/css/fiesta-all.css">
 
     <script>
+        if (window.location.href.indexOf("#_=_") > 0) {
+            window.location = window.location.href.replace(/#.*/, "");
+        }
+
+
         CONFIG = {
             disqus_shortname    : '<?php echo $disqus_shortname?>',
             userId              : '<?php echo $userId?>',
-            userName            : '<?php echo isset($account) ? $account->username : 'Guest';?>',
+            userName            : '<?php echo (isset($account) && isset($account->username)) ? $account->username : 'Guest';?>',
             gravatarUrl         : '<?php echo isset($gravatarUrl) ? $gravatarUrl : ''?>',
             fb_url              : '<?php echo $fb_url?>',
             frameworkRoot       : '/media/frameworks/',

@@ -2,7 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<?php echo $this->load->view('head', array('title' => lang('connect_create_account'))); ?>
-
+    <script>
+        if (window.location.href.indexOf("#_=_") > 0) {
+            window.location = window.location.href.replace(/#.*/, "");
+        }
+    </script>
 </head>
 <body>
 <div class="container">

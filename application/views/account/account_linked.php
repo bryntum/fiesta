@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script>
+        if (window.location.href.indexOf("#_=_") > 0) {
+            window.location = window.location.href.replace(/#.*/, "");
+        }
+    </script>
 	<?php echo $this->load->view('head', array('title' => lang('linked_page_name'))); ?>
-
 </head>
 <body>
 

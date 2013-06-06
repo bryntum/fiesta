@@ -21,13 +21,15 @@ class Main extends CI_Controller {
         $totalUsers = $this->account_model->countUsers();
         $onlineUsers = $this->account_model->getOnlineUsers($this->session->_get_time());
 
+        $gravatarUrl = '';
 
         if ($this->authentication->is_signed_in())
         {
 
             $account = $this->account_model->get_by_id($this->session->userdata('account_id'));
-
-            $gravatarUrl = $this->getGravatarUrl($account->email,16);
+            if(isset($account->email)) {
+                $gravatarUrl = $this->getGravatarUrl($account->email,16);
+            }
 
 
             $data = array (
@@ -51,7 +53,7 @@ class Main extends CI_Controller {
             $data = array (
                 'disqus_shortname' => $this->config->item('disqus_shortname'),
                 'userId' => 'guest',
-                'gravatarUrl' => '',
+                'gravatarUrl' => $gravatarUrl,
                 'fb_url' => $this->facebook_lib->fb->getLoginUrl(array(
                     'redirect_uri'  => $this->facebook_lib->getReturnUrl()
                 )),
