@@ -8,93 +8,93 @@ Ext.define("Fiesta.view.SearchForm", {
     initComponent : function () {
 
         Ext.apply(this, {
-                stateId       : 'searchForm',
-                stateful      : true,
-                fieldDefaults : {
-                    msgTarget : "side"
-                },
-                defaults      : {
-                    anchor : "100%"
-                },
-                items         : [
-                    {
-                        margin : "0 0 5 0",
-                        xtype : 'container',
-                        border : 0,
-                        layout : {
-                            type  : "hbox",
-                            align : "middle"
+            stateId       : 'searchForm',
+            stateful      : true,
+            fieldDefaults : {
+                msgTarget : "side"
+            },
+            defaults      : {
+                anchor : "100%"
+            },
+            items         : [
+                {
+                    margin : "0 0 5 0",
+                    xtype : 'container',
+                    border : 0,
+                    layout : {
+                        type  : "hbox",
+                        align : "middle"
+                    },
+                    items  : [
+                        {
+                            id        : "name-filter",
+                            cls       : 'details-text',
+                            xtype     : "textfield",
+                            flex      : true,
+                            height    : 26,
+                            emptyText : "Filter by name",
+                            name      : 'testCaseName',
+                            tabIndex  : 1,
+                            listeners : {
+                                change      : this.processFilter,
+                                scope       : this
+                            }
                         },
-                        items  : [
-                            {
-                                id        : "name-filter",
-                                cls       : 'details-text',
-                                xtype     : "textfield",
-                                flex      : true,
-                                height    : 26,
-                                emptyText : "Filter by name",
-                                name      : 'testCaseName',
-                                tabIndex  : 1,
-                                listeners : {
-                                    change      : this.processFilter,
-                                    scope       : this
-                                }
+                        {
+                            action  : "createNew",
+                            xtype   : "splitbutton",
+                            text    : "Create new",
+                            cls     : 'addNewBtn',
+                            handler : function () {
+                                this.createTest();
                             },
-                            {
-                                action  : "createNew",
-                                xtype   : "splitbutton",
-                                text    : "Create new",
-                                cls     : 'addNewBtn',
-                                handler : function () {
-                                    this.createTest();
-                                },
-                                margin  : '0 0 0 5',
-                                scope   : this,
-                                menu    : {
-                                    xtype     : 'testtemplatemenu',
-                                    listeners : {
-                                        click : function (item, e) {
-                                            var url = item.url;
-                                            var testConfig = {
-                                                name : item.text
-                                            };
+                            margin  : '0 0 0 5',
+                            scope   : this,
+                            menu    : {
+                                xtype     : 'testtemplatemenu',
+                                listeners : {
+                                    click : function (item, e) {
+                                        var url = item.url;
+                                        var testConfig = {
+                                            name : item.text
+                                        };
 
-                                            if (item.url) {
-                                                var frameworkName = item.up('[frameworkName]').frameworkName;
+                                        if (item.url) {
+                                            var frameworkName = item.up('[frameworkName]').frameworkName;
 //                                                testConfig.frameworkId = frameworkName;
-                                                testConfig.hostPageUrl = frameworkName + '/examples/' + item.url;
-                                            }
+                                            testConfig.hostPageUrl = frameworkName + '/examples/' + item.url;
+                                        }
 
-                                            this.createTest(testConfig);
+                                        this.createTest(testConfig);
 
-                                            if (url) {
-                                                // Run test to show the page immediately
-                                                FIESTA.getMainView().activeTab.runTest();
-                                            }
-                                        },
-                                        scope : this
-                                    }
+                                        if (url) {
+                                            // Run test to show the page immediately
+                                            FIESTA.getMainView().activeTab.runTest();
+                                        }
+                                    },
+                                    scope : this
                                 }
                             }
-                        ]
-                    },
-                    {
-                        id             : "tags-filter",
-                        xtype          : "tagselect",
-                        store          : new Fiesta.store.Tags(),
-                        displayField   : "tag",
-                        valueField     : "id",
-                        emptyText      : "Filter by tag(s)",
-                        name           : 'testCaseTags[]',
-                        queryMode      : 'local',
-                        tabIndex       : 2,
-                        forceSelection : true,
-                        listeners      : {
-                            change      : this.processFilter,
-                            scope       : this
                         }
+                    ]
+                },
+                {
+                    id             : "tags-filter",
+                    xtype          : "tagselect",
+                    store          : new Fiesta.store.Tags(),
+                    displayField   : "tag",
+                    valueField     : "id",
+                    emptyText      : "Filter by tag(s)",
+                    name           : 'testCaseTags[]',
+                    queryMode      : 'local',
+                    tabIndex       : 2,
+                    forceSelection : true,
+                    listeners      : {
+                        change      : this.processFilter,
+                        scope       : this
+                    }
 
-                    },
+                },
 //                    {
 //                        id           : "framework-filter",
 //                        xtype        : "combo",
@@ -110,58 +110,59 @@ Ext.define("Fiesta.view.SearchForm", {
 //                        }
 //
 //                    },
-                    {
-                        margin : '0 0 5 0',
-                        xtype : 'container',
-                        border : 0,
-                        layout : {
-                            type  : "hbox",
-                            align : "middle"
+                {
+                    margin : '0 0 5 0',
+                    xtype : 'container',
+                    border : 0,
+                    layout : {
+                        type  : "hbox",
+                        align : "middle"
+                    },
+                    items  : (FIESTA.isSignedIn() ? [
+                        {
+                            xtype     : 'checkbox',
+                            boxLabel  : 'My own',
+                            name      : 'showMy',
+                            value     : 1,
+                            listeners : {
+                                change      : this.processFilter,
+                                scope       : this
+                            }
                         },
-                        items  : (FIESTA.isSignedIn() ? [
-                            {
-                                xtype     : 'checkbox',
-                                boxLabel  : 'My own',
-                                name      : 'showMy',
-                                value     : 1,
-                                listeners : {
-                                    change      : this.processFilter,
-                                    scope       : this
-                                }
-                            },
-                            {
-                                xtype     : 'checkbox',
-                                boxLabel  : 'Favorites only',
-                                name      : 'showStarred',
-                                value     : 1,
-                                margin    : '0 0 0 10',
-                                checked   : false,
-                                listeners : {
-                                    change      : this.processFilter,
-                                    scope       : this
+                        {
+                            xtype     : 'checkbox',
+                            boxLabel  : 'Favorites only',
+                            name      : 'showStarred',
+                            value     : 1,
+                            margin    : '0 0 0 10',
+                            checked   : false,
+                            listeners : {
+                                change      : this.processFilter,
+                                scope       : this
+                            }
+                        }
+                    ] : []).concat(
+                        { xtype : 'component', flex : 1 },
+                        {
+                            xtype     : 'component',
+                            cls       : 'clrFilter',
+                            html      : '<span style="white-space: nowrap">Clear filters</span>',
+                            listeners : {
+                                click : {
+                                    element : 'el',
+                                    scope   : this,
+                                    fn      : this.clearFilters
                                 }
                             }
-                        ] : []).concat(
-                            { xtype : 'component', flex : 1 },
-                            {
-                                xtype     : 'component',
-                                cls       : 'clrFilter',
-                                html      : '<span style="white-space: nowrap">Clear filters</span>',
-                                listeners : {
-                                    click : {
-                                        element : 'el',
-                                        scope   : this,
-                                        fn      : this.clearFilters
-                                    }
-                                }
-                            }
-                        )
-                    }
-                ]
-            }
-        );
+                        }
+                    )
+                }
+            ]
+        });
 
         this.callParent(arguments);
+        
+        this.processFilter      = Ext.Function.createBuffered(this.processFilter, 400, this)
     },
 
     
