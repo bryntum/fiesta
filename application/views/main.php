@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="/media/css/fiesta-all.css">
 
     <script>
-        if (window.location.href.indexOf("#_=_") > 0) {
-            window.location = window.location.href.replace(/#.*/, "");
+//        if (window.location.href.indexOf("#_=_") > 0) {
+//            window.location = window.location.href.replace(/#.*/, "");
+//        }
+        if (window.location.hash == "#_=_") {
+            window.location.hash = "";
         }
-
 
         CONFIG = {
             disqus_shortname    : '<?php echo $disqus_shortname?>',
