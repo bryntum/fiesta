@@ -8,3 +8,8 @@ log-*.php
 
 /application/config/account/facebook.php
 /application/config/account/twitter.php
+/application/config/account/recaptcha.php
+
+/media/js/fiesta/fiesta-all.js
+/media/js/fiesta/fiesta-all-debug.js
+/media/css/fiesta-all.css
