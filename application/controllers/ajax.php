@@ -96,7 +96,7 @@ class Ajax extends CI_Controller {
             $sort = json_decode($params['sort']);
         }
         else {
-            $sort = json_decode('[{"property":"created_at","direction":"DESC"}]');
+            $sort = json_decode('[{"property":"updated_at","direction":"DESC"}]');
         }
 
 //        if(empty($where)) {

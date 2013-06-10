@@ -99,7 +99,8 @@ Ext.define('Fiesta.view.testcases.List', {
                 text      : 'Sort by date',
                 iconCls   : 'sortDesc',
                 itemId    : 'sortDate',
-                sortField : 'created_at',
+//                sortField : 'created_at',
+                sortField : 'updated_at',
                 handler   : menu.processSort
             }
         ]);
