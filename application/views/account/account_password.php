@@ -75,7 +75,6 @@
     </div>
 </div>
 
-<?php echo $this->load->view('footer'); ?>
 
 </body>
 </html>
