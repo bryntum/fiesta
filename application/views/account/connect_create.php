@@ -3,8 +3,8 @@
 <head>
 	<?php echo $this->load->view('head', array('title' => lang('connect_create_account'))); ?>
     <script>
-        if (window.location.href.indexOf("#_=_") > 0) {
-            window.location = window.location.href.replace(/#.*/, "");
+        if (window.location.hash == "#_=_") {
+            window.location.hash = "";
         }
     </script>
 </head>

@@ -2,8 +2,8 @@
 <html>
 <head>
     <script>
-        if (window.location.href.indexOf("#_=_") > 0) {
-            window.location = window.location.href.replace(/#.*/, "");
+        if (window.location.hash == "#_=_") {
+            window.location.hash = "";
         }
     </script>
 	<?php echo $this->load->view('head', array('title' => lang('linked_page_name'))); ?>
