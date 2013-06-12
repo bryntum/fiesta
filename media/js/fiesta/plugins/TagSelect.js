@@ -5,6 +5,7 @@ Ext.define('Fiesta.plugins.TagSelect', {
     pinList        : false,
     filterPickList : true,
     delimiter      : ',',
+    enableRegEx    : true,
 
     alignPicker: function(){
         this.callParent();
