@@ -10,6 +10,7 @@ Ext.define("Fiesta.view.SearchForm", {
         Ext.apply(this, {
             stateId       : 'searchForm',
             stateful      : true,
+            filterOn      : false,
             fieldDefaults : {
                 msgTarget : "side"
             },
@@ -184,26 +185,29 @@ Ext.define("Fiesta.view.SearchForm", {
     
 
     clearFilters : function () {
+
         var store = Ext.getStore('TestCases');
-        store.clearFilter();
+        if(this.filterOn) {
+            store.clearFilter();
 
-        this.getForm().getFields().each(function (field) {
-            field.suspendEvents();
-        });
+            this.getForm().getFields().each(function (field) {
+                field.suspendEvents();
+            });
 
-        this.getForm().reset();
+            this.getForm().reset();
 
-        if (FIESTA.isSignedIn()) {
-            this.getForm().setValues({showMy : false});
+            if (FIESTA.isSignedIn()) {
+                this.getForm().setValues({showMy : false});
+            }
+
+            this.getForm().getFields().each(function (field) {
+                field.resumeEvents();
+            });
+
+
+            store.proxy.extraParams = {action : 'filter'};
+            store.load();
         }
-
-        this.getForm().getFields().each(function (field) {
-            field.resumeEvents();
-        });
-
-
-        store.proxy.extraParams = {action : 'filter'};
-        store.load();
     },
 
     
@@ -212,8 +216,16 @@ Ext.define("Fiesta.view.SearchForm", {
             store   = Ext.getStore('TestCases');
 
         store.clearFilter();
+        this.filterOn = false;
+        
+        if (params.length > 2 || params['testCaseTags[]'].length > 0 || params.testCaseName.length > 0) {
+
+            this.filterOn = true;
+        }
+
 
         params.action = 'filter';
+
 
         if (params.showStarred == 'on') {
             store.filter(
