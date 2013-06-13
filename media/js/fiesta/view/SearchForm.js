@@ -212,12 +212,15 @@ Ext.define("Fiesta.view.SearchForm", {
 
     
     processFilter : function (field) {
+
         var params  = this.getForm().getValues(),
             store   = Ext.getStore('TestCases');
 
+        Ext.Ajax.abort();
+        
         store.clearFilter();
         this.filterOn = false;
-        
+
         if (params.length > 2 || params['testCaseTags[]'].length > 0 || params.testCaseName.length > 0) {
 
             this.filterOn = true;
