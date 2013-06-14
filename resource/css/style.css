@@ -1,8 +1,10 @@
 html {overflow-y: scroll;}	/* always show scrollbar */
 
+/*
 body {
 	padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
+*/
 
 li.third_party {
     list-style: none;
@@ -137,4 +139,26 @@ input.openid {
 li.third_party a
 {
     text-indent: -10000px;
+}
+
+.accHeader {
+    background:#3892d3;
+    height: 60px;
+    margin-bottom: 40px;
+}
+
+.accHeader .logo {
+    margin-top: 8px;
+    margin-left: 5px;
+    height: 45px;
+}
+
+.userMenuHolder {
+    float: right;
+    margin-top: 10px;
+    color: #ffffff;
+    margin-right: 20px;
+    line-height: 20px;
+    font-weight: bold;
+    font-size:  12px;
 }

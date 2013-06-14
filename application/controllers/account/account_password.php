@@ -35,8 +35,9 @@ class Account_password extends CI_Controller {
 
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
+        $data['gravatarUrl'] = $this->authentication->getGravatarUrl($data['account']->email,16);
 
-		// No access to users without a password
+        // No access to users without a password
 		if ( ! $data['account']->password) redirect('');
 
 		### Setup form validation

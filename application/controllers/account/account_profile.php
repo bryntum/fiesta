@@ -36,8 +36,9 @@ class Account_profile extends CI_Controller {
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 		$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
+        $data['gravatarUrl'] = $this->authentication->getGravatarUrl($data['account']->email,16);
 
-		// Delete profile picture
+        // Delete profile picture
 		if ($action == 'delete')
 		{
 			unlink(FCPATH.RES_DIR.'/user/profile/'.$data['account_details']->picture); // delete previous picture

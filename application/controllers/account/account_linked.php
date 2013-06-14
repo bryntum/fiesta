@@ -35,8 +35,9 @@ class Account_linked extends CI_Controller {
 
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
+        $data['gravatarUrl'] = $this->authentication->getGravatarUrl($data['account']->email,16);
 
-		// Delete a linked account
+        // Delete a linked account
 		if ($this->input->post('facebook_id') || $this->input->post('twitter_id') || $this->input->post('openid'))
 		{
 			if ($this->input->post('facebook_id')) $this->account_facebook_model->delete($this->input->post('facebook_id', TRUE));

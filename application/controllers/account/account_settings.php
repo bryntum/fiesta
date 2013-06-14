@@ -36,6 +36,8 @@ class Account_settings extends CI_Controller {
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 		$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
+        $data['gravatarUrl'] = $this->authentication->getGravatarUrl($data['account']->email,16);
+
 
 		// Retrieve countries, languages and timezones
 		$data['countries'] = $this->ref_country_model->get_all();

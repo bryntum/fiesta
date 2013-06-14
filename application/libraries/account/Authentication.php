@@ -123,6 +123,14 @@ class Authentication {
 		return $hasher->CheckPassword($password, $password_hash) ? TRUE : FALSE;
 	}
 
+    function getGravatarUrl ($email,$size) {
+        $url = 	'http://www.gravatar.com/avatar.php?gravatar_id='.md5($email)
+            .'&s='.$size
+            .'&d=mm';
+
+        return $url;
+    }
+
 
 }
 

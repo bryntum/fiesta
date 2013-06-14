@@ -3,7 +3,7 @@
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="<?php echo base_url().RES_DIR; ?>/bootstrap/js/bootstrap.min.js"></script>
 
-<div class="navbar navbar-inverse navbar-fixed-top" id="topBar">
+<!-- div class="navbar navbar-inverse navbar-fixed-top" id="topBar">
     <div class="navbar-inner">
         <div class="container">
 
@@ -39,5 +39,15 @@
             </div>
 
         </div>
+    </div>
+</div -->
+
+<div class='accHeader'>
+<a href="/"><img src="/media/img/logosmall.png" class="logo"></a>
+    <div class="userMenuHolder">
+        <?php if ($this->authentication->is_signed_in()) : ?>
+             <img src="<?php echo $gravatarUrl; ?>"> <?php echo $account->username; ?>
+        <?php endif; ?>
+
     </div>
 </div>
