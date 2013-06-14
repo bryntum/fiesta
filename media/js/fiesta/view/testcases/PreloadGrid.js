@@ -112,6 +112,9 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                                                 text : CONFIG.latestExtVersion
                                             },
                                             {
+                                                text : '4.2.0'
+                                            },
+                                            {
                                                 text : '4.1.1a'
                                             },
                                             {
