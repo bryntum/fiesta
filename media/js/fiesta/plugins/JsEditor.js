@@ -540,6 +540,50 @@ Ext.define('Fiesta.plugins.JsEditor', {
             Ext.destroyMembers('tb', 'toolbarWrap', 'editorEl');
         }
         me.callParent();
+    },
+
+    commentLine : function () {
+        var editor = this.editor;
+        var start = editor.getCursor(true);
+        var end = editor.getCursor(false);
+        var currentLine = start.line;
+
+        function toggleCommented(line) {
+            text = editor.getLine(line);
+            if (text.match(/^\s*\/\/\s*/)) {
+                text = text.replace(/\s*\/\/\s*/, '');
+            } else {
+                text = '// ' + text;
+            }
+            editor.setLine(line, text);
+        }
+
+        if (start.line === end.line && start.ch === end.ch) {
+            toggleCommented(start.line);
+        } else if (start.character == 0) {
+            while (currentLine != end.line) {
+                toggleCommented(currentLine);
+                currentLine = editor.getLine(++currentLine);
+            }
+            editor.selectLines(start.line, start.ch, end.line, end.ch);
+        } else {
+            var text = editor.getSelection();
+            var diff = 1;
+            if (text.match(/^\/\*/) && text.match(/^\/\*/)) {
+                text = text.substring(2, text.length-2);
+                diff = -1;
+            } else {
+                text = "/*" + text + "*/";
+            }
+            editor.replaceSelection( text );
+
+            // following line crash
+//            if (start.line == end.line) {
+//                editor.setSelection(start.line, start.ch, end.line, end.ch+(diff*4));
+//            } else {
+//                editor.setSelection(start.line, start.ch, end.line, end.ch+(diff*2));
+//            }
+        }
     }
 
 });

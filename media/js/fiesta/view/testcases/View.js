@@ -255,13 +255,7 @@ Ext.define('Fiesta.view.testcases.View', {
         this.domContainer           = this.down('[slot=domContainer]');
 
         this.codeEditor.on({
-            keyevent : function (sender, event) {
-                var e = new Ext.EventObjectImpl(event);
-
-                if (e.ctrlKey && e.getKey() === e.ENTER && event.type == 'keydown') {
-                    this.runTest();
-                }
-            },
+            keyevent : this.onCodeEditorKeyDown,
             scope    : this
         });
 
@@ -667,5 +661,24 @@ Ext.define('Fiesta.view.testcases.View', {
         });
 
         FIESTA.getMainView().activateTabFor(copy);
+    },
+
+    onCodeEditorKeyDown :  function (sender, event) {
+        var e = new Ext.EventObjectImpl(event);
+
+        if (e.ctrlKey && event.type == 'keydown') {
+            switch(e.getKey()) {
+                case e.ENTER:
+                    this.runTest();
+                break;
+
+                case e.K:
+                    var ed = this.codeEditor.editor;
+
+                    this.codeEditor.commentLine();
+                    ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
+                break;
+            }
+        }
     }
 });
