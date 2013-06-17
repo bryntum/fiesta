@@ -547,13 +547,15 @@ Ext.define('Fiesta.plugins.JsEditor', {
         var start = editor.getCursor(true);
         var end = editor.getCursor(false);
         var currentLine = start.line;
+        var doFormat = false;
 
         function toggleCommented(line) {
             text = editor.getLine(line);
             if (text.match(/^\s*\/\/\s*/)) {
                 text = text.replace(/\s*\/\/\s*/, '');
+                doFormat = true;
             } else {
-                text = '// ' + text;
+                text = text.substr(0, text.indexOf(Ext.String.trim(text))) + '// ' + Ext.String.trim(text);
             }
             editor.setLine(line, text);
         }
@@ -572,6 +574,7 @@ Ext.define('Fiesta.plugins.JsEditor', {
             if (text.match(/^\/\*/) && text.match(/^\/\*/)) {
                 text = text.substring(2, text.length-2);
                 diff = -1;
+                doFormat = true;
             } else {
                 text = "/*" + text + "*/";
             }
@@ -583,6 +586,10 @@ Ext.define('Fiesta.plugins.JsEditor', {
 //            } else {
 //                editor.setSelection(start.line, start.ch, end.line, end.ch+(diff*2));
 //            }
+        }
+
+        if (doFormat) {
+            editor.autoIndentRange({ line : 0 }, { line : editor.lineCount() });
         }
     }
 

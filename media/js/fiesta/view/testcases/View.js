@@ -676,7 +676,6 @@ Ext.define('Fiesta.view.testcases.View', {
                     var ed = this.codeEditor.editor;
 
                     this.codeEditor.commentLine();
-                    ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
                 break;
             }
         }
