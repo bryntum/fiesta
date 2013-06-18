@@ -217,7 +217,7 @@ Ext.define("Fiesta.view.SearchForm", {
             store   = Ext.getStore('TestCases');
 
         Ext.Ajax.abort();
-        
+
         store.clearFilter();
         this.filterOn = false;
 

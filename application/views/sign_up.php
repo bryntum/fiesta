@@ -4,7 +4,7 @@
 	<?php echo $this->load->view('head', array('title' => lang('sign_up_page_name'))); ?>
 
 </head>
-<body>
+<body style="padding-top: 60px;">
 
 <div class="container">
     <div class="row">

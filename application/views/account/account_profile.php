@@ -14,6 +14,13 @@
 			<?php echo $this->load->view('account/account_menu', array('current' => 'account_profile')); ?>
         </div>
         <div class="span10">
+            <?php if ($this->session->flashdata('password_info')) : ?>
+                <div class="alert alert-success fade in">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <?php echo $this->session->flashdata('password_info'); ?>
+                </div>
+            <?php endif; ?>
+
 
 			<?php if (isset($profile_info))
 		{

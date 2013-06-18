@@ -28,18 +28,19 @@ Ext.define('Fiesta.view.account.SignIn', {
                     },
                     items           : [
                         {
-                            xtype       : "textfield",
-                            flex        : true,
-                            name        : 'sign_in_username_email',
-                            emptyText   : "Username or email",
-                            allowBlank  : false
+                            xtype          : "textfield",
+                            flex           : true,
+                            name           : 'sign_in_username_email',
+                            emptyText      : "Username or email",
+                            allowBlank     : false,
+                            validateOnBlur : false
                         },
                         {
                             xtype       : "textfield",
                             flex        : true,
                             inputType   : 'password',
                             name        : 'sign_in_password',
-                            emptyText   : "Password",
+                            emptyText   : "",
                             allowBlank  : false,
                             listeners : {
                                 specialkey : function(field, e) {

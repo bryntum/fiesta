@@ -4,7 +4,7 @@
 	<?php echo $this->load->view('head'); ?>
 
 </head>
-<body>
+<body style="padding-top: 60px;">
 
 
 <div class="container">

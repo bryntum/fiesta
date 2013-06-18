@@ -4,7 +4,7 @@
 	<?php echo $this->load->view('head', array('title' => lang('sign_in_page_name'))); ?>
 
 </head>
-<body>
+<body style="padding-top: 60px;">
 
 <div class="container">
         <div style="margin: 0 auto; width: 400px;">
