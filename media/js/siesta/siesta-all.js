@@ -6343,6 +6343,17 @@ Class('Siesta.Result', {
                 type        : this.meta.name,
                 description : this.description
             }
+        },
+        
+        
+        findChildById : function (id) {
+            var child
+            
+            this.each(function (node) {
+                if (node.id == id) { child = node; return false } 
+            })
+            
+            return child
         }
     },
     
@@ -6365,15 +6376,6 @@ Class('Siesta.Result.Diagnostic', {
     
     has : {
         isWarning           : false
-        
-//        ,
-//        
-//        isSimulatedEvent    : false,
-//
-//        // Used by simulated events
-//        sourceX             : null,
-//        sourceY             : null,
-//        type                : null
     },
 
     methods : {
@@ -6513,29 +6515,47 @@ Class('Siesta.Result.SubTest', {
         
         
         toJSON : function () {
-            var test        = this.test
+            var test            = this.test
+            
+            // a flag that test instance does not belongs to the current context
+            // this only happens during self-testing
+            // if this is the case, in IE, calling any method from the test context will throw exception
+            // "can't execute script from freed context", so we avoid calling any methods on the test in such case
+            // accessing properties is ok though
+            var isCrossContext  = !(test instanceof Object)
             
             var report      = {
                 type            : this.meta.name,
                 name            : test.name,
                 
-                startDate       : test.startDate - 0,
-                endDate         : test.endDate - 0,
+                startDate       : test.startDate,
+                endDate         : test.endDate || (new Date() - 0),
                 
-                passed          : test.isPassed()
+                passed          : isCrossContext ? null : test.isPassed()
             }
             
             if (!test.parent)   report.url          = test.url
             if (test.specType)  report.bddSpecType  = test.specType
             
+            var isFailed    = false
             var assertions  = []
             
             Joose.A.each(this.children, function (result) {
-                if ((result instanceof Siesta.Result.Assertion) || (result instanceof Siesta.Result.Diagnostic) || (result instanceof Siesta.Result.SubTest)) 
-                    assertions.push(result.toJSON())
+                if ((result instanceof Siesta.Result.Assertion) || (result instanceof Siesta.Result.Diagnostic) || (result instanceof Siesta.Result.SubTest)) {
+                    var assertion   = result.toJSON()
+                    
+                    if (!assertion.passed && !assertion.isTodo) isFailed = true
+                    
+                    assertions.push(assertion)
+                }
             })
             
             report.assertions       = assertions
+            
+            // see a comment above
+            if (isCrossContext) {
+                report.passed       = !(isFailed || test.failed || !test.endDate)
+            }
             
             return report
         }
@@ -8704,6 +8724,8 @@ Class('Siesta.Test', {
         failedException     : null, // stringified exception
         failedExceptionType : null, // type of exception
         
+        // start and end date are stored as numbers (new Date() - 0)
+        // this is to allow sharing date instances between different contexts
         startDate           : null,
         endDate             : null,
         lastActivityDate    : null,
@@ -9738,12 +9760,12 @@ Class('Siesta.Test', {
          *
          * For example:
 
-    t.todo('Scheduled for 4.1.x release', function (todo) {
-    
-        var treePanel    = new Ext.tree.Panel()
-    
-        todo.is(treePanel.getView().store, treePanel.store, 'NodeStore and TreeStore have been merged and there's only 1 store now');
-    })
+            t.todo('Scheduled for 4.1.x release', function (todo) {
+
+                var treePanel    = new Ext.tree.Panel()
+
+                todo.is(treePanel.getView().store, treePanel.store, 'NodeStore and TreeStore have been merged and there is only 1 store now');
+            })
 
          * @param {String} why The reason/description for the todo
          * @param {Function} code A function, wrapping the "todo" assertions. This function will receive a special test class instance
@@ -9795,7 +9817,7 @@ Class('Siesta.Test', {
         store2.load({
             callback : function () {
                 t.endAsync(async);
-                t.isGreater(store1.getCount(), 0, "Store2 has been loaded")
+                t.isGreater(store2.getCount(), 0, "Store2 has been loaded")
             }
         })
     })
@@ -9867,7 +9889,7 @@ Class('Siesta.Test', {
                 throw 'Test has already been started';
             }
 
-            this.startDate  = new Date()
+            this.startDate  = new Date() - 0
             
             /**
              * This event is fired when the individual test case starts. When *started*, test may still be waiting for the {@link #isReady} conditions
@@ -10078,7 +10100,7 @@ Class('Siesta.Test', {
                 this.fireEvent('beforetestfinalize');
             }
             
-            this.endDate = new Date()
+            this.endDate = new Date() - 0
 
             if (!this.parent) this.addResult(new Siesta.Result.Summary({
                 isFailed            : this.isFailed(),
@@ -22039,7 +22061,7 @@ Class('Siesta.Test.Action.Type', {
         
         process : function () {
             // By default use the current focused element as target
-            this.target = this.target || this.test.global.document.activeElement;
+            this.target = this.target || this.test.activeElement();
 
             // additional "getTarget" to allow functions as "target" value
             this.test.type(this.getTarget(), this.text, this.next, null, this.options);
@@ -22379,11 +22401,9 @@ Role('Siesta.Test.Simulate.Mouse', {
         */
         dragPrecision           : $.browser.msie ? 10 : 5,
 
-        autoScrollElementsIntoView : false,
+        autoScrollElementsIntoView : true,
 
-        overEls : {
-           init : function () { return []; }
-        }
+        overEls                 : Joose.I.Array
     },
 
 
@@ -22391,11 +22411,12 @@ Role('Siesta.Test.Simulate.Mouse', {
         // private
         createMouseEvent: function (type, options, el) {
             var event;
+            var global      = this.global
             
             options = $.extend({
                 bubbles     : type !== 'mouseenter' && type !== 'mouseleave', 
                 cancelable  : type != "mousemove", 
-                view        : this.global, 
+                view        : global, 
                 detail      : 0,
 
                 screenX     : 0,
@@ -22423,13 +22444,12 @@ Role('Siesta.Test.Simulate.Mouse', {
             // Not supported in IE
             if ("screenX" in window) {
                 options = $.extend(options, {
-                    screenX: this.global.screenX + options.clientX,
-                    screenY: this.global.screenY + options.clientY
+                    screenX: global.screenX + options.clientX,
+                    screenY: global.screenY + options.clientY
                 });
             }
 
-            // Guessing contest, for which browser is this fallback needed?
-            var doc = el.ownerDocument || this.global.document;
+            var doc = el.ownerDocument;
 
             // use W3C standard when available and allowed by "simulateEventsWith" option
             if (doc.createEvent && this.getSimulateEventsWith() == 'dispatchEvent') {
@@ -22453,19 +22473,16 @@ Role('Siesta.Test.Simulate.Mouse', {
 
             // Mouse over is used in some certain edge cases which interfer with this tracking
             if (type !== 'mouseover' && type !== 'mouseout') {
-                var elWindow = el.ownerDocument.defaultView || el.ownerDocument.parentWindow;
-                var cursorX = options.clientX;
-                var cursorY = options.clientY;
+                var elWindow    = doc.defaultView || doc.parentWindow;
+                var cursorX     = options.clientX;
+                var cursorY     = options.clientY;
 
                 // Potentially we're interacting with an element inside a nested frame, which means the coordinates are local to that frame
-                if (elWindow !== this.global) {
-                    var offsetsToTop = this.$(elWindow.frameElement).offset();
-                    var localX = cursorX - offsetsToTop.left,
-                        localY = cursorY - offsetsToTop.top;
-
-                    var offsets = $(elWindow.frameElement).offset();
-                    cursorX += offsets.left;
-                    cursorY += offsets.top;
+                if (elWindow !== global) {
+                    var offsets = this.$(elWindow.frameElement).offset();
+                    
+                    cursorX     += offsets.left;
+                    cursorY     += offsets.top;
                 }
 
                 this.currentPosition[ 0 ]   = cursorX;
@@ -22586,11 +22603,12 @@ Role('Siesta.Test.Simulate.Mouse', {
                         var targetEl    = me.elementFromPoint(point[0], point[1]);
 
                         if (targetEl.ownerDocument !== document) {
-                            var win = targetEl.ownerDocument.defaultView || targetEl.ownerDocument.parentWindow;
+                            var win     = targetEl.ownerDocument.defaultView || targetEl.ownerDocument.parentWindow;
+                            
                             var offsetsToTopWindow = me.$(win.frameElement).offset();
 
-                            point[0] = point[0] - offsetsToTopWindow.left,
-                            point[1] = point[1] - offsetsToTopWindow.top;
+                            point[0]    -= offsetsToTopWindow.left,
+                            point[1]    -= offsetsToTopWindow.top;
                         }
 
                         if (targetEl !== lastOverEl) {
@@ -22643,27 +22661,30 @@ Role('Siesta.Test.Simulate.Mouse', {
                 scope       = callback;
                 callback    = el; 
                 el          = null;
-            } 
+            }
+            
+            el              = el || this.currentPosition
 
-            options = options || {};
+            var normalized  = this.normalizeElement(el);
+
+            options         = options || {};
 
             if (!this.valueIsArray(el) && this.autoScrollElementsIntoView) {
-                var normalized = this.normalizeElement(el);
 
                 // If element isn't visible, try to bring it into view
                 if (!this.elementIsTop(normalized, true)) {
-                    $(normalized).scrollintoview({ duration : 0 });
+                    this.$(normalized).scrollintoview({ duration : 0 });
                 }
             }
 
             var data        = this.getNormalizedTopElementInfo(el, false, method);
-
+            
             if (!data) {
                 // No point in continuing
                 callback && callback.call(scope || this);
                 return;
             }
-
+            
             options.clientX = options.clientX != null ? options.clientX : data.localXY[0];
             options.clientY = options.clientY != null ? options.clientY : data.localXY[1];
 
@@ -22673,6 +22694,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             } else {
                 this[ method ](data.el, callback, scope, options);
             }
+            
         },
 
         /**
@@ -22857,9 +22879,9 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             queue.addStep({
                 processor       : function () {
+                    me.focus(el)
+                    
                     me.simulateEvent(el, "contextmenu", options, false);
-//  do we need to focus the element on the right click?                  
-//                    try { el.focus() } catch (e) {}
                 }
             })
             
@@ -22895,9 +22917,9 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             queue.addStep({
                 processor       : function () {
-                    me.simulateEvent(el, "click", options, false);
+                    me.focus(el)
                     
-                    try { el.focus() } catch (e) {}
+                    me.simulateEvent(el, "click", options, false);
                 }
             })
             
@@ -22930,18 +22952,17 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             queue.addStep([ el, "mousedown", options, false ])
             queue.addStep([ el, "mouseup", options, true ])
-            queue.addStep([ el, "click", options, true ])
+            queue.addStep({
+                processor       : function () {
+                    me.focus(el)
+                    
+                    me.simulateEvent(el, "click", options, true);
+                }
+            })
             queue.addStep([ el, "mousedown", options, false ])
             queue.addStep([ el, "mouseup", options, true ])
             queue.addStep([ el, "click", options, true ])
-            
-            queue.addStep({
-                processor       : function () {
-                    me.simulateEvent(el, "dblclick", options, false);
-                    
-                    try { el.focus() } catch (e) {}
-                }
-            })
+            queue.addStep([ el, "dblclick", options, false ])
             
             var async   = me.beginAsync();
             
@@ -23070,19 +23091,12 @@ Role('Siesta.Test.Simulate.Mouse', {
         
         // private
         simulateDrag: function (sourceXY, targetXY, callback, scope, options, dragOnly) {
-            var global = this.global,
-                document = global.document,
-                source,
-                target;
+            var me          = this
+            options         = options || {};
 
-            // For drag operations (we we should always use the top level document.elementFromPoint
-
-            options = options || {};
-
-            source = document.elementFromPoint(sourceXY[0], sourceXY[1]);
-            target = document.elementFromPoint(targetXY[0], targetXY[1]);
-            
-            var me          = this;
+            // For drag operations we should always use the top level document.elementFromPoint
+            var source      = me.elementFromPoint(sourceXY[0], sourceXY[1], true);
+            var target      = me.elementFromPoint(targetXY[0], targetXY[1], true);
             
             var queue       = new Siesta.Util.Queue({
                 deferer         : this.originalSetTimeout,
@@ -23103,7 +23117,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             queue.addStep({
                 processor : function () {
                     // Fetch source el again since the mouseover might trigger another element to go visible.
-                    source = document.elementFromPoint(sourceXY[0], sourceXY[1]);
+                    source  = me.elementFromPoint(sourceXY[0], sourceXY[1], true, source);
                     me.simulateEvent(source, "mouseover", $.extend({ clientX: sourceXY[0], clientY: sourceXY[1]}, options));
                 }
             });
@@ -23126,7 +23140,7 @@ Role('Siesta.Test.Simulate.Mouse', {
             
             queue.addStep({
                 processor : function () {
-                    el = document.elementFromPoint(targetXY[0], targetXY[1]);
+                    el      = me.elementFromPoint(targetXY[0], targetXY[1], true);
                     me.simulateEvent(el, 'mouseover', $.extend({ clientX: targetXY[0], clientY: targetXY[1] }, options)); 
                 }
             });
@@ -23420,8 +23434,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
                 keyCode: 0, charCode: 0
             }, options);
 
-            // Guessing contest, for which browser is this fallback needed?
-            var doc = el.ownerDocument || this.global.document;
+            var doc = el.ownerDocument;
 
             // use W3C standard when available and allowed by "simulateEventsWith" option
             if (doc.createEvent && this.getSimulateEventsWith() == 'dispatchEvent') {
@@ -23490,13 +23503,13 @@ Role('Siesta.Test.Simulate.Keyboard', {
         * @param {Object} options (optional) any extra options used to configure the DOM events (like holding shiftKey, ctrlKey etc)
         */
         type: function (el, text, callback, scope, options) {
-            el      = this.normalizeElement(el || this.global.document.activeElement);
+            el              = this.normalizeElement(el || this.activeElement());
 
             // Some browsers (IE/FF) do not overwrite selected text, do it manually.
-            var selText = this.getSelectedText(el);
+            var selText     = this.getSelectedText(el);
 
             if (selText) {
-                el.value = el.value.replace(selText, '');
+                el.value    = el.value.replace(selText, '');
             }
 
             var me          = this
@@ -23508,10 +23521,9 @@ Role('Siesta.Test.Simulate.Keyboard', {
             }
 
             // Extract normal chars, or special keys in brackets such as [TAB], [RIGHT] or [ENTER]			
-            var keys        = (text + '').match(/\[([^\])]+\])|([^\[])/g) || [];
+            var keys        = (text + '').match(/(\[(?:\w|-)+\])|([\s\S])/g) || [];
 
             var queue       = new Siesta.Util.Queue({
-
                 deferer         : this.originalSetTimeout,
                 deferClearer    : this.originalClearTimeout,
 
@@ -23521,14 +23533,12 @@ Role('Siesta.Test.Simulate.Keyboard', {
                 observeTest     : this,
 
                 processor       : function (data, index) {
-
-                    var focusedEl = el.ownerDocument.activeElement;
-
-                    if (focusedEl === el.ownerDocument.body) {
-                        // If user clicks around in the harness during ongoing test, the activeElement will be reset to BODY
-                        // If this happens, reuse the original el and hope all is well
-                        focusedEl = el;
-                    }
+                    // 1. In IE10, it seems activeElement cannot be trusted as it sometimes returns an empty object with no properties.
+                    // Try to detect this case and simply use the original el 
+                    // 2. If user clicks around in the harness during ongoing test, the activeElement will be reset to BODY
+                    // If this happens, reuse the original el and hope all is well
+                    var focusedEl   = me.activeElement(true, el, el)
+                    
                     me.keyPress(focusedEl, data.key, options)
                 }
             })
@@ -23536,11 +23546,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
             // Manually focus event to be typed into first
             queue.addStep({
                 processor       : function () {
-                    try {
-                        el.tabIndex = -1;
-                        el.focus();
-                    } catch (e) {
-                    }
+                    me.focus(el)
                 }
             })
 
@@ -23609,9 +23615,13 @@ Role('Siesta.Test.Simulate.Keyboard', {
                         // TODO should check first if textInput event is supported
                         me.simulateEvent(el, 'textInput', { text: options.readableKey }, true);
                     }
+                    
+                    var maxLength       = el.getAttribute('maxlength')
+                    
+                    if (maxLength != null) maxLength    = Number(maxLength)
 
                     // If the entered char had no impact on the textfield - manually put it there
-                    if (!supports.canSimulateKeyCharacters || (originalLength === el.value.length)) {
+                    if (!supports.canSimulateKeyCharacters || (originalLength === el.value.length && originalLength !== maxLength)) {
                         el.value = el.value + options.readableKey;
                     }
                 }
@@ -23622,7 +23632,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
                 }
 
                 if (keyCode === KeyCodes.ENTER && !supports.enterSubmitsForm) {
-                    var form = $(el).closest('form');
+                    var form = this.$(el).closest('form');
 
                     if (form.length) {
                         form.submit();
@@ -23748,14 +23758,29 @@ Role('Siesta.Test.Simulate.Event', {
             if (/^key(up|down|press)$/.test(type)) {
                 return this.createKeyboardEvent(type, options, el);
             }
-            
+
 //            XXX should be implemented in the Mobile (SenchaTouch) test class
 //            if (/^touch/.test(type)) {
 //                return this.createTouchEvent(type, options, el);
 //            }
-            throw 'Event type: ' + type + ' not supported';
+            // use W3C standard when available and allowed by "simulateEventsWith" option
+
+            return this.createHtmlEvent(type, options, el);
         },
 
+
+        createHtmlEvent : function(type, options, el) {
+
+            var doc = el.ownerDocument;
+
+            if (doc.createEvent && this.getSimulateEventsWith() == 'dispatchEvent') {
+                var evt = doc.createEvent("HTMLEvents");
+                evt.initEvent(type, false, false);
+                return evt;
+            } else if (doc.createEventObject) {
+                return doc.createEventObject();
+            }
+        },
         
         dispatchEvent: function (el, type, evt) {
             // use W3C standard when available and allowed by "simulateEventsWith" option            
@@ -23988,8 +24013,8 @@ Role('Siesta.Test.ExtJSCore', {
 
             // Ext JS
             if (Ext && Ext.form && Ext.form.Field && locateInputEl) {
-                if (comp instanceof Ext.form.Field && comp.inputEl){
-                    return comp.inputEl;
+                if (comp instanceof Ext.form.Field && comp.inputEl) {
+                    return comp.inputEl.dom || comp.inputEl;
                 }
             }
 
@@ -24006,17 +24031,17 @@ Role('Siesta.Test.ExtJSCore', {
         normalizeElement : function(el, allowMissing) {
             if (!el) return null
             
-            var Ext = this.getExt();
+            var Ext     = this.getExt();
 
-            var origEl = el;
+            var origEl  = el;
 
             if (typeof el === 'string') {
                 if (el.match(/=>/))
                     // Composite query
                     el      = this.compositeQuery(el)[ 0 ]
-                else if (el.match(/^>>/)) {
+                else if (el.match(/^\s*>>/)) {
                     // Component query
-                    el = this.cq1(el.substring(2))
+                    el      = this.cq1(el.substring(2))
                 } else {
                     // string in  unknown format, guessing its a DOM query
                     return this.SUPER(el, allowMissing)
@@ -24028,10 +24053,13 @@ Role('Siesta.Test.ExtJSCore', {
             }
 
             if (Ext && Ext.Component && el instanceof Ext.Component) {
-                el = this.compToEl(el);
-                var center = this.findCenter(el);
-
-                el = this.elementFromPoint(center[0], center[1]) || el;
+                el          = this.compToEl(el);
+                
+                if (this.isElementVisible(el)) {
+                    var center  = this.findCenter(el);
+    
+                    el          = this.elementFromPoint(center[0], center[1], false, el.dom);
+                }
             }
 
             // ExtJS Element
@@ -24050,7 +24078,7 @@ Role('Siesta.Test.ExtJSCore', {
         // component instance
         normalizeActionTarget : function (el) {
             if (typeof el === 'string') {
-                if (el.match(/^>>/)) {
+                if (el.match(/^\s*>>/)) {
                     // Component query
                     var result = this.cq1(el.substring(2));
 
@@ -25550,7 +25578,7 @@ Role('Siesta.Test.TextSelection', {
                 doFocus = $.browser.mozilla || $.browser.opera;
             }
             if (doFocus) {
-                el.focus();
+                this.focus(el);
             }
         }
     }
@@ -25572,11 +25600,16 @@ Role('Siesta.Test.Element', {
     methods : {
         
         /**
-         * Utility method which returns the center if a passed element. The coordinates are by default relative to the
-         * containing document of the element. To get coordinates relative to the test iframe, pass 'local' as false.
+         * Utility method which returns the center of a passed element. The coordinates are by default relative to the
+         * containing document of the element (so for example if the element is inside of the nested iframe, coordinates
+         * will be "local" to that iframe element). To get coordinates relative to the test iframe ("global" coordinates), 
+         * pass `local` as `false`.
+         * 
          * @param {Siesta.Test.ActionTarget} el The element to find the center of.
-         * @param {Boolean} local 'true' means coordinates are relative to the containing document. 'false' to make sure the coordinates are global to the test window.
-         * @return {Object} The object with `x` and `y` properties
+         * @param {Boolean} [local] Pass `true` means coordinates are relative to the containing document. This is the default value. 
+         * Pass `false` to make sure the coordinates are global to the test window.
+         * 
+         * @return {Array} The array first element of which is the `x` coordinate and 2nd - `y` 
          */
         findCenter : function (target, local) {
             var normalizedEl    = this.normalizeElement(target);
@@ -25587,14 +25620,14 @@ Role('Siesta.Test.Element', {
                 doc             = this.$(elDoc);
 
             if (local === false) {
-                var elWindow = elDoc.defaultView || elDoc.parentWindow;
+                var elWindow    = elDoc.defaultView || elDoc.parentWindow;
 
                 // Potentially we're interacting with an element inside a nested frame, which means the coordinates are local to that frame
                 if (elWindow !== this.global) {
-                    var offsetsToTop = this.$(elWindow.frameElement).offset();
-                    var innerOffsets = $(elWindow.frameElement).offset();
-                    offset.left += innerOffsets.left;
-                    offset.top += innerOffsets.top;
+                    var offsetsToTop    = this.$(elWindow.frameElement).offset();
+                    
+                    offset.left         += offsetsToTop.left;
+                    offset.top          += offsetsToTop.top;
                 }
             }
 
@@ -25607,6 +25640,7 @@ Role('Siesta.Test.Element', {
 
         /**
          * Returns true if the element is visible, checking jQuery :visible selector + style visibilty value.
+         * 
          * @param {Siesta.Test.ActionTarget} el The element 
          * @return {Boolean}
          */
@@ -25956,11 +25990,12 @@ Role('Siesta.Test.Element', {
         waitForSelectorAt : function(xy, selector, callback, scope, timeout) {
             if (!selector) throw 'A CSS selector must be supplied';
             
-            var doc = this.global.document;
+            var me      = this
             
             this.waitFor({
                 method          : function() { 
-                    var el = doc.elementFromPoint(xy[0], xy[1]);
+                    var el = me.elementFromPoint(xy[0], xy[1], true);
+                    
                     if (el && this.$(el).is(selector)) return el; 
                 }, 
                 callback        : callback,
@@ -26193,14 +26228,13 @@ Role('Siesta.Test.Element', {
         waitForElementNotTop : function(el, callback, scope, timeout) {
             el          = this.normalizeElement(el);
             
-            var me      = this,
-                doc     = me.global.document;
+            var me      = this
 
             this.waitFor({
                 method          : function() {    
                     if (!me.elementIsTop(el, true)) {
                         var center = me.findCenter(el);
-                        return doc.elementFromPoint(center[0], center[1]);
+                        return me.elementFromPoint(center[0], center[1], true);
                     }        
                 }, 
                 callback        : callback,
@@ -26240,11 +26274,11 @@ Role('Siesta.Test.Element', {
          * @return {Boolean} true if the element is the top element.
          */
         elementIsTop : function(el, allowChildren) {
-            el = this.normalizeElement(el);
+            el              = this.normalizeElement(el);
 
-            var elDoc = el.ownerDocument,
-                center  = this.findCenter(el),
-                foundEl = elDoc.elementFromPoint(center[0], center[1]);
+            var elDoc       = el.ownerDocument,
+                center      = this.findCenter(el),
+                foundEl     = elDoc.elementFromPoint(center[0], center[1]);
             
             return foundEl && (foundEl === el || (allowChildren && this.$(foundEl).closest(el).length > 0));
         },
@@ -26258,9 +26292,9 @@ Role('Siesta.Test.Element', {
          * @param {String} [description] The description for the assertion
          */
         elementIsAt : function(el, xy, allowChildren, description) {
-            el = this.normalizeElement(el);
+            el              = this.normalizeElement(el);
             
-            var foundEl = this.global.document.elementFromPoint(xy[0], xy[1]);
+            var foundEl     = this.elementFromPoint(xy[0], xy[1], true);
             
             if (!foundEl) {
                 this.fail(description, {
@@ -26270,7 +26304,7 @@ Role('Siesta.Test.Element', {
                     annotation          : 'No element found at the specified position'
                 });
             } else if (allowChildren) {
-                if (foundEl === el || $(foundEl).closest(el).length > 0) {
+                if (foundEl === el || this.$(foundEl).closest(el).length > 0) {
                     this.pass(description, {
                         descTpl         : 'DOM element or its child is at [ {x}, {y} ] coordinates',
                         x               : xy[ 0 ],
@@ -26350,7 +26384,7 @@ Role('Siesta.Test.Element', {
             el              = this.normalizeElement(el);
             var center      = this.findCenter(el);
             
-            var foundEl     = this.global.document.elementFromPoint(center[0], center[1]);
+            var foundEl     = this.elementFromPoint(center[ 0 ], center[ 1 ], true);
             
             if (!foundEl) {
                 this.pass(description, {
@@ -26361,7 +26395,7 @@ Role('Siesta.Test.Element', {
             }
             
             if (allowChildren) {
-                this.ok(foundEl !== el && $(foundEl).closest(el).length === 0, description);
+                this.ok(foundEl !== el && this.$(foundEl).closest(el).length === 0, description);
             } else {
                 this.isnt(foundEl, el, description);
             }
@@ -26378,9 +26412,7 @@ Role('Siesta.Test.Element', {
         selectorIsAt : function(selector, xy, description) {
             if (!selector) throw 'A CSS selector must be supplied';
 
-            var doc = this.global.document;
-
-            var foundEl = this.$(doc.elementFromPoint(xy[0], xy[1]) || doc.body);
+            var foundEl = this.$(this.elementFromPoint(xy[0], xy[1], true));
             
             if (foundEl.has(selector).length > 0 || foundEl.closest(selector).length > 0) {
                 this.pass(description, {
@@ -26767,13 +26799,15 @@ Role('Siesta.Test.Element', {
             var offset      = this.$(el).offset();
             
             if (offset) {
-                var docViewTop = $(this.global).scrollTop();
-                var docViewBottom = docViewTop + $(this.global).height();
+                var docViewTop      = $(this.global).scrollTop();
+                var docViewBottom   = docViewTop + $(this.global).height();
 
-                var elemTop = offset.top;
-                var elemBottom = elemTop + $(el).height();
-                inView = elemBottom >= docViewTop && elemTop <= docViewBottom;
+                var elemTop         = offset.top;
+                var elemBottom      = elemTop + $(el).height();
+                
+                inView              = elemBottom >= docViewTop && elemTop <= docViewBottom;
             }
+            
             return inView;
         },
 
@@ -26798,6 +26832,22 @@ Role('Siesta.Test.Element', {
                 assertionName   : 'waitUntilInView',
                 description     : el.toString + ' to appear in the viewport'
             });
+        },
+        
+        
+        focus : function (el) {
+            var prevIndex   = el.getAttribute('tabIndex')
+            
+            try {
+                el.tabIndex = -1
+                el.focus() 
+            } catch (e) {
+            } finally {
+                if (prevIndex == null)
+                    el.removeAttribute('tabIndex')
+                else
+                    el.setAttribute('tabIndex', prevIndex)
+            }
         }
     }
 });
@@ -26874,18 +26924,15 @@ Class('Siesta.Test.Browser', {
         normalizeElement : function (el, allowMissing) {
             if (typeof el === 'string') {
                 // DOM query
-                var origEl = el;
-                el = this.$(el)[ 0 ];
+                var origEl  = el;
+                el          = this.$(el)[ 0 ];
+                
                 if (!allowMissing && !el) {
                     throw 'No DOM element found found for CSS selector: ' + origEl;
                 }
             }
             
-            if (this.valueIsArray(el)) {
-                var document    = this.global.document
-                
-                el = this.elementFromPoint(el[0], el[1]);
-            }
+            if (this.valueIsArray(el)) el = this.elementFromPoint(el[0], el[1]);
             
             return el;
         },
@@ -26970,33 +27017,82 @@ Class('Siesta.Test.Browser', {
         
         /**
          * This method will return the top-most DOM element at the specified coordinates from the test page. If
-         * the resulting element is an iframe it'll query the iframe for its element from the local point inside it.
+         * the resulting element is an iframe and `shallow` argument is not passed as `true`
+         * it'll query the iframe for its element from the local point inside it.
          * 
          * @param {Number} x The X coordinate
          * @param {Number} y The Y coordinate
+         * @param {Boolean} [shallow] Pass `true` to _not_ check the nested iframe if element at original coordinates is an iframe.
+         * 
          * @return {HTMLElement} The top-most element at the specified position on the test page
          */
-        elementFromPoint : function (x, y) {
+        elementFromPoint : function (x, y, shallow, fallbackEl, fullInfo) {
             var document    = this.global.document;
-            var el          = document.elementFromPoint(x, y) || document.body;
-
-            // If it's not an IFRAME, all is safe
-            if (el.nodeName.toUpperCase() !== 'IFRAME') return el;
-
-            var iframeDoc       = el.contentWindow.document;
-            var offsetsToTop    = this.$(el).offset();
+            var el          = document.elementFromPoint(x, y)
             
-            var localX          = x - offsetsToTop.left,
-                localY          = y - offsetsToTop.top;
+            // trying 2nd time if 1st attempt failed and returned null
+            // this weird thing seems to be required sometimes for IE8 and may be for IE10
+            if (!el) el     = document.elementFromPoint(x, y)
+            
+            // final fallback to the provided element or to the <body> element
+            el              = el || fallbackEl || document.body;
+            
+            var localX      = x
+            var localY      = y
 
-            var resolvedEl      = iframeDoc.elementFromPoint(localX, localY) || iframeDoc.body;
+            // If we found IFRAME and its not a `shallow` request, try to dig deeper
+            if (el.nodeName.toUpperCase() == 'IFRAME' && !shallow) { 
+                // if found iframe is loaded from different domain
+                // just accessing its "el.contentWindow.document" property will throw exception
+                try {
+                    var iframeDoc       = el.contentWindow.document;
+                    var offsetsToTop    = this.$(el).offset();
+                    
+                    localX              = x - offsetsToTop.left
+                    localY              = y - offsetsToTop.top
+        
+                    var resolvedEl      = iframeDoc.elementFromPoint(localX, localY)
+        
+                    // again weird 2nd attempt for IE
+                    if (!resolvedEl) resolvedEl = iframeDoc.elementFromPoint(localX, localY)
+                    
+                    resolvedEl          = resolvedEl || iframeDoc.body;
+        
+                    // Chrome reports 'HTML' in nested document.elementFromPoint calls which makes no sense
+                    if (resolvedEl.nodeName.toUpperCase() === 'HTML') resolvedEl = iframeDoc.body;
+        
+                    el                  = resolvedEl;
+                } catch (e) {
+                    // digging deeper failed, restore the local coordinates
+                    localX              = x
+                    localY              = y
+                }
+            }
+            
+            return fullInfo ? {
+                el          : el,
+                localXY     : [ localX, localY ],
+                globalXY    : [ x, y ]
+            } : el
+        },
+        
+        
+        activeElement : function (notAllowBody, fallbackEl, elOrDoc) {
+            var doc         = elOrDoc ? elOrDoc.ownerDocument || elOrDoc : this.global.document
+            
+            var focusedEl   = doc.activeElement;
 
-            // Chrome reports 'HTML' in nested document.elementFromPoint calls which makes no sense
-            if (resolvedEl.nodeName.toUpperCase() === 'HTML') resolvedEl = iframeDoc.body;
-
-            return resolvedEl;
+            // 1. In IE10, it seems activeElement cannot be trusted as it sometimes returns an empty object with no properties.
+            // Try to detect this case and use the fallback el 
+            // 2. Sometimes receiving <body> from this method does not make sense either - use fallback el as well
+            if (!focusedEl || !focusedEl.nodeName || !focusedEl.tagName || (focusedEl === doc.body && notAllowBody)) {
+                focusedEl   = fallbackEl;
+            }
+            
+            return focusedEl
         },
 
+        
         getElementAtCursor : function() {
             var xy          = this.currentPosition;
             
@@ -27316,22 +27412,21 @@ Class('Siesta.Test.Browser', {
         // This is the only element we can truly interact with in a real browser.
         // returns an object containing the element plus coordinates
         getNormalizedTopElementInfo : function (actionTarget, skipWarning, actionName) {
-            var doc         = this.global.document;
             var localXY, globalXY, el;
 
-            actionTarget = actionTarget || this.currentPosition;
+            actionTarget    = actionTarget || this.currentPosition;
 
             // First lets get a normal DOM element to work with
             if (this.valueIsArray(actionTarget)) {
-                // If the actionTarget is an array, we just resolve the element at that position and that's it
-                localXY = globalXY = actionTarget;
-                el = doc.elementFromPoint(actionTarget[0], actionTarget[1]);
+                globalXY    = actionTarget;
+                
+                var info    = this.elementFromPoint(actionTarget[ 0 ], actionTarget[ 1 ], false, null, true);
+                
+                el          = info.el
+                localXY     = info.localXY
             } else {
-                el = this.normalizeElement(actionTarget);
+                el          = this.normalizeElement(actionTarget);
             }
-
-            // IE returns null for elementFromPoint in some cases
-            el = el || doc.body;
 
             // 1. If this element is not visible, something is wrong
             // 2. If element is visible but not reachable (scrolled out of view) this is also an invalid scenario (this check is skipped for IE)
@@ -27343,13 +27438,15 @@ Class('Siesta.Test.Browser', {
             }
 
             if (!this.valueIsArray(actionTarget)) {
-                doc         = el.ownerDocument;
-                localXY     = this.findCenter(el, true);
-                globalXY    = this.findCenter(el, false),
-                el          = doc.elementFromPoint(localXY[0], localXY[1]);
+                var doc     = el.ownerDocument;
+                
+                localXY     = this.findCenter(el, true)
+                globalXY    = this.findCenter(el, false)
+                // trying 2 times for IE
+                el          = doc.elementFromPoint(localXY[ 0 ], localXY[ 1 ]) || doc.elementFromPoint(localXY[ 0 ], localXY[ 1 ]) || doc.body;
 
                 if (!el) {
-                    this.fail('findTopDomElement: Could not find any element at [' + xy + ']');
+                    this.fail('findTopDomElement: Could not find any element at [' + localXY + ']');
                     return; // No point going further
                 }
             }
@@ -27364,7 +27461,7 @@ Class('Siesta.Test.Browser', {
 });
 ;
 /**
- * 
+ *
 @class Siesta.Test.ExtJS
 @extends Siesta.Test.Browser
 @mixin Siesta.Test.ExtJSCore
@@ -27372,39 +27469,44 @@ Class('Siesta.Test.Browser', {
 @mixin Siesta.Test.ExtJS.Observable
 @mixin Siesta.Test.ExtJS.FormField
 @mixin Siesta.Test.ExtJS.Component
-@mixin Siesta.Test.ExtJS.Element 
-@mixin Siesta.Test.ExtJS.Store 
+@mixin Siesta.Test.ExtJS.Element
+@mixin Siesta.Test.ExtJS.Store
 @mixin Siesta.Test.ExtJS.DataView
 @mixin Siesta.Test.ExtJS.Grid
 
-A base class for testing browser and ExtJS applications. It inherit from {@link Siesta.Test.Browser} 
+A base class for testing browser and ExtJS applications. It inherit from {@link Siesta.Test.Browser}
 and adds various ExtJS specific assertions.
 
 This file is a reference only, for a getting start guide and manual, please refer to <a href="#!/guide/siesta_getting_started">Getting Started Guide</a>.
 
 */
 Class('Siesta.Test.ExtJS', {
-    
+
     isa         : Siesta.Test.Browser,
-        
-    does        :  [ 
-        Siesta.Test.ExtJSCore, 
-        Siesta.Test.ExtJS.Component, 
-        Siesta.Test.ExtJS.Element, 
-        Siesta.Test.ExtJS.FormField, 
-        Siesta.Test.ExtJS.Observable, 
-        Siesta.Test.ExtJS.Store, 
+
+    does        :  [
+        Siesta.Test.ExtJSCore,
+        Siesta.Test.ExtJS.Component,
+        Siesta.Test.ExtJS.Element,
+        Siesta.Test.ExtJS.FormField,
+        Siesta.Test.ExtJS.Observable,
+        Siesta.Test.ExtJS.Store,
         Siesta.Test.ExtJS.Grid,
         Siesta.Test.ExtJS.DataView,
 		Siesta.Test.ExtJS.Ajax
     ],
+
+    
+    has : {
+        globalExtOverrides      : null
+    },
     
     methods : {
-        
+
         getExtBundlePath : function() {
             var path;
             var testDescriptor      = this.harness.getScriptDescriptor(this.url)
-            
+
             while (testDescriptor && !path) {
                 if (testDescriptor.preload) {
                     Joose.A.each(testDescriptor.preload, function (url) {
@@ -27430,7 +27532,7 @@ Class('Siesta.Test.ExtJS', {
                     Joose.A.each(testDescriptor.preload, function (url) {
                         var regex = /(.*ext(?:js)?-\d\.\d+(?:\.\d+)?.*?)\/ext-all(?:-debug)?\.js/;
                         var match = regex.exec(url);
-                
+
                         if (match) {
                            folder = match[1];
                         }
@@ -27440,6 +27542,229 @@ Class('Siesta.Test.ExtJS', {
             }
 
             return folder;
+        },
+        
+        
+        getNumberOfGlobalExtOverrides : function (callback) {
+            var globalExtOverrides  = this.globalExtOverrides;
+            
+            if (globalExtOverrides != null) 
+                callback && callback.call(this, globalExtOverrides.length, globalExtOverrides)
+            else {
+                var me              = this;
+                var Ext             = this.getExt();
+                var extjsBundleURL  = me.getExtBundlePath()
+    
+                if (!extjsBundleURL) {
+                    me.fail("Can'me find ExtJS bundle url");
+                    callback && callback.call(me, null, null)
+                    return;
+                }
+
+                // For IE
+                this.expectGlobal('0');
+
+                var frame           = Ext.core.DomHelper.append(Ext.getBody(), { 
+                    tag     : "iframe",
+                    style   : 'display:none'
+                }, false);
+                
+                var freshWin        = frame.contentWindow;
+    
+                freshWin.document.open();
+    
+                freshWin.document.write(
+                    '<html><head><script type="text/javascript" src="' + extjsBundleURL + '"></script></head><body></body></html>'
+                );
+    
+                freshWin.document.close();
+                
+                var resolveObject   = function (hostObj, nameSpace) {
+                    var parts   = nameSpace.split('.');
+                    var p       = hostObj
+    
+                    for (var i = 0; i < parts.length; i++) {
+                        p       = p[ parts[ i ] ];
+                    };
+    
+                    return p;
+                }
+    
+                var ignore          = function (name) {
+                    return name.match(/Ext\.data\.Store\.ImplicitModel|collectorThreadId/);
+                }
+                
+                var getObjectDifferences    = function (cleanObj, dirtyObj, ns) {
+                    var diff    = []
+
+                    for (var p in dirtyObj) {
+                        try {
+                            if (dirtyObj.hasOwnProperty(p)) {
+                                // Check if the object exists on the clean window and also do a string comparison
+                                // in case a builtin method has been overridden
+                                if (
+                                    (!cleanObj.hasOwnProperty(p) && typeof cleanObj[p] == 'undefined' ) ||
+                                        (typeof dirtyObj[p] == 'function' && cleanObj[p].toString() !== dirtyObj[p].toString()) ||
+                                        (Ext.isPrimitive(dirtyObj[p]) && dirtyObj[p].toString() !== cleanObj[p].toString())
+                                ) {
+                                    if (!ignore(ns + '.' + p)) diff.push(ns + '.' + p);
+                                }
+                            }
+                        } catch (e) {
+                            // Just continue
+                        }
+                    }
+                    return diff;
+                }
+                
+                me.waitFor(
+                    function () { return freshWin.Ext && freshWin.Ext.isReady; }, 
+                    function () {
+                        var dirtyWin    = me.global,
+                            overrides   = [];
+        
+                        // Check for native class augmentations
+                        Ext.iterate(Ext.ClassManager.classes, function (item) {
+                            if (!item.match(/^Ext\./)) return;
+        
+                            var freshItem   = resolveObject(freshWin, item);
+                            var dirtyItem   = resolveObject(dirtyWin, item);
+        
+                            if (freshItem && typeof dirtyItem !== 'undefined') {
+                                var staticDiff = getObjectDifferences(freshItem,  dirtyItem, item);
+                                    
+                                overrides.push.apply(overrides, staticDiff);
+        
+                                // Prototype properties
+                                if (dirtyItem.prototype) {
+                                    var prototypeDiff = getObjectDifferences(freshItem.prototype, dirtyItem.prototype, item + '.prototype');
+                                    
+                                    overrides.push.apply(overrides, prototypeDiff);
+                                }
+                            }
+                        });
+                        
+                        me.globalExtOverrides   = overrides
+                        
+                        callback && callback.call(me, overrides.length, overrides)
+                    }
+                )
+                // eof waitFor
+            }
+        },
+        
+
+        /**
+         * This assertion passes if no global Ext JS overrides exist. It creates a fresh iframe window where a new, fresh copy
+         * of Ext JS w/o any overrides is loaded and then a comparison is made against the copy of Ext JS loaded in the test.
+         * 
+         * A global ExtJS override is some change, made in the core class, for example like this:
+         * 
+
+    Ext.data.Store.override({
+        removeAll       : function () {
+            // my fix
+            ...
+        }
+    })
+
+         * While such overrides are often seems as the only possible solution (usually for some bug in Ext) they should be 
+         * avoided as much as possible, because it a very bad practice. For example, in the previous case, a better approach
+         * would be to create a new subclass of the Ext.data.Store with the desired changed.
+         * 
+         * See also {@link #assertMaxNumberOfGlobalExtOverrides} assertion. 
+         *
+         * @param {String} [description] The description for the assertion
+         */
+        assertNoGlobalExtOverrides : function (description) {
+            this.getNumberOfGlobalExtOverrides(function (length, overrides) {
+                if (length == null) {
+                    this.fail("Was not able to find the ExtJS bundle URL in the `assertNoGlobalExtOverrides` assertion")
+                    return
+                }
+                
+                if (length) {
+                    this.fail(description, {
+                        assertionName   : 'assertNoGlobalExtOverrides',
+                        descTpl         : 'No global Ext overrides found',
+                        
+                        got             : length,
+                        gotDesc         : "Number of overrides found",
+                        
+                        annotation      : "Found overrides for: `" + overrides.join('`, `') + '`'
+                    })
+                } else
+                    this.pass(description, {
+                        descTpl             : 'No global Ext overrides found'
+                    })
+            })
+        },
+
+        
+        /**
+         * This assertion passes if the number of global overrides does not exceed the given number.
+         * 
+         * For example, you can add this assertion in your existing codebase (assuming you have 3 overrides your application
+         * cannot function without):
+         * 
+         *      t.assertMaxNumberOfGlobalExtOverrides(3, "Ideally should be none of these")
+         *      
+         * and catch all the cases when someone adds a new global override.
+         * 
+         * @param {Number} maxNumber The maximum number of Ext JS overrides allowed
+         * @param {String} [description] The description for the assertion
+         */
+        assertMaxNumberOfGlobalExtOverrides : function (maxNumber, description) {
+            this.getNumberOfGlobalExtOverrides(function (length, overrides) {
+                if (length == null) {
+                    this.fail("Was not able to find the ExtJS bundle URL in the `assertMaxNumberOfGlobalExtOverrides` assertion")
+                    return
+                }
+                
+                if (length > maxNumber) {
+                    this.fail(description, {
+                        assertionName   : 'assertNoGlobalExtOverrides',
+                        descTpl         : 'Found less or equal than ' + maxNumber + ' ext global overrides',
+                        
+                        got             : length,
+                        gotDesc         : "Number of overrides found",
+                        
+                        annotation      : "Found overrides for: `" + overrides.join('`, `') + '`'
+                    })
+                } else
+                    this.pass(description, {
+                        descTpl             : 'Found less or equal than ' + maxNumber + ' ext global overrides',
+                        annotation          : "Number of overrides found: " + length
+                    })
+            })
+        },
+
+        /**
+         * A helper method returning the total number of Ext JS container layouts that have been performed since the beginning of the page lifecycle.
+         * @return {Int} The number of layouts
+         */
+        getTotalLayoutCounter : function () {
+            var count       = 0
+
+            this.Ext().each(this.cq('container'), function(c) { count += c.layoutCounter });
+
+            return count;
+        },
+
+        /**
+         * This assertion passes if no Ext JS layout cycles are performed as a result of running the passed function. This
+         * function will query all containers on the page and measure the number of layouts performed before and after the function call.
+         *
+         * @param {Function} fn The function to call
+         * @param {Object} scope The 'thisObject' to use for the function call
+         * @param {String} [description] The description for the assertion
+         */
+        assertNoLayoutTriggered : function(fn, scope, description) {
+            var countBefore = this.getTotalLayoutCounter();
+
+            fn.call(scope || this);
+
+            this.is(this.getTotalLayoutCounter(), countBefore, description);
         }
     }
 })
@@ -28231,6 +28556,16 @@ Class('Siesta.Harness.Browser', {
             testOfForcedIFrame          : null,
             
             /**
+             * @cfg {Boolean} autoScrollElementsIntoView
+             * 
+             * With this option enabled Siesta will try to scroll the invisible action targets into the view automatically, before performing the
+             * action. 
+             * 
+             * This option can also be specified in the test file descriptor.
+             */
+            autoScrollElementsIntoView  : true,
+            
+            /**
              * @cfg {Boolean} maintainViewportSize
              * 
              * Enabling this option will cause Siesta to honor the {@link #viewportWidth} and {@link #viewportHeight} configuration options.
@@ -28448,14 +28783,15 @@ Class('Siesta.Harness.Browser', {
                 
                 var testConfig          = descriptor.testConfig
                 
-                if (testConfig && testConfig.hasOwnProperty('preload')) 
-                    if (testConfig.preload != 'inherit')
-                        return testConfig.preload
-                        
-                var hasHostPageUrl      = Boolean(this.getDescriptorConfig(descriptor, 'hostPageUrl', true))
-                var needToInherit       = Boolean(this.lookUpValueInDescriptorTree(descriptor, 'preload') == 'inherit')
+                var hasOwnPreload       = testConfig && testConfig.hasOwnProperty('preload') || descriptor.hasOwnProperty('preload')
+                // this will include lookup in the "testConfig"
+                var preloadValue        = this.lookUpValueInDescriptorTree(descriptor, 'preload')
                 
-                if (hasHostPageUrl && !needToInherit) return []
+                var hasHostPageUrl      = Boolean(this.getDescriptorConfig(descriptor, 'hostPageUrl', true))
+                
+                // for host page url, if we found preload value which is not inherit, then return it if its own (defined on the descriptor)
+                // otherwise return empty array
+                if (hasHostPageUrl && preloadValue != 'inherit') return hasOwnPreload ? preloadValue : []
                         
                 do {
                     if (descriptor.hasOwnProperty('preload'))
@@ -28494,7 +28830,6 @@ Class('Siesta.Harness.Browser', {
                 var config          = this.SUPERARG(arguments)
                 
                 if (this.getDescriptorConfig(desc, 'speedRun')) {
-                    
                     Joose.O.extend(config, {
                         actionDelay         : 1,
                         dragPrecision       : 20,
@@ -28504,7 +28839,8 @@ Class('Siesta.Harness.Browser', {
                 
                 if (this.hasOwnProperty('simulateEventsWith')) config.simulateEventsWith = this.simulateEventsWith
                 
-                config.forceDOMVisible  = this.getDescriptorConfig(desc, 'forceDOMVisible')
+                config.forceDOMVisible              = this.getDescriptorConfig(desc, 'forceDOMVisible')
+                config.autoScrollElementsIntoView   = this.getDescriptorConfig(desc, 'autoScrollElementsIntoView')
                 
                 return config
             },
@@ -29955,7 +30291,6 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     maintainViewportSize    : true,
 
     canManageDOM            : true,
-    
     suspendAfterLayoutAlign : false,
 
     initComponent : function() {
@@ -29963,31 +30298,79 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
 
         this.addEvents(
             'startinspection',
+            'componenthover',
+            'componentselected',
             'stopinspection'
         )
 
         Ext.apply(this, {
             header          : false,
             collapsible     : true,
-            animCollapse    : false
-        })
-    
+            animCollapse    : false,
+
+            dockedItems     : {
+                xtype : 'component',
+                dock : 'bottom',
+                cls  : 'domcontainer-console',
+                autoEl : {
+                    tag : 'div',
+                    children : {
+                        tag         : 'input'
+                    }
+                }
+            }
+        });
+
         this.callParent()
-    
+
         this.on({
             afterlayout : this.onAfterLayout,
             expand      : this.onExpand,
             collapse    : this.onCollapse,
-        
+
             scope       : this
         })
     },
-    
+
+    afterRender : function() {
+        this.callParent(arguments);
+
+        var input = this.consoleInput = this.el.down('.domcontainer-console input');
+
+        this.on('componenthover', function(dc, cmp){
+            input.dom.value = 'Ext.getCmp("' + cmp.id + '").';
+        });
+
+        this.on('componentselected', function(dc, cmp){
+            input.focus(true);
+        });
+
+        input.on({
+            keyup : function(e, t){
+                var val = input.dom.value;
+
+                if (e.getKey() === e.ENTER && val) {
+                    var frame = this.getIFrame();
+                    try {
+                        var retVal = frame.contentWindow.eval(val);
+                        if (console) {
+                            console.log(retVal);
+                        }
+//                        field.clearInvalid();
+                    } catch(e) {
+                        console.log(e.message);
+//                        field.markInvalid(e.message);
+                    }
+                }
+            },
+            scope : this
+        });
+    },
 
     setCanManageDOM : function (value) {
         if (value != this.canManageDOM) {
             this.canManageDOM = value
-        
+
             if (value && !this.hidden) this.alignIFrame()
         }
     },
@@ -29995,23 +30378,23 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
 
     getIFrameWrapper : function () {
         var test = this.test;
-        
-        if (test) 
+
+        if (test)
             return this.canManageDOM && test.scopeProvider && test.scopeProvider.wrapper || null
         else
             return null;
     },
-    
-    
+
+
     getIFrame : function () {
         var test = this.test;
-        
-        if (test) 
+
+        if (test)
             return this.canManageDOM && test.scopeProvider && test.scopeProvider.iframe || null
         else
             return null;
     },
-    
+
 
     onAfterLayout : function () {
         if (!this.suspendAfterLayoutAlign) this.alignIFrame();
@@ -30020,48 +30403,43 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
 
     alignIFrame : function () {
         var wrapper         = this.getIFrameWrapper();
-    
+
         if (!this.isFrameVisible() || !wrapper) return
-       
+
         Ext.fly(wrapper).removeCls('tr-iframe-hidden')
         Ext.fly(wrapper).removeCls('tr-iframe-forced')
-        
-        var box     = this.el.getBox()
-        
-//        box.x       += 5
-//        box.y       += 0
-//        box.width   -= 5
-//        box.height  -= 0
-        
+
+        var box     = this.body.getBox()
+
         Ext.fly(wrapper).setBox(box)
-        
+
         if (!this.maintainViewportSize) {
-            Ext.fly(this.getIFrame()).setSize(this.el.getSize())
+            Ext.fly(this.getIFrame()).setSize(this.body.getSize())
         }
-        
+
         var test        = this.test
-        
+
         test && test.fireEvent('testframeshow')
     },
 
-    
+
     onCollapse : function() {
         this.hideIFrame();
     },
-    
+
 
     onExpand : function() {
         this.alignIFrame();
     },
 
-    
+
     hideIFrame : function () {
         var iframe      = this.getIFrameWrapper()
-    
+
         iframe && Ext.fly(iframe).setLeftTop(-10000, -10000)
-        
+
         var test        = this.test
-        
+
         test && test.fireEvent('testframehide')
     },
 
@@ -30074,176 +30452,240 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
     showTest : function (test, assertionsStore) {
         if (this.test) {
             Joose.A.each(this.testListeners, function (listener) { listener.remove() })
-            
+
             this.testListeners   = []
-            
+
             this.hideIFrame()
         }
-        
+
         this.test   = test
-    
+
         this.testListeners   = [
             test.on('testfinalize', this.onTestFinalize, this)
         ]
-        
+
         // when starting the test with forcedIframe - do not allow the assertion grid to change the location of the iframe
         // (canManageDOM is set to false)
         this.setCanManageDOM(!test.hasForcedIframe())
-        
+
         this.alignIFrame();
     },
 
-    
+
     onTestFinalize : function (event, test) {
         this.setCanManageDOM(true)
-        
+
         // this prevents harness from hiding the iframe, because "test.hasForcedIframe()" will return null
         // we've moved the iframe to the correct position, and it can never be "forced" again anyway
         if (this.isFrameVisible()) test.forceDOMVisible    = false
     },
-    
-    
+
+
     destroy : function () {
         // just in case
         this.hideIFrame()
-        
+
         Joose.A.each(this.testListeners, function (listener) { listener.remove() })
-        
+
         this.test   = null
-        
+
         this.callParent(arguments)
     },
 
-    // Inspection related code
-    inspectionListener      : null,
+    // BEGIN Inspection related code
+    // -----------------------------
+    inspectedComponent      : null,
+    inspectedComponentXType : null,
 
     toggleInspectionMode : function(on) {
         if (!this.test) return;
 
-        var wrap = Ext.get(this.test.scopeProvider.wrapper);
+        if (on) {
+            this.startInspection();
+        } else {
+            this.stopInspection();
+        }
+    },
+
+    startInspection : function() {
+        if (!this.test) return;
+
         var frame = this.test.scopeProvider.iframe;
         var _Ext = frame.contentWindow.Ext;
-        var me = this;
 
+        // This is only relevant for frames containing 'Ext'
         if (!_Ext) return;
 
-        function cleanUp() {
-            var frames = _Ext.getBody().select('iframe');
-            Ext.destroy(me.boxIndicator);
-            wrap.un('mouseleave', cleanUp);
+        var me = this;
+        var wrap = Ext.get(this.getIFrameWrapper());
 
-            me.fireEvent('stopinspection', me);
-            me.boxIndicator = null;
+        this.stopInspection(true);
 
-            _Ext.getBody().un('mousemove', this.onMouseMove, this, { buffer : 30 });
-            _Ext.getBody().un('click', cleanUp);
-
-            for (var i = 0; i < frames.getCount(); i++) {
-                var innerExt = frames.item(i).dom.contentWindow.Ext;
-                innerExt && innerExt.getBody().un('mousemove', this.onMouseMove, this, { buffer : 30 });
-            }
-        }
-
-        if (on) {
-            var innerFrame = _Ext.getBody().down('iframe');
-            var frames = _Ext.getBody().select('iframe');
-            cleanUp();
-
-            me.boxIndicator = wrap.createChild({
-                cls : 'cmp-inspector-box'
-            });
-
-            var label = me.boxIndicator.createChild({
+        me.boxIndicator = wrap.createChild({
+            cls : 'cmp-inspector-box',
+            children : {
                 tag     : 'a',
                 cls     : 'cmp-inspector-label',
                 target  : '_blank'
-            })
-
-            _Ext.getBody().on('mousemove', this.onMouseMove, this, { buffer : 30 });
-
-            for (var i = 0; i < frames.getCount(); i++) {
-                var innerExt = frames.item(i).dom.contentWindow.Ext;
-                innerExt && innerExt.getBody().on('mousemove', this.onMouseMove, this, { buffer : 30 });
             }
+        });
 
-            _Ext.getBody().on('click', cleanUp);
-            wrap.on('mouseleave', cleanUp);
-            this.fireEvent('startinspection', this)
+        this.toggleMouseMoveListener(true);
+
+        _Ext.getBody().on('click', this.onInspectionClick, this);
+        wrap.on('mouseout', this.onMouseLeave, this);
+
+        this.fireEvent('startinspection', this);
+
+        this.addCls('inspection-mode');
+    },
+
+    stopInspection : function(suppressEvent) {
+        var wrap = Ext.get(this.getIFrameWrapper());
+        var frame = this.test.scopeProvider.iframe;
+        var _Ext = frame.contentWindow.Ext;
+
+        Ext.destroy(this.boxIndicator);
+        this.boxIndicator = null;
+
+        this.removeCls('inspection-mode');
+
+        wrap.un('mouseout', this.onMouseLeave, this);
+
+        if (!suppressEvent) {
+            this.fireEvent('stopinspection', this);
+        }
+
+        this.toggleMouseMoveListener(false);
+        _Ext && _Ext.getBody().un('click', this.onInspectionClick, this);
+
+        this.inspectedComponent = this.inspectedComponentXType = null;
+    },
+
+    onMouseLeave : function(e, t) {
+        if(!this.el.contains(e.relatedTarget) && !Ext.fly(this.getIFrameWrapper()).contains(e.relatedTarget)) {
+            this.stopInspection();
+        }
+    },
+
+    // Listen for mousemove in the frame and any direct iframe children too
+    toggleMouseMoveListener : function(enabled) {
+        var frame = this.test.scopeProvider.iframe;
+        var _Ext = frame.contentWindow.Ext;
+        var frames = _Ext.getBody().select('iframe');
+        var fn = enabled ? 'on' : 'un';
+
+        _Ext.getBody()[fn]('mousemove', this.onMouseMove, this, { buffer : 30 });
+
+        for (var i = 0; i < frames.getCount(); i++) {
+            var innerExt = frames.item(i).dom.contentWindow.Ext;
+            innerExt && innerExt.getBody()[fn]('mousemove', this.onMouseMove, this, { buffer : 30 });
+        }
+    },
+
+    onInspectionClick : function(e, t) {
+        if (e.synthetic || !this.boxIndicator) return;
+
+        this.toggleMouseMoveListener(false);
+
+        // If user clicks on a non-component, or clicking outside currently selected component - we abort
+        if (!this.inspectedComponent || this.findComponentByTarget(t) !== this.inspectedComponent) {
+            this.stopInspection();
         } else {
-            cleanUp();
+            this.fireEvent('componentselected', this, this.inspectedComponent, this.inspectedComponentXType);
         }
     },
 
     onMouseMove : function(e, t) {
         if (e.synthetic || !this.boxIndicator) return;
 
+        var cmp = this.findComponentByTarget(t);
+
+        if (!cmp || cmp === this.inspectedComponent) return;
+
+        var me = this;
+        var xtype = (cmp.getXType && cmp.getXType()) || cmp.xtype;
+        var el = cmp.el || cmp.element;
+        var boxStyle = me.boxIndicator.dom.style;
+        var offsets = this.getOffsets(t);
+
+        // If the found component doesn't have an own xtype, look up the superclass chain to find one
+        if (!xtype) {
+            var cls = cmp;
+            for (var i = 0; i < 10 && !xtype; i++) {
+                cls = cmp.superclass;
+                xtype = cls.xtype;
+            }
+        }
+
+        this.inspectedComponent = cmp;
+        this.inspectedComponentXType = xtype;
+
+        // Regular getWidth/getHeight doesn't work if another iframe is on the page
+        boxStyle.left = (el.getX()-1 + offsets[0]) + 'px';
+        boxStyle.top = (el.getY()-1 + offsets[1]) + 'px';
+        boxStyle.width = ((el.getWidth() || (parseInt(el.dom.style.width.substring(0, el.dom.style.width.length-2), 10)))+2) + 'px';
+        boxStyle.height = ((el.getHeight() || (parseInt(el.dom.style.height.substring(0, el.dom.style.height.length-2), 10)))+2) + 'px';
+
+        var link = me.boxIndicator.child('.cmp-inspector-label');
+        var linkHref = '';
+        link.update(xtype);
+
+        if(Ext.ClassManager) {
+            var clsName = this.findExtAncestorClassName(cmp);
+
+            if (clsName) {
+                var docsPath = 'http://docs.sencha.com/{0}/#!/api/{1}';
+                var framework;
+
+                if (Ext.versions.touch) {
+                    framework = 'touch';
+                } else {
+                    framework = 'extjs';
+                }
+                linkHref = Ext.String.format(docsPath, framework, clsName);
+                link.dom.title = 'View documentation for ' + clsName;
+            }
+        }
+
+        link.dom.href = linkHref;
+
+        this.fireEvent('componenthover', this, this.inspectedComponent, this.inspectedComponentXType);
+    },
+
+    findComponentByTarget : function(t) {
         var test = this.test;
         var Ext = test.global.Ext;
         var testDoc = test.global.document;
-        var me = this;
-        var offsets = [0,0];
+        var cmp;
 
         // Handle potentially having another Ext copy loaded in another frame
         if (t.ownerDocument !== testDoc) {
-            var xy = e.getXY();
             var innerFrame = (t.ownerDocument.parentWindow || t.ownerDocument.defaultView).frameElement;
-
-            offsets = Ext.fly(innerFrame).getXY();
-            offsets[0] -= t.ownerDocument.body.scrollLeft;
-            offsets[1] -= t.ownerDocument.body.scrollTop;
             Ext = innerFrame.contentWindow.Ext;
         }
 
-        while (t && t.nodeName !== 'BODY') {
-            var cmp = Ext.getCmp(t.id);
-
-            if (cmp) {             // Ext JS 3+4                Sencha touch
-                var xtype = (cmp.getXType && cmp.getXType()) || cmp.xtype;
-                var el = cmp.el || cmp.element;
-                var boxStyle = me.boxIndicator.dom.style;
-
-                if (!xtype) {
-                    var cls = cmp;
-                    for (var i = 0; i < 10 && !xtype; i++) {
-                        cls = cmp.superclass;
-                        xtype = cls.xtype;
-                    }
-                }
-
-                // Regular getWidth/getHeight doesn't work if another iframe is on the page
-                boxStyle.left = (el.getX()-1 + offsets[0]) + 'px';
-                boxStyle.top = (el.getY()-1 + offsets[1]) + 'px';
-                boxStyle.width = ((el.getWidth() || (parseInt(el.dom.style.width.substring(0, el.dom.style.width.length-2), 10)))+2) + 'px';
-                boxStyle.height = ((el.getHeight() || (parseInt(el.dom.style.height.substring(0, el.dom.style.height.length-2), 10)))+2) + 'px';
-
-                var link = me.boxIndicator.child('.cmp-inspector-label');
-                var linkHref = '';
-                link.update(xtype);
-
-                if(Ext.ClassManager) {
-                    var clsName = this.findExtAncestorClassName(cmp);
-
-                    if (clsName) {
-                        var docsPath = 'http://docs.sencha.com/{0}/#!/api/{1}';
-                        var framework;
-
-                        if (Ext.versions.touch) {
-                            framework = 'touch';
-                        } else {
-                            framework = 'extjs';
-                        }
-                        linkHref = Ext.String.format(docsPath, framework, clsName);
-                        link.dom.title = 'View documentation for ' + clsName;
-                    }
-                }
-
-                link.dom.href = linkHref;
-
-                return;
-            } else {
-                t = t.parentNode;
-            }
+        while (!cmp && t && t.nodeName !== 'BODY') {
+            cmp = Ext.getCmp(t.id);
+            t = t.parentNode;
         }
+
+        return cmp;
+    },
+
+    getOffsets : function(node) {
+        var testDoc = this.test.global.document;
+        var offsets = [0,0];
+
+        if (node.ownerDocument !== testDoc) {
+            var innerFrame = (node.ownerDocument.parentWindow || node.ownerDocument.defaultView).frameElement;
+
+            offsets = Ext.fly(innerFrame).getXY();
+            offsets[0] -= node.ownerDocument.body.scrollLeft;
+            offsets[1] -= node.ownerDocument.body.scrollTop;
+        }
+
+        return offsets;
     },
 
     findExtAncestorClassName : function(cmp) {
@@ -30258,6 +30700,8 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
 
         return '';
     }
+    // END Inspection related code
+    // -----------------------------
 });;
 Ext.define('Siesta.Harness.Browser.UI.Viewport', {
 
@@ -31574,18 +32018,38 @@ Ext.define('Siesta.Harness.Browser.UI.TestGrid', {
         var header      = this.header
         
         if (newValue) {
-            var regexps         = Ext.Array.map(newValue.split(/\s+/), function (token) { return new RegExp(Ext.String.escapeRegex(token), 'i') })
-            var length          = regexps.length
+            var parts           = newValue.split(/\s*\|\s*/);
+            var regexps         = []
+            var lengths         = []
+            
+            for (var i = 0; i < parts.length; i++) {
+                // ignore empty
+                if (parts[ i ]) {
+                    regexps.push(
+                        Ext.Array.map(parts[ i ].split(/\s+/), function (token) { return new RegExp(Ext.String.escapeRegex(token), 'i') })
+                    )
+                    lengths.push(regexps[ regexps.length - 1 ].length)
+                }
+            }
             
             this.store.filterTreeBy({
                 filter  : function (testFile) {
                     var title       = testFile.get('title')
                     
-                    // blazing fast "for" loop! :)
-                    for (var i = 0; i < length; i++)
-                        if (!regexps[ i ].test(title)) return false
+                    for (var p = 0; p < parts.length; p++) {
+                        var groupMatch  = true
                         
-                    return true
+                        // blazing fast "for" loop! :)
+                        for (var i = 0; i < lengths[ p ]; i++)
+                            if (!regexps[ p ][ i ].test(title)) {
+                                groupMatch  = false
+                                break
+                            }
+                            
+                        if (groupMatch) return true
+                    }
+                        
+                    return false
                 },
                 fullMathchingParents    : this.filterGroups
             })
@@ -32180,7 +32644,9 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                 stripeRows              : false,
                 disableSelection        : true,
                 markDirty               : false,
-                animate                 : true,
+                // Animation is disabled until: http://www.sencha.com/forum/showthread.php?265901-4.2.0-Animation-breaks-the-order-of-nodes-in-the-tree-view&p=974172
+                // is resolved
+                animate                 : false,
                 trackOver               : false,
 
                 // dummy store to be re-defined before showing each test
@@ -32698,93 +33164,98 @@ Class('Siesta.Harness.Browser.SenchaTouch', {
             },
 
             
-            showForcedIFrame : function (iframe, test) {
+            showForcedIFrame : function (test) {
                 $.rebindWindowContext(window);
+                
+                var wrapper     = test.scopeProvider.wrapper
 
-                $(iframe).setStyle({
+                $(wrapper).css({
                     'z-index'   : 100000
                 });
             },
 
             
             onBeforeScopePreload : function (scopeProvider, url) {
-                var setupEventTranslation = function() {
-                    Ext.event.publisher.TouchGesture.override({
-                        moveEventName: 'mousemove',
+                var setupEventTranslation = function () {
+                    if (Ext.feature.has.Touch) {
+                        if (Ext.getVersion('touch').isGreaterThanOrEqual('2.2.0')) {
+                            Ext.event.publisher.TouchGesture.prototype.handledEvents.push('mousedown', 'mousemove', 'mouseup');
+                        } else {
+                            Ext.event.publisher.TouchGesture.override({
+                                moveEventName: 'mousemove',
 
-                        map: {
-                            mouseToTouch: {
-                                mousedown: 'touchstart',
-                                mousemove: 'touchmove',
-                                mouseup: 'touchend'
-                            },
+                                map: {
+                                    mouseToTouch: {
+                                        mousedown: 'touchstart',
+                                        mousemove: 'touchmove',
+                                        mouseup: 'touchend'
+                                    },
 
-                            touchToMouse: {
-                                touchstart: 'mousedown',
-                                touchmove: 'mousemove',
-                                touchend: 'mouseup'
-                            }
-                        },
+                                    touchToMouse: {
+                                        touchstart: 'mousedown',
+                                        touchmove: 'mousemove',
+                                        touchend: 'mouseup'
+                                    }
+                                },
 
-                        attachListener: function(eventName) {
-                            eventName = this.map.touchToMouse[eventName];
+                                attachListener: function(eventName) {
+                                    eventName = this.map.touchToMouse[eventName];
 
-                            if (!eventName) {
-                                return;
-                            }
+                                    if (!eventName) {
+                                        return;
+                                    }
 
-                            return this.callOverridden([eventName]);
-                        },
+                                    return this.callOverridden([eventName]);
+                                },
 
-                        lastEventType: null,
+                                lastEventType: null,
 
-                        onEvent: function(e) {
-                            if ('button' in e && e.button !== 0) {
-                                return;
-                            }
+                                onEvent: function(e) {
+                                    if ('button' in e && e.button !== 0) {
+                                        return;
+                                    }
 
-                            var type = e.type,
-                                touchList = [e];
-                    
-                            // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
-                            // when the element is being animated
-                            // with webkit-transition (2 mousedowns without any mouseup)
-                            if (type === 'mousedown' && this.lastEventType && this.lastEventType !== 'mouseup') {
-                                var fixedEvent = document.createEvent("MouseEvent");
-                                    fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
-                                        document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
-                                        e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.metaKey,
-                                        e.button, e.relatedTarget);
+                                    var type = e.type,
+                                        touchList = [e];
 
-                                this.onEvent(fixedEvent);
-                            }
+                                    // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
+                                    // when the element is being animated
+                                    // with webkit-transition (2 mousedowns without any mouseup)
+                                    if (type === 'mousedown' && this.lastEventType && this.lastEventType !== 'mouseup') {
+                                        var fixedEvent = document.createEvent("MouseEvent");
+                                            fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
+                                                document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
+                                                e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.metaKey,
+                                                e.button, e.relatedTarget);
 
-                            if (type !== 'mousemove') {
-                                this.lastEventType = type;
-                            }
+                                        this.onEvent(fixedEvent);
+                                    }
 
-                            e.identifier = 1;
-                            e.touches = (type !== 'mouseup') ? touchList : [];
-                            e.targetTouches = (type !== 'mouseup') ? touchList : [];
-                            e.changedTouches = touchList;
+                                    if (type !== 'mousemove') {
+                                        this.lastEventType = type;
+                                    }
 
-                            return this.callOverridden([e]);
-                        },
+                                    e.identifier = 1;
+                                    e.touches = (type !== 'mouseup') ? touchList : [];
+                                    e.targetTouches = (type !== 'mouseup') ? touchList : [];
+                                    e.changedTouches = touchList;
 
-                        processEvent: function(e) {
-                            this.eventProcessors[this.map.mouseToTouch[e.type]].call(this, e);
+                                    return this.callOverridden([e]);
+                                },
+
+                                processEvent: function(e) {
+                                    this.eventProcessors[this.map.mouseToTouch[e.type]].call(this, e);
+                                }
+                            });
                         }
-                    });
+                    }
                 };
 
-                if ("ontouchstart" in window) {
-                    
-                    // Need to tell ST to convert mouse events to their touch counterpart
-                    scopeProvider.addPreload({
-                        type        : 'js', 
-                        content     : '(' + setupEventTranslation.toString() + ')();'
-                    })
-                }
+                // Need to tell ST to convert mouse events to their touch counterpart
+                scopeProvider.addPreload({
+                    type        : 'js', 
+                    content     : '(' + setupEventTranslation.toString() + ')();'
+                })
                  
                 this.SUPERARG(arguments)
             }
@@ -33094,7 +33565,7 @@ Role('Siesta.Harness.Report.JUnit', {
                 
                 attributes  : {
                     name        : this.title || 'No title',
-                    timestamp   : this.convertDateToISO8601(this.startDate),
+                    timestamp   : this.convertDateToISO8601(new Date(this.startDate)),
                     time        : ((this.endDate || new Date()) - this.startDate) / 1000,
                     //                                     Browser                                                                      NodeJS
                     hostname    : typeof window != 'undefined' && window.location && window.location.host || typeof require != 'undefined' && require('os') && require('os').hostname() || 'localhost'
@@ -33477,8 +33948,8 @@ Role('Siesta.Harness.Browser.Automation', {
             var report = {
                 testSuiteName       : this.title || '',
                 
-                startDate           : this.startDate - 0,
-                endDate             : (this.endDate || new Date()) - 0,
+                startDate           : this.startDate,
+                endDate             : this.endDate || (new Date() - 0),
                 
                 passed              : this.allPassed(),
                 
