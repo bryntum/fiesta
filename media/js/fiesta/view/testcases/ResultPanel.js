@@ -49,7 +49,7 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
                     title           : 'Assertions',
                     height          : 200,
                     hideHeaders     : true,
-                    split           : true,
+//                    split           : true,
                     isStandalone    : true
 //                    listeners       : {
 //                        itemdblclick    : this.onAssertionDoubleClick,

@@ -65,7 +65,7 @@ Ext.define("Fiesta.model.TestCase", {
         return valid;
     },
 
-    getTagNamesAsString : function() {
+    getTagNamesAsString : function(separator) {
         return this.getTagNames().join(separator || ',');
     },
 

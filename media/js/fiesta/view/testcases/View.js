@@ -521,7 +521,7 @@ Ext.define('Fiesta.view.testcases.View', {
     shareTwitter : function () {
 
         var twitterUrl = 'https://twitter.com/share?' +
-            'text=' + encodeURIComponent(this.title) +
+            'text=' + encodeURIComponent(this.testCaseModel.get('name')) +
             '&hashtags=' + encodeURIComponent(this.testCaseModel.getTagNamesAsString(',')) +
             '&url=' + encodeURIComponent(window.location.href);
 
