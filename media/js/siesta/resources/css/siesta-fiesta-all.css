@@ -87,61 +87,88 @@
     Panel with test iframe
 */
 
-
 .tr-container {
-    visibility     : visible !important;
+    visibility : visible !important;
 }
 
 .x-ie9 .tr-container {
-	z-index        : 1;
+    z-index : 1;
 }
 
 .tr-container .x-panel-collapsed {
-    display        : block !important;
-    
-    visibility     : hidden !important;
-    
-    z-index        : -1 !important;
+    display    : block !important;
+    visibility : hidden !important;
+    z-index    : -1 !important;
 }
 
-
 td.tr-td-vertical-align {
-    vertical-align     : middle;
+    vertical-align : middle;
 }
 
 .tr-iframe-wrapper {
-    position    : absolute;
-
-    left        : -10000px;
-    top         : -10000px;
-    
-    overflow    : auto;
+    position : absolute;
+    left     : -10000px;
+    top      : -10000px;
+    overflow : auto;
 }
 
 .x-ie9 .tr-iframe-wrapper {
-	z-index        : 1;
-}
-
-iframe.tr-iframe {
-    background-color    : white;
+    z-index : 1;
 }
 
 .tr-iframe-forced {
-    z-index                    : 100000 !important;
-
-    border                     : 5px solid;
-    border-color               : #d5e7f0;
-    -moz-border-radius         : 14px;
-    -webkit-border-radius      : 14px;
-    border-radius              : 14px;
+    z-index               : 100000 !important;
+    border                : 5px solid;
+    border-color          : #d5e7f0;
+    -moz-border-radius    : 14px;
+    -webkit-border-radius : 14px;
+    border-radius         : 14px;
+    background-color      : white;
 }
 
 .tr-iframe-hidden {
-    left        : -10000px !important;
-    top         : -10000px !important;
+    left : -10000px !important;
+    top  : -10000px !important;
 }
 
+.siesta-domcontainer {
+    background-color    : #f5f5f5;
+    background-image    : linear-gradient(#fff 2px, transparent 2px), linear-gradient(90deg, #fff 2px, transparent 2px), linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .3) 1px, transparent 1px);
+    background-size     : 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+    background-position : -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+}
 
+.siesta-domcontainer .x-panel-body {
+    background : transparent;
+    border     : 0 none;
+    margin     : 20px;
+}
+
+.domcontainer-console {
+    height     : 0;
+    padding    : 3px;
+    transition : bottom, height 0.5s;
+    top        : auto !important;
+    bottom     : -4px;
+}
+
+.inspection-mode .domcontainer-console {
+    height : 30px;
+    bottom : 0;
+}
+
+.domcontainer-console input {
+    color           : #666;
+    height          : 24px;
+    width           : 100%;
+    padding         : 2px 2px 2px 20px;
+    background      : #fff url(../images/prompt.png) no-repeat 4px center;
+    font            : 14px "Consolas";
+    background-size : 12px;
+    line-height     : 19px;
+    border          : 1px solid #ccc;
+    box-shadow      : 0 1px 3px 0 rgba(150, 150, 150, 0.2) inset, 0 1px 0 rgba(255, 255, 255, 0.2);
+}
 
 /*=======================================================================================================================================================================================================================
     Toolbar icons

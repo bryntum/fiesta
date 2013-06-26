@@ -143,24 +143,6 @@ div.run-testcase .x-btn-inner {
     border-top-color    : #666 !important;
 }
 
-.resultpanel {
-    background-color    : #f5f5f5;
-    background-image    : linear-gradient(#fff 2px, transparent 2px), linear-gradient(90deg, #fff 2px, transparent 2px), linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .3) 1px, transparent 1px);
-    background-size     : 50px 50px, 50px 50px, 10px 10px, 10px 10px;
-    background-position : -2px -2px, -2px -2px, -1px -1px, -1px -1px;
-}
-
-.domct
-{
-    box-shadow: inset 0 1px 2px #e4e4e4;
-    padding:20px;
-}
-
-.domct .x-panel-body
-{
-    background: transparent;
-}
-
 /*
 .domct.mobile-dom
 {

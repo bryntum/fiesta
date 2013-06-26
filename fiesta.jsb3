@@ -2,7 +2,7 @@
     "projectName"   : "Fiesta",
     "licenseText"   : "",
     
-    "packages"          : [
+    "builds"          : [
         {
             "name"      : "Fiesta-JS",
 
