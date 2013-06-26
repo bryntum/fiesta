@@ -1,6 +1,11 @@
 <?php
 class Testcases_model extends CI_Model {
 
+    public function __construct()
+    {
+        $this->load->config('account/account');
+    }
+
     /**
      * Get testCase by id
      *
@@ -157,6 +162,7 @@ class Testcases_model extends CI_Model {
             ->join('user_testCases as st', "st.testCase_id = tc.id AND st.starred = 1 AND st.user_id = ".$userId, 'left')
             ->join('testCases_votes as tv', "tv.testCase_id = tc.id AND tv.user_id = ".$userId, 'left');
 
+
         if(!empty($params['whereClause'])) {
             $this->db->where($params['whereClause']);
         }
@@ -235,15 +241,21 @@ class Testcases_model extends CI_Model {
 
             $data['slug'] = $this->makeSlug($data['name']);
 
+
             $tagsList = $data['tagsList'];
             unset($data['tagsList']);
 
             $this->db->insert('testCases', $data);
             $testCaseId = $this->db->insert_id();
+            $slug = $testCaseId.'-'.$data['slug'];
+
+            if($data['private'] == 2) {
+                $slug .= '.'.md5($testCaseId.$this->config->item("test_link_secret"));
+            }
 
 
             $this->db->where('id', $testCaseId);
-            $this->db->update('testCases', array('slug' => $testCaseId.'-'.$data['slug']));
+            $this->db->update('testCases', array('slug' => $slug));
 
             if(!empty($tagsList)) {
                 $this->updateTestCaseTags($testCaseId,$tagsList);
@@ -267,6 +279,11 @@ class Testcases_model extends CI_Model {
     
     function update ($testCaseId, $data, $isAdmin = false) {
         $data['slug'] = $testCaseId.'-'.$this->makeSlug($data['name']);
+
+        if($data['private'] == 2) {
+            $data['slug'] .= '.'.md5($testCaseId.$this->config->item("test_link_secret"));
+        }
+
         $curUser = $data['owner_id'];
 
         if($isAdmin) {

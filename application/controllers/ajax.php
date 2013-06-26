@@ -10,6 +10,8 @@ class Ajax extends CI_Controller {
         $this->load->library(array('account/authentication'));
         $this->load->model(array('account/account_model'));
         $this->load->model(array('testCases/testCases_model'));
+        $this->load->config('account/account');
+
 
         if ($this->authentication->is_signed_in()) {
             $this->authUserID = $this->session->userdata('account_id');
@@ -30,13 +32,15 @@ class Ajax extends CI_Controller {
        
         $params = $this->input->get(NULL,TRUE);
 
-        $where = array();
+        $whereArray[] = array();
+        $where = '';
         $sort = array();
         $tagsList = array();
 
         // TODO: needs to be a little bit refactored to use native activerecrod style where, where_and
 
         if(isset($params['action']) && $params['action'] == 'filter') {
+
             $whereArray = array();
             
             if(!empty($params['testCaseName'])) {
@@ -60,7 +64,7 @@ class Ajax extends CI_Controller {
             }
             if(count($whereArray) == 0 && !$this->isAdmin()) {
                 if ($this->authentication->is_signed_in()) {
-                    $where = '((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
+                    $where = '((private > 0 AND owner_id = '.$this->authUserID.') OR private = 0)';
                 } else {
                     $where = 'private = 0';
                 }
@@ -70,7 +74,7 @@ class Ajax extends CI_Controller {
 
                 if(!$this->isAdmin()) {
                     if ($this->authentication->is_signed_in()) {
-                        $where .= ' AND ((private = 1 AND owner_id = '.$this->authUserID.') OR private = 0)';
+                        $where .= ' AND ((private > 0 AND owner_id = '.$this->authUserID.') OR private = 0)';
                     } else {
                         $where .= ' AND private = 0';
                     }
@@ -80,6 +84,7 @@ class Ajax extends CI_Controller {
 
         }
         else {
+
 //            if ($this->authentication->is_signed_in()) {
 //                $where = 'owner_id ='.$this->authUserID;
 //            }
@@ -162,7 +167,10 @@ class Ajax extends CI_Controller {
        $tabId = $this->input->post('tabId');
        $slug = $this->input->post('slug');
        $success = false;
-       
+       $errorMsg = '';
+
+
+
        if($tabId) {
            $testCase = $this->testCases_model->getById($tabId,$this->authUserID);
            $success = true;
@@ -170,14 +178,43 @@ class Ajax extends CI_Controller {
        elseif($slug) {
            $idFromSlug = preg_replace('/(\d+)-(.*)/i', '${1}', $slug);
            $testCase = $this->testCases_model->getById($idFromSlug,$this->authUserID);
-           $success = true;
+
+
+           if($testCase->private == 1 && !$this->isAdmin()) {
+               $errorMsg = 'You are not permited to access this test!';
+               $testCase = '';
+           }
+
+           else if($testCase->private == 2 && !$this->isAdmin()) {
+               $errorMsg = 'You are not permited to access this test!';
+               preg_match('/\.(.*)/', $slug, $matches);
+
+
+               if(isset($matches[1])) {
+                   if(md5($idFromSlug.$this->config->item("test_link_secret")) == $matches[1]) {
+                       $success = true;
+                       $errorMsg = '';
+                   }
+               }
+
+           }
+
+           else {
+               $success = true;
+           }
+
+
        }
        else {
             $testCase = array();
        }
            
 
-       echo json_encode(array('data' => $testCase, 'success' => $success));
+        if(!$success) {
+            $testCase = array();
+        }
+
+       echo json_encode(array('data' => $testCase, 'errorMsg' => $errorMsg, 'success' => $success));
     }
 
 
@@ -254,6 +291,10 @@ class Ajax extends CI_Controller {
            $success = true;
         }
 
+        if($private == 2) {
+            $slug .= '.'.md5($testCaseId.$this->config->item("test_link_secret"));
+        }
+
         echo json_encode(array('id'=> $testCaseId, 'slug' => $slug, 'result' => $resultRec, 'errorMsg' => $errorMsg, 'success' => $success));
     }
 
@@ -285,6 +326,12 @@ class Ajax extends CI_Controller {
 
                 $testCaseId = $testCaseId.'_tmp';
                 $slug = $testCaseId.'-'.$this->testCases_model->makeSlug($testCase->name);
+
+
+                if($private == 2) {
+                    $slug .= '.'.md5($testCaseId.$this->config->item("test_link_secret"));
+                }
+
 
                 $resultRec[] = array(
                     'id' => $testCaseId,
@@ -323,7 +370,7 @@ class Ajax extends CI_Controller {
                 $updateParams = array(
                     'name' => $name,
                     'framework_id' => $frameworkId,
-                    'private' => $private == 'true' ? 1 : 0,
+                    'private' => $private,
                     'code' => $code,
                     'tagsList' => $tagsList,
                     'hostPageUrl' => $hostPageUrl,
@@ -365,6 +412,11 @@ class Ajax extends CI_Controller {
 
             $errorMsg = 'Please login!<br/> If you were logged in before updating test, changess will be resoted.';
         }
+
+        if($private == 2) {
+            $slug .= '.'.md5($testCaseId.$this->config->item("test_link_secret"));
+        }
+
 
         echo json_encode(array(
             'slug' => $slug,

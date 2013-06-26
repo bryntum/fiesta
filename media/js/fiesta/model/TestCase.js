@@ -11,7 +11,7 @@ Ext.define("Fiesta.model.TestCase", {
         "code", 
         'tags', 
         'slug',
-        'private',
+        {name: 'private', type: 'int'},
         'hostPageUrl',
         {name: 'starred', type: 'bool'},
         {name: 'voted', type: 'int'},

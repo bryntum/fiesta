@@ -31,7 +31,8 @@
         DATA =  {
             totalTests          : '<?php echo $totalTests?>',
             totalUsers          : '<?php echo $totalUsers?>',
-            onlineUsers         : '<?php echo $onlineUsers?>'
+            onlineUsers         : '<?php echo $onlineUsers?>',
+            lastRegUsers        : <?php echo $lastRegUsers?>
         }
 
         var FIESTA;

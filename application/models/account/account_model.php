@@ -251,6 +251,17 @@ class Account_model extends CI_Model {
         return $this->db->count_all_results();
     }
 
+    function getLastRegisteredUsers ($limit = 5) {
+
+        $query = $this->db->from('a3m_account')
+             ->order_by('createdon', 'DESC')
+             ->limit($limit)
+             ->get();
+
+        return $query->result();
+
+    }
+
 }
 
 

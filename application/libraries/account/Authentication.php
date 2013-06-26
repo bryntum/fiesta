@@ -91,6 +91,8 @@ class Authentication {
 	function sign_out()
 	{
 		$this->CI->session->unset_userdata('account_id');
+        $this->CI->session->unset_userdata('isAdmin');
+
 	}
 
 	// --------------------------------------------------------------------

@@ -32,7 +32,7 @@ class Reset_password extends CI_Controller {
 
 
 // Uncoment this part to enable captcha before reset password dialogue
-        
+
 //		// Check recaptcha
 //		$recaptcha_result = $this->recaptcha->check();
 
