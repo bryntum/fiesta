@@ -104,3 +104,7 @@ li[qtip=learn]{
     border-color : rgb(84, 164, 84);
     color        : #fff;
 }
+
+.x-btn-plain-toolbar-small-disabled .x-btn-icon-el, .x-btn-plain-toolbar-medium-disabled .x-btn-icon-el, .x-btn-plain-toolbar-large-disabled .x-btn-icon-el {
+    background-color:transparent;
+}

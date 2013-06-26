@@ -12,7 +12,8 @@ body
 }
 
 .x-grid-row .x-grid-cell,
-.x-tab-inner
+.x-tab-inner,
+.x-toolbar .x-toolbar-text
 {
     font: 300 13px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
 }
