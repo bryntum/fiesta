@@ -87,7 +87,6 @@ class Main extends CI_Controller {
 
     private function getGravatarUrl ($email,$size) {
         $url = 	'http://www.gravatar.com/avatar.php?gravatar_id='.md5($email)
-            .'&s='.$size
             .'&d=mm';
 
         return $url;

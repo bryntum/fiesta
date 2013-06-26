@@ -8,46 +8,64 @@ Ext.define('Fiesta.view.UserPanel', {
     initComponent : function () {
         Ext.apply(this, {
             items : [
-                '->',
-                !FIESTA.isSignedIn() ? {
-                    xtype   : 'button',
-                    action  : 'sign_in',
-                    text    : 'Sign In',
-                    handler : this.openSigninWindow
-                    //                        href        : '/account/sign_in/',
-                    //                        hrefTarget  : '_self'
+                '->'
+//                {
+//                    xtype : 'label',
+//                    renderTpl : '<a href="#">About Fiesta</a> | '
+//                },
 
-                } : {
-                    xtype : 'button',
-                    text  : CONFIG.userName,
-                    cls   : 'user-button',
-                    icon  : CONFIG.gravatarUrl,
-                    menu  : {
-                        plain : true,
-                        items : [
-                            {
-                                text       : 'Profile',
-                                href       : '/account/account_profile',
-                                hrefTarget : '_self'
+                ].concat(!FIESTA.isSignedIn() ? [
+                    {
+                        xtype   : 'button',
+                        scale   : 'medium',
+                        action  : 'sign_in',
+                        text    : 'Sign In',
+                        handler : this.openSigninWindow
+                        //                        href        : '/account/sign_in/',
+                        //                        hrefTarget  : '_self'
 
-                            },
-                            {
-                                text       : 'Settings',
-                                href       : '/account/account_settings',
-                                hrefTarget : '_self'
-
-                            },
-                            '-',
-                            {
-                                text       : 'Log out',
-                                href       : '/account/sign_out',
-                                hrefTarget : '_self'
-
-                            }
-                        ]
                     }
-                }
-            ]
+                ] : [
+                    {
+                        xtype : 'component',
+                        cls   : 'user-info',
+                        renderTpl : '<dl class="userinfo">' +
+                            '<dt>Welcome</dt>' +
+                            '<dd><span class="username">' + CONFIG.userName + '</span></dd>' +
+                            '</dl>'
+                    },
+                    {
+                        xtype : 'component',
+                        renderTpl : '<img src="' + CONFIG.gravatarUrl + '" />',
+                        cls   : 'user-avatar',
+                        width : 40,
+                        menu  : {
+                            plain : true,
+                            items : [
+                                {
+                                    text       : 'Profile',
+                                    href       : '/account/account_profile',
+                                    hrefTarget : '_self'
+
+                                },
+                                {
+                                    text       : 'Settings',
+                                    href       : '/account/account_settings',
+                                    hrefTarget : '_self'
+
+                                },
+                                '-',
+                                {
+                                    text       : 'Log out',
+                                    href       : '/account/sign_out',
+                                    hrefTarget : '_self'
+
+                                }
+                            ]
+                        }
+                    }
+                ]
+            )
         });
 
         this.callParent(arguments);

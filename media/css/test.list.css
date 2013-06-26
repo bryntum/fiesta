@@ -86,7 +86,7 @@
 }
 
 .testCasesList ul > li:hover {
-    background-color : #ABC7FC;
+    border-color : #8BA7FC;
     cursor           : pointer;
 }
 
@@ -95,7 +95,6 @@
     display     : block;
     float       : left;
     font-size   : 10px;
-    font-weight : normal;
 }
 
 .tag-learn,

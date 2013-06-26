@@ -27,7 +27,7 @@ Ext.define('Fiesta.view.testcases.List', {
             bbar      : {
                 xtype       : 'pagingtoolbar',
                 store       : 'TestCases',
-                displayInfo : true
+                displayInfo : false
             },
             listeners : {
                 itemclick    : this.onMyItemClick,
@@ -38,6 +38,9 @@ Ext.define('Fiesta.view.testcases.List', {
         });
 
         this.callParent(arguments);
+
+        this.down('toolbar #first').hide();
+        this.down('toolbar #last').hide();
     },
 
     onMyItemClick   : function (grid, record, item, index, e) {

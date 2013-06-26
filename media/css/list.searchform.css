@@ -14,18 +14,16 @@
     background-image : url("/media/img/sort_asc.png");
 }
 
-.addNewBtn {
-    border-color : rgb(50, 109, 156);
-}
-
 /* line 143, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
 .addNewBtn {
+    height             : 30px;
     font-size          : 24px;
     font-weight        : 200;
     color              : #fff;
     -webkit-box-shadow : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .25);
     -moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .25);
     box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .25);
+    border-color : rgb(50, 109, 156);
 }
 
 .addNewBtn .x-btn-inner {
