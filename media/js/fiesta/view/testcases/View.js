@@ -530,9 +530,11 @@ Ext.define('Fiesta.view.testcases.View', {
 
 
     shareFb : function () {
+        var title = this.testCaseModel.get('name');
+
         var fbUrl = 'http://www.facebook.com/sharer.php?s=100' +
-            '&amp;p[title]=' + encodeURIComponent(this.title) +
-            '&amp;p[summary]=' + encodeURIComponent(this.title + ' was created by ' + this.testCaseModel.get('ownerName')) +
+            '&amp;p[title]=' + encodeURIComponent(title) +
+            '&amp;p[summary]=' + encodeURIComponent(title + ' was created by ' + this.testCaseModel.get('ownerName')) +
             '&amp;p[url]=' + encodeURIComponent(window.location.href) +
             '&amp;p[images][0]=';
 
@@ -542,7 +544,7 @@ Ext.define('Fiesta.view.testcases.View', {
 
     shareGoogle : function () {
         var googleUrl = 'http://plus.google.com/share?' +
-            'text=' + encodeURIComponent(this.title) +
+            'text=' + encodeURIComponent(this.testCaseModel.get('name')) +
             '&url=' + encodeURIComponent(window.location.href);
 
         window.open(googleUrl);
