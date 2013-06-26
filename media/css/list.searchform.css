@@ -48,8 +48,8 @@
 }
 
 .searchform .x-form-empty-field, textarea.x-form-empty-field {
-    font  : 12px helvetica, arial, verdana, sans-serif !important;
-    color : #bbb;
+    font: 300 12px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    color : #aaa;
 }
 
 #tags-filter ul.x-boxselect-list {

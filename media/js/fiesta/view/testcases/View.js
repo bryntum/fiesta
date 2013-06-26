@@ -34,7 +34,8 @@ Ext.define('Fiesta.view.testcases.View', {
             cls  : 'testcase-toolbar',
             items : [
                 {
-                    iconCls : 'icon-arrow-down',
+//                    iconCls : 'icon-arrow-down',
+//                    text    : 'V',
                     action  : 'expandcollapse',
                     cls     : 'expandcollapse',
                     scope   : this,
