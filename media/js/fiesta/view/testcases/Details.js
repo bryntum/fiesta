@@ -16,7 +16,6 @@ Ext.define('Fiesta.view.testcases.Details', {
     collapsed     : true,
     cls           : 'testdetailsform',
     itemId        : 'testdetailsform',
-    bodyPadding   : 5,
     border        : false,
     defaults      : { border : false },
     layout        : { type : 'hbox', align : 'stretch' },
@@ -80,6 +79,7 @@ Ext.define('Fiesta.view.testcases.Details', {
                         },
                         {
                             xtype  : 'button',
+                            margin : '5 0 0 0',
                             text   : 'Delete',
                             width  : 80,
                             cls    : 'delete-testcase',

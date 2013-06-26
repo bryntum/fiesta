@@ -121,7 +121,7 @@ Ext.define("Fiesta.view.SearchForm", {
                         },
                         {
                             xtype     : 'checkbox',
-                            boxLabel  : 'Favorites only',
+                            boxLabel  : 'Favorites',
                             name      : 'showStarred',
                             value     : 1,
                             margin    : '0 0 0 10',

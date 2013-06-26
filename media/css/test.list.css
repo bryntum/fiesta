@@ -8,7 +8,7 @@
 }
 
 .testcase-list-container .x-grid-body {
-    background : #fff;
+    background : rgb(58,153,216);
 }
 
 .testCasesList .x-column-header-trigger
@@ -38,11 +38,19 @@
     display : block;
 }
 
-.testCasesList .mineTest .x-grid-td,
-.testCasesList .mineTest .x-grid-row-alt .x-grid-td,
-.testCasesList .mineTest  .x-grid-row-over .x-grid-td,
-.testCasesList .mineTest  .x-grid-row-selected .x-grid-td {
-    background-color : #FFF6EA !important;
+.testCasesList td.x-grid-cell-inner {
+    background:#f8f8f8;
+}
+
+.testCasesList .testcase-row-selected td
+{
+    position:relative;
+    left:7px;
+}
+
+.testCasesList .testcase-row-selected .x-grid-cell-inner {
+    background-color : #fff !important;
+    margin-left: -7px;
 }
 
 .testCasesList .x-grid-row td {

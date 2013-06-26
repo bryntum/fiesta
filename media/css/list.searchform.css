@@ -36,7 +36,7 @@
     background-position : 0 top;
 }
 
-.searchform .x-form-item, .x-form-field,
+.searchform .x-form-text,
 .searchform .x-form-trigger-wrap {
     border-color  : rgb(50, 109, 156);
     border-radius : 2px;
@@ -45,6 +45,12 @@
 
 .x-form-trigger-wrap {
     background : #fff;
+}
+
+.searchform .x-form-cb-label
+{
+    color:#fff;
+    font-size:0.9em;
 }
 
 .searchform .x-form-empty-field, textarea.x-form-empty-field {

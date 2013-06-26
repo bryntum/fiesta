@@ -31,7 +31,7 @@ ul.x-boxselect-list.x-boxselect-singleselect {
 }
 .x-boxselect-item {
 	padding: 2px 4px 0px 5px !important;
-	margin: 1px;
+	margin: 1px 3px 1px 1px;
     background: none repeat scroll 0 0 #DEE7F8;
     border: 1px solid #CAD8F3;
     border-radius: 1px;

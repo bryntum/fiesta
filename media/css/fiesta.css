@@ -13,7 +13,8 @@ body
 
 .x-grid-row .x-grid-cell,
 .x-tab-inner,
-.x-toolbar .x-toolbar-text
+.x-toolbar .x-toolbar-text,
+.x-form-item, .x-form-field, .x-form-item-label, .x-form-display-field
 {
     font: 300 13px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
 }
