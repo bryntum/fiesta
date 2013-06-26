@@ -4,6 +4,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
     hideHeaders : true,
     flex        : 1,
     cls         : 'preloadgrid',
+    border      : false,
 
     initComponent : function () {
         var editing =  new Ext.grid.plugin.CellEditing({
@@ -18,10 +19,12 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
         });
 
         Ext.apply(this, {
+            preventHeader   : true,
+            store           : store,
             viewConfig : {
-                stripeRows : false,
-                markDirty : false,
-                trackOver : false,
+                stripeRows  : false,
+                markDirty   : false,
+                trackOver   : false,
                 plugins: {
                     ptype: 'gridviewdragdrop'
                 }
@@ -73,6 +76,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                 cls    : 'templates-toolbar',
                 border : false,
                 height : 26,
+                margin : '0 0 4 0',
                 items  : [
                     {
                         xtype : 'splitbutton',
@@ -186,8 +190,7 @@ Ext.define('Fiesta.view.testcases.PreloadGrid', {
                         scope : this
                     }
                 ]
-            },
-            store : store
+            }
         });
 
         this.callParent(arguments);

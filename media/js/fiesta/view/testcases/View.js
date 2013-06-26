@@ -75,6 +75,7 @@ Ext.define('Fiesta.view.testcases.View', {
                 {
                     xtype   : 'runbutton',
                     handler : this.runTest,
+                    scale   : 'medium',
                     scope   : this
                 },
                 {
@@ -195,19 +196,22 @@ Ext.define('Fiesta.view.testcases.View', {
                             region : 'center',
                             cls    : 'code-container',
                             layout : 'border',
+                            style  : 'border:1px solid #eee',
                             items  : [
                                 {
                                     xtype  : 'component',
                                     region     : 'north',
                                     cls    : 'codeeditor-before',
-                                    html   : '<div class="panel-picker">' +
-                                        '<button class="active">JS</button>' +
-                                        '<button>Comments</button>' +
-                                        '</div>'+
+                                    html   :
+//                                        '<div class="panel-picker">' +
+//                                        '<button class="active">JS</button>' +
+//                                        '<button>Comments</button>' +
+//                                        '</div>'+
                                         'StartTest(<span style="color:#708">function</span>(t) {'
                                 },
                                 {
                                     xtype      : 'jseditor',
+                                    cls        : 'jseditor',
                                     region     : 'center'
                                 }
                                 ,

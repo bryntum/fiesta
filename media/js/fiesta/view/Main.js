@@ -6,6 +6,7 @@ Ext.define('Fiesta.view.Main', {
     
     stateId             : 'tabs',
     stateful            : true,
+    cls                 : 'mainview',
     bodyCls             : 'mainview-body',
     plain               : true,
     
@@ -16,7 +17,9 @@ Ext.define('Fiesta.view.Main', {
 
         Ext.apply(this, {
             mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer(),
-            
+            tabBar : {
+                margin : '10 0 0 0'
+            },
             items       : [
                 {
                     xtype : 'homepanel',

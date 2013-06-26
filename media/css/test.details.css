@@ -1,5 +1,5 @@
 .testdetailsform .x-panel-body {
-    background : #eee;
+    background : #f7f7f7;
 }
 
 .testdetailsform .details-text .x-form-text {
@@ -48,4 +48,25 @@
 .preloadgrid .x-grid-cell
 {
     color:#888;
+}
+
+.preloadgrid .x-grid-body {
+    border-color: #d7d7d7 !important;
+}
+
+.preloadgrid .x-grid-header-ct
+{
+    display:none;
+}
+
+.preloadgrid .icon-file
+{
+    position:relative;
+    left: 1px;
+    top:1px;
+}
+
+.templates-toolbar
+{
+    border: 0 none;
 }
