@@ -132,10 +132,10 @@ td.tr-td-vertical-align {
 }
 
 .siesta-domcontainer {
-    background-color    : #f5f5f5;
-    background-image    : linear-gradient(#fff 2px, transparent 2px), linear-gradient(90deg, #fff 2px, transparent 2px), linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .3) 1px, transparent 1px);
-    background-size     : 50px 50px, 50px 50px, 10px 10px, 10px 10px;
-    background-position : -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+    background-color: #fff;
+    background-image: linear-gradient(rgba(221, 221, 221, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(221, 221, 221, .3) 1px, transparent 1px);
+    background-size: 8px 8px, 8px 8px;
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 }
 
 .siesta-domcontainer .x-panel-body {

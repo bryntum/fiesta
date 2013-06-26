@@ -22673,6 +22673,8 @@ Role('Siesta.Test.Simulate.Mouse', {
 
                 // If element isn't visible, try to bring it into view
                 if (!this.elementIsTop(normalized, true)) {
+                    normalized.scrollIntoView();
+
                     this.$(normalized).scrollintoview({ duration : 0 });
                 }
             }
@@ -24055,7 +24057,7 @@ Role('Siesta.Test.ExtJSCore', {
             if (Ext && Ext.Component && el instanceof Ext.Component) {
                 el          = this.compToEl(el);
                 
-                if (this.isElementVisible(el)) {
+                if (this.isElementVisible(el) && this.elementIsTop(el, true)) {
                     var center  = this.findCenter(el);
     
                     el          = this.elementFromPoint(center[0], center[1], false, el.dom);
@@ -24070,8 +24072,8 @@ Role('Siesta.Test.ExtJSCore', {
         },
         
         
-        // this method generally has the same semantic as the "normalizeElement", its being used in 
-        // Siesta.Test.Action.Role.HasTarget to determine what to pass to next step
+        // this method generally has the same semantic as the "normalizeElement", it's being used in
+        // Siesta.Test.Action.Role.HasTarget to determine what to pass to the next step
         //
         // on the browser level the only possibility is DOM element
         // but on ExtJS level user can also use ComponentQuery and next step need to receive the 
@@ -30356,10 +30358,8 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
                         if (console) {
                             console.log(retVal);
                         }
-//                        field.clearInvalid();
                     } catch(e) {
                         console.log(e.message);
-//                        field.markInvalid(e.message);
                     }
                 }
             },

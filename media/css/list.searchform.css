@@ -1,0 +1,64 @@
+.clrFilter {
+    float       : right;
+    color       : #eee;
+    cursor      : pointer;
+    font-size   : 10px;
+    padding-top : 2px;
+}
+
+.sortDesc {
+    background-image : url("/media/img/sort_desc.png");
+}
+
+.sortAsc {
+    background-image : url("/media/img/sort_asc.png");
+}
+
+.addNewBtn {
+    border-color : rgb(50, 109, 156);
+}
+
+/* line 143, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.addNewBtn {
+    font-size          : 24px;
+    font-weight        : 200;
+    color              : #fff;
+    -webkit-box-shadow : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .25);
+    -moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .25);
+    box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .25);
+}
+
+.addNewBtn .x-btn-inner {
+    font-weight : normal !important;
+}
+
+/* line 218, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.x-nlg .addNewBtn {
+    background-image    : url(images/btn/btn-default-small-bg.gif);
+    background-position : 0 top;
+}
+
+.searchform .x-form-item, .x-form-field,
+.searchform .x-form-trigger-wrap {
+    border-color  : rgb(50, 109, 156);
+    border-radius : 2px;
+    height        : 30px;
+}
+
+.x-form-trigger-wrap {
+    background : #fff;
+}
+
+.searchform .x-form-empty-field, textarea.x-form-empty-field {
+    font  : 12px helvetica, arial, verdana, sans-serif !important;
+    color : #bbb;
+}
+
+#tags-filter ul.x-boxselect-list {
+    padding : 2px 3px 1px 3px;
+}
+
+#tags-filter .x-form-trigger
+{
+    background-position:0 3px !important;
+}

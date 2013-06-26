@@ -26,15 +26,14 @@ Ext.define("Fiesta.view.Viewport", {
                     margin      : '33px 0 0 0',
                     width       : 250,
                     cls         : 'testcase-list-container',
+                    border      : false,
                     collapsible : true,
-                    split       : true,
+//                    split       : true,
                     
                     layout  : {
                         type    : 'vbox',
                         align   : 'stretch'
                     },
-                    border  : false,
-                    split   : true,
                     items   : [
                         {
                             xtype       : 'searchForm',

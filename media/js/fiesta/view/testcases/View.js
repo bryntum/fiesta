@@ -194,11 +194,11 @@ Ext.define('Fiesta.view.testcases.View', {
                             xtype  : 'container',
                             region : 'center',
                             cls    : 'code-container',
-                            layout : { type : 'vbox', align : 'stretch' },
+                            layout : 'border',
                             items  : [
                                 {
                                     xtype  : 'component',
-                                    height : 18,
+                                    region     : 'north',
                                     cls    : 'codeeditor-before',
                                     html   : '<div class="panel-picker">' +
                                         '<button class="active">JS</button>' +
@@ -208,15 +208,14 @@ Ext.define('Fiesta.view.testcases.View', {
                                 },
                                 {
                                     xtype      : 'jseditor',
-                                    flex       : 1,
-                                    autoWidth  : true,
-                                    autoHeight : true
-                                },
+                                    region     : 'center'
+                                }
+                                ,
                                 {
                                     xtype  : 'component',
                                     cls    : 'codeeditor-after',
                                     html   : '});',
-                                    height : 18
+                                    region     : 'south'
                                 }
                             ]
                         },

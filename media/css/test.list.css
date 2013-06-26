@@ -1,9 +1,19 @@
+.testCasesList
+{
+    border-right:1px solid rgb(225, 225, 225);
+}
+
 .testcase-list-container .x-panel-body-default {
-    background : #f3f3f3;
+    background : transparent;
 }
 
 .testcase-list-container .x-grid-body {
     background : #fff;
+}
+
+.testCasesList .x-column-header-trigger
+{
+    border: 0 none !important;
 }
 
 .testCasesList .nameHolder {
@@ -11,27 +21,16 @@
     clear         : both;
     font-size     : 13px;
     white-space   : normal;
-    margin-right  : 68px;
-    line-height   : 15px;
+    margin-right  : 10px;
+    line-height   : 14px;
     color         : #444;
     display       : block;
+    font-weight   : bold;
 }
 
 .filledStar .nameHolder {
     background    : url('/media/img/star_full.png') no-repeat left center;
     padding-left  : 20px;
-}
-
-.testCasesList .date {
-    font-size : 10px;
-    position  : absolute;
-    right     : 3px;
-    color     : #bbb;
-    top       : 0;
-}
-
-.testCasesList .x-grid-cell-inner {
-    padding : 1px 6px 2px 6px;
 }
 
 .testCasesList .testNameColumn .x-column-header-trigger {
@@ -55,15 +54,21 @@
 
 .testCasesList .x-grid-cell-inner {
     position : relative;
+    padding : 8px 6px 8px 17px;
 }
 
+.testCasesList .x-column-header-inner
+{
+    padding-left:16px;
+}
+
+.testCasesList .date,
 .testCasesList .userName {
-    position     : absolute;
-    right        : 3px;
-    bottom       : 0;
-    font-size    : 10px;
-    text-align   : left;
+    position     : relative;
+    top          : -1px;
+    font-size    : 9px;
     margin-right : 3px;
+    text-transform: uppercase;
     color        : rgb(172, 172, 172);
 }
 
@@ -86,7 +91,7 @@
 }
 
 .testCasesList ul > li {
-    padding     : 0px 2px !important;
+    padding     : 2px 4px !important;
     display     : block;
     float       : left;
     font-size   : 10px;

@@ -7,6 +7,7 @@ Ext.define('Fiesta.view.testcases.List', {
     initComponent : function () {
         Ext.apply(this, {
             viewConfig : {
+                stripeRows      : false,
                 getRowClass     : this.getCls,
                 overItemCls     : 'testcase-row-over',
                 selectedItemCls : 'testcase-row-selected'

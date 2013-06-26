@@ -7,7 +7,6 @@ Ext.define('Fiesta.view.Main', {
     stateId             : 'tabs',
     stateful            : true,
     bodyCls             : 'mainview-body',
-    border              : false,
     plain               : true,
     
     mouseVisualizer     : null,
@@ -21,7 +20,10 @@ Ext.define('Fiesta.view.Main', {
             items       : [
                 {
                     xtype : 'homepanel',
-                    iconCls : 'icon-home'
+                    tabConfig: {
+                        cls     : 'hometab',
+                        iconCls : 'icon-home'
+                    }
                 }
             ],
             plugins     : [
@@ -147,7 +149,7 @@ Ext.define('Fiesta.view.Main', {
             }
 
             var newTab = new Fiesta.view.testcases.View({
-                title           : Ext.String.ellipsis(testCaseModel.get('name') || newTestTitle, 15),
+                title           : Ext.String.ellipsis(testCaseModel.get('name') || newTestTitle, 25),
                 testCaseModel   : testCaseModel,
                 mouseVisualizer : this.mouseVisualizer
             });

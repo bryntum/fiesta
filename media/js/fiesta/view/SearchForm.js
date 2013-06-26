@@ -15,69 +15,59 @@ Ext.define("Fiesta.view.SearchForm", {
                 msgTarget : "side"
             },
             defaults      : {
-                anchor : "100%"
+                anchor : "100%",
+                margin  : '5 20'
             },
             items         : [
+                ,
                 {
-                    margin : "0 0 5 0",
-                    xtype : 'container',
-                    border : 0,
-                    layout : {
-                        type  : "hbox",
-                        align : "middle"
+                    action  : "createNew",
+                    xtype   : "splitbutton",
+                    text    : "Create new",
+                    scale   : 'medium',
+                    cls     : 'addNewBtn',
+                    handler : function () {
+                        this.createTest();
                     },
-                    items  : [
-                        {
-                            id        : "name-filter",
-                            cls       : 'details-text',
-                            xtype     : "textfield",
-                            flex      : true,
-                            height    : 26,
-                            emptyText : "Filter by name",
-                            name      : 'testCaseName',
-                            tabIndex  : 1,
-                            listeners : {
-                                change      : this.processFilter,
-                                scope       : this
-                            }
-                        },
-                        {
-                            action  : "createNew",
-                            xtype   : "splitbutton",
-                            text    : "Create new",
-                            cls     : 'addNewBtn',
-                            handler : function () {
-                                this.createTest();
-                            },
-                            margin  : '0 0 0 5',
-                            scope   : this,
-                            menu    : {
-                                xtype     : 'testtemplatemenu',
-                                listeners : {
-                                    click : function (item, e) {
-                                        var url = item.url;
-                                        var testConfig = {
-                                            name : item.text
-                                        };
+                    scope   : this,
+                    menu    : {
+                        xtype     : 'testtemplatemenu',
+                        listeners : {
+                            click : function (item, e) {
+                                var url = item.url;
+                                var testConfig = {
+                                    name : item.text
+                                };
 
-                                        if (item.url) {
-                                            var frameworkName = item.up('[frameworkName]').frameworkName;
+                                if (item.url) {
+                                    var frameworkName = item.up('[frameworkName]').frameworkName;
 //                                                testConfig.frameworkId = frameworkName;
-                                            testConfig.hostPageUrl = frameworkName + '/examples/' + item.url;
-                                        }
-
-                                        this.createTest(testConfig);
-
-                                        if (url) {
-                                            // Run test to show the page immediately
-                                            FIESTA.getMainView().activeTab.runTest();
-                                        }
-                                    },
-                                    scope : this
+                                    testConfig.hostPageUrl = frameworkName + '/examples/' + item.url;
                                 }
-                            }
+
+                                this.createTest(testConfig);
+
+                                if (url) {
+                                    // Run test to show the page immediately
+                                    FIESTA.getMainView().activeTab.runTest();
+                                }
+                            },
+                            scope : this
                         }
-                    ]
+                    }
+                },
+                {
+                    id        : "name-filter",
+                    cls       : 'details-text',
+                    xtype     : "textfield",
+                    flex      : true,
+                    emptyText : "Filter by name",
+                    name      : 'testCaseName',
+                    tabIndex  : 1,
+                    listeners : {
+                        change      : this.processFilter,
+                        scope       : this
+                    }
                 },
                 {
                     id             : "tags-filter",
@@ -112,7 +102,6 @@ Ext.define("Fiesta.view.SearchForm", {
 //
 //                    },
                 {
-                    margin : '0 0 5 0',
                     xtype : 'container',
                     border : 0,
                     layout : {

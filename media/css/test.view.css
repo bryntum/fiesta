@@ -5,24 +5,32 @@
     background-image : url(../img/loading.gif);
 }
 
-.mainview-body {
-    margin-top : -2px;
-}
-
 .codeeditor-before {
-    padding-top : 1px;
+    padding-top   : 1px;
+    border-bottom : 1px solid #e6e6e6;
 }
 
 .codeeditor-before,
 .codeeditor-after {
+    height       : 40px;
+    line-height  : 38px;
     padding-left : 10px;
     color        : #444;
     font-size    : .85em;
     font-family  : "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
 }
 
+.codeeditor-after {
+    border-top : 1px solid #e6e6e6;
+}
+
 .CodeMirror * {
     -webkit-font-smoothing : subpixel-antialiased;
+}
+
+.CodeMirror-lines
+{
+    background:#fff;
 }
 
 .mainview-body .x-btn-icon {
@@ -44,11 +52,12 @@
 
 /* SOCIAL ICONS */
 .mainview-body .social {
-    color         : blueviolet;
-    border-radius : 10px;
+    color         : #fff;
+    border-radius : 4px;
     opacity       : 0.7;
-    border-color  : #ccc;
-    background    : lavender;
+    box-shadow    : inset 1px 1px 1px rgb(138,178,209);
+    text-shadow   : 1px 1px 1px rgb(118,158,189);
+    background    : rgb(159, 198, 227);
 }
 
 .mainview-body .social:hover {
@@ -127,7 +136,6 @@ div.run-testcase .x-btn-inner {
 .vote-container .vote-count {
     line-height : 17px;
 }
-
 
 .vote-container .up.voted {
     border-bottom : 7px solid #EDAB37;
@@ -294,28 +302,28 @@ div.run-testcase .x-btn-inner {
     color       : #888;
 }
 
-.run-testcase span
-{
-    font-size   : 1.3em !important;
+.run-testcase span {
+    font-size : 1.3em !important;
 }
 
 .run-testcase:hover,
-.run-testcase:hover span
+.run-testcase:hover span {
+    color : #eee;
+}
+
+.testcase-toolbar
 {
-    color:#eee;
+    background:rgb(249,250,254);
 }
 
 .testcase-toolbar .x-btn-default-toolbar-small .x-btn-split-right {
-    background-image: url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
+    background-image : url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
 }
 
-
-.x-btn-pressed .icon-search
-{
-    color: rgb(66, 129, 235);
+.x-btn-pressed .icon-search {
+    color : rgb(66, 129, 235);
 }
 
-.testview-tool
-{
-    color: #666;
+.testview-tool {
+    color : #666;
 }
