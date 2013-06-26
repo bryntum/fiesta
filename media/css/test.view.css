@@ -311,7 +311,25 @@ div.run-testcase .x-btn-inner {
     color : #eee;
 }
 
-.testcase-toolbar {
+.x-toolbar,
+.x-column-header,
+.x-column-header-over,
+.x-panel-header {
+    background-image      : -moz-linear-gradient(top, #ffffff, #d3d3d3);
+    background-image      : -webkit-gradient(linear, 0 0, 0 100%, from(#f8f8f8), to(#d3d3d3));
+    background-image      : -webkit-linear-gradient(top, #f8f8f8,#d3d3d3);
+    background-image      : -o-linear-gradient(top, #f8f8f8,#d3d3d3);
+    background-image      : linear-gradient(to bottom, #f8f8f8,#d3d3d3);
+}
+
+.x-panel-header {
+    border-color:#ddd;
+}
+
+.x-panel-header .x-header-text
+{
+    color:#333;
+    text-shadow:1px 1px 1px #fff;
 }
 
 .testcase-toolbar .x-btn-default-toolbar-medium .x-btn-split-right {
