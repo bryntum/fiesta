@@ -83,6 +83,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     width   : 70,
                     cls     : 'save-testcase',
                     action  : 'save',
+                    scale   : 'medium',
 
                     handler : this.save,
                     scope   : this
@@ -94,6 +95,7 @@ Ext.define('Fiesta.view.testcases.View', {
                     tooltip         : 'Component inspector',
                     cls             : 'testview-tool',
                     iconCls         : 'icon-search',
+                    scale           : 'medium',
                     handler         : function(btn) {
                         this.domContainer.toggleInspectionMode(btn.pressed);
                     },
@@ -101,9 +103,10 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope           : this
                 }),
                 {
-                    text    : '<b>{ }</b>',
+                    text    : '<b style="display:block;margin-top:-2px;font-size:1.1em">{ }</b>',
                     cls     : 'testview-tool',
                     tooltip : 'Auto-indent code',
+                    scale   : 'medium',
                     handler : function () {
                         var ed = this.codeEditor.editor;
                         ed.autoIndentRange({ line : 0 }, { line : ed.lineCount() });
@@ -111,25 +114,26 @@ Ext.define('Fiesta.view.testcases.View', {
                     scope   : this
                 },
                 {
-                    iconCls  : testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
-                    cls     : 'testview-tool',
-
-                    handler  : this.changeFavorite,
-                    scope    : this,
-                    
-                    action   : 'changeFavorites',
-                    disabled : testCaseModel.phantom || !FIESTA.isSignedIn()
-                },
-
-                {
                     iconCls  : 'icon-copy',
-                    cls             : 'testview-tool',
+                    cls      : 'testview-tool',
+                    scale    : 'medium',
 
                     handler  : this.onCloneClick,
                     scope    : this,
                     
                     tooltip  : 'Clone this test',
                     disabled : testCaseModel.phantom
+                },
+                {
+                    iconCls  : testCaseModel.get('starred') ? 'icon-star-2' : 'icon-star',
+                    cls      : 'testview-tool',
+                    scale    : 'medium',
+
+                    handler  : this.changeFavorite,
+                    scope    : this,
+
+                    action   : 'changeFavorites',
+                    disabled : testCaseModel.phantom || !FIESTA.isSignedIn()
                 },
                 { xtype : 'tbseparator' },
                 {

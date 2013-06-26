@@ -343,7 +343,25 @@ div.run-testcase .x-btn-inner {
 }
 
 .testview-tool {
-    color : #666;
+    color         : #444 !important;
+    background    : transparent;
+    border        : 0 none;
+    text-shadow   : 0px 1px 0px #f4f4f4;
+}
+
+.testview-tool:hover,
+.testview-tool b:hover {
+    color         : #000 !important;
+}
+
+.testview-tool .x-btn-icon-el
+{
+    line-height   : 24px;
+}
+
+.testview-tool .x-btn-inner
+{
+    color         : #333 !important;
 }
 
 .resultpanel,
