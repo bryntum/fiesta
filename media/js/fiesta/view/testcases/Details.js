@@ -1,27 +1,27 @@
 Ext.define('Fiesta.view.testcases.Details', {
-    extend        : 'Ext.FormPanel',
-    alias         : 'widget.detailspanel',
-    requires      : [
+    extend   : 'Ext.FormPanel',
+    alias    : 'widget.detailspanel',
+    requires : [
         'Fiesta.plugins.TagSelect',
         'Fiesta.view.testcases.PreloadGrid'
     ],
-    
-    border        : false,
-    style         : 'border-bottom:1px solid #bbb',
-    scroll        : true,
-    autoScroll    : true,
-    layout        : 'fit',
-    
-    header        : false,
-    collapsed     : true,
-    cls           : 'testdetailsform',
-    itemId        : 'testdetailsform',
-    border        : false,
-    defaults      : { border : false },
-    layout        : { type : 'hbox', align : 'stretch' },
-    
+
+    border     : false,
+    style      : 'border-bottom:1px solid #bbb',
+    scroll     : true,
+    autoScroll : true,
+    layout     : 'fit',
+
+    header    : false,
+    collapsed : true,
+    cls       : 'testdetailsform',
+    itemId    : 'testdetailsform',
+    border    : false,
+    defaults  : { border : false },
+    layout    : { type : 'hbox', align : 'stretch' },
+
     testCaseModel : null,
-    
+
 //    disqusContainer : null,
 
     initComponent : function () {
@@ -57,40 +57,43 @@ Ext.define('Fiesta.view.testcases.Details', {
                             forceSelection   : false
                         },
                         {
-                            xtype : 'container',
+                            xtype  : 'container',
+                            anchor     : '80%',
                             layout : {
-                                type : 'hbox',
+                                type  : 'hbox',
                                 align : 'stretch'
                             },
-                            items : [
+                            items  : [
                                 {
                                     xtype      : 'displayfield',
                                     name       : 'ownerName',
-                                    fieldLabel : 'Submitted by'
+                                    fieldLabel : 'Submitted by',
+                                    flex       : 1
                                 },
                                 {
                                     xtype      : 'combobox',
                                     labelAlign : 'right',
+                                    cls        : 'details-combo',
                                     name       : 'private',
                                     width      : 250,
                                     fieldLabel : 'Visibility',
                                     listClass  : 'x-combo-list-small',
                                     value      : 0,
                                     store      : [
-                                        [0,'Public'],
-                                        [1,'My eyes only'],
-                                        [2,'Anyone with the link'],
+                                        [0, 'Public'],
+                                        [1, 'My eyes only'],
+                                        [2, 'Anyone with the link']
                                     ]
                                 }
                             ]
                         },
                         {
-                            xtype  : 'button',
-                            margin : '5 0 0 0',
-                            text   : 'Delete',
-                            width  : 80,
-                            cls    : 'delete-testcase',
-                            action : 'delete',
+                            xtype   : 'button',
+                            margin  : '5 0 0 0',
+                            text    : 'Delete',
+                            width   : 80,
+                            cls     : 'delete-testcase',
+                            action  : 'delete',
                             handler : this.onDeleteTestCase,
                             scope   : this
                         }
@@ -110,7 +113,7 @@ Ext.define('Fiesta.view.testcases.Details', {
                         }
                     ]
                 } : {
-                    xtype : 'preloadgrid',
+                    xtype  : 'preloadgrid',
                     border : true,
                     height : 100
                 }
@@ -119,23 +122,23 @@ Ext.define('Fiesta.view.testcases.Details', {
 
         this.callParent(arguments);
     },
-    
-    
+
+
     onDeleteTestCase : function () {
         var me = this;
-        
+
         Ext.Msg.confirm('Confirm', 'Are you sure?', function (btn) {
             if (btn == 'yes') Fiesta.DataModel.deleteTestCase(me.testCaseModel);
         })
-    },    
+    },
 
 
     setTestCaseModel : function (model) {
-        var tagsList        = [],
-            preloadGrid     = this.down('preloadgrid'),
-            detailsForm     = this.getForm();
+        var tagsList = [],
+            preloadGrid = this.down('preloadgrid'),
+            detailsForm = this.getForm();
 
-        this.testCaseModel  = model;
+        this.testCaseModel = model;
 
         Ext.each(model.get('tags'), function (tag) {
             tagsList.push(tag.tag);
@@ -143,11 +146,11 @@ Ext.define('Fiesta.view.testcases.Details', {
 
         detailsForm.loadRecord(model);
         detailsForm.setValues({ tagsList : tagsList });
-        
+
         if (preloadGrid) {
             preloadGrid.setValue(model.get('preloads'));
         }
-        
+
         this.down('[action=delete]').setVisible(!model.phantom && model.isEditable())
     },
 
@@ -161,8 +164,8 @@ Ext.define('Fiesta.view.testcases.Details', {
 //        if (!this.collapsed && !this.hidden) Ext.get('disqus_thread').setBox(this.disqusContainer.el.getBox())
     },
 
-    
-    updateRecord : function() {
+
+    updateRecord : function () {
         var preloadGrid = this.down('preloadgrid');
 
         this.getForm().updateRecord();
