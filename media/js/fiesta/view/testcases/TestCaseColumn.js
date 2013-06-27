@@ -10,9 +10,9 @@ Ext.define('Fiesta.view.testcases.TestCaseColumn', {
 
         Ext.apply(this, {
             tpl :
-                '<div class="nameHolder">{name}</div>'+
-                '<span class="date">{[Fiesta.util.Format.humanDate(values.updated_at)]}</span><span class="userName">by {ownerName}</span>' +
-                '<ul class="x-boxselect-list">'+
+                '<div class="top nameHolder">{name}</div>'+
+                '<span class="top date">{[Fiesta.util.Format.humanDate(values.updated_at)]}</span><span class="userName">by {ownerName}</span>' +
+                '<ul class="top x-boxselect-list">'+
                     '<tpl foreach="tags">'+
                         '<li class="x-tab-default x-boxselect-item tag-{tag}">'+
                             '{tag}'+

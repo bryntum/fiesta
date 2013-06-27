@@ -92,14 +92,6 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
 
     afterRender : function() {
         this.callParent(arguments);
-
-        this.el.createChild({
-            cls : "panel-picker",
-            children : [
-                { tag : 'button', cls : 'dom active', html : 'DOM' },
-                { tag : 'button', cls : 'assertions', html : 'Assertions' }
-            ]
-        })
     },
     
     onExpand : function() {
