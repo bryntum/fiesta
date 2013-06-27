@@ -164,6 +164,7 @@ Ext.define("Fiesta.view.SearchForm", {
             ownerId   : CONFIG.userId,
             ownerName : CONFIG.userName,
             tags      : [],
+            private   : 0,
             id        : 'tmp-' + Ext.id()
         }));
 

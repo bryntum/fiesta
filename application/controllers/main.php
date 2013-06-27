@@ -20,6 +20,11 @@ class Main extends CI_Controller {
         $totalTests = $this->testCases_model->getAll(array('getTotal' => true));
         $totalUsers = $this->account_model->countUsers();
         $onlineUsers = $this->account_model->getOnlineUsers($this->session->_get_time());
+        $lastRegUsers = array();
+
+        foreach($this->account_model->getLastRegisteredUsers(5) as $user) {
+            $lastRegUsers[] = $user->username;
+        }
 
         $gravatarUrl = '';
 
@@ -43,7 +48,8 @@ class Main extends CI_Controller {
                 'isAdmin'   => (boolean) $this->session->userdata('isAdmin'),
                 'totalTests' => $totalTests,
                 'onlineUsers' => $onlineUsers,
-                'totalUsers' => $totalUsers
+                'totalUsers' => $totalUsers,
+                'lastRegUsers' => json_encode($lastRegUsers)
             );
             
         }
@@ -60,6 +66,7 @@ class Main extends CI_Controller {
                 'totalTests' => $totalTests,
                 'onlineUsers' => $onlineUsers,
                 'totalUsers' => $totalUsers,
+                'lastRegUsers' => json_encode($lastRegUsers),
                 'isAdmin'  => false
             );
             

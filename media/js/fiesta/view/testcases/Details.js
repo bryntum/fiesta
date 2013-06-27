@@ -69,11 +69,18 @@ Ext.define('Fiesta.view.testcases.Details', {
                                     fieldLabel : 'Submitted by'
                                 },
                                 {
-                                    xtype      : 'checkbox',
+                                    xtype      : 'combobox',
                                     labelAlign : 'right',
                                     name       : 'private',
-                                    width      : 80,
-                                    fieldLabel : 'Private'
+                                    width      : 250,
+                                    fieldLabel : 'Visibility',
+                                    listClass  : 'x-combo-list-small',
+                                    value      : 0,
+                                    store      : [
+                                        [0,'Public'],
+                                        [1,'My eyes only'],
+                                        [2,'Anyone with the link'],
+                                    ]
                                 }
                             ]
                         },
