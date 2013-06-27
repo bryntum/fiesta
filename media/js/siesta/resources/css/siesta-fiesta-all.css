@@ -110,10 +110,7 @@ td.tr-td-vertical-align {
     left     : -10000px;
     top      : -10000px;
     overflow : auto;
-}
-
-.x-ie9 .tr-iframe-wrapper {
-    z-index : 1;
+    z-index  : 2;
 }
 
 .tr-iframe-forced {
@@ -132,17 +129,16 @@ td.tr-td-vertical-align {
 }
 
 .siesta-domcontainer {
-    background-color: #fff;
-    background-image: linear-gradient(rgba(221, 221, 221, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(221, 221, 221, .3) 1px, transparent 1px);
-    background-size: 8px 8px, 8px 8px;
-    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
-    box-shadow: inset 0 1px 2px #e4e4e4;
+    background-color    : #fff;
+    background-image    : linear-gradient(rgba(221, 221, 221, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(221, 221, 221, .3) 1px, transparent 1px);
+    background-size     : 8px 8px, 8px 8px;
+    background-position : -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+    box-shadow          : inset 0 1px 2px #e4e4e4;
 }
 
 .siesta-domcontainer .x-panel-body {
     background : transparent;
     border     : 0 none;
-    margin     : 20px;
 }
 
 .domcontainer-console {

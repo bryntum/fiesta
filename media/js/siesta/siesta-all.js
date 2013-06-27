@@ -22673,6 +22673,7 @@ Role('Siesta.Test.Simulate.Mouse', {
 
                 // If element isn't visible, try to bring it into view
                 if (!this.elementIsTop(normalized, true)) {
+                    // Required to handle the case where the body is scrolled
                     normalized.scrollIntoView();
 
                     this.$(normalized).scrollintoview({ duration : 0 });
@@ -23623,7 +23624,7 @@ Role('Siesta.Test.Simulate.Keyboard', {
                     if (maxLength != null) maxLength    = Number(maxLength)
 
                     // If the entered char had no impact on the textfield - manually put it there
-                    if (!supports.canSimulateKeyCharacters || (originalLength === el.value.length && originalLength !== maxLength)) {
+                    if (!supports.canSimulateKeyCharacters && originalLength === el.value.length && originalLength !== maxLength) {
                         el.value = el.value + options.readableKey;
                     }
                 }
@@ -24056,10 +24057,10 @@ Role('Siesta.Test.ExtJSCore', {
 
             if (Ext && Ext.Component && el instanceof Ext.Component) {
                 el          = this.compToEl(el);
-                
+
                 if (this.isElementVisible(el) && this.elementIsTop(el, true)) {
                     var center  = this.findCenter(el);
-    
+
                     el          = this.elementFromPoint(center[0], center[1], false, el.dom);
                 }
             }
@@ -27000,7 +27001,7 @@ Class('Siesta.Test.Browser', {
 
             var last = stops[stops.length-1];
 
-            if (last[0] !== to[0] || last[1] !== to[1]) {
+            if (last.length > 0 && last[0] !== to[0] || last[1] !== to[1]) {
                 stops.push(to);
             }
             return stops;
@@ -30294,6 +30295,7 @@ Ext.define('Siesta.Harness.Browser.UI.DomContainer', {
 
     canManageDOM            : true,
     suspendAfterLayoutAlign : false,
+    padding                 : 15,
 
     initComponent : function() {
         this.testListeners  = []
