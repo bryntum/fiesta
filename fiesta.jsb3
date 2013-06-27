@@ -11,7 +11,7 @@
             "files"     : [
                 { "path"  : "media/frameworks/extjs-4.2.0/ext-all.js" },
                 { "path"  : "media/frameworks/extjs-4.2.0/ext-theme-neptune.js" },
-                { "path"  : "media/js/siesta/siesta-all.js" },
+                { "path"  : "media/js/siesta/siesta-fiesta.js" },
                 { "path"  : "media/js/codemirror/lib/codemirror.js" },
                 { "path"  : "media/js/codemirror/mode/javascript/javascript.js" },
                 { "path"  : "media/js/codemirror/jshint.js" },
