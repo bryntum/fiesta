@@ -42,7 +42,7 @@
     background:#f8f8f8;
 }
 
-.x-grid-row td.x-grid-cell
+.testCasesList .x-grid-row td.x-grid-cell
 {
     background:transparent;
     cursor : pointer;
