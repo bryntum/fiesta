@@ -176,8 +176,8 @@ dl.userinfo {
     right         : -2px;
     bottom        : -1px;
     z-index       : 2;
-    background    : #fff;
-    border        : 1px solid #ccc;
+    background    : #f8f8f8;
+    border        : 1px solid #d8d8d8;
     border-radius : 12px;
     width         : 12px;
     height        : 12px;
@@ -186,13 +186,17 @@ dl.userinfo {
 }
 
 .user-arrow-ct:hover {
-    border-color  : blue;
+    border-color  : #999;
+}
+
+.user-arrow-ct:hover .user-arrow {
+    border-color       : #777;
 }
 
 .user-arrow {
     width              : 0;
     height             : 0;
-    border-color       : #bbb;
+    border-color       : #aaa;
     border-right-color : transparent !important;
     border-left-color  : transparent !important;
     border-width       : 4px 3px 0;
