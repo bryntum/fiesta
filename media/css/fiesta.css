@@ -3,95 +3,82 @@ dl, dd, dt, ul, li {
     padding : 0;
 }
 
-body
-{
-    background:rgb(58,153,216) url(../img/logosmall.png) no-repeat 6px 8px !important;
-    background-size:auto 45px !important;
-    font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
-    font-weight: 300;
+body {
+    background      : rgb(58, 153, 216) url(../img/logosmall.png) no-repeat 6px 8px !important;
+    background-size : auto 45px !important;
+    font-family     : "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    font-weight     : 300;
 }
 
 .x-grid-row .x-grid-cell,
 .x-tab-inner,
 .x-toolbar .x-toolbar-text,
-.x-form-item, .x-form-field, .x-form-item-label, .x-form-display-field
-{
-    font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
-    font-weight: 300;
+.x-form-item, .x-form-field, .x-form-item-label, .x-form-display-field {
+    font-family : "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    font-weight : 300;
 }
 
-.x-btn-inner
-{
-    font-weight:normal !important;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+.x-btn-inner {
+    font-weight : normal !important;
+    font-family : "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
 }
 
 .x-panel-body-default,
-.x-border-layout-ct
-{
-    background:#fff;
+.x-border-layout-ct {
+    background : #fff;
 }
 
-div.x-splitter
-{
-    background:#fff;
+div.x-splitter {
+    background : #fff;
 }
 
-.beta
-{
-    position : absolute;
-    top:33px;
-    left:139px;
-    color:yellow;
-    font-size: 10px;
-    font-family: "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+.beta {
+    position    : absolute;
+    top         : 33px;
+    left        : 139px;
+    color       : yellow;
+    font-size   : 10px;
+    font-family : "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
 }
 
-.x-boxselect input
-{
-    padding-left:3px;
+.x-boxselect input {
+    padding-left : 3px;
 }
 
-.viewport-top-toolbar
-{
-    overflow: visible;
-    color : #fff;
-    padding-right:10px;
+.viewport-top-toolbar {
+    overflow      : visible;
+    color         : #fff;
+    padding-right : 10px;
 }
 
-.viewport-top-toolbar a
-{
-    color:#fff;
-    text-decoration: none;
+.viewport-top-toolbar a {
+    color           : #fff;
+    text-decoration : none;
 }
 
-.viewport-top-toolbar .x-box-inner
-{
-    overflow:visible;
+.viewport-top-toolbar .x-box-inner {
+    overflow : visible;
 }
 
-.user-avatar img
-{
-    height:35px;
-    border:1px solid #f6f6f6;
-    margin:9px 0 0 3px;
+.user-avatar img {
+    height : 35px;
+    border : 1px solid #f6f6f6;
+    margin : 9px 0 0 3px;
 }
 
-dl.userinfo
-{
-    line-height:1.2em;
-    padding-top:8px;
+dl.userinfo {
+    line-height : 1.2em;
+    padding-top : 8px;
 }
 
-.userinfo dd
-{
-    text-align:center;
-    font-weight:bold;
+.userinfo dd {
+    text-align  : center;
+    font-weight : bold;
 }
 
 .x-panel-header-text-container-default,
 .x-tab-inner {
-    font-size   : 14px !important;
+    font-size : 14px !important;
 }
 
 .star {
@@ -112,7 +99,6 @@ dl.userinfo
     width  : 16px;
     height : 16px;
 }
-
 
 .rating {
     font-size : 10px;
@@ -165,7 +151,7 @@ dl.userinfo
 .homepanel h2 {
     color      : #666;
     font-size  : 3em;
-    padding    : 20px 0 0 0 ;
+    padding    : 20px 0 0 0;
     text-align : center;
     margin     : 0;
 }
@@ -177,20 +163,18 @@ dl.userinfo
     clear      : both;
 }
 
-
-.homepanel .x-panel-body{
-    background : url(../img/siestalogo.png) no-repeat center center;
-    background-size:20%;
+.homepanel .x-panel-body {
+    background      : url(../img/siestalogo.png) no-repeat center center;
+    background-size : 20%;
 }
 
-
 .homepanel .footer {
-    background-color       : #ebebeb;
-    position    : absolute;
-    bottom      : 0;
-    left        : 0;
-    height      : 100px;
-    width       : 100%;
+    background-color : #ebebeb;
+    position         : absolute;
+    bottom           : 0;
+    left             : 0;
+    height           : 100px;
+    width            : 100%;
 }
 
 .homepanel .footer dl {
@@ -206,62 +190,55 @@ dl.userinfo
 }
 
 .homepanel .footer dl:last-child {
-    border-right:0;
+    border-right : 0;
 }
 
 .homepanel .footer dt {
-    font-size: 2.3em;
-    line-height  : 1em;
+    font-size   : 2.3em;
+    line-height : 1em;
 }
 
-.user-button
-{
-    background: none;
-    border:none;
+.user-button {
+    background : none;
+    border     : none;
 }
 
-.user-button .x-btn-arrow
-{
-    background-image:url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
+.user-button .x-btn-arrow {
+    background-image : url("/media/js/ext/resources/ext-theme-neptune/images/button/default-small-s-arrow.png");
 }
 
-.user-button .x-btn-inner
-{
-    color: #fff;
-    padding-right: 4px !important;
+.user-button .x-btn-inner {
+    color         : #fff;
+    padding-right : 4px !important;
 }
 
-.noavatar
-{
-    background: url(../img/user.png) no-repeat left center;
+.noavatar {
+    background : url(../img/user.png) no-repeat left center;
 }
 
 /* TABS STYLING */
 
 .x-tab-default {
-    transition: left 0.3s;
+    transition : left 0.3s;
 }
 
-.x-tab-default-top
-{
-    background:rgb(176,214,239);
-    box-shadow:1px 1px 1px rgb(58,113,186);
-    margin-left:8px;
+.x-tab-default-top {
+    background  : rgb(176, 214, 239);
+    box-shadow  : 1px 1px 1px rgb(58, 113, 186);
+    margin-left : 8px;
 }
 
-.x-tab-default-top .x-tab-inner
-{
-    color:rgb(88,152,222);
+.x-tab-default-top .x-tab-inner {
+    color : rgb(88, 152, 222);
 }
 
 .x-tab-default-top-active {
-    background:#fff;
-    font-weight:bold;
+    background  : #fff;
+    font-weight : bold;
 }
 
-.x-tab-default-top-active .x-tab-inner
-{
-    color:rgb(88,152,222);
+.x-tab-default-top-active .x-tab-inner {
+    color : rgb(88, 152, 222);
 }
 
 .icon-home {
@@ -274,28 +251,34 @@ dl.userinfo
     color : dodgerblue;
 }
 
-.x-tab-bar-strip
-{
-    height:0;
+.x-tab-bar-strip {
+    height : 0;
 }
 
-.mainview
-{
+.mainview {
 }
 
-.mainview-body
-{
-    border-top:1px solid #ddd;
-    box-shadow:0px 0px 6px #999;
-    border-top-left-radius:3px;
-    z-index:2;
+.mainview-body {
+    border-top             : 1px solid #ddd;
+    box-shadow             : 0px 0px 6px #999;
+    border-top-left-radius : 3px;
+    z-index                : 2;
 }
 
-.x-tab-bar-body
-{
-    margin-top: 5px;
+.x-tab-bar-body {
+    margin-top : 5px;
 }
-.x-tab-default .x-tab-close-btn {
-    background-color: #ddd;
-    border-radius: 2px;
+
+.x-tool-expand-top, .x-tool-collapse-top {
+}
+
+.x-tab-default a.x-tab-close-btn {
+    background-image    : url(../img/delete.png);
+    opacity             : 0.6;
+    background-position : 0 0;
+}
+
+.x-tab-default a.x-tab-close-btn:hover {
+    background-position : 0 0;
+    opacity             : 1;
 }

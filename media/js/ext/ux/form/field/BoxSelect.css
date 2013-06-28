@@ -44,6 +44,11 @@ ul.x-boxselect-list.x-boxselect-singleselect {
     cursor        : default;
 }
 
+.x-boxselect-item .x-tab-close-btn {
+    top   : 0px;
+    right : 0px;
+}
+
 .x-field:not(.x-item-disabled) .x-boxselect-item:hover {
     background : #BBCEF1;
     border     : 1px solid #6D95E0;
