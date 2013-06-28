@@ -203,7 +203,7 @@ dl.userinfo {
     border-style       : solid;
 }
 
-.signin-button {
+.light-button {
     background-image : -moz-linear-gradient(top, #fff, #e0e0e0);
     background-image : -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#e0e0e0));
     background-image : -webkit-linear-gradient(top, #fff, #e0e0e0);
@@ -213,7 +213,7 @@ dl.userinfo {
     z-index          : 3;
 }
 
-.signin-button:hover {
+.light-button:hover {
     background-image : -moz-linear-gradient(top, #f5f5f5, #d7d7d7);
     background-image : -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#d7d7d7));
     background-image : -webkit-linear-gradient(top, #f5f5f5, #d7d7d7);

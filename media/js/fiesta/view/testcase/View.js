@@ -29,9 +29,9 @@ Ext.define('Fiesta.view.testcase.View', {
         var testCaseModel       = this.testCaseModel
 
         var topBar = {
-            xtype : 'toolbar',
-            dock : 'top',
-            cls  : 'testcase-toolbar',
+            xtype   : 'toolbar',
+            dock    : 'top',
+            cls     : 'testcase-toolbar',
             items : [
                 {
                     action  : 'expandcollapse',
@@ -51,7 +51,7 @@ Ext.define('Fiesta.view.testcase.View', {
                 {
                     text    : 'Save',
                     width   : 70,
-                    cls     : 'save-testcase',
+                    cls     : 'save-testcase light-button',
                     action  : 'save',
                     scale   : 'medium',
 

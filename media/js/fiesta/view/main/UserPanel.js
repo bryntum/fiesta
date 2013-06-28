@@ -23,7 +23,7 @@ Ext.define('Fiesta.view.main.UserPanel', {
             ].concat(!FIESTA.isSignedIn() ? [
                     {
                         margin  : '27 0 0 0',
-                        cls     : 'signin-button',
+                        cls     : 'signin-button light-button',
                         xtype   : 'button',
                         scale   : 'medium',
                         action  : 'sign_in',
