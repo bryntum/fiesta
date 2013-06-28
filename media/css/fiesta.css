@@ -269,7 +269,19 @@ dl.userinfo {
     margin-top : 5px;
 }
 
-.x-tool-expand-top, .x-tool-collapse-top {
+.x-tool-expand-top, .x-tool-expand-bottom,
+.x-tool-collapse-top, .x-tool-collapse-bottom,
+.expandcollapse {
+    background-image : url(../img/expand.png);
+    background-color : transparent !important;
+    border           : 0 none;
+    opacity          : 0.5;
+}
+
+.x-tool-expand-top:hover, .x-tool-expand-bottom:hover,
+.x-tool-collapse-top:hover, .x-tool-collapse-bottom:hover,
+.expandcollapse:hover {
+    opacity          : 0.8;
 }
 
 .x-tab-default a.x-tab-close-btn {

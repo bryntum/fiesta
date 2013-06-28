@@ -34,45 +34,14 @@ Ext.define('Fiesta.view.testcases.View', {
             cls  : 'testcase-toolbar',
             items : [
                 {
-//                    iconCls : 'icon-arrow-down',
-//                    text    : 'V',
                     action  : 'expandcollapse',
                     cls     : 'expandcollapse',
+                    height  : 14,
                     scope   : this,
-                    handler : function () {
+                    handler : function (btn) {
                         this.detailsPanel.toggleCollapse();
                     }
                 },
-                {
-                    xtype           : 'displayfield',
-                    width           : 20,
-                    cls             : 'vote-container',
-                    value           : testCaseModel.get('rating'),
-                    renderer        : function (value) {
-
-                        var voted = this.up('testCasesView').testCaseModel.get('voted');
-                            votedUpCls = '',
-                            votedDownCls = '';
-
-                        if(voted == 1) {
-                            votedUpCls = 'voted';
-                        };
-
-                        if(voted == -1) {
-                            votedDownCls = 'voted';
-                        };
-
-
-
-                        var result = '<dl><dt class="arrow up '+votedUpCls+'" title="Vote up"></dt><dd class="vote-count">'
-                                        +value+
-                                    '</dd><dd class="arrow down '+votedDownCls+'" title="Vote down"></dd></dl>';
-                        return result;
-                    },
-                    disabled         : testCaseModel.get('ownerId') == CONFIG.userId || testCaseModel.phantom
-                },
-
-                { xtype : 'tbseparator' },
                 {
                     xtype   : 'runbutton',
                     handler : this.runTest,
@@ -91,6 +60,34 @@ Ext.define('Fiesta.view.testcases.View', {
                 },
                 {
                     xtype : 'tbfill'
+                },
+                {
+                    xtype           : 'displayfield',
+                    width           : 20,
+                    cls             : 'vote-container',
+                    value           : testCaseModel.get('rating'),
+                    renderer        : function (value) {
+
+                        var voted = this.up('testCasesView').testCaseModel.get('voted');
+                        votedUpCls = '',
+                            votedDownCls = '';
+
+                        if(voted == 1) {
+                            votedUpCls = 'voted';
+                        };
+
+                        if(voted == -1) {
+                            votedDownCls = 'voted';
+                        };
+
+
+
+                        var result = '<dl><dt class="arrow up '+votedUpCls+'" title="Vote up"></dt><dd class="vote-count">'
+                            +value+
+                            '</dd><dd class="arrow down '+votedDownCls+'" title="Vote down"></dd></dl>';
+                        return result;
+                    },
+                    disabled         : testCaseModel.get('ownerId') == CONFIG.userId || testCaseModel.phantom
                 },
                 this.inspectionButton = new Ext.Button({
                     tooltip         : 'Component inspector',
@@ -181,7 +178,6 @@ Ext.define('Fiesta.view.testcases.View', {
                     testCaseModel   : testCaseModel,
                     region          : 'north',
                     listeners       : {
-                        collapse    : this.onDetailsCollapseExpand,
                         expand      : this.onDetailsExpand,
                         
                         scope       : this
@@ -628,8 +624,6 @@ Ext.define('Fiesta.view.testcases.View', {
     onDetailsExpand : function (pnl) {
         var me = this;
 
-        this.onDetailsCollapseExpand();
-
 //        DISQUS.reset({
 //            reload : true,
 //            config : function () {
@@ -637,12 +631,6 @@ Ext.define('Fiesta.view.testcases.View', {
 //                this.page.url = 'http://fiestadev.bryntum.com/' + me.testCaseModel.get('slug');
 //            }
 //        });
-    },
-
-    
-    onDetailsCollapseExpand : function() {
-        var btn = this.expandCollapseButton;
-        btn.setIconCls(this.detailsPanel.collapsed ? 'icon-arrow-down' : 'icon-arrow-up');
     },
 
     

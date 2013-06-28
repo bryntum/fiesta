@@ -63,18 +63,10 @@
     opacity : 1;
 }
 
-.expandcollapse {
-    background    : #747474;
-    border-radius : 100%;
-}
 
 .expandcollapse .x-btn-text
 {
     color         : #fff;
-}
-
-.expandcollapse:hover {
-    color : #0061f2;
 }
 
 /* Bootstrap styles, Apache 2.0 license */
@@ -346,8 +338,9 @@ div.run-testcase .x-btn-inner {
     color : rgb(66, 129, 235);
 }
 
-.testview-tool {
-    color         : #444 !important;
+.testview-tool,
+.testview-tool b{
+    color         : #555;
     background    : transparent;
     border        : 0 none;
     text-shadow   : 0px 1px 0px #f4f4f4;
@@ -355,7 +348,7 @@ div.run-testcase .x-btn-inner {
 
 .testview-tool:hover,
 .testview-tool b:hover {
-    color : #0061f2;
+    color : #000;
 }
 
 .testview-tool .x-btn-icon-el

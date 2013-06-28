@@ -46,6 +46,7 @@ Ext.define('Fiesta.view.testcases.ResultPanel', {
                     slot            : 'grid',
                     region          : 'south',
                     collapsed       : true,
+                    collapsible     : true,
                     title           : 'Assertions',
                     height          : 200,
                     hideHeaders     : true,

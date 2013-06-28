@@ -55,8 +55,7 @@ ul.x-boxselect-list.x-boxselect-singleselect {
 }
 
 .x-field:not(.x-item-disabled) .x-boxselect-item.selected {
-    border     : 1px solid #316AD3 !important;
-    background : #658FDC !important;
+    border     : 1px solid #316AD3;
 }
 
 .x-boxselect-item-text {
