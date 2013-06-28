@@ -131,13 +131,13 @@ div.x-splitter {
 .x-menu-item-icon
 {
     font-size : 1.4em;
-    top       : 9px;
+    top       : 11px;
     left      : 6px;
 }
 
 .x-menu-item-icon-right
 {
-    top       : 9px;
+    top       : 11px;
 }
 
 .x-menu-item-link {
@@ -157,7 +157,6 @@ div.x-splitter {
 }
 
 .x-menu-item-arrow {
-    top    : 14px;
     width  : 12px;
     height : 9px;
     top    : 12px;
@@ -173,6 +172,7 @@ div.x-splitter {
 .x-menu-item-text,
 .x-menu-item-icon
 {
+    font-size : 14px;
     color     : #888;
 }
 

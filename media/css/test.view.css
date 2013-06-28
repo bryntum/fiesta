@@ -312,6 +312,11 @@ div.run-testcase .x-btn-inner {
     line-height : 1.4em;
 }
 
+.run-testcase .x-btn-icon-el
+{
+    margin-left:3px;
+}
+
 .run-testcase:hover,
 .run-testcase:hover span {
     color : #eee;
