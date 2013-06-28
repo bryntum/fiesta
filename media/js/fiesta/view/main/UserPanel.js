@@ -23,7 +23,7 @@ Ext.define('Fiesta.view.main.UserPanel', {
             ].concat(!FIESTA.isSignedIn() ? [
                     {
                         margin  : '27 0 0 0',
-                        style   : 'z-index:3', // since it's overlapping the panel below
+                        cls     : 'signin-button',
                         xtype   : 'button',
                         scale   : 'medium',
                         action  : 'sign_in',

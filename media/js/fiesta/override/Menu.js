@@ -30,5 +30,5 @@ Ext.define('Fiesta.override.Menu', {
         '{childElCls}"/>',
         '</div>',
         '</tpl>'
-    ],
+    ]
 });

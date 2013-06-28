@@ -186,11 +186,11 @@ dl.userinfo {
 }
 
 .user-arrow-ct:hover {
-    border-color  : #999;
+    border-color : #999;
 }
 
 .user-arrow-ct:hover .user-arrow {
-    border-color       : #777;
+    border-color : #777;
 }
 
 .user-arrow {
@@ -201,4 +201,22 @@ dl.userinfo {
     border-left-color  : transparent !important;
     border-width       : 4px 3px 0;
     border-style       : solid;
+}
+
+.signin-button {
+    background-image : -moz-linear-gradient(top, #fff, #e0e0e0);
+    background-image : -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#e0e0e0));
+    background-image : -webkit-linear-gradient(top, #fff, #e0e0e0);
+    background-image : -o-linear-gradient(top, #fff, #e0e0e0);
+    background-image : linear-gradient(to bottom, fff, #e0e0e0);
+    border-color     : rgb(47, 132, 194);
+    z-index          : 3;
+}
+
+.signin-button:hover {
+    background-image : -moz-linear-gradient(top, #f5f5f5, #d7d7d7);
+    background-image : -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#d7d7d7));
+    background-image : -webkit-linear-gradient(top, #f5f5f5, #d7d7d7);
+    background-image : -o-linear-gradient(top, #f5f5f5, #d7d7d7);
+    background-image : linear-gradient(to bottom, f5f5f5, #d7d7d7);
 }

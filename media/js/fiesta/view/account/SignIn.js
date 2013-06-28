@@ -1,10 +1,10 @@
 Ext.define('Fiesta.view.account.SignIn', {
     extend          : 'Ext.window.Window',
     alias           : 'widget.signin',
-    width           : 400,
-    height          : 230,
+    width           : 350,
+    height          : 270,
     autoShow        : true,
-    title           : 'Sign In',
+    title           : 'SIGN IN',
     layout          : 'fit',
     closeAction     : 'destroy',
     cls             : 'login-window',
@@ -17,30 +17,34 @@ Ext.define('Fiesta.view.account.SignIn', {
                 {
                     xtype           : 'form',
                     border          : false,
-                    bodyPadding     : 10,
+                    bodyPadding     : '10 20',
                     url             : '/account/sign_in',
                     standardSubmit  : true,
                     fieldDefaults   : {
                         msgTarget   : "side"
                     },
                     defaults        : {
-                        anchor  : "90%"
+                        anchor  : "100%",
+                        margin  : '5 0',
+                        height  : 50
                     },
                     items           : [
                         {
                             xtype          : "textfield",
                             flex           : true,
+                            labelAlign      : 'top',
                             name           : 'sign_in_username_email',
-                            emptyText      : "Username or email",
+                            fieldLabel     : "Username or email",
                             allowBlank     : false,
                             validateOnBlur : false
                         },
                         {
                             xtype       : "textfield",
+                            labelAlign      : 'top',
                             flex        : true,
                             inputType   : 'password',
                             name        : 'sign_in_password',
-                            emptyText   : "",
+                            fieldLabel  : "Password",
                             allowBlank  : false,
                             listeners : {
                                 specialkey : function(field, e) {
@@ -51,41 +55,55 @@ Ext.define('Fiesta.view.account.SignIn', {
                                 scope : this
                             }
                         },
-
                         {
-                            xtype       : 'checkbox',
-                            boxLabel    : 'Remember me',
-                            name        : 'sign_in_remember'
-                        },
-                        {
-                            border      : false,
-                            xtype       : 'component',
-                            height      : 40,
-                            cls         : 'third-party-auth',
-                            html        : '<a href="'+CONFIG.fb_url+'" title="Sign In with Facebook"><img src="/resource/img/auth_icons/facebook.png"/></a></li>'+
-                                          '<a href="/account/connect_twitter" title="Sign In with Twitter"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
-                                          '<a href="/account/connect_google" title="Sign In with Google"><img src="/resource/img/auth_icons/google.png"/></a></li>'
-//                                          '<li class="third_party"><a href="/account/connect_yahoo" title="Sign In with Yahoo!"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
-//                                          '<li class="third_party"><a href="/account/connect_openid" title="Sign In with OpenID"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
+                            xtype : 'container',
+                            height      : 47,
+                            layout : {
+                                type : 'hbox',
+                                align : 'stretch'
+                            },
+                            items : [
+                                {
+                                    xtype       : 'checkbox',
+                                    boxLabel    : 'Remember me',
+                                    name        : 'sign_in_remember',
+                                    flex        : 1
+                                },
+                                {
+                                    border      : false,
+                                    margin      : '9 0',
+                                    xtype       : 'component',
+                                    width       : 130,
+                                    cls         : 'third-party-auth',
+                                    html        : '<a href="'+CONFIG.fb_url+'" title="Sign In with Facebook"><img src="/resource/img/auth_icons/facebook.png"/></a></li>'+
+                                        '<a href="/account/connect_twitter" title="Sign In with Twitter"><img src="/resource/img/auth_icons/twitter.png"/></a></li>'+
+                                        '<a href="/account/connect_google" title="Sign In with Google"><img src="/resource/img/auth_icons/google.png"/></a></li>'
+                                }
+                            ]
                         }
                     ]
                 }
             ],
-            buttons  : [
-                {
-                    text    : 'Sign In',
-                    action  : 'do_sign_in',
-                    handler : this.processSignin,
-                    scope   : this
-                },
-                {
-                    text    : 'Sign Up',
-                    action  : 'sign_up',
-                    href    : '/account/sign_up',
-                    hrefTarget : '_self'
-                }
+            buttons  : {
+                padding : '10 13',
 
-            ]
+                items :[
+                    {
+                        text    : 'Sign In',
+                        scale   : 'medium',
+                        action  : 'do_sign_in',
+                        handler : this.processSignin,
+                        scope   : this
+                    },
+                    {
+                        text    : 'Sign Up',
+                        scale   : 'medium',
+                        action  : 'sign_up',
+                        href    : '/account/sign_up',
+                        hrefTarget : '_self'
+                    }
+                ]
+            }
         });
 
         this.callParent(arguments);

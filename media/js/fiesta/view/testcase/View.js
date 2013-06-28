@@ -90,7 +90,7 @@ Ext.define('Fiesta.view.testcase.View', {
                     disabled         : testCaseModel.get('ownerId') == CONFIG.userId || testCaseModel.phantom
                 },
                 this.inspectionButton = new Ext.Button({
-                    tooltip         : 'Component inspector',
+//                    tooltip         : 'Component inspector',
                     cls             : 'testview-tool',
                     iconCls         : 'icon-search',
                     scale           : 'medium',
@@ -103,7 +103,7 @@ Ext.define('Fiesta.view.testcase.View', {
                 {
                     text    : '<b style="display:block;margin-top:-2px;font-size:1.1em">{ }</b>',
                     cls     : 'testview-tool',
-                    tooltip : 'Auto-indent code',
+//                    tooltip : 'Auto-indent code',
                     scale   : 'medium',
                     handler : function () {
                         var ed = this.codeEditor.editor;
@@ -119,7 +119,7 @@ Ext.define('Fiesta.view.testcase.View', {
                     handler  : this.onCloneClick,
                     scope    : this,
                     
-                    tooltip  : 'Clone this test',
+//                    tooltip  : 'Clone this test',
                     disabled : testCaseModel.phantom
                 },
                 {
@@ -139,7 +139,7 @@ Ext.define('Fiesta.view.testcase.View', {
                     
                     handler : this.shareTwitter,
                     scope   : this,
-                    tooltip : 'Share on Twitter',
+//                    tooltip : 'Share on Twitter',
                     
                     cls     : 'social'
                 },
@@ -149,7 +149,7 @@ Ext.define('Fiesta.view.testcase.View', {
                     handler : this.shareFb,
                     scope   : this,
                     
-                    tooltip : 'Share on Facebook',
+//                    tooltip : 'Share on Facebook',
                     
                     cls     : 'social'
                 },
@@ -159,7 +159,7 @@ Ext.define('Fiesta.view.testcase.View', {
                     handler : this.shareGoogle,
                     scope   : this,
                     
-                    tooltip : 'Share on Google+',
+//                    tooltip : 'Share on Google+',
                     
                     cls     : 'social'
                 }
