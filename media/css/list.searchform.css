@@ -3,7 +3,7 @@
     color       : #eee;
     cursor      : pointer;
     font-size   : 10px;
-    padding-top : 2px;
+    padding-top : 1px;
 }
 
 .sortDesc {
@@ -36,11 +36,18 @@
     background-position : 0 top;
 }
 
+.searchform .x-form-text{
+    height        : 30px;
+}
+
 .searchform .x-form-text,
 .searchform .x-form-trigger-wrap {
     border-color  : rgb(50, 109, 156);
     border-radius : 2px;
-    height        : 30px;
+}
+
+.searchform .x-form-trigger-wrap .x-form-text{
+    height        : 28px;
 }
 
 .x-form-trigger-wrap {
@@ -51,6 +58,11 @@
 {
     color:#fff;
     font-size:0.9em;
+}
+
+.searchform .x-form-cb
+{
+    margin-top:5px;
 }
 
 .searchform .x-form-empty-field, textarea.x-form-empty-field {

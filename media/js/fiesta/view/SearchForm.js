@@ -72,6 +72,7 @@ Ext.define("Fiesta.view.SearchForm", {
                 {
                     id             : "tags-filter",
                     xtype          : "tagselect",
+                    cls            : 'tagfilter',
                     store          : new Fiesta.store.Tags(),
                     displayField   : "tag",
                     valueField     : "id",
