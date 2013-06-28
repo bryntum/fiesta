@@ -24,6 +24,19 @@
     -moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .1), 0 0px 3px rgba(0, 0, 0, .25);
     box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .1), 0 0px 3px rgba(0, 0, 0, .25);
     border-color : rgb(50, 109, 156);
+    background-image      : -moz-linear-gradient(top, #76b1d7, #2d82ba);
+    background-image      : -webkit-gradient(linear, 0 0, 0 100%, from(#76b1d7), to(#2d82ba));
+    background-image      : -webkit-linear-gradient(top, #76b1d7, #2d82ba);
+    background-image      : -o-linear-gradient(top, #76b1d7, #2d82ba);
+    background-image      : linear-gradient(to bottom, #76b1d7, #2d82ba);
+}
+
+.addNewBtn:hover {
+    background-image      : -moz-linear-gradient(top, #5691c7, #2d82ba);
+    background-image      : -webkit-gradient(linear, 0 0, 0 100%, from(#5691c7), to(#2d82ba));
+    background-image      : -webkit-linear-gradient(top, #5691c7, #2d82ba);
+    background-image      : -o-linear-gradient(top, #5691c7, #2d82ba);
+    background-image      : linear-gradient(to bottom, #5691c7, #2d82ba);
 }
 
 .addNewBtn .x-btn-inner {
