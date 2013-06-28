@@ -41,7 +41,6 @@ div.x-splitter {
     font-size : 14px !important;
 }
 
-
 /* TABS STYLING */
 .x-tab-default {
     transition : left 0.3s;
@@ -79,8 +78,7 @@ div.x-splitter {
 }
 
 .x-tool-expand-top, .x-tool-expand-bottom,
-.x-tool-collapse-top, .x-tool-collapse-bottom
-{
+.x-tool-collapse-top, .x-tool-collapse-bottom {
     background-image : url(../img/expand.png);
     background-color : transparent !important;
     border           : 0 none;
@@ -88,9 +86,8 @@ div.x-splitter {
 }
 
 .x-tool-expand-top:hover, .x-tool-expand-bottom:hover,
-.x-tool-collapse-top:hover, .x-tool-collapse-bottom:hover
-{
-    opacity          : 0.8;
+.x-tool-collapse-top:hover, .x-tool-collapse-bottom:hover {
+    opacity : 0.8;
 }
 
 .x-tab-default a.x-tab-close-btn {
@@ -106,40 +103,60 @@ div.x-splitter {
 }
 
 /* MENU STYLING */
-.x-menu-item
-{
-    height: 36px;
-    line-height: 2.2em;
+.x-menu {
+    border-color : #ccc;
 }
 
+.x-menu-item {
+    height      : 36px;
+    line-height : 2.2em;
+}
+
+.x-menu-item-icon {
+    font-size : 1.4em;
+    top       : 8px;
+    left      : 6px;
+}
+
+.x-menu-item-link {
+    margin-top   : 4px;
+    line-height  : 29px;
+    padding-left : 31px;
+}
+
+.x-menu-item-disabled {
+    background    : #ddd;
+    border-top    : 1px solid #bbb;
+    border-bottom : 1px solid #bbb;
+}
+
+.x-menu-item-disabled .x-menu-item-link {
+    padding-left : 5px;
+}
+
+.x-menu-item-arrow {
+    top    : 14px;
+    width  : 12px;
+    height : 9px;
+    top    : 13px;
+    right  : 4px;
+    background : none;
+    color     : #aaa;
+}
+
+.x-menu-item-active {
+    background : rgb(59, 153, 216);
+}
+
+.x-menu-item-text,
 .x-menu-item-icon
 {
-    font-size: 1.4em;
-    color: #888;
-    top : 8px;
-    left: 6px;
+    color     : #888;
 }
 
-.x-menu-item-link
+.x-menu-item-active .x-menu-item-text,
+.x-menu-item-active .x-menu-item-icon,
+.x-menu-item-active .x-menu-item-arrow
 {
-    margin-top:4px;
-    line-height:29px;
-    padding-left:31px;
-}
-
-.x-menu-item-disabled
-{
-    background: #ddd;
-    border-top:1px solid #bbb;
-    border-bottom:1px solid #bbb;
-}
-
-.x-menu-item-disabled .x-menu-item-link
-{
-    padding-left:5px;
-}
-
-.x-menu-item-arrow
-{
-    top:14px;
+    color : #fff;
 }

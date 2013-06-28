@@ -10,6 +10,9 @@ Ext.application({
     
     requires        : [
         'Ext.ux.form.field.BoxSelect',
+
+        'Fiesta.override.Menu',
+
         'Fiesta.plugins.FiestaTabCloseMenu',
         'Ext.ux.TabReorderer',
         'Fiesta.DataModel',
