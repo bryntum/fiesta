@@ -15,14 +15,15 @@
     overflow      : visible;
     color         : #fff;
     padding-right : 10px;
+    margin-top    : -3px !important;
 }
 
-.viewport-top-toolbar a {
+.viewport-top-toolbar .about-fiesta {
     color           : #fff;
     text-decoration : none;
 }
 
-.viewport-top-toolbar a:hover {
+.viewport-top-toolbar .about-fiesta:hover {
     text-decoration : underline;
 }
 
