@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.main.UserPanel', {
+Ext.define('Fiesta.view.main.TopPanel', {
     extend : 'Ext.Toolbar',
 
     requires : [
@@ -14,12 +14,22 @@ Ext.define('Fiesta.view.main.UserPanel', {
     initComponent : function () {
         Ext.apply(this, {
             items : [
-                '->'
-//                {
-//                    xtype : 'label',
-//                    renderTpl : '<a href="#">About Fiesta</a> | '
-//                },
-
+                '->',
+                {
+                    xtype     : 'label',
+                    padding   : '7 0 0 5',
+                    renderTpl : 'Welcome: <spanclass="username">' + CONFIG.userName + '</span>'
+                },
+                {
+                    xtype : 'tbseparator',
+                    style : 'margin:4px 4px 0 4px !important'
+                },
+                {
+                    xtype     : 'label',
+                    padding   : '7 7 0 15',
+                    style     : 'z-index:2',
+                    renderTpl : '<a href="#" class="about-fiesta">About Fiesta</a>'
+                }
             ].concat(!FIESTA.isSignedIn() ? [
                     {
                         margin  : '27 0 0 0',
@@ -34,14 +44,6 @@ Ext.define('Fiesta.view.main.UserPanel', {
 
                     }
                 ] : [
-                    {
-                        xtype     : 'component',
-                        cls       : 'user-info',
-                        renderTpl : '<dl class="userinfo">' +
-                            '<dt>Welcome</dt>' +
-                            '<dd><span class="username">' + CONFIG.userName + '</span></dd>' +
-                            '</dl>'
-                    },
                     {
                         xtype     : 'component',
                         style     : 'top: 6px !important', // FF messes this up sometimes

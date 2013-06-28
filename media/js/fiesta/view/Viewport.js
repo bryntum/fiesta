@@ -5,7 +5,7 @@ Ext.define("Fiesta.view.Viewport", {
     border      : false,
 
     requires    : [
-        'Fiesta.view.main.UserPanel',
+        'Fiesta.view.main.TopPanel',
         'Fiesta.view.main.TabPanel',
         'Fiesta.view.main.TestSection'
     ],
