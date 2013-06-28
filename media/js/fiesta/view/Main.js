@@ -151,7 +151,7 @@ Ext.define('Fiesta.view.Main', {
                 newTestTitle    += ' '+tempTabs;
             }
 
-            var newTab = new Fiesta.view.testcases.View({
+            var newTab = new Fiesta.view.testcase.View({
                 title           : Ext.String.ellipsis(testCaseModel.get('name') || newTestTitle, 25),
                 testCaseModel   : testCaseModel,
                 mouseVisualizer : this.mouseVisualizer

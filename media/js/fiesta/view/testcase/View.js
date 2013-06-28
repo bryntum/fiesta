@@ -1,12 +1,12 @@
-Ext.define('Fiesta.view.testcases.View', {
+Ext.define('Fiesta.view.testcase.View', {
     extend      : 'Ext.panel.Panel',
     
     alias       : 'widget.testCasesView',
     
     requires    : [
-        'Fiesta.view.testcases.Details',
-        'Fiesta.view.testcases.ResultPanel',
-        'Fiesta.view.testcases.RunButton',
+        'Fiesta.view.testcase.Details',
+        'Fiesta.view.testcase.ResultPanel',
+        'Fiesta.view.testcase.RunButton',
         'Fiesta.plugins.JsEditor'
     ],
 

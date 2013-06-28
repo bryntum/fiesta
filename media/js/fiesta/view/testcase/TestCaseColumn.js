@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testcases.TestCaseColumn', {
+Ext.define('Fiesta.view.testcase.TestCaseColumn', {
     extend        : 'Ext.grid.column.Template',
     alias         : 'widget.testCaseColumn',
     text          : "Tests",

@@ -1,9 +1,9 @@
-Ext.define('Fiesta.view.testcases.Details', {
+Ext.define('Fiesta.view.testcase.Details', {
     extend   : 'Ext.FormPanel',
     alias    : 'widget.detailspanel',
     requires : [
         'Fiesta.plugins.TagSelect',
-        'Fiesta.view.testcases.PreloadGrid'
+        'Fiesta.view.testcase.PreloadGrid'
     ],
 
     border     : false,

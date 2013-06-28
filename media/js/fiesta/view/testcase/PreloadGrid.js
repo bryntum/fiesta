@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testcases.PreloadGrid', {
+Ext.define('Fiesta.view.testcase.PreloadGrid', {
     extend      : 'Ext.grid.Panel',
     alias       : 'widget.preloadgrid',
     hideHeaders : true,

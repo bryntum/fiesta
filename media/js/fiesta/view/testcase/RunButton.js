@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testcases.RunButton', {
+Ext.define('Fiesta.view.testcase.RunButton', {
     extend   : 'Ext.button.Split',
     alias    : 'widget.runbutton',
     text     : 'Run',

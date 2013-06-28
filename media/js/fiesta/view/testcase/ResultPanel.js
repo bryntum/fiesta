@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.testcases.ResultPanel', {
+Ext.define('Fiesta.view.testcase.ResultPanel', {
     extend                  : 'Ext.Panel',
     alias                   : 'widget.fiestaresultpanel',
     cls                     : 'resultpanel',

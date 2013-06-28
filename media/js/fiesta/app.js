@@ -18,8 +18,8 @@ Ext.application({
         'Fiesta.DataModel',
         'Fiesta.view.UserPanel',
         'Fiesta.view.Main',
-        'Fiesta.view.testcases.View',
-        'Fiesta.view.testcases.List',
+        'Fiesta.view.testcase.View',
+        'Fiesta.view.testcase.List',
         'Fiesta.view.SearchForm',
         'Fiesta.view.account.SignIn'
 
