@@ -304,7 +304,7 @@ Ext.define('Fiesta.view.testcase.View', {
     
     
     updateTestCaseModel : function (testCaseModel) {
-        this.setTitle(Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 15));
+        this.setTitle(Ext.String.ellipsis(testCaseModel.get('name') || 'New test', 25));
         
         this.testCaseModel = testCaseModel;
         
