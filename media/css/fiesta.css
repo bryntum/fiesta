@@ -276,6 +276,7 @@ dl.userinfo {
     background-image    : url(../img/delete.png);
     opacity             : 0.6;
     background-position : 0 0;
+    right               : 1px;
 }
 
 .x-tab-default a.x-tab-close-btn:hover {
