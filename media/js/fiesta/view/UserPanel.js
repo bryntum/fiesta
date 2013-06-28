@@ -1,9 +1,15 @@
 Ext.define('Fiesta.view.UserPanel', {
-    extend        : 'Ext.Toolbar',
-    alias         : 'widget.userpanel',
-    style         : 'background:transparent;',
-    height        : 27,
-    cls           : 'viewport-top-toolbar',
+    extend : 'Ext.Toolbar',
+
+    requires : [
+        'Fiesta.view.menu.UserAccountMenu'
+    ],
+
+    alias : 'widget.userpanel',
+
+    style  : 'background:transparent;',
+    height : 27,
+    cls    : 'viewport-top-toolbar',
 
     initComponent : function () {
         Ext.apply(this, {
@@ -14,7 +20,7 @@ Ext.define('Fiesta.view.UserPanel', {
 //                    renderTpl : '<a href="#">About Fiesta</a> | '
 //                },
 
-                ].concat(!FIESTA.isSignedIn() ? [
+            ].concat(!FIESTA.isSignedIn() ? [
                     {
                         margin  : '27 0 0 0',
                         style   : 'z-index:3', // since it's overlapping the panel below
@@ -29,49 +35,38 @@ Ext.define('Fiesta.view.UserPanel', {
                     }
                 ] : [
                     {
-                        xtype : 'component',
-                        cls   : 'user-info',
+                        xtype     : 'component',
+                        cls       : 'user-info',
                         renderTpl : '<dl class="userinfo">' +
                             '<dt>Welcome</dt>' +
                             '<dd><span class="username">' + CONFIG.userName + '</span></dd>' +
                             '</dl>'
                     },
                     {
-                        xtype : 'component',
-                        renderTpl : '<img src="' + CONFIG.gravatarUrl + '" />',
-                        cls   : 'user-avatar',
-                        width : 40,
-                        menu  : {
-                            plain : true,
-                            items : [
-                                {
-                                    text       : 'Profile',
-                                    href       : '/account/account_profile',
-                                    hrefTarget : '_self'
-
-                                },
-                                {
-                                    text       : 'Settings',
-                                    href       : '/account/account_settings',
-                                    hrefTarget : '_self'
-
-                                },
-                                '-',
-                                {
-                                    text       : 'Log out',
-                                    href       : '/account/sign_out',
-                                    hrefTarget : '_self'
-
-                                }
-                            ]
-                        }
+                        xtype     : 'component',
+                        renderTpl : '<img src="' + CONFIG.gravatarUrl + '" /><div class="user-arrow-ct"><div class="user-arrow"></div></div>',
+                        cls       : 'user-avatar',
+                        width     : 40
                     }
                 ]
-            )
+                )
         });
 
         this.callParent(arguments);
+    },
 
+    afterRender : function () {
+        this.callParent(arguments);
+
+        this.el.on('click', this.onMenuArrowClick, this, { delegate : '.user-arrow-ct' });
+    },
+
+    onMenuArrowClick : function (e, t) {
+        if (!this.userMenu) {
+            this.userMenu = new Fiesta.view.menu.UserAccountMenu();
+        }
+
+        this.userMenu.showAt(e.getXY());
     },
 
     openSigninWindow : function () {
