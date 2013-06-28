@@ -44,6 +44,7 @@ Ext.define('Fiesta.view.main.UserPanel', {
                     },
                     {
                         xtype     : 'component',
+                        style     : 'top: 6px !important', // FF messes this up sometimes
                         renderTpl : '<img src="' + CONFIG.gravatarUrl + '" /><div class="user-arrow-ct"><div class="user-arrow"></div></div>',
                         cls       : 'user-avatar',
                         width     : 40
