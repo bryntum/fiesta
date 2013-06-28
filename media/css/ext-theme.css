@@ -98,6 +98,11 @@ div.x-splitter {
     opacity : 0.8;
 }
 
+.x-nlg .x-btn-default-toolbar-small
+{
+    background:transparent none;
+}
+
 .x-tab-default a.x-tab-close-btn {
     background-image    : url(../img/delete.png);
     opacity             : 0.6;
