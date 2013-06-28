@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.UserPanel', {
+Ext.define('Fiesta.view.main.UserPanel', {
     extend : 'Ext.Toolbar',
 
     requires : [
