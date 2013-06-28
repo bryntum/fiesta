@@ -35,7 +35,7 @@ Ext.define('Fiesta.view.testcases.View', {
             items : [
                 {
                     action  : 'expandcollapse',
-                    cls     : 'expandcollapse',
+                    cls     : 'x-tool-expand-top',
                     height  : 14,
                     scope   : this,
                     handler : function (btn) {

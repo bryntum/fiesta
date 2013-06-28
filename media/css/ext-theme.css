@@ -1,0 +1,145 @@
+/* GLOBAL EXT THEME OVERRIDES */
+
+dl, dd, dt, ul, li {
+    margin  : 0;
+    padding : 0;
+}
+
+body {
+    background      : rgb(58, 153, 216) url(../img/logosmall.png) no-repeat 6px 8px !important;
+    background-size : auto 45px !important;
+    font-family     : "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    font-weight     : 300;
+}
+
+.x-grid-row .x-grid-cell,
+.x-tab-inner,
+.x-toolbar .x-toolbar-text,
+.x-form-item, .x-form-field, .x-form-item-label, .x-form-display-field {
+    font-family : "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    font-weight : 300;
+}
+
+.x-btn-inner {
+    font-weight : normal !important;
+    font-family : "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+}
+
+.x-panel-body-default,
+.x-border-layout-ct {
+    background : #fff;
+}
+
+/* Transparent splitter */
+div.x-splitter {
+    background : #fff;
+}
+
+/* Panel header text + Tab title text */
+.x-panel-header-text-container-default,
+.x-tab-inner {
+    font-size : 14px !important;
+}
+
+
+/* TABS STYLING */
+.x-tab-default {
+    transition : left 0.3s;
+}
+
+.x-tab-default .x-tab-glyph {
+    font-size : 22px;
+}
+
+.x-tab-default-top {
+    background  : rgb(176, 214, 239);
+    box-shadow  : 1px 1px 1px rgb(58, 113, 186);
+    margin-left : 8px;
+}
+
+.x-tab-default-top .x-tab-inner {
+    color : rgb(88, 152, 222);
+}
+
+.x-tab-default-top-active {
+    background  : #fff;
+    font-weight : bold;
+}
+
+.x-tab-default-top-active .x-tab-inner {
+    color : rgb(88, 152, 222);
+}
+
+.x-tab-bar-strip {
+    height : 0;
+}
+
+.x-tab-bar-body {
+    margin-top : 5px;
+}
+
+.x-tool-expand-top, .x-tool-expand-bottom,
+.x-tool-collapse-top, .x-tool-collapse-bottom
+{
+    background-image : url(../img/expand.png);
+    background-color : transparent !important;
+    border           : 0 none;
+    opacity          : 0.5;
+}
+
+.x-tool-expand-top:hover, .x-tool-expand-bottom:hover,
+.x-tool-collapse-top:hover, .x-tool-collapse-bottom:hover
+{
+    opacity          : 0.8;
+}
+
+.x-tab-default a.x-tab-close-btn {
+    background-image    : url(../img/delete.png);
+    opacity             : 0.6;
+    background-position : 0 0;
+    right               : 1px;
+}
+
+.x-tab-default a.x-tab-close-btn:hover {
+    background-position : 0 0;
+    opacity             : 1;
+}
+
+/* MENU STYLING */
+.x-menu-item
+{
+    height: 36px;
+    line-height: 2.2em;
+}
+
+.x-menu-item-icon
+{
+    font-size: 1.4em;
+    color: #888;
+    top : 8px;
+    left: 6px;
+}
+
+.x-menu-item-link
+{
+    margin-top:4px;
+    line-height:29px;
+    padding-left:31px;
+}
+
+.x-menu-item-disabled
+{
+    background: #ddd;
+    border-top:1px solid #bbb;
+    border-bottom:1px solid #bbb;
+}
+
+.x-menu-item-disabled .x-menu-item-link
+{
+    padding-left:5px;
+}
+
+.x-menu-item-arrow
+{
+    top:14px;
+}

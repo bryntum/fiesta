@@ -4,6 +4,7 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
     plain              : true,
     ignoreParentClicks : true,
     cls                : 'test-template-menu',
+    minWidth           : 200,
 
     initComponent : function () {
 

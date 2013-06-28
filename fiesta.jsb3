@@ -26,6 +26,7 @@
             "target"    : "media/css/fiesta-all.css",
             "files"     : [
                 { "path"  : "media/js/ext/ux/form/field/BoxSelect.css" },
+                { "path"  : "media/css/ext-theme.css" },
                 { "path"  : "media/css/test.details.css" },
                 { "path"  : "media/css/test.view.css" },
                 { "path"  : "media/css/list.searchform.css" },

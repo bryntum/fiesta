@@ -1,6 +1,5 @@
-.testdetailsform
-{
-    padding : 10px 25px;
+.testdetailsform {
+    padding    : 10px 25px;
     background : #f7f7f7;
 }
 
@@ -9,73 +8,73 @@
 }
 
 .testdetailsform .details-text .x-form-text {
-    background    : #fff;
-    border        : 1px solid #ddd;
-    font-size     : 16px;
-    margin        : 0;
-    padding       : 2px 5px;
-    line-height   : 1.4;
-    height        : 30px;
-    color         : #444;
+    background  : #fff;
+    border      : 1px solid #ddd;
+    font-size   : 16px;
+    margin      : 0;
+    padding     : 2px 5px;
+    line-height : 1.4;
+    height      : 30px;
+    color       : #444;
 }
 
 .details-combo .x-form-trigger-wrap {
-    background    : #fff;
-    border        : 1px solid #ddd;
-    height        : 30px;
+    background : #fff;
+    border     : 1px solid #ddd;
+    height     : 30px;
 }
 
-.details-combo .x-form-trigger
-{
-    background-position: 0 4px;
+.details-combo .x-form-trigger {
+    background-position : 0 4px;
 }
 
-.details-combo .x-form-text
-{
-    background: none transparent;
+.details-combo .x-form-text {
+    background : none transparent;
 }
 
-.details-combo .x-trigger-cell
-{
-    border-left:1px solid #ddd;
-    border-top-right-radius : 4px;
+.details-combo .x-trigger-cell {
+    border-left                : 1px solid #ddd;
+    border-top-right-radius    : 4px;
     border-bottom-right-radius : 4px;
 }
 
-
-
-.details-tags ul.x-boxselect-list
-{
-    padding-right:0;
+.details-tags ul.x-boxselect-list {
+    padding-right : 0;
 }
 
-.testdetailsform .x-field-label-cell
-{
-    vertical-align: middle;
+.testdetailsform .x-field-label-cell {
+    vertical-align : middle;
 }
 
-.preloadgrid .x-grid-cell
-{
-    color:#888;
+.preloadgrid .x-grid-cell {
+    color : #888;
 }
 
 .preloadgrid .x-grid-body {
-    border-color: #d7d7d7 !important;
+    border-color : #d7d7d7 !important;
 }
 
-.preloadgrid .x-grid-header-ct
-{
-    display:none;
+.preloadgrid .x-grid-header-ct {
+    display : none;
 }
 
-.preloadgrid .icon-file
-{
-    position:relative;
-    left: 1px;
-    top:1px;
+.preloadgrid .icon-file {
+    position : relative;
+    left     : 1px;
+    top      : 1px;
 }
 
-.templates-toolbar
-{
-    border: 0 none;
+.templates-toolbar {
+    border : 0 none;
+}
+
+.siesta-assertion-grid {
+    border-top : 1px solid #d7d7d7;
+}
+
+.resultpanel .x-panel-header {
+    border-left-color  : transparent;
+    border-right-color : transparent;
+    border-bottom      : 0 none;
+    margin-top         : -1px;
 }
