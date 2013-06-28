@@ -81,7 +81,7 @@ div.x-splitter {
 .x-tool-expand-left, .x-tool-expand-right,
 .x-tool-collapse-left, .x-tool-collapse-right,
 .x-tool-collapse-top, .x-tool-collapse-bottom {
-    background-image : url(../img/expand.png);
+    background-image : url(../img/expand.png) !important;
     background-color : transparent !important;
     border           : 0 none;
     opacity          : 0.5;
@@ -100,7 +100,7 @@ div.x-splitter {
 
 .x-nlg .x-btn-default-toolbar-small
 {
-    background:transparent none;
+    /*background:transparent none;*/
 }
 
 .x-tab-default a.x-tab-close-btn {
