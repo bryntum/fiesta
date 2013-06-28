@@ -62,6 +62,7 @@ Ext.define('Fiesta.view.main.TopPanel', {
         this.callParent(arguments);
 
         this.el.on('click', this.onMenuArrowClick, this, { delegate : '.user-arrow-ct' });
+        this.el.on('click', this.onAboutClick, this, { delegate : '.about-fiesta' });
     },
 
     onMenuArrowClick : function (e, t) {
@@ -70,6 +71,44 @@ Ext.define('Fiesta.view.main.TopPanel', {
         }
 
         this.userMenu.showAt(e.getXY());
+    },
+
+    onAboutClick : function (e, t) {
+        e.stopEvent();
+
+        new Ext.Window({
+            title       : 'FIESTA',
+            bodyPadding : 20,
+            modal       : true,
+            width       : 500,
+            height      : 350,
+            closeAction : 'destroy',
+            html        :
+                'Fiesta is a crowd sourced test suite made by <a target="_blank" href="http://www.bryntum.com">Bryntum</a>, anyone can login and upload JavaScript test cases, or any code snippets in general. \
+            \              You can see it as a mix between JsFiddle and unit testing. Any JavaScript can be used, + an assertion layer provided by \
+                           <a target="_blank" href="http://bryntum.com/products/siesta">Siesta</a>.<br><br> \
+                         Fiesta would not be possible without these awesome services, products & libraries: <br><br>\
+                         \<ul style="padding:0 0 0 30px">\
+                         \  <li><a href="http://sencha.com/extjs">Ext JS</a></li> \
+                         \  <li><a href="http://jquery.com">jQuery</a></li> \
+                         \  <li><a href="http://codemirror.net">CodeMirror</a></li> \
+                         \  <li><a href="http://bryntum.com/products/siesta">Siesta</a></li> \
+                         \  <li><a href="http://jshint.com">JsHint</a></li> \
+                         \  <li><a href="http://icomoon.io">IcoMoon</a></li> \
+                         \  <li><a href="http://99designs.com">99 Designs</a></li> \
+                        </ul>',
+            buttons  : {
+                padding : '10 13',
+                style : 'background: transparent',
+
+                items :[
+                    {
+                        text    : 'Got it!',
+                        handler : function() { this.up('window').close(); }
+                    }
+                ]
+            }
+        }).show();
     },
 
     openSigninWindow : function () {
