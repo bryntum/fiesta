@@ -128,10 +128,16 @@ div.x-splitter {
     line-height : 2.2em;
 }
 
-.x-menu-item-icon {
+.x-menu-item-icon
+{
     font-size : 1.4em;
-    top       : 8px;
+    top       : 9px;
     left      : 6px;
+}
+
+.x-menu-item-icon-right
+{
+    top       : 9px;
 }
 
 .x-menu-item-link {
