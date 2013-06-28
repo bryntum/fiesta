@@ -1,37 +1,37 @@
 /**
-* @private
-* @class Ext.ux.layout.component.field.CodeMirror
-* @extends Ext.layout.component.field.Field
-* @author Adrian Teodorescu (ateodorescu@gmail.com)
-* 
-* Layout class for {@link Ext.ux.form.field.CodeMirror} fields. Handles sizing the codemirror field.
-*/
+ * @private
+ * @class Ext.ux.layout.component.field.CodeMirror
+ * @extends Ext.layout.component.field.Field
+ * @author Adrian Teodorescu (ateodorescu@gmail.com)
+ *
+ * Layout class for {@link Ext.ux.form.field.CodeMirror} fields. Handles sizing the codemirror field.
+ */
 Ext.define('Ext.ux.layout.component.field.CodeMirror', {
-    extend: 'Ext.layout.component.field.Field',
-    alias: ['layout.codemirror'],
+    extend : 'Ext.layout.component.field.Field',
+    alias  : ['layout.codemirror'],
 
-    type: 'codemirror',
+    type : 'codemirror',
 
 
-    beginLayout: function(ownerContext) {
+    beginLayout : function (ownerContext) {
         this.callParent(arguments);
 
         ownerContext.textAreaContext = ownerContext.getEl('textareaEl');
-        ownerContext.editorContext   = ownerContext.getEl('editorEl');
+        ownerContext.editorContext = ownerContext.getEl('editorEl');
     },
 
-    renderItems: Ext.emptyFn,
+    renderItems : Ext.emptyFn,
 
-    getRenderTarget: function() {
+    getRenderTarget : function () {
         return this.owner.bodyEl;
     },
 
-    publishInnerHeight: function (ownerContext, height) {
+    publishInnerHeight : function (ownerContext, height) {
         var me = this,
             innerHeight = height - me.measureLabelErrorHeight(ownerContext) -
-                          ownerContext.bodyCellContext.getPaddingInfo().height;
+                ownerContext.bodyCellContext.getPaddingInfo().height;
 
-        
+
         if (Ext.isNumber(innerHeight)) {
             ownerContext.textAreaContext.setHeight(innerHeight);
             ownerContext.editorContext.setHeight(innerHeight);
@@ -40,9 +40,9 @@ Ext.define('Ext.ux.layout.component.field.CodeMirror', {
         }
     },
 
-    publishInnerWidth: function (ownerContext, width) {
+    publishInnerWidth : function (ownerContext, width) {
         var me = this;
-        
+
         if (Ext.isNumber(width)) {
             ownerContext.textAreaContext.setWidth(width);
             ownerContext.editorContext.setWidth(width);
@@ -54,97 +54,97 @@ Ext.define('Ext.ux.layout.component.field.CodeMirror', {
 
 
 Ext.define('Fiesta.plugins.JsEditor', {
-    extend: 'Ext.Component',
-    mixins: {
-        labelable: 'Ext.form.Labelable',
-        field: 'Ext.form.field.Field'
+    extend             : 'Ext.Component',
+    mixins             : {
+        labelable : 'Ext.form.Labelable',
+        field     : 'Ext.form.field.Field'
     },
-    alias: 'widget.jseditor',
-    alternateClassName: 'Ext.form.CodeMirror',
-    requires: [
+    alias              : 'widget.jseditor',
+    alternateClassName : 'Ext.form.CodeMirror',
+    requires           : [
         'Ext.tip.QuickTipManager',
         'Ext.toolbar.Item',
         'Ext.util.Format',
         'Ext.ux.layout.component.field.CodeMirror'
     ],
 
-    childEls: [
+    childEls : [
         'editorEl', 'textareaEl'
     ],
 
-    fieldSubTpl: [
+    fieldSubTpl : [
         '<textarea id="{cmpId}-textareaEl" name="{name}" tabIndex="-1" class="{textareaCls}" ',
-            'style="{size}" autocomplete="off"></textarea>',
+        'style="{size}" autocomplete="off"></textarea>',
         '<div id="{cmpId}-editorEl" class="{editorCls}" name="{editorName}" style="{size}"></div>',
         {
-            disableFormats: true
+            disableFormats : true
         }
     ],
 
-    componentLayout: 'codemirror',
+    componentLayout : 'codemirror',
 
-    editorWrapCls: Ext.baseCSSPrefix + 'html-editor-wrap',
-    
-    maskOnDisable: true,
+    editorWrapCls : Ext.baseCSSPrefix + 'html-editor-wrap',
 
-    afterBodyEl: '</div>',
+    maskOnDisable : true,
 
-    /**
-    * @cfg {String} mode The default mode to use when the editor is initialized. When not given, this will default to the first mode that was loaded. 
-    * It may be a string, which either simply names the mode or is a MIME type associated with the mode. Alternatively, 
-    * it may be an object containing configuration options for the mode, with a name property that names the mode 
-    * (for example {name: "javascript", json: true}). The demo pages for each mode contain information about what 
-    * configuration parameters the mode supports.
-    */
-    mode:               'text/plain',
+    afterBodyEl : '</div>',
 
     /**
-    * @cfg {Boolean} showLineNumbers Enable line numbers button in the toolbar.
-    */
-    showLineNumbers:    true,
+     * @cfg {String} mode The default mode to use when the editor is initialized. When not given, this will default to the first mode that was loaded.
+     * It may be a string, which either simply names the mode or is a MIME type associated with the mode. Alternatively,
+     * it may be an object containing configuration options for the mode, with a name property that names the mode
+     * (for example {name: "javascript", json: true}). The demo pages for each mode contain information about what
+     * configuration parameters the mode supports.
+     */
+    mode : 'text/plain',
 
     /**
-    * @cfg {Boolean} enableMatchBrackets Force matching-bracket-highlighting to happen 
-    */
-    enableMatchBrackets:    true,
+     * @cfg {Boolean} showLineNumbers Enable line numbers button in the toolbar.
+     */
+    showLineNumbers : true,
 
     /**
-    * @cfg {Boolean} enableElectricChars Configures whether the editor should re-indent the current line when a character is typed 
-    * that might change its proper indentation (only works if the mode supports indentation). 
-    */
-    enableElectricChars:    false,
+     * @cfg {Boolean} enableMatchBrackets Force matching-bracket-highlighting to happen
+     */
+    enableMatchBrackets : true,
 
     /**
-    * @cfg {Boolean} enableIndentWithTabs Whether, when indenting, the first N*tabSize spaces should be replaced by N tabs.
-    */
-    enableIndentWithTabs:   true,
+     * @cfg {Boolean} enableElectricChars Configures whether the editor should re-indent the current line when a character is typed
+     * that might change its proper indentation (only works if the mode supports indentation).
+     */
+    enableElectricChars : false,
 
     /**
-    * @cfg {Boolean} enableSmartIndent Whether to use the context-sensitive indentation that the mode provides (or just indent the same as the line before).
-    */
-    enableSmartIndent:      true,
+     * @cfg {Boolean} enableIndentWithTabs Whether, when indenting, the first N*tabSize spaces should be replaced by N tabs.
+     */
+    enableIndentWithTabs : true,
 
     /**
-    * @cfg {Boolean} enableLineWrapping Whether CodeMirror should scroll or wrap for long lines.
-    */
-    enableLineWrapping:     false,
+     * @cfg {Boolean} enableSmartIndent Whether to use the context-sensitive indentation that the mode provides (or just indent the same as the line before).
+     */
+    enableSmartIndent : true,
 
     /**
-    * @cfg {Boolean} enableLineNumbers Whether to show line numbers to the left of the editor.
-    */
-    enableLineNumbers:      true,
+     * @cfg {Boolean} enableLineWrapping Whether CodeMirror should scroll or wrap for long lines.
+     */
+    enableLineWrapping : false,
+
+    /**
+     * @cfg {Boolean} enableLineNumbers Whether to show line numbers to the left of the editor.
+     */
+    enableLineNumbers : true,
 
 
     /**
-    * @cfg {Boolean} enableFixedGutter When enabled (off by default), this will make the gutter stay visible when the 
-    * document is scrolled horizontally.
-    */
-    enableFixedGutter:      false,
+     * @cfg {Boolean} enableFixedGutter When enabled (off by default), this will make the gutter stay visible when the
+     * document is scrolled horizontally.
+     */
+    enableFixedGutter : false,
 
     /**
-    * @cfg {Number} firstLineNumber At which number to start counting lines.
-    */
-    firstLineNumber:         1,
+     * @cfg {Number} firstLineNumber At which number to start counting lines.
+     */
+    firstLineNumber : 1,
 
     /**
      * @cfg {Boolean} readOnly <tt>true</tt> to mark the field as readOnly.
@@ -152,36 +152,36 @@ Ext.define('Fiesta.plugins.JsEditor', {
     readOnly : false,
 
     /**
-    * @cfg {Number} pollInterval Indicates how quickly (miliseconds) CodeMirror should poll its input textarea for changes. 
-    * Most input is captured by events, but some things, like IME input on some browsers, doesn't generate events 
-    * that allow CodeMirror to properly detect it. Thus, it polls.
-    */
-    pollInterval:         100,
+     * @cfg {Number} pollInterval Indicates how quickly (miliseconds) CodeMirror should poll its input textarea for changes.
+     * Most input is captured by events, but some things, like IME input on some browsers, doesn't generate events
+     * that allow CodeMirror to properly detect it. Thus, it polls.
+     */
+    pollInterval : 100,
 
     /**
-    * @cfg {Number} indentUnit How many spaces a block (whatever that means in the edited language) should be indented.
-    */
-    indentUnit:         4,
+     * @cfg {Number} indentUnit How many spaces a block (whatever that means in the edited language) should be indented.
+     */
+    indentUnit : 4,
 
     /**
-    * @cfg {Number} tabSize The width of a tab character.
-    */
-    tabSize:            4,
+     * @cfg {Number} tabSize The width of a tab character.
+     */
+    tabSize : 4,
 
     /**
-    * @cfg {String} theme The theme to style the editor with. You must make sure the CSS file defining the corresponding 
-    * .cm-s-[name] styles is loaded (see the theme directory in the distribution). The default is "default", for which 
-    * colors are included in codemirror.css. It is possible to use multiple theming classes at once—for example 
-    * "foo bar" will assign both the cm-s-foo and the cm-s-bar classes to the editor.
-    */
-    theme:              'default',
+     * @cfg {String} theme The theme to style the editor with. You must make sure the CSS file defining the corresponding
+     * .cm-s-[name] styles is loaded (see the theme directory in the distribution). The default is "default", for which
+     * colors are included in codemirror.css. It is possible to use multiple theming classes at once—for example
+     * "foo bar" will assign both the cm-s-foo and the cm-s-bar classes to the editor.
+     */
+    theme : 'default',
 
-    scriptsLoaded: [],
-    lastMode: '',
-    
-    initComponent : function(){
+    scriptsLoaded : [],
+    lastMode      : '',
+
+    initComponent : function () {
         var me = this;
-        
+
         me.addEvents(
             /**
              * @event initialize
@@ -198,17 +198,17 @@ Ext.define('Fiesta.plugins.JsEditor', {
             'activate',
             /**
              * @event deactivate
-             * Fires when the editor looses the focus. 
+             * Fires when the editor looses the focus.
              * @param {Ext.ux.form.field.CodeMirror} this
              */
             'deactivate',
-             /**
+            /**
              * @event change
-             * Fires when the content of the editor is changed. 
+             * Fires when the content of the editor is changed.
              * @param {Ext.ux.form.field.CodeMirror} this
              * @param {String} newValue New value
              * @param {String} oldValue Old value
-             * @param {Array} options 
+             * @param {Array} options
              */
             'change',
 
@@ -220,7 +220,7 @@ Ext.define('Fiesta.plugins.JsEditor', {
             'cursoractivity',
             /**
              * @event gutterclick
-             * Fires whenever the editor gutter (the line-number area) is clicked. 
+             * Fires whenever the editor gutter (the line-number area) is clicked.
              * @param {Ext.ux.form.field.CodeMirror} this
              * @param {Number} lineNumber Zero-based number of the line that was clicked
              * @param {Object} event The raw mousedown event
@@ -248,11 +248,11 @@ Ext.define('Fiesta.plugins.JsEditor', {
              * @event keyevent
              * Fires on eery keydown, keyup, and keypress event that CodeMirror captures.
              * @param {Ext.ux.form.field.CodeMirror} this
-             * @param {Object} event This key event is pretty much the raw key event, except that a stop() method is always 
-             * added to it. You could feed it to, for example, jQuery.Event to further normalize it. This function can inspect 
-             * the key event, and handle it if it wants to. It may return true to tell CodeMirror to ignore the event. 
-             * Be wary that, on some browsers, stopping a keydown does not stop the keypress from firing, whereas on others 
-             * it does. If you respond to an event, you should probably inspect its type property and only do something when 
+             * @param {Object} event This key event is pretty much the raw key event, except that a stop() method is always
+             * added to it. You could feed it to, for example, jQuery.Event to further normalize it. This function can inspect
+             * the key event, and handle it if it wants to. It may return true to tell CodeMirror to ignore the event.
+             * Be wary that, on some browsers, stopping a keydown does not stop the keypress from firing, whereas on others
+             * it does. If you respond to an event, you should probably inspect its type property and only do something when
              * it is keydown (or keypress for actions that need character data).
              */
             'keyevent'
@@ -263,60 +263,60 @@ Ext.define('Fiesta.plugins.JsEditor', {
 
         me.initLabelable();
         me.initField();
-        
+
         /* 
-        Fix resize issues as suggested by user koblass on the Extjs forums
-        http://www.sencha.com/forum/showthread.php?167047-Ext.ux.form.field.CodeMirror-for-Ext-4.x&p=860535&viewfull=1#post860535
-        */
-        me.on('resize', function() {
+         Fix resize issues as suggested by user koblass on the Extjs forums
+         http://www.sencha.com/forum/showthread.php?167047-Ext.ux.form.field.CodeMirror-for-Ext-4.x&p=860535&viewfull=1#post860535
+         */
+        me.on('resize', function () {
             if (me.editor) {
                 me.editor.refresh();
             }
         }, me);
-        
+
     },
 
-    getMaskTarget: function(){
-        return this.bodyEl;    
+    getMaskTarget : function () {
+        return this.bodyEl;
     },
 
     /**
-    * @private override
-    */
-    getSubTplData: function() {
+     * @private override
+     */
+    getSubTplData : function () {
         var cssPrefix = Ext.baseCSSPrefix;
         return {
-            $comp           : this,
-            cmpId           : this.id,
-            id              : this.getInputId(),
-            toolbarWrapCls  : cssPrefix + 'html-editor-tb',
-            textareaCls     : cssPrefix + 'hidden',
-            editorCls       : cssPrefix + 'codemirror',
-            editorName      : Ext.id(),
-            size            : 'height:100px;width:100%'
+            $comp          : this,
+            cmpId          : this.id,
+            id             : this.getInputId(),
+            toolbarWrapCls : cssPrefix + 'html-editor-tb',
+            textareaCls    : cssPrefix + 'hidden',
+            editorCls      : cssPrefix + 'codemirror',
+            editorName     : Ext.id(),
+            size           : 'height:100px;width:100%'
         };
     },
 
-    getSubTplMarkup: function() {
+    getSubTplMarkup : function () {
         return this.getTpl('fieldSubTpl').apply(this.getSubTplData());
     },
 
 
     /**
-    * @private override
-    */
-    onRender: function() {
+     * @private override
+     */
+    onRender : function () {
         var me = this;
 
         me.callParent(arguments);
         me.inputEl = me.editorEl;
         me.initEditor();
-        
+
 
         me.rendered = true;
     },
-    
-    initRenderTpl: function() {
+
+    initRenderTpl : function () {
         var me = this;
         if (!me.hasOwnProperty('renderTpl')) {
             me.renderTpl = me.getTpl('labelableRenderTpl');
@@ -324,63 +324,63 @@ Ext.define('Fiesta.plugins.JsEditor', {
         return me.callParent();
     },
 
-    initRenderData: function() {
+    initRenderData : function () {
         this.beforeSubTpl = '<div class="' + this.editorWrapCls + '">';
         return Ext.applyIf(this.callParent(), this.getLabelableRenderData());
     },
 
     /**
-    * @private override
-    */
-    initEditor : function(){
+     * @private override
+     */
+    initEditor : function () {
         var me = this,
             mode = 'javascript';
-        
+
 
         me.editor = CodeMirror(me.editorEl, {
-            matchBrackets:      me.enableMatchBrackets,
-            electricChars:      me.enableElectricChars,
-            autoClearEmptyLines :true,
-            indentUnit:         me.indentUnit,
-            smartIndent:        me.enableSmartIndent,
-            indentWithTabs:     me.indentWithTabs,
-            pollInterval:       me.pollInterval,
-            lineNumbers:        me.enableLineNumbers,
-            lineWrapping:       me.enableLineWrapping,
-            firstLineNumber:    me.firstLineNumber,
-            tabSize:            me.tabSize,
-            gutters : ["CodeMirror-lint-markers"],
-            fixedGutter:        me.enableFixedGutter,
-            theme:              me.theme,
-            mode:               mode,
-            lintWith: CodeMirror.javascriptValidatorWithOptions(CONFIG.LINT_SETTINGS),
+            matchBrackets       : me.enableMatchBrackets,
+            electricChars       : me.enableElectricChars,
+            autoClearEmptyLines : true,
+            indentUnit          : me.indentUnit,
+            smartIndent         : me.enableSmartIndent,
+            indentWithTabs      : me.indentWithTabs,
+            pollInterval        : me.pollInterval,
+            lineNumbers         : me.enableLineNumbers,
+            lineWrapping        : me.enableLineWrapping,
+            firstLineNumber     : me.firstLineNumber,
+            tabSize             : me.tabSize,
+            gutters             : ["CodeMirror-lint-markers"],
+            fixedGutter         : me.enableFixedGutter,
+            theme               : me.theme,
+            mode                : mode,
+            lintWith            : CodeMirror.javascriptValidatorWithOptions(CONFIG.LINT_SETTINGS),
 
-            onChange:           function(editor, tc){
+            onChange            : function (editor, tc) {
                 me.checkChange();
                 //me.fireEvent('change', me, tc.from, tc.to, tc.text, tc.next || null);
             },
-            onCursorActivity:   function(editor){
+            onCursorActivity    : function (editor) {
                 me.fireEvent('cursoractivity', me);
             },
-            onGutterClick:      function(editor, line, event){
+            onGutterClick       : function (editor, line, event) {
                 me.fireEvent('gutterclick', me, line, event);
             },
-            onFocus:            function(editor){
+            onFocus             : function (editor) {
                 me.fireEvent('activate', me);
             },
-            onBlur:             function(editor){
+            onBlur              : function (editor) {
                 me.fireEvent('deactivate', me);
             },
-            onScroll:           function(editor){
+            onScroll            : function (editor) {
                 me.fireEvent('scroll', me);
             },
-            onHighlightComplete: function(editor){
+            onHighlightComplete : function (editor) {
                 me.fireEvent('highlightcomplete', me);
             },
-            onUpdate:           function(editor){
+            onUpdate            : function (editor) {
                 me.fireEvent('update', me);
             },
-            onKeyEvent:         function(editor, event){
+            onKeyEvent          : function (editor, event) {
                 event.cancelBubble = true; // fix suggested by koblass user on Sencha forums (http://www.sencha.com/forum/showthread.php?167047-Ext.ux.form.field.CodeMirror-for-Ext-4.x&p=862029&viewfull=1#post862029)
                 me.fireEvent('keyevent', me, event);
             }
@@ -394,141 +394,141 @@ Ext.define('Fiesta.plugins.JsEditor', {
 
         // change the codemirror css
         var css = Ext.util.CSS.getRule('.CodeMirror');
-        if(css){
+        if (css) {
             css.style.height = '100%';
             css.style.position = 'relative';
             css.style.overflow = 'hidden';
         }
         var css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
-        if(css){
+        if (css) {
             css.style.height = '100%';
         }
 
     },
-    
+
 
     /**
-    * @private
-    */
-    relayBtnCmd: function(btn){
+     * @private
+     */
+    relayBtnCmd : function (btn) {
         this.relayCmd(btn.getItemId());
     },
-    
+
     /**
-    * @private
-    */
-    relayCmd: function(cmd){
-        Ext.defer(function() {
+     * @private
+     */
+    relayCmd : function (cmd) {
+        Ext.defer(function () {
             var me = this;
             me.editor.focus();
-            switch(cmd){
+            switch (cmd) {
                 // auto formatting
                 case 'justifycenter':
-                    if(!CodeMirror.extensions.autoIndentRange){
-                        me.loadDependencies(me.extensions.format, me.pathExtensions, me.doIndentSelection, me);                        
-                    }else{
+                    if (!CodeMirror.extensions.autoIndentRange) {
+                        me.loadDependencies(me.extensions.format, me.pathExtensions, me.doIndentSelection, me);
+                    } else {
                         me.doIndentSelection();
                     }
-                break;
-                
+                    break;
+
                 // line numbers
                 case 'insertorderedlist':
                     me.doChangeLineNumbers();
-                break;
+                    break;
             }
         }, 10, this);
     },
-    
 
-    
-    doChangeLineNumbers: function(){
+
+    doChangeLineNumbers : function () {
         var me = this;
-        
+
         me.enableLineNumbers = !me.enableLineNumbers;
         me.editor.setOption('lineNumbers', me.enableLineNumbers);
     },
-    
+
     /**
-    * @private
-    */
-    doIndentSelection: function(){
+     * @private
+     */
+    doIndentSelection : function () {
         var me = this;
-        
+
         me.reloadExtentions();
-        
-        try{
-            var range = { from: me.editor.getCursor(true), to: me.editor.getCursor(false) };
-            me.editor.autoIndentRange(range.from, range.to);        
-        }catch(err){}
+
+        try {
+            var range = { from : me.editor.getCursor(true), to : me.editor.getCursor(false) };
+            me.editor.autoIndentRange(range.from, range.to);
+        } catch (err) {
+        }
     },
 
 
     /**
-    * Set the editor as read only
-    * 
-    * @param {Boolean} readOnly
-    */
-    setReadOnly: function(readOnly) {
+     * Set the editor as read only
+     *
+     * @param {Boolean} readOnly
+     */
+    setReadOnly : function (readOnly) {
         var me = this;
-        
-        if(me.editor){
+
+        if (me.editor) {
             me.editor.setOption('readOnly', readOnly);
         }
     },
-    
-    onDisable: function() {
+
+    onDisable : function () {
         this.bodyEl.mask();
         this.callParent(arguments);
     },
 
-    onEnable: function() {
+    onEnable : function () {
         this.bodyEl.unmask();
         this.callParent(arguments);
     },
-    
+
 
     /**
-    * Sets a data value into the field and runs the change detection. 
-    * @param {Mixed} value The value to set
-    * @return {Ext.ux.form.field.CodeMirror} this
-    */
-    setValue: function(value){
+     * Sets a data value into the field and runs the change detection.
+     * @param {Mixed} value The value to set
+     * @return {Ext.ux.form.field.CodeMirror} this
+     */
+    setValue : function (value) {
         var me = this;
         me.mixins.field.setValue.call(me, value);
         me.rawValue = value;
-        if(me.editor)
+        if (me.editor)
             me.editor.setValue(value);
         return me;
     },
-    
+
     /**
-    * Return submit value to the owner form.
-    * @return {Mixed} The field value
-    */
-    getSubmitValue: function(){
+     * Return submit value to the owner form.
+     * @return {Mixed} The field value
+     */
+    getSubmitValue : function () {
         var me = this;
         return me.getValue();
     },
-    
+
     /**
-    * Return the value of the CodeMirror editor
-    * @return {Mixed} The field value
-    */
-    getValue: function(){
+     * Return the value of the CodeMirror editor
+     * @return {Mixed} The field value
+     */
+    getValue : function () {
         var me = this;
-        
-        if(me.editor)
+
+        if (me.editor)
             return me.editor.getValue();
         else
             return null;
     },
-    
+
     /**
-    * @private
-    */
-    onDestroy: function(){
+     * @private
+     */
+    onDestroy : function () {
         var me = this;
-        if(me.rendered){
+        if (me.rendered) {
             try {
                 Ext.EventManager.removeAll(me.editor);
                 for (prop in me.editor) {
@@ -536,7 +536,8 @@ Ext.define('Fiesta.plugins.JsEditor', {
                         delete me.editor[prop];
                     }
                 }
-            }catch(e){}
+            } catch (e) {
+            }
             Ext.destroyMembers('tb', 'toolbarWrap', 'editorEl');
         }
         me.callParent();
@@ -572,13 +573,13 @@ Ext.define('Fiesta.plugins.JsEditor', {
             var text = editor.getSelection();
             var diff = 1;
             if (text.match(/^\/\*/) && text.match(/^\/\*/)) {
-                text = text.substring(2, text.length-2);
+                text = text.substring(2, text.length - 2);
                 diff = -1;
                 doFormat = true;
             } else {
                 text = "/*" + text + "*/";
             }
-            editor.replaceSelection( text );
+            editor.replaceSelection(text);
 
             // following line crash
 //            if (start.line == end.line) {
@@ -595,20 +596,20 @@ Ext.define('Fiesta.plugins.JsEditor', {
 
 });
 
-(function() {
+(function () {
     CodeMirror.extendMode("css", {
-        commentStart: "/*",
-        commentEnd: "*/",
-        newlineAfterToken: function(type, content) {
+        commentStart      : "/*",
+        commentEnd        : "*/",
+        newlineAfterToken : function (type, content) {
             return /^[;{}]$/.test(content);
         }
     });
 
     CodeMirror.extendMode("javascript", {
-        commentStart: "/*",
-        commentEnd: "*/",
+        commentStart      : "/*",
+        commentEnd        : "*/",
         // FIXME semicolons inside of for
-        newlineAfterToken: function(type, content, textAfter, state) {
+        newlineAfterToken : function (type, content, textAfter, state) {
             if (this.jsonMode) {
                 return /^[\[,{]$/.test(content) || /^}/.test(textAfter);
             } else {
@@ -619,9 +620,9 @@ Ext.define('Fiesta.plugins.JsEditor', {
     });
 
     CodeMirror.extendMode("xml", {
-        commentStart: "<!--",
-        commentEnd: "-->",
-        newlineAfterToken: function(type, content, textAfter) {
+        commentStart      : "<!--",
+        commentEnd        : "-->",
+        newlineAfterToken : function (type, content, textAfter) {
             return type == "tag" && />$/.test(content) || /^</.test(textAfter);
         }
     });
@@ -629,7 +630,7 @@ Ext.define('Fiesta.plugins.JsEditor', {
     // Comment/uncomment the specified range
     CodeMirror.defineExtension("commentRange", function (isComment, from, to) {
         var cm = this, curMode = CodeMirror.innerMode(cm.getMode(), cm.getTokenAt(from).state).mode;
-        cm.operation(function() {
+        cm.operation(function () {
             if (isComment) { // Comment range
                 cm.replaceRange(curMode.commentEnd, to);
                 cm.replaceRange(curMode.commentStart, from);
@@ -670,6 +671,7 @@ Ext.define('Fiesta.plugins.JsEditor', {
         var tabSize = cm.getOption("tabSize");
 
         var out = "", lines = 0, atSol = from.ch == 0;
+
         function newline() {
             out += "\n";
             atSol = true;
@@ -687,7 +689,7 @@ Ext.define('Fiesta.plugins.JsEditor', {
                     atSol = false;
                 }
                 if (!atSol && inner.mode.newlineAfterToken &&
-                    inner.mode.newlineAfterToken(style, cur, stream.string.slice(stream.pos) || text[i+1] || "", inner.state))
+                    inner.mode.newlineAfterToken(style, cur, stream.string.slice(stream.pos) || text[i + 1] || "", inner.state))
                     newline();
             }
             if (!stream.pos && outer.blankLine) outer.blankLine(state);
