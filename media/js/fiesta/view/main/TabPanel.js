@@ -9,17 +9,13 @@ Ext.define('Fiesta.view.main.TabPanel', {
     cls                 : 'mainview',
     bodyCls             : 'mainview-body',
     plain               : true,
-    
+    margin              : '-33 0 0 0',
     mouseVisualizer     : null,
     
-
     initComponent : function () {
 
         Ext.apply(this, {
             mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer(),
-            tabBar : {
-                margin : '10 0 0 0'
-            },
             items       : [
                 {
                     xtype : 'homepanel',

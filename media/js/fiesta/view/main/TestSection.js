@@ -4,15 +4,11 @@ Ext.define('Fiesta.view.main.TestSection', {
     alias       : 'widget.testsection',
     header      : false,
     region      : 'west',
-    margin      : '33px 0 0 0',
+    margin      : '1 0 0 0',
     width       : 250,
     cls         : 'testcase-list-container',
     border      : false,
     collapsible : true,
-
-//    placeholder : {
-//        cls : 'testcase-list-placeholder'
-//    },
 
     layout      : {
         type  : 'vbox',
