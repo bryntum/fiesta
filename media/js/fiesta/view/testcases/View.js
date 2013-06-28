@@ -201,26 +201,20 @@ Ext.define('Fiesta.view.testcases.View', {
                             items  : [
                                 {
                                     xtype  : 'component',
-                                    region     : 'north',
+                                    region : 'north',
                                     cls    : 'codeeditor-before',
-                                    html   :
-//                                        '<div class="panel-picker">' +
-//                                        '<button class="active">JS</button>' +
-//                                        '<button>Comments</button>' +
-//                                        '</div>'+
-                                        'StartTest(<span style="color:#708">function</span>(t) {'
+                                    html   : 'StartTest(<span style="color:#708">function</span>(t) {'
                                 },
                                 {
                                     xtype      : 'jseditor',
                                     cls        : 'jseditor',
                                     region     : 'center'
-                                }
-                                ,
+                                },
                                 {
                                     xtype  : 'component',
                                     cls    : 'codeeditor-after',
-                                    html   : '});',
-                                    region     : 'south'
+                                    region : 'south',
+                                    html   : '});'
                                 }
                             ]
                         },
@@ -229,8 +223,8 @@ Ext.define('Fiesta.view.testcases.View', {
                             flex            : 1,
                             region          : 'east',
                             split           : true,
-                            border          : false,
-                            floatable       : false
+                            header          : false,
+                            border          : false
                         }
                     ]
                 }

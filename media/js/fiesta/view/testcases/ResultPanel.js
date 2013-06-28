@@ -1,5 +1,5 @@
 Ext.define('Fiesta.view.testcases.ResultPanel', {
-    extend                  : 'Ext.Container',
+    extend                  : 'Ext.Panel',
     alias                   : 'widget.fiestaresultpanel',
     cls                     : 'resultpanel',
 

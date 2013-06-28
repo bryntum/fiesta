@@ -78,11 +78,19 @@ div.x-splitter {
 }
 
 .x-tool-expand-top, .x-tool-expand-bottom,
+.x-tool-expand-left, .x-tool-expand-right,
+.x-tool-collapse-left, .x-tool-collapse-right,
 .x-tool-collapse-top, .x-tool-collapse-bottom {
     background-image : url(../img/expand.png);
     background-color : transparent !important;
     border           : 0 none;
     opacity          : 0.5;
+}
+
+.x-tool-collapse-left, .x-tool-collapse-right,
+.x-tool-expand-left, .x-tool-expand-right {
+    -webkit-transform:rotate(90deg);
+    transform:rotate(90deg);
 }
 
 .x-tool-expand-top:hover, .x-tool-expand-bottom:hover,

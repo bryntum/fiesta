@@ -3,7 +3,6 @@ Ext.define("Fiesta.view.menu.UserAccountMenu", {
     alias              : "widget.useraccountmenu",
     plain              : true,
     cls                : 'user-account-menu',
-    minWidth           : 200,
 
     initComponent : function () {
 
