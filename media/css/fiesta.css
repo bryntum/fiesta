@@ -251,7 +251,7 @@ dl.userinfo
 
 .x-tab-default-top .x-tab-inner
 {
-    color:#999;
+    color:rgb(88,152,222);
 }
 
 .x-tab-default-top-active {
@@ -267,7 +267,7 @@ dl.userinfo
 .icon-home {
     font-size   : 1.4em;
     margin-left : -1px;
-    color       : #999;
+    color       : rgb(50, 109, 156);
 }
 
 .x-tab-active .icon-home {
