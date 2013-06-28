@@ -94,6 +94,7 @@ div.x-splitter {
 }
 
 .x-tool-expand-top:hover, .x-tool-expand-bottom:hover,
+.x-tool-expand-left:hover, .x-tool-expand-right:hover,
 .x-tool-collapse-top:hover, .x-tool-collapse-bottom:hover {
     opacity : 0.8;
 }
@@ -120,7 +121,7 @@ div.x-splitter {
     border-color : #ccc;
 }
 
-.x-menu-item {
+.x-menu-item:not(.x-menu-item-separator) {
     height      : 36px;
     line-height : 2.2em;
 }

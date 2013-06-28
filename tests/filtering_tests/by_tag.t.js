@@ -1,8 +1,8 @@
 StartTest(function(t) {
-    var store = t.cq1('testCasesList').store;
+    var store = t.cq1('testCaseList').store;
 
     t.chain(
-        { waitFor : 'rowsVisible', args : t.cq1('testCasesList') },
+        { waitFor : 'rowsVisible', args : t.cq1('testCaseList') },
 
         { action : 'click', target : '>> tagselect'},
 

@@ -22,5 +22,7 @@ Ext.define('Fiesta.view.testcase.TestCaseColumn', {
         });
 
         this.callParent(arguments);
+
+
     }
 });

@@ -1,3 +1,5 @@
+.x-panel-header-collapsed
+
 .testCasesList
 {
     border-right:1px solid rgb(225, 225, 225);
@@ -116,4 +118,9 @@ li[qtip=learn]{
 
 .x-btn-plain-toolbar-small-disabled .x-btn-icon-el, .x-btn-plain-toolbar-medium-disabled .x-btn-icon-el, .x-btn-plain-toolbar-large-disabled .x-btn-icon-el {
     background-color:transparent;
+}
+
+.testCasesList .x-tool-expand-left .x-tool-img
+{
+    background:transparent none;
 }

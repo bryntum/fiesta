@@ -3,7 +3,12 @@ Ext.define("Fiesta.view.Viewport", {
     layout      : 'border',
     margins     : 5,
     border      : false,
-    
+
+    requires    : [
+        'Fiesta.view.main.UserPanel',
+        'Fiesta.view.main.TabPanel',
+        'Fiesta.view.main.TestSection'
+    ],
     
     initComponent: function () {
         Ext.apply(this, {
@@ -18,35 +23,8 @@ Ext.define("Fiesta.view.Viewport", {
                     region  : 'center',
                     border  : false
                 },
-
                 {
-                    title       : 'Search',
-                    header      : false, 
-                    region      : 'west',
-                    margin      : '33px 0 0 0',
-                    width       : 250,
-                    cls         : 'testcase-list-container',
-                    border      : false,
-                    collapsible : true,
-//                    split       : true,
-                    
-                    layout  : {
-                        type    : 'vbox',
-                        align   : 'stretch'
-                    },
-                    items   : [
-                        {
-                            xtype       : 'searchForm',
-                            bodyPadding : 5
-                        },
-                        {
-                            xtype       : 'testCasesList',
-                            region      : 'center',
-                            layout      : 'fit',
-                            forceFit    : true,
-                            flex        : 1
-                        }
-                    ]
+                    xtype : 'testsection'
                 }
             ],
             // EoF items

@@ -1,4 +1,4 @@
-Ext.define('Fiesta.view.Main', {
+Ext.define('Fiesta.view.main.TabPanel', {
     extend              : 'Ext.tab.Panel',
 
     alias               : 'widget.mainView',

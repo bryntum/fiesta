@@ -1,8 +1,10 @@
 Ext.define('Fiesta.view.testcase.List', {
     extend   : 'Ext.grid.Panel',
-    alias    : 'widget.testCasesList',
+    alias    : 'widget.testCaseList',
     requires : ['Fiesta.store.TestCases', 'Fiesta.view.testcase.TestCaseColumn'],
     cls        : 'testCasesList',
+    title      : 'Tests',
+    hideHeaders : true,
 
     initComponent : function () {
         Ext.apply(this, {
@@ -22,7 +24,6 @@ Ext.define('Fiesta.view.testcase.List', {
             ],
             emptyText  : 'No tests found...',
 
-
             store     : new Fiesta.store.TestCases(),
             bbar      : {
                 xtype       : 'pagingtoolbar',
@@ -34,7 +35,17 @@ Ext.define('Fiesta.view.testcase.List', {
                 itemdblclick : this.onMyItemDoubleClick,
                 afterrender  : this.onMyAfterRender,
                 scope        : this
-            }
+            },
+
+            tools : [
+                {
+                    cls : 'x-tool-expand-left',
+                    handler : function() {
+                        this.fireEvent('togglecollapse', this);
+                    },
+                    scope : this
+                }
+            ]
         });
 
         this.callParent(arguments);
@@ -74,9 +85,7 @@ Ext.define('Fiesta.view.testcase.List', {
 
     onMyAfterRender : function () {
         var menu = this.headerCt.getMenu();
-        menu.items.get('columnItem').hide();
-        menu.items.get('ascItem').hide();
-        menu.items.get('descItem').hide();
+        menu.removeAll();
 
         menu.processSort = function () {
             var me = this;
@@ -106,19 +115,13 @@ Ext.define('Fiesta.view.testcase.List', {
 //                sortField : 'created_at',
                 sortField : 'updated_at',
                 handler   : menu.processSort
-            }
-        ]);
-
-        menu.add([
+            },
             {
                 text      : 'Sort by name',
                 itemId    : 'sortName',
                 sortField : 'name',
                 handler   : menu.processSort
-            }
-        ]);
-
-        menu.add([
+            },
             {
                 text      : 'Sort by user',
                 itemId    : 'sortUser',
@@ -126,8 +129,8 @@ Ext.define('Fiesta.view.testcase.List', {
                 handler   : menu.processSort
             }
         ]);
-
     },
+
     getCls          : function (record, index) {
         var cls = '';
 
