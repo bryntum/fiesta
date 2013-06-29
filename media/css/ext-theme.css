@@ -123,9 +123,11 @@ div.x-splitter {
     border-color : #ccc;
 }
 
-.x-menu-item:not(.x-menu-item-separator) {
+.x-menu-item:not(.x-menu-item-separator),
+.x-boundlist-item
+{
     height      : 36px;
-    line-height : 2.2em;
+    line-height : 2.3em;
 }
 
 .x-menu-item-icon
@@ -165,7 +167,9 @@ div.x-splitter {
     color     : #aaa;
 }
 
-.x-menu-item-active {
+.x-menu-item-active,
+.x-boundlist-item-over
+{
     background : rgb(59, 153, 216);
 }
 
@@ -178,7 +182,8 @@ div.x-splitter {
 
 .x-menu-item-active .x-menu-item-text,
 .x-menu-item-active .x-menu-item-icon,
-.x-menu-item-active .x-menu-item-arrow
+.x-menu-item-active .x-menu-item-arrow,
+.x-boundlist-item-over
 {
     color : #fff;
 }
