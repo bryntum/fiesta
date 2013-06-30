@@ -17,16 +17,16 @@ Ext.define('Fiesta.view.main.TopPanel', {
                 '->',
                 {
                     xtype     : 'label',
-                    padding   : '7 0 0 5',
-                    renderTpl : 'Welcome: <spanclass="username">' + CONFIG.userName + '</span>'
-                },
-                {
-                    xtype : 'tbseparator',
-                    style : 'margin:4px 4px 0 4px !important'
+                    renderTpl : 'Welcome: <span class="username">' + CONFIG.userName + '</span>'
                 },
                 {
                     xtype     : 'label',
-                    padding   : '7 7 0 15',
+                    padding   : '0 0 0 5',
+                    renderTpl : '|'
+                },
+                {
+                    xtype     : 'label',
+                    padding   : '0 7 0 5',
                     style     : 'z-index:2',
                     renderTpl : '<a href="#" class="about-fiesta">About Fiesta</a>'
                 }
