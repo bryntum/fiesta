@@ -1,13 +1,17 @@
 Ext.define('Fiesta.view.testcase.PreloadGrid', {
-    extend      : 'Ext.grid.Panel',
-    alias       : 'widget.preloadgrid',
-    hideHeaders : true,
-    flex        : 1,
-    cls         : 'preloadgrid',
-    border      : false,
+    extend             : 'Ext.grid.Panel',
+    alias              : 'widget.preloadgrid',
+    hideHeaders        : true,
+    flex               : 1,
+    cls                : 'preloadgrid',
+    border             : false,
+    hideHeaders        : true,
+    enableColumnHide   : false,
+    enableColumnMove   : false,
+    enableColumnResize : false,
 
     initComponent : function () {
-        var editing =  new Ext.grid.plugin.CellEditing({
+        var editing = new Ext.grid.plugin.CellEditing({
             clicksToEdit : 1
         });
 
@@ -19,20 +23,20 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
         });
 
         Ext.apply(this, {
-            preventHeader   : true,
-            store           : store,
-            viewConfig : {
-                stripeRows  : false,
-                markDirty   : false,
-                trackOver   : false,
-                plugins: {
-                    ptype: 'gridviewdragdrop'
+            preventHeader : true,
+            store         : store,
+            viewConfig    : {
+                stripeRows : false,
+                markDirty  : false,
+                trackOver  : false,
+                plugins    : {
+                    ptype : 'gridviewdragdrop'
                 }
             },
-            columns  : [
+            columns       : [
                 {
                     dataIndex : 'url',
-                    renderer : function(v, meta) {
+                    renderer  : function (v, meta) {
                         var match = (/\/([^/]*)$/).exec(v);
 
                         if (!v) {
@@ -50,13 +54,13 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                                 var currentIndex = store.indexOf(editing.activeRecord);
 
                                 if ((e.getKey() === e.RETURN || (e.getKey() === e.TAB && !e.shiftKey)) &&
-                                    currentIndex === store.getCount()-1 ) {
+                                    currentIndex === store.getCount() - 1) {
                                     var newRecord = new store.model();
                                     store.add(newRecord);
                                     editing.startEdit(newRecord, 0);
                                 }
                                 else if (e.getKey() === e.RETURN) {
-                                    editing.startEdit(currentIndex+1, 0);
+                                    editing.startEdit(currentIndex + 1, 0);
                                 }
                             }
                         }
@@ -65,12 +69,12 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                     sortable  : false
                 }
             ],
-            selModel : {
+            selModel      : {
                 type : 'cellmodel'
             },
-            plugins  : editing,
+            plugins       : editing,
 
-            tbar  : {
+            tbar : {
                 xtype  : 'toolbar',
                 style  : 'background:transparent;padding:0',
                 cls    : 'templates-toolbar',
@@ -79,14 +83,14 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                 margin : '0 0 4 0',
                 items  : [
                     {
-                        xtype : 'splitbutton',
-                        text   : 'Add file URLs...',
+                        xtype   : 'splitbutton',
+                        text    : 'Add file URLs...',
                         iconCls : 'icon-plus',
-                        handler : function() {
+                        handler : function () {
                             var editAtPosition = 0;
                             var found;
 
-                            store.each(function(rec, index) {
+                            store.each(function (rec, index) {
                                 editAtPosition = index;
 
                                 if (!rec.data.url) {
@@ -102,16 +106,16 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
 
                             editing.startEdit(editAtPosition, 0);
                         },
-                        menu   : {
+                        menu    : {
                             ignoreParentClicks : true,
-                            items : [
+                            items              : [
                                 {
                                     text : 'Ext JS',
-                                    menu   : {
+                                    menu : {
                                         ignoreParentClicks : true,
-                                        bubbleEvents : ['click'],
-                                        itemId : 'Ext JS',
-                                        items : [
+                                        bubbleEvents       : ['click'],
+                                        itemId             : 'Ext JS',
+                                        items              : [
                                             {
                                                 text : CONFIG.latestExtVersion
                                             },
@@ -128,13 +132,13 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                                     }
                                 },
                                 {
-                                    text : 'Sencha Touch',
+                                    text         : 'Sencha Touch',
                                     bubbleEvents : ['click'],
-                                    menu   : {
+                                    menu         : {
                                         ignoreParentClicks : true,
-                                        bubbleEvents : ['click'],
-                                        itemId : 'Sencha Touch',
-                                        items : [
+                                        bubbleEvents       : ['click'],
+                                        itemId             : 'Sencha Touch',
+                                        items              : [
                                             {
                                                 text : CONFIG.latestTouchVersion
                                             },
@@ -145,13 +149,13 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                                     }
                                 },
                                 {
-                                    text : 'Bryntum',
+                                    text         : 'Bryntum',
                                     bubbleEvents : ['click'],
-                                    menu   : {
+                                    menu         : {
                                         ignoreParentClicks : true,
-                                        bubbleEvents : ['click'],
-                                        itemId : 'Bryntum',
-                                        items : [
+                                        bubbleEvents       : ['click'],
+                                        itemId             : 'Bryntum',
+                                        items              : [
                                             {
                                                 text : 'Ext Scheduler'
                                             },
@@ -162,8 +166,8 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                                     }
                                 }
                             ],
-                            listeners : {
-                                click : function(menu, item) {
+                            listeners          : {
+                                click : function (menu, item) {
                                     if (!item.menu) {
                                         this.addTemplatePreloads(item.ownerCt.itemId, item.text);
                                     }
@@ -174,20 +178,20 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                     },
                     '->',
                     {
-                        text : 'Ext ' + CONFIG.latestExtVersion,
-                        itemId: 'quickbutton-ext',
-                        handler : function() {
+                        text    : 'Ext ' + CONFIG.latestExtVersion,
+                        itemId  : 'quickbutton-ext',
+                        handler : function () {
                             this.addTemplatePreloads('Ext JS', CONFIG.latestExtVersion);
                         },
-                        scope : this
+                        scope   : this
                     },
                     {
-                        text : 'Touch ' + CONFIG.latestTouchVersion,
-                        itemId: 'quickbutton-touch',
-                        handler : function() {
+                        text    : 'Touch ' + CONFIG.latestTouchVersion,
+                        itemId  : 'quickbutton-touch',
+                        handler : function () {
                             this.addTemplatePreloads('Sencha Touch', CONFIG.latestTouchVersion);
                         },
-                        scope : this
+                        scope   : this
                     }
                 ]
             }
@@ -196,10 +200,10 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
         this.callParent(arguments);
     },
 
-    afterRender : function() {
+    afterRender : function () {
         this.callParent(arguments);
 
-        this.el.on('mouseup', function(e, t) {
+        this.el.on('mouseup', function (e, t) {
             var view = this.getView();
             var node = view.findItemByChild(t);
             var record = view.getRecord(node);
@@ -207,17 +211,17 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
         }, this, { delegate : '.remove'});
     },
 
-    getValue : function() {
-        var preloads        = []
-        
+    getValue : function () {
+        var preloads = []
+
         this.store.each(function (record) {
             if (record.get('url')) preloads.push(record.get('url'))
         })
-        
+
         return preloads.join(',');
     },
 
-    addTemplatePreloads : function(category, id) {
+    addTemplatePreloads : function (category, id) {
         var preloads;
 
         switch (category) {
@@ -255,15 +259,17 @@ Ext.define('Fiesta.view.testcase.PreloadGrid', {
                 break;
         }
 
-        this.store.loadData(Ext.Array.map(preloads, function(a) { return [a]; }).concat(['']));
+        this.store.loadData(Ext.Array.map(preloads,function (a) {
+            return [a];
+        }).concat(['']));
     },
 
-    setValue : function(preloadsAsString) {
+    setValue : function (preloadsAsString) {
         this.store.removeAll();
         var vals = [];
 
         if (preloadsAsString) {
-            Ext.Array.each(preloadsAsString.split(','), function(url) {
+            Ext.Array.each(preloadsAsString.split(','), function (url) {
                 vals.push([url]);
             });
         }
