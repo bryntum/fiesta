@@ -167,12 +167,10 @@ Ext.define('Fiesta.view.testcase.View', {
         };
 
         Ext.apply(this, {
-            layout    : 'border',
-            closable  : true,
-            dockedItems : [
-                topBar
-            ],
-            items     : [
+            layout      : 'border',
+            closable    : true,
+            dockedItems : topBar,
+            items       : [
                 {
                     xtype           : 'detailspanel',
                     testCaseModel   : testCaseModel,
