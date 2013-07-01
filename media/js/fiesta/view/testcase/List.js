@@ -1,10 +1,14 @@
 Ext.define('Fiesta.view.testcase.List', {
-    extend   : 'Ext.grid.Panel',
-    alias    : 'widget.testCaseList',
-    requires : ['Fiesta.store.TestCases', 'Fiesta.view.testcase.TestCaseColumn'],
-    cls        : 'testCasesList',
-    title      : 'Tests',
-    hideHeaders : true,
+    extend             : 'Ext.grid.Panel',
+    alias              : 'widget.testCaseList',
+    requires           : ['Fiesta.store.TestCases', 'Fiesta.view.testcase.TestCaseColumn'],
+    cls                : 'testCasesList',
+    title              : 'Tests',
+    hideHeaders        : true,
+    enableColumnHide   : false,
+    enableColumnMove   : false,
+    enableColumnResize : false,
+    emptyText          : 'No tests found...',
 
     initComponent : function () {
         Ext.apply(this, {
@@ -22,7 +26,6 @@ Ext.define('Fiesta.view.testcase.List', {
                     xtype : 'testCaseColumn'
                 }
             ],
-            emptyText  : 'No tests found...',
 
             store     : new Fiesta.store.TestCases(),
             bbar      : {
@@ -39,11 +42,11 @@ Ext.define('Fiesta.view.testcase.List', {
 
             tools : [
                 {
-                    cls : 'x-tool-expand-left',
-                    handler : function() {
+                    cls     : 'x-tool-expand-left',
+                    handler : function () {
                         this.fireEvent('togglecollapse', this);
                     },
-                    scope : this
+                    scope   : this
                 }
             ]
         });
@@ -54,7 +57,7 @@ Ext.define('Fiesta.view.testcase.List', {
         this.down('toolbar #last').hide();
     },
 
-    onMyItemClick   : function (grid, record, item, index, e) {
+    onMyItemClick : function (grid, record, item, index, e) {
         var target = Ext.get(e.getTarget()),
             tabs = FIESTA.getMainView();
 
@@ -76,7 +79,7 @@ Ext.define('Fiesta.view.testcase.List', {
         }
     },
 
-    onMyItemDoubleClick   : function (grid, record, item, index, e) {
+    onMyItemDoubleClick : function (grid, record, item, index, e) {
         var tabs = FIESTA.getMainView();
 
         tabs.activateTabFor(record);
@@ -131,7 +134,7 @@ Ext.define('Fiesta.view.testcase.List', {
         ]);
     },
 
-    getCls          : function (record, index) {
+    getCls : function (record, index) {
         var cls = '';
 
         if (record.get('ownerId') === CONFIG.userId) {
