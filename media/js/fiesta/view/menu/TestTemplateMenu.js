@@ -7,21 +7,23 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
     minWidth           : 200,
 
     initComponent : function () {
+        var extRoot = '/media/frameworks/extjs-' + CONFIG.latestExtVersion;
+        var touchRoot = '/media/frameworks/sencha-touch-' + CONFIG.latestTouchVersion;
 
         Ext.Ajax.request({
-            url     : '/media/frameworks/extjs-' + CONFIG.latestExtVersion + '/examples/examples.json',
+            url     : extRoot + '/examples/examples.json',
             success : function (response) {
                 var data = Ext.decode(response.responseText);
-                this.buildMenuItems('#extjs', data);
+                this.extData = data;
             },
             scope   : this
         });
 
         Ext.Ajax.request({
-            url     : '/media/frameworks/sencha-touch-' + CONFIG.latestTouchVersion + '/examples/examples.json',
+            url     : touchRoot + '/examples/examples.json',
             success : function (response) {
                 var data = Ext.decode(response.responseText);
-                this.buildMenuItems('#touch', data);
+                this.touchData = data;
             },
             scope   : this
         });
@@ -31,7 +33,16 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                 {
                     text        : 'Blank test case',
                     iconCls     : 'icon-file-css'
-                },
+                }
+            ]
+        });
+
+        this.callParent(arguments);
+    },
+
+    show : function() {
+        if (this.items.getCount() === 1 && this.touchData && this.extData) {
+            this.add([
                 {
                     text        : '<strong>Application tests</strong>',
                     disabled    : true
@@ -57,8 +68,13 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                         ignoreParentClicks  : true
                     }
                 }
-            ]
-        });
+            ]);
+
+            this.buildMenuItems('#touch', this.touchData);
+            this.buildMenuItems('#extjs', this.extData);
+            delete this.touchData;
+            delete this.extData;
+        }
 
         this.callParent(arguments);
     },
@@ -77,7 +93,11 @@ Ext.define("Fiesta.view.menu.TestTemplateMenu", {
                     defaults           : {
                         bubbleEvents : ['click']
                     },
-                    items              : item.items
+                    items              : Ext.Array.map(item.items, function(exam) {
+                            // Remove the path provided by the Sencha SDK
+                            exam.icon = null;
+                            return exam;
+                        })
                 }
             })
         });
