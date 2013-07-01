@@ -15,6 +15,10 @@ Ext.define('Fiesta.view.main.TabPanel', {
     initComponent : function () {
 
         Ext.apply(this, {
+            tabBar : {
+                // Prevent overlap of avatar area
+                style : 'margin-right:55px'
+            },
             mouseVisualizer     : Ext.isIE ? null : new Siesta.Harness.Browser.UI.MouseVisualizer(),
             items       : [
                 {
