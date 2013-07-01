@@ -23,24 +23,25 @@
     -webkit-box-shadow : inset 0 1px 0 rgba(255, 255, 255, .1), 0 0px 3px rgba(0, 0, 0, .25);
     -moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .1), 0 0px 3px rgba(0, 0, 0, .25);
     box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .1), 0 0px 3px rgba(0, 0, 0, .25);
-    border-color : rgb(50, 109, 156);
-    background-image      : -moz-linear-gradient(top, #76b1d7, #2d82ba);
-    background-image      : -webkit-gradient(linear, 0 0, 0 100%, from(#76b1d7), to(#2d82ba));
-    background-image      : -webkit-linear-gradient(top, #76b1d7, #2d82ba);
-    background-image      : -o-linear-gradient(top, #76b1d7, #2d82ba);
-    background-image      : linear-gradient(to bottom, #76b1d7, #2d82ba);
+    border-color       : rgb(50, 109, 156);
+    background-image   : -moz-linear-gradient(top, #76b1d7, #2d82ba);
+    background-image   : -webkit-gradient(linear, 0 0, 0 100%, from(#76b1d7), to(#2d82ba));
+    background-image   : -webkit-linear-gradient(top, #76b1d7, #2d82ba);
+    background-image   : -o-linear-gradient(top, #76b1d7, #2d82ba);
+    background-image   : linear-gradient(to bottom, #76b1d7, #2d82ba);
 }
 
 .addNewBtn:hover {
-    background-image      : -moz-linear-gradient(top, #5691c7, #2d82ba);
-    background-image      : -webkit-gradient(linear, 0 0, 0 100%, from(#5691c7), to(#2d82ba));
-    background-image      : -webkit-linear-gradient(top, #5691c7, #2d82ba);
-    background-image      : -o-linear-gradient(top, #5691c7, #2d82ba);
-    background-image      : linear-gradient(to bottom, #5691c7, #2d82ba);
+    background-image : -moz-linear-gradient(top, #5691c7, #2d82ba);
+    background-image : -webkit-gradient(linear, 0 0, 0 100%, from(#5691c7), to(#2d82ba));
+    background-image : -webkit-linear-gradient(top, #5691c7, #2d82ba);
+    background-image : -o-linear-gradient(top, #5691c7, #2d82ba);
+    background-image : linear-gradient(to bottom, #5691c7, #2d82ba);
 }
 
 .addNewBtn .x-btn-inner {
     font-weight : normal !important;
+    line-height : 21px;
 }
 
 /* line 218, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
@@ -49,8 +50,8 @@
     background-position : 0 top;
 }
 
-.searchform .x-form-text{
-    height        : 30px;
+.searchform .x-form-text {
+    height : 30px;
 }
 
 .searchform .x-form-text,
@@ -59,27 +60,25 @@
     border-radius : 2px;
 }
 
-.searchform .x-form-trigger-wrap .x-form-text{
-    height        : 28px;
+.searchform .x-form-trigger-wrap .x-form-text {
+    height : 28px;
 }
 
 .x-form-trigger-wrap {
     background : #fff;
 }
 
-.searchform .x-form-cb-label
-{
-    color:#fff;
-    font-size:0.9em;
+.searchform .x-form-cb-label {
+    color     : #fff;
+    font-size : 0.9em;
 }
 
-.searchform .x-form-cb
-{
-    margin-top:5px;
+.searchform .x-form-cb {
+    margin-top : 5px;
 }
 
 .searchform .x-form-empty-field, textarea.x-form-empty-field {
-    font: 300 12px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+    font  : 300 12px "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
     color : #aaa;
 }
 
@@ -87,7 +86,6 @@
     padding : 2px 3px 1px 3px;
 }
 
-#tags-filter .x-form-trigger
-{
-    background-position:0 3px !important;
+#tags-filter .x-form-trigger {
+    background-position : 0 3px !important;
 }
