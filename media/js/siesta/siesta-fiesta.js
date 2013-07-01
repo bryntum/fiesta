@@ -28627,10 +28627,10 @@ Class('Siesta.Harness.Browser', {
                 
                 if (this.needUI && !this.viewport) {
                     var cb = function () {
-                        if (Ext.QuickTips) {
-                            Ext.QuickTips.init();
-                        }
-                        
+//                        if (Ext.QuickTips) {
+//                            Ext.QuickTips.init();
+//                        }
+//
                         me.viewport = me.createViewport({
                             title           : me.title,
                             harness         : me
@@ -29025,12 +29025,473 @@ Singleton('Siesta.Harness.Browser.FeatureSupport', {
     }
 })
 ;
+/**
+@class Siesta.Harness.Browser.ExtJS
+@extends Siesta.Harness.Browser 
+
+Class, representing the browser harness. This class provides a web-based UI and defines some additional configuration options.
+
+The default value of the `testClass` configuration option in this class is {@link Siesta.Test.ExtJS}, which inherits from 
+{@link Siesta.Test.Browser} and contains various ExtJS-specific assertions. So, use this harness class, when testing an ExtJS application.
+
+This file is for reference only, for a getting start guide and manual, please refer to <a href="#!/guide/siesta_getting_started">Getting Started Guide</a>.
+
+Synopsys
+========
+
+    var Harness = Siesta.Harness.Browser.ExtJS;
+    
+    Harness.configure({
+        title     : 'Awesome ExtJS Application Test Suite',
+        
+        transparentEx       : true,
+        
+        autoCheckGlobals    : true,
+        expectedGlobals     : [
+            'Ext',
+            'Sch'
+        ],
+        
+        preload : [
+            "http://cdn.sencha.io/ext-4.0.2a/ext-all-debug.js",
+            "../awesome-project-all.js",
+            {
+                text    : "console.log('preload completed')"
+            }
+        ]
+    })
+    
+    
+    Harness.start(
+        // simple string - url relative to harness file
+        'sanity.t.js',
+        
+        // test file descriptor with own configuration options
+        {
+            url     : 'basic.t.js',
+            
+            // replace `preload` option of harness
+            preload : [
+                "http://cdn.sencha.io/ext-4.0.6/ext-all-debug.js",
+                "../awesome-project-all.js"
+            ]
+        },
+        
+        // groups ("folders") of test files (possibly with own options)
+        {
+            group       : 'Sanity',
+            
+            autoCheckGlobals    : false,
+            
+            items       : [
+                'data/crud.t.js',
+                ...
+            ]
+        },
+        ...
+    )
+
+
+*/
+
+Class('Siesta.Harness.Browser.ExtJS', {
+    
+    isa     : Siesta.Harness.Browser,
+    
+    // pure static class, no need to instantiate it
+    my : {
+        
+        has     : {
+            /**
+             * @cfg {Class} testClass The test class which will be used for creating test instances, defaults to {@link Siesta.Test.ExtJS}.
+             * You can subclass {@link Siesta.Test.ExtJS} and provide a new class. 
+             * 
+             * This option can be also specified in the test file descriptor. 
+             */
+            testClass           : Siesta.Test.ExtJS,
+            
+            /**
+             * @cfg {Boolean} waitForExtReady
+             * 
+             * By default the `StartTest` function will be executed after `Ext.onReady`. Set to `false` to launch `StartTest` immediately.  
+             * 
+             * This option can be also specified in the test file descriptor. 
+             */
+            waitForExtReady     : true,
+            
+            /**
+             * @cfg {Boolean} waitForAppReady
+             * 
+             * Setting this configuration option to "true" will cause Siesta to wait until the ExtJS MVC application on the test page will become ready,
+             * before starting the test. More precisely it will wait till the first "launch" event from any instance of `Ext.app.Application` class on the page.
+             *   
+             * This option can (and probably should) be also specified in the test file descriptor. 
+             */
+            waitForAppReady     : false,
+            
+
+            /**
+             * @cfg {Object} loaderPath
+             * 
+             * The path used to configure the Ext.Loader, for dynamic loading of Ext JS classes.
+             *
+             * This option can be also specified in the test file descriptor. 
+             */
+            loaderPath          : null,
+            
+            extVersion              : null,
+
+            /**
+             * @cfg {Boolean} allowExtVersionChange
+             * 
+             * True to show a version picker to swiftly change which Ext JS version is used in the test suite.
+             */
+            allowExtVersionChange   : false,
+            
+            extVersionRegExp    : /ext(?:js)?-(\d\.\d+\.\d+.*?)\//
+        },
+        
+        
+        methods : {
+            createViewport       : function(config) {
+               return Ext.create("Siesta.Harness.Browser.UI.ExtViewport", config);
+            },
+            
+            setup : function (callback) {
+                var me      = this
+                
+                this.SUPER(function () {
+                    if (me.allowExtVersionChange) me.extVersion = me.findExtVersion()
+                    
+                    callback()
+                })
+            },
+            
+        
+            getNewTestConfiguration : function (desc, scopeProvider, contentManager, options, runFunc) {
+                var config          = this.SUPERARG(arguments)
+                
+                config.waitForExtReady  = this.getDescriptorConfig(desc, 'waitForExtReady')
+                config.waitForAppReady  = this.getDescriptorConfig(desc, 'waitForAppReady')
+                config.loaderPath       = this.getDescriptorConfig(desc, 'loaderPath')
+                
+                return config
+            },
+            
+            
+            setExtVersion : function (newVersion) {
+                if (!this.allowExtVersionChange || newVersion == this.extVersion) return
+                
+                this.extVersion         = newVersion
+                
+                var me                  = this
+                var allDescriptors      = this.flattenDescriptors(this.descriptors)
+                var mainPreset          = this.mainPreset
+                
+                this.setExtVersionForPreset(mainPreset, newVersion)
+                
+                Joose.A.each(allDescriptors, function (desc) {
+                    if (desc.preset != mainPreset) me.setExtVersionForPreset(desc.preset, newVersion)
+                })
+            },
+            
+            
+            setExtVersionForPreset : function (preset, newVersion) {
+                var me      = this
+                
+                preset.eachResource(function (resource) {
+                    var url     = resource.url
+                    
+                    if (url && url.match(me.extVersionRegExp)) resource.url = url.replace(me.extVersionRegExp, 'ext-' + newVersion + '/')
+                })
+            },
+            
+            
+            findExtVersion : function () {
+                var me      = this
+                
+                var found
+                
+                this.mainPreset.eachResource(function (resource) {
+                    var match   = me.extVersionRegExp.exec(resource.url)
+                    
+                    if (match) {
+                        found   = match[ 1 ]
+                        
+                        return false
+                    }
+                })
+                
+                return found
+            }
+        }
+    }
+})
+
+
 ;
-Ext.Component.override({
+/**
+@class Siesta.Harness.Browser.SenchaTouch
+@extends Siesta.Harness.Browser 
+
+A Class representing the browser harness. This class provides a web-based UI and defines some additional configuration options.
+
+The default value of the `testClass` configuration option in this class is {@link Siesta.Test.SenchaTouch}, which inherits from 
+{@link Siesta.Test.Browser} and contains various Sencha Touch-specific assertions. Use this harness class when testing Sencha Touch applications.
+
+* **Note** Make sure, you've checked the {@link #performSetup} configuration option. 
+
+This file is for reference only, for a getting start guide and manual, please refer to <a href="#!/guide/siesta_getting_started">Getting Started Guide</a>.
+
+Synopsys
+========
+
+    var Harness = Siesta.Harness.Browser.SenchaTouch;
+        
+    Harness.configure({
+        title           : 'Awesome Sencha Touch Application Test Suite',
+                
+        transparentEx   : true,
+                
+        preload         : [
+            "http://cdn.sencha.io/ext-4.0.2a/ext-all-debug.js",
+            "../awesome-project-all.js"
+        ]
+    })
+        
+        
+    Harness.start(
+        // simple string - url relative to harness file
+        'sanity.t.js',
+                
+        // test file descriptor with own configuration options
+        {
+            url     : 'basic.t.js',
+                        
+            // replace `preload` option of harness
+            preload : [
+                "http://cdn.sencha.io/ext-4.0.6/ext-all-debug.js",
+                "../awesome-project-all.js"
+            ]
+        },
+                
+        // groups ("folders") of test files (possibly with own options)
+        {
+            group       : 'Sanity',
+                        
+            autoCheckGlobals    : false,
+                        
+            items       : [
+                'data/crud.t.js',
+                ...
+            ]
+        },
+        ...
+    )
+
+
+*/
+
+Class('Siesta.Harness.Browser.SenchaTouch', {
+
+    isa: Siesta.Harness.Browser,
+
+    // pure static class, no need to instantiate it
+    my: {
+
+        has: {
+            /**
+            * @cfg {Class} testClass The test class which will be used for creating test instances, defaults to {@link Siesta.Test.SenchaTouch}.
+            * You can subclass {@link Siesta.Test.SenchaTouch} and provide a new class. 
+            * 
+            * This option can be also specified in the test file descriptor. 
+            */
+            testClass           : Siesta.Test.SenchaTouch,
+
+            /**
+             * @cfg {Boolean} transparentEx
+             */
+            transparentEx       : true,
+            keepResults         : false,
+            keepNLastResults    : 0,
+            
+            /**
+             * @cfg {Boolean} performSetup When set to `true`, Siesta will perform a `Ext.setup()` call, so you can safely assume there's a viewport for example.
+             * If, however your test code, performs `Ext.setup()` itself, you need to disable this option.
+             * 
+             * If this option is not explicitly specified in the test descritor, but instead inherited, it will be automatically disabled if test has {@link #hostPageUrl} value.
+             * 
+             * This option can be also specified in the test file descriptor.
+             */
+            performSetup        : true,
+            
+            /**
+             * @cfg {String} runCore
+             */
+            runCore             : 'sequential',
+
+            /**
+            * @cfg {Object} loaderPath
+            * 
+            * The path used to configure the Ext.Loader with, for dynamic loading of Ext JS classes.
+            *
+            * This option can be also specified in the test file descriptor. 
+            */
+            loaderPath          : null,
+            
+            isRunningOnMobile   : true,
+            useExtJSUI          : true
+        },
+
+
+        methods: {
+            
+            setup : function () {
+                // TODO fix proper mobile detection, since Ext may be absent in "no-ui" harness
+                this.isRunningOnMobile = typeof Ext !== 'undefined' && Ext.getVersion && Ext.getVersion('touch')
+                
+                if (!this.isRunningOnMobile) this.keepNLastResults = 2
+                
+                this.SUPERARG(arguments)
+            },
+
+
+            getNewTestConfiguration: function (desc, scopeProvider, contentManager, options, runFunc) {
+                var config = this.SUPERARG(arguments)
+
+                var hostPageUrl = this.getDescriptorConfig(desc, 'hostPageUrl');
+                
+                if (!desc.hasOwnProperty('performSetup') && hostPageUrl) {
+                    config.performSetup = false;
+                } else {
+                    config.performSetup = this.getDescriptorConfig(desc, 'performSetup')
+                }
+                
+                config.loaderPath       = this.getDescriptorConfig(desc, 'loaderPath')
+
+                return config
+            },
+
+
+
+            createViewport: function (config) {
+                if (!this.isRunningOnMobile && this.useExtJSUI) return Ext.create("Siesta.Harness.Browser.UI.ExtViewport", config);
+                
+                var mainPanel = Ext.create('Siesta.Harness.Browser.UI_Mobile.MainPanel', config);
+                
+                Ext.Viewport.add(mainPanel);
+                
+                return mainPanel;
+            },
+
+            
+            showForcedIFrame : function (test) {
+                $.rebindWindowContext(window);
+                
+                var wrapper     = test.scopeProvider.wrapper
+
+                $(wrapper).css({
+                    'z-index'   : 100000
+                });
+            },
+
+            
+            onBeforeScopePreload : function (scopeProvider, url) {
+                var setupEventTranslation = function () {
+                    if (Ext.feature.has.Touch) {
+                        if (Ext.getVersion('touch').isGreaterThanOrEqual('2.2.0')) {
+                            Ext.event.publisher.TouchGesture.prototype.handledEvents.push('mousedown', 'mousemove', 'mouseup');
+                        } else {
+                            Ext.event.publisher.TouchGesture.override({
+                                moveEventName: 'mousemove',
+
+                                map: {
+                                    mouseToTouch: {
+                                        mousedown: 'touchstart',
+                                        mousemove: 'touchmove',
+                                        mouseup: 'touchend'
+                                    },
+
+                                    touchToMouse: {
+                                        touchstart: 'mousedown',
+                                        touchmove: 'mousemove',
+                                        touchend: 'mouseup'
+                                    }
+                                },
+
+                                attachListener: function(eventName) {
+                                    eventName = this.map.touchToMouse[eventName];
+
+                                    if (!eventName) {
+                                        return;
+                                    }
+
+                                    return this.callOverridden([eventName]);
+                                },
+
+                                lastEventType: null,
+
+                                onEvent: function(e) {
+                                    if ('button' in e && e.button !== 0) {
+                                        return;
+                                    }
+
+                                    var type = e.type,
+                                        touchList = [e];
+
+                                    // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
+                                    // when the element is being animated
+                                    // with webkit-transition (2 mousedowns without any mouseup)
+                                    if (type === 'mousedown' && this.lastEventType && this.lastEventType !== 'mouseup') {
+                                        var fixedEvent = document.createEvent("MouseEvent");
+                                            fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
+                                                document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
+                                                e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.metaKey,
+                                                e.button, e.relatedTarget);
+
+                                        this.onEvent(fixedEvent);
+                                    }
+
+                                    if (type !== 'mousemove') {
+                                        this.lastEventType = type;
+                                    }
+
+                                    e.identifier = 1;
+                                    e.touches = (type !== 'mouseup') ? touchList : [];
+                                    e.targetTouches = (type !== 'mouseup') ? touchList : [];
+                                    e.changedTouches = touchList;
+
+                                    return this.callOverridden([e]);
+                                },
+
+                                processEvent: function(e) {
+                                    this.eventProcessors[this.map.mouseToTouch[e.type]].call(this, e);
+                                }
+                            });
+                        }
+                    }
+                };
+
+                // Need to tell ST to convert mouse events to their touch counterpart
+                scopeProvider.addPreload({
+                    type        : 'js', 
+                    content     : '(' + setupEventTranslation.toString() + ')();'
+                })
+                 
+                this.SUPERARG(arguments)
+            }
+        }
+    }
+})
+
+
+;
+;
+Ext.define('ExtX.Reference.Slot', {
+    override : 'Ext.Component',
 
     slot            : null,
     __COLLECTOR__   : null,
-
 
     onRemoved : function() {
         if (this.__COLLECTOR__) {
@@ -29053,11 +29514,11 @@ Ext.Component.override({
 })
 
 
+Ext.define('ExtX.Reference.Slot2', {
 
-Ext.Container.override({
+    override : 'Ext.Container',
 
     slots       : null,
-
 
     onAdd : function () {
     
@@ -29070,7 +29531,6 @@ Ext.Container.override({
             }
         })
     },
-
 
     initComponent : function () {
         if (this.slots) this.slots = {}
@@ -29679,12 +30139,13 @@ Ext.define("Sch.data.mixin.FilterableTreeStore", {
 });;
 Ext.define('Siesta.Harness.Browser.Model.AssertionTreeStore', {
     extend          : 'Ext.data.TreeStore',
-    
+
+    model   : 'Siesta.Harness.Browser.Model.Assertion',
+
     mixins          : [
         'Sch.data.mixin.FilterableTreeStore'
     ],
-    
-    
+
     constructor     : function () {
         this.callParent(arguments)
         
@@ -30562,8 +31023,13 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     mixins          : [
         'Siesta.Harness.Browser.UI.CanFillAssertionsStore'
     ],
-    
-    
+
+//    requires            : [
+//        'Siesta.Harness.Browser.Model.AssertionTreeStore',
+//        'Siesta.Harness.Browser.UI.FilterableTreeView',
+//        'Siesta.Harness.Browser.UI.TreeColumn'
+//    ],
+
     cls                 : 'siesta-assertion-grid hide-simulated',
 
     enableColumnHide    : false,
@@ -30576,22 +31042,22 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     minWidth            : 100,
     trackMouseOver      : false,
     autoScrollToBottom  : true,
-    
+    hideHeaders         : true,
     resultTpl           : null,
-    
+    rowLines            : false,
     isStandalone        : false,
-    
+    rootVisible         : false,
+
     test                : null,
     testListeners       : null,
-    
-    
+    viewType            : 'filterabletreeview',
+
     initComponent : function() {
         var me = this;
         
         this.testListeners  = []
         
         if (!this.store) this.store = new Siesta.Harness.Browser.Model.AssertionTreeStore({
-            model   : 'Siesta.Harness.Browser.Model.Assertion',
 
             proxy   : {
                 type        : 'memory',
@@ -30639,11 +31105,7 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
                     sortable        : false
                 } 
             ],
-            
-            rootVisible : false,
-            rowLines    : true,
-                    
-            viewType    : 'filterabletreeview',
+
             viewConfig  : {
                 enableTextSelection     : true,
                 stripeRows              : false,
@@ -30807,465 +31269,4 @@ Ext.define('Siesta.Harness.Browser.UI.AssertionGrid', {
     }
     
 })
-;
-/**
-@class Siesta.Harness.Browser.ExtJS
-@extends Siesta.Harness.Browser 
-
-Class, representing the browser harness. This class provides a web-based UI and defines some additional configuration options.
-
-The default value of the `testClass` configuration option in this class is {@link Siesta.Test.ExtJS}, which inherits from 
-{@link Siesta.Test.Browser} and contains various ExtJS-specific assertions. So, use this harness class, when testing an ExtJS application.
-
-This file is for reference only, for a getting start guide and manual, please refer to <a href="#!/guide/siesta_getting_started">Getting Started Guide</a>.
-
-Synopsys
-========
-
-    var Harness = Siesta.Harness.Browser.ExtJS;
-    
-    Harness.configure({
-        title     : 'Awesome ExtJS Application Test Suite',
-        
-        transparentEx       : true,
-        
-        autoCheckGlobals    : true,
-        expectedGlobals     : [
-            'Ext',
-            'Sch'
-        ],
-        
-        preload : [
-            "http://cdn.sencha.io/ext-4.0.2a/ext-all-debug.js",
-            "../awesome-project-all.js",
-            {
-                text    : "console.log('preload completed')"
-            }
-        ]
-    })
-    
-    
-    Harness.start(
-        // simple string - url relative to harness file
-        'sanity.t.js',
-        
-        // test file descriptor with own configuration options
-        {
-            url     : 'basic.t.js',
-            
-            // replace `preload` option of harness
-            preload : [
-                "http://cdn.sencha.io/ext-4.0.6/ext-all-debug.js",
-                "../awesome-project-all.js"
-            ]
-        },
-        
-        // groups ("folders") of test files (possibly with own options)
-        {
-            group       : 'Sanity',
-            
-            autoCheckGlobals    : false,
-            
-            items       : [
-                'data/crud.t.js',
-                ...
-            ]
-        },
-        ...
-    )
-
-
-*/
-
-Class('Siesta.Harness.Browser.ExtJS', {
-    
-    isa     : Siesta.Harness.Browser,
-    
-    // pure static class, no need to instantiate it
-    my : {
-        
-        has     : {
-            /**
-             * @cfg {Class} testClass The test class which will be used for creating test instances, defaults to {@link Siesta.Test.ExtJS}.
-             * You can subclass {@link Siesta.Test.ExtJS} and provide a new class. 
-             * 
-             * This option can be also specified in the test file descriptor. 
-             */
-            testClass           : Siesta.Test.ExtJS,
-            
-            /**
-             * @cfg {Boolean} waitForExtReady
-             * 
-             * By default the `StartTest` function will be executed after `Ext.onReady`. Set to `false` to launch `StartTest` immediately.  
-             * 
-             * This option can be also specified in the test file descriptor. 
-             */
-            waitForExtReady     : true,
-            
-            /**
-             * @cfg {Boolean} waitForAppReady
-             * 
-             * Setting this configuration option to "true" will cause Siesta to wait until the ExtJS MVC application on the test page will become ready,
-             * before starting the test. More precisely it will wait till the first "launch" event from any instance of `Ext.app.Application` class on the page.
-             *   
-             * This option can (and probably should) be also specified in the test file descriptor. 
-             */
-            waitForAppReady     : false,
-            
-
-            /**
-             * @cfg {Object} loaderPath
-             * 
-             * The path used to configure the Ext.Loader, for dynamic loading of Ext JS classes.
-             *
-             * This option can be also specified in the test file descriptor. 
-             */
-            loaderPath          : null,
-            
-            extVersion              : null,
-
-            /**
-             * @cfg {Boolean} allowExtVersionChange
-             * 
-             * True to show a version picker to swiftly change which Ext JS version is used in the test suite.
-             */
-            allowExtVersionChange   : false,
-            
-            extVersionRegExp    : /ext(?:js)?-(\d\.\d+\.\d+.*?)\//
-        },
-        
-        
-        methods : {
-            createViewport       : function(config) {
-               return Ext.create("Siesta.Harness.Browser.UI.ExtViewport", config);
-            },
-            
-            setup : function (callback) {
-                var me      = this
-                
-                this.SUPER(function () {
-                    if (me.allowExtVersionChange) me.extVersion = me.findExtVersion()
-                    
-                    callback()
-                })
-            },
-            
-        
-            getNewTestConfiguration : function (desc, scopeProvider, contentManager, options, runFunc) {
-                var config          = this.SUPERARG(arguments)
-                
-                config.waitForExtReady  = this.getDescriptorConfig(desc, 'waitForExtReady')
-                config.waitForAppReady  = this.getDescriptorConfig(desc, 'waitForAppReady')
-                config.loaderPath       = this.getDescriptorConfig(desc, 'loaderPath')
-                
-                return config
-            },
-            
-            
-            setExtVersion : function (newVersion) {
-                if (!this.allowExtVersionChange || newVersion == this.extVersion) return
-                
-                this.extVersion         = newVersion
-                
-                var me                  = this
-                var allDescriptors      = this.flattenDescriptors(this.descriptors)
-                var mainPreset          = this.mainPreset
-                
-                this.setExtVersionForPreset(mainPreset, newVersion)
-                
-                Joose.A.each(allDescriptors, function (desc) {
-                    if (desc.preset != mainPreset) me.setExtVersionForPreset(desc.preset, newVersion)
-                })
-            },
-            
-            
-            setExtVersionForPreset : function (preset, newVersion) {
-                var me      = this
-                
-                preset.eachResource(function (resource) {
-                    var url     = resource.url
-                    
-                    if (url && url.match(me.extVersionRegExp)) resource.url = url.replace(me.extVersionRegExp, 'ext-' + newVersion + '/')
-                })
-            },
-            
-            
-            findExtVersion : function () {
-                var me      = this
-                
-                var found
-                
-                this.mainPreset.eachResource(function (resource) {
-                    var match   = me.extVersionRegExp.exec(resource.url)
-                    
-                    if (match) {
-                        found   = match[ 1 ]
-                        
-                        return false
-                    }
-                })
-                
-                return found
-            }
-        }
-    }
-})
-
-
-;
-/**
-@class Siesta.Harness.Browser.SenchaTouch
-@extends Siesta.Harness.Browser 
-
-A Class representing the browser harness. This class provides a web-based UI and defines some additional configuration options.
-
-The default value of the `testClass` configuration option in this class is {@link Siesta.Test.SenchaTouch}, which inherits from 
-{@link Siesta.Test.Browser} and contains various Sencha Touch-specific assertions. Use this harness class when testing Sencha Touch applications.
-
-* **Note** Make sure, you've checked the {@link #performSetup} configuration option. 
-
-This file is for reference only, for a getting start guide and manual, please refer to <a href="#!/guide/siesta_getting_started">Getting Started Guide</a>.
-
-Synopsys
-========
-
-    var Harness = Siesta.Harness.Browser.SenchaTouch;
-        
-    Harness.configure({
-        title           : 'Awesome Sencha Touch Application Test Suite',
-                
-        transparentEx   : true,
-                
-        preload         : [
-            "http://cdn.sencha.io/ext-4.0.2a/ext-all-debug.js",
-            "../awesome-project-all.js"
-        ]
-    })
-        
-        
-    Harness.start(
-        // simple string - url relative to harness file
-        'sanity.t.js',
-                
-        // test file descriptor with own configuration options
-        {
-            url     : 'basic.t.js',
-                        
-            // replace `preload` option of harness
-            preload : [
-                "http://cdn.sencha.io/ext-4.0.6/ext-all-debug.js",
-                "../awesome-project-all.js"
-            ]
-        },
-                
-        // groups ("folders") of test files (possibly with own options)
-        {
-            group       : 'Sanity',
-                        
-            autoCheckGlobals    : false,
-                        
-            items       : [
-                'data/crud.t.js',
-                ...
-            ]
-        },
-        ...
-    )
-
-
-*/
-
-Class('Siesta.Harness.Browser.SenchaTouch', {
-
-    isa: Siesta.Harness.Browser,
-
-    // pure static class, no need to instantiate it
-    my: {
-
-        has: {
-            /**
-            * @cfg {Class} testClass The test class which will be used for creating test instances, defaults to {@link Siesta.Test.SenchaTouch}.
-            * You can subclass {@link Siesta.Test.SenchaTouch} and provide a new class. 
-            * 
-            * This option can be also specified in the test file descriptor. 
-            */
-            testClass           : Siesta.Test.SenchaTouch,
-
-            /**
-             * @cfg {Boolean} transparentEx
-             */
-            transparentEx       : true,
-            keepResults         : false,
-            keepNLastResults    : 0,
-            
-            /**
-             * @cfg {Boolean} performSetup When set to `true`, Siesta will perform a `Ext.setup()` call, so you can safely assume there's a viewport for example.
-             * If, however your test code, performs `Ext.setup()` itself, you need to disable this option.
-             * 
-             * If this option is not explicitly specified in the test descritor, but instead inherited, it will be automatically disabled if test has {@link #hostPageUrl} value.
-             * 
-             * This option can be also specified in the test file descriptor.
-             */
-            performSetup        : true,
-            
-            /**
-             * @cfg {String} runCore
-             */
-            runCore             : 'sequential',
-
-            /**
-            * @cfg {Object} loaderPath
-            * 
-            * The path used to configure the Ext.Loader with, for dynamic loading of Ext JS classes.
-            *
-            * This option can be also specified in the test file descriptor. 
-            */
-            loaderPath          : null,
-            
-            isRunningOnMobile   : true,
-            useExtJSUI          : true
-        },
-
-
-        methods: {
-            
-            setup : function () {
-                // TODO fix proper mobile detection, since Ext may be absent in "no-ui" harness
-                this.isRunningOnMobile = typeof Ext !== 'undefined' && Ext.getVersion && Ext.getVersion('touch')
-                
-                if (!this.isRunningOnMobile) this.keepNLastResults = 2
-                
-                this.SUPERARG(arguments)
-            },
-
-
-            getNewTestConfiguration: function (desc, scopeProvider, contentManager, options, runFunc) {
-                var config = this.SUPERARG(arguments)
-
-                var hostPageUrl = this.getDescriptorConfig(desc, 'hostPageUrl');
-                
-                if (!desc.hasOwnProperty('performSetup') && hostPageUrl) {
-                    config.performSetup = false;
-                } else {
-                    config.performSetup = this.getDescriptorConfig(desc, 'performSetup')
-                }
-                
-                config.loaderPath       = this.getDescriptorConfig(desc, 'loaderPath')
-
-                return config
-            },
-
-
-
-            createViewport: function (config) {
-                if (!this.isRunningOnMobile && this.useExtJSUI) return Ext.create("Siesta.Harness.Browser.UI.ExtViewport", config);
-                
-                var mainPanel = Ext.create('Siesta.Harness.Browser.UI_Mobile.MainPanel', config);
-                
-                Ext.Viewport.add(mainPanel);
-                
-                return mainPanel;
-            },
-
-            
-            showForcedIFrame : function (test) {
-                $.rebindWindowContext(window);
-                
-                var wrapper     = test.scopeProvider.wrapper
-
-                $(wrapper).css({
-                    'z-index'   : 100000
-                });
-            },
-
-            
-            onBeforeScopePreload : function (scopeProvider, url) {
-                var setupEventTranslation = function () {
-                    if (Ext.feature.has.Touch) {
-                        if (Ext.getVersion('touch').isGreaterThanOrEqual('2.2.0')) {
-                            Ext.event.publisher.TouchGesture.prototype.handledEvents.push('mousedown', 'mousemove', 'mouseup');
-                        } else {
-                            Ext.event.publisher.TouchGesture.override({
-                                moveEventName: 'mousemove',
-
-                                map: {
-                                    mouseToTouch: {
-                                        mousedown: 'touchstart',
-                                        mousemove: 'touchmove',
-                                        mouseup: 'touchend'
-                                    },
-
-                                    touchToMouse: {
-                                        touchstart: 'mousedown',
-                                        touchmove: 'mousemove',
-                                        touchend: 'mouseup'
-                                    }
-                                },
-
-                                attachListener: function(eventName) {
-                                    eventName = this.map.touchToMouse[eventName];
-
-                                    if (!eventName) {
-                                        return;
-                                    }
-
-                                    return this.callOverridden([eventName]);
-                                },
-
-                                lastEventType: null,
-
-                                onEvent: function(e) {
-                                    if ('button' in e && e.button !== 0) {
-                                        return;
-                                    }
-
-                                    var type = e.type,
-                                        touchList = [e];
-
-                                    // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
-                                    // when the element is being animated
-                                    // with webkit-transition (2 mousedowns without any mouseup)
-                                    if (type === 'mousedown' && this.lastEventType && this.lastEventType !== 'mouseup') {
-                                        var fixedEvent = document.createEvent("MouseEvent");
-                                            fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
-                                                document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
-                                                e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.metaKey,
-                                                e.button, e.relatedTarget);
-
-                                        this.onEvent(fixedEvent);
-                                    }
-
-                                    if (type !== 'mousemove') {
-                                        this.lastEventType = type;
-                                    }
-
-                                    e.identifier = 1;
-                                    e.touches = (type !== 'mouseup') ? touchList : [];
-                                    e.targetTouches = (type !== 'mouseup') ? touchList : [];
-                                    e.changedTouches = touchList;
-
-                                    return this.callOverridden([e]);
-                                },
-
-                                processEvent: function(e) {
-                                    this.eventProcessors[this.map.mouseToTouch[e.type]].call(this, e);
-                                }
-                            });
-                        }
-                    }
-                };
-
-                // Need to tell ST to convert mouse events to their touch counterpart
-                scopeProvider.addPreload({
-                    type        : 'js', 
-                    content     : '(' + setupEventTranslation.toString() + ')();'
-                })
-                 
-                this.SUPERARG(arguments)
-            }
-        }
-    }
-})
-
-
 ;
