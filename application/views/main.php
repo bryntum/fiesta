@@ -39,18 +39,19 @@
     </script>
     <script type="text/javascript" src="/media/js/fiesta/fiesta-all-debug.js"></script>
 </head>
-<body>
-<span class="beta">beta</span>
-<div id="disqus_thread"></div>
-<!--<script>-->
-    <!--var disqus_developer = 1;-->
-    <!--var disqus_shortname = '<?php echo $disqus_shortname?>';-->
-    <!--(function() {-->
-        <!--var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = false;-->
-        <!--dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';-->
-        <!--(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);-->
-    <!--})();-->
-<!--</script>-->
-<!--script src="http://<?php echo $disqus_shortname?>.disqus.com/embed.js"></script -->
+<body style="background-color: rgb(58, 153, 216)">
+    <a href="/"><img src="/media/img/logo_fiesta_white_alone@2x.png" class="logo"/></a>
+
+    <div id="disqus_thread"></div>
+    <!--<script>-->
+        <!--var disqus_developer = 1;-->
+        <!--var disqus_shortname = '<?php echo $disqus_shortname?>';-->
+        <!--(function() {-->
+            <!--var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = false;-->
+            <!--dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';-->
+            <!--(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);-->
+        <!--})();-->
+    <!--</script>-->
+    <!--script src="http://<?php echo $disqus_shortname?>.disqus.com/embed.js"></script -->
 </body>
 </html>

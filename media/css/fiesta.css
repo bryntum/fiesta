@@ -1,10 +1,12 @@
-.beta {
+body {
+    background-color: rgb(58, 153, 216)!important;
+}
+
+.logo {
     position    : absolute;
-    top         : 33px;
-    left        : 139px;
-    color       : yellow;
-    font-size   : 10px;
-    font-family : "Monaco", "Inconsolata", "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    top         : 16px;
+    left        : 11px;
+    height      : 40px;
 }
 
 .x-boxselect input {
@@ -102,11 +104,6 @@
     overflow   : hidden;
     text-align : center;
     clear      : both;
-}
-
-.homepanel .x-panel-body {
-    background      : url(../img/siestalogo.png) no-repeat center center;
-    background-size : 20%;
 }
 
 .homepanel .footer {
