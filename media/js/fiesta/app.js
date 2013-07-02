@@ -9,6 +9,7 @@ Ext.application({
     autoCreateViewport      : true,
     
     requires        : [
+        'Fiesta.store.TestCases',
         'Ext.ux.form.field.BoxSelect',
 
         'Fiesta.override.Menu',
@@ -128,6 +129,9 @@ Ext.application({
     },
 
     init: function () {
+
+        var testCases = new Fiesta.store.TestCases();
+        testCases.load();
 
         Ext.apply(CONFIG, {
             LINT_SETTINGS : this.lintSettings

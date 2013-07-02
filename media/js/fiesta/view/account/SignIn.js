@@ -4,6 +4,7 @@ Ext.define('Fiesta.view.account.SignIn', {
     width           : 350,
     height          : 270,
     autoShow        : true,
+    modal           : true,
     title           : 'SIGN IN',
     layout          : 'fit',
     closeAction     : 'destroy',

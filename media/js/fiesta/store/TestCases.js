@@ -1,7 +1,7 @@
 Ext.define("Fiesta.store.TestCases", {
     extend     : "Ext.data.Store",
     model      : "Fiesta.model.TestCase",
-    autoLoad   : true,
+    autoLoad   : false,
     storeId    : 'TestCases',
     remoteSort : true,
     pageSize   : 200,

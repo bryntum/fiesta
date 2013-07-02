@@ -35,7 +35,7 @@ Ext.define('Fiesta.view.testcase.Details', {
     },
 
     addComponents : function() {
-        var tagsStore = new Fiesta.store.Tags();
+//        var tagsStore = new Fiesta.store.Tags();
 
         this.add([
             {
@@ -54,7 +54,7 @@ Ext.define('Fiesta.view.testcase.Details', {
                         fieldLabel       : 'Tags',
                         xtype            : 'tagselect',
                         cls              : 'details-tags details-combo',
-                        store            : tagsStore,
+                        store            : 'Tags',
                         emptyText        : "Add multiple tags",
                         displayField     : "tag",
                         valueField       : "tag",

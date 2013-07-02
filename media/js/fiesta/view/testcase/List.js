@@ -1,7 +1,7 @@
 Ext.define('Fiesta.view.testcase.List', {
     extend             : 'Ext.grid.Panel',
     alias              : 'widget.testCaseList',
-    requires           : ['Fiesta.store.TestCases', 'Fiesta.view.testcase.TestCaseColumn'],
+    requires           : ['Fiesta.view.testcase.TestCaseColumn'],
     cls                : 'testCasesList',
     title              : 'Tests',
     hideHeaders        : true,
@@ -27,7 +27,7 @@ Ext.define('Fiesta.view.testcase.List', {
                 }
             ],
 
-            store     : new Fiesta.store.TestCases(),
+            store     : 'TestCases',
             bbar      : {
                 xtype       : 'pagingtoolbar',
                 store       : 'TestCases',

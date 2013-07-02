@@ -197,20 +197,21 @@ Ext.define('Fiesta.view.main.TabPanel', {
         var tabs = this;
 
         if (state.openedTabs && state.openedTabs.length > 0) {
+
+            var activeTabSlug = state.activeTabSlug;
+
             Fiesta.DataModel.getTestCasesColl(
                 state.openedTabs,
                 function (modelsCollection) {
-                    Ext.each(modelsCollection, function (testcaseModel) {
-                        tabs.updateTab(testcaseModel);
-                    });
 
-                    if (!tabs.getActiveTab()) {
-                        tabs.items.each(function (tab) {
-                            if (state.activeTabId == tab.testCaseModel.get('id')) {
-                                tabs.setActiveTab(tab);
-                            }
-                        });
-                    }
+                    Ext.each(modelsCollection, function (testcaseModel) {
+                        if(testcaseModel.get('slug') == activeTabSlug && (!tabs.getActiveTab() || !tabs.getActiveTab().testCaseModel)){
+                            tabs.activateTabFor(testcaseModel);
+                        }
+                        else {
+                            tabs.updateTab(testcaseModel);
+                        }
+                    });
 
                     return false;
                 },
