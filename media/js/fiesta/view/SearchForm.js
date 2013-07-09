@@ -16,7 +16,7 @@ Ext.define("Fiesta.view.SearchForm", {
             },
             defaults      : {
                 anchor : "100%",
-                margin  : '5 20'
+                margin  : '5 10'
             },
             items         : [
                 ,

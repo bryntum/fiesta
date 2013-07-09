@@ -5,7 +5,7 @@ body {
 .logo {
     position    : absolute;
     top         : 16px;
-    left        : 11px;
+    left        : 0;
     height      : 40px;
 }
 

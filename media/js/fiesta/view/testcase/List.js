@@ -43,6 +43,7 @@ Ext.define('Fiesta.view.testcase.List', {
             tools : [
                 {
                     cls     : 'x-tool-expand-left',
+                    style   : 'margin-right:3px',
                     handler : function () {
                         this.fireEvent('togglecollapse', this);
                     },

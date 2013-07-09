@@ -3,6 +3,13 @@
     border-right:1px solid rgb(225, 225, 225);
 }
 
+
+.testCasesList .x-header-text
+{
+    padding-left: 7px;
+}
+
+
 .testcase-list-container .x-panel-body-default {
     background : transparent;
 }

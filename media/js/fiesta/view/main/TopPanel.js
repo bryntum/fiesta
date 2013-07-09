@@ -96,6 +96,7 @@ Ext.define('Fiesta.view.main.TopPanel', {
                          \  <li><a href="http://jshint.com">JsHint</a></li> \
                          \  <li><a href="http://icomoon.io">IcoMoon</a></li> \
                          \  <li><a href="http://99designs.com">99 Designs</a></li> \
+                         \  <li><a href="https://github.com/gotwarlost/istanbul">Istanbul</a></li> \
                         </ul>',
             buttons  : {
                 padding : '10 13',
