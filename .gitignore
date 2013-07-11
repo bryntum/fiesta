@@ -1,7 +1,8 @@
 #Ignore log files of any kind
 log-*.php
 
-.project
+/.project
+/.externalToolBuilders
 /.idea
 
 .DS_Store

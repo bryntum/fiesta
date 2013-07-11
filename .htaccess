@@ -3,27 +3,3 @@ RewriteRule ^$ /index.php [L]
 RewriteCond $1 !^(index\.php|tests|resource|media|system|user_guide|bootstrap|robots\.txt|favicon\.ico)
 RewriteRule ^(.*)$ /index.php/$1 [L]
 
-#<ifModule mod_headers.c>
-#    Header set Connection keep-alive
-#</ifModule>
-#
-#Header unset ETag
-#FileETag None
-
-## GZIP
-#AddOutputFilterByType DEFLATE text/css application/javascript text/html text/plain text/xml application/json text/json
-#
-# 480 weeks
-#<filesMatch ".(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
-#Header set Cache-Control "max-age=290304000, public"
-#</filesMatch>
-
-# 2 DAYS
-#<filesMatch ".(xml|txt)$">
-#Header set Cache-Control "max-age=172800, public, must-revalidate"
-#</filesMatch>
-
-# 2 HOURS
-#<filesMatch ".(html|htm)$">
-#Header set Cache-Control "max-age=7200, must-revalidate"
-#</filesMatch>

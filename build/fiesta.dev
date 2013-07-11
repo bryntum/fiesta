@@ -1,0 +1,67 @@
+<VirtualHost *:80>
+	ServerAdmin nickolay@bryntum.com
+	ServerName fiestadev.bryntum.com
+	
+	DocumentRoot /home/nickolay/workspace/Bryntum/fiesta/
+	
+	<Directory "/home/nickolay/workspace/Bryntum/fiesta/">
+	    Options -Indexes +MultiViews +FollowSymLinks
+	    
+	    DirectoryIndex	index.php
+	    
+	    AllowOverride All
+	    Order allow,deny
+	    Allow from all
+	</Directory>
+	
+	<Location "/media/frameworks">
+	    Options +Indexes +MultiViews
+	    DirectoryIndex index
+	</Location>
+	
+	ErrorLog /var/log/apache2/fiesta-error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/fiesta-access.log combined
+	
+	<Proxy *>
+	    Order allow,deny
+	    Allow from all
+	</Proxy>
+
+	RewriteEngine on
+
+	#RewriteCond %{REQUEST_URI} !^/app
+	#RewriteCond %{REQUEST_URI} !^/vendor
+
+	#RewriteRule ^/(.*)$ "http://localhost:3000/$1" [proxy,qsappend,last]
+	
+    <ifModule mod_headers.c>
+        Header set Connection keep-alive
+    </ifModule>
+    
+    Header unset ETag
+    FileETag None
+    
+    #GZIP
+    AddOutputFilterByType DEFLATE text/css application/javascript text/html text/plain text/xml application/json text/json
+    
+    #480 weeks
+    <filesMatch ".(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
+        Header set Cache-Control "max-age=290304000, public"
+    </filesMatch>
+    
+    #2 DAYS
+    <filesMatch ".(xml|txt)$">
+        Header set Cache-Control "max-age=172800, public, must-revalidate"
+    </filesMatch>
+    
+    #2 HOURS
+    <filesMatch ".(html|htm)$">
+        Header set Cache-Control "max-age=7200, must-revalidate"
+    </filesMatch>
+
+</VirtualHost>
