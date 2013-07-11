@@ -65,10 +65,7 @@
     </filesMatch>
     
     <Location "/media/js/fiesta">
-        #2 HOURS
-        <filesMatch "\.js$">
-            Header set Cache-Control "max-age=7200, must-revalidate"
-        </filesMatch>
+        Header set Cache-Control "max-age=7200, must-revalidate"
     </Location>
     
 
