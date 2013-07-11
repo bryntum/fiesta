@@ -7,6 +7,7 @@ log-*.php
 
 .DS_Store
 
+/application/config/account/database.php
 /application/config/account/facebook.php
 /application/config/account/twitter.php
 /application/config/account/recaptcha.php
