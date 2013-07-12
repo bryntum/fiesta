@@ -160,21 +160,23 @@ Ext.define('Fiesta.view.testcase.ResultPanel', {
 
     hideIFrame : function () {
         this.slots.domContainer.hideIFrame()
-    },
-
-
-    clear : function () {
-        this.slots.grid.clear()
-    },
-
-
-    onAssertionDoubleClick : function(view, record) {
-        var result      = record.getResult()
-
-        if ((result instanceof Siesta.Result.Assertion) && !result.isPassed(true)) {
-            this.showSource(result.sourceLine);
-        }
     }
+    
+//    ,
+//
+//
+//    clear : function () {
+//        this.slots.grid.clear()
+//    },
+//
+//
+//    onAssertionDoubleClick : function(view, record) {
+//        var result      = record.getResult()
+//
+//        if ((result instanceof Siesta.Result.Assertion) && !result.isPassed(true)) {
+//            this.showSource(result.sourceLine);
+//        }
+//    }
 });
 
 // To avoid the DOM container splitter getting stuck
